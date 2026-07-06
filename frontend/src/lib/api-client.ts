@@ -1,0 +1,282 @@
+import type {
+  ApiSuccessResponse,
+  Asset,
+  Comment,
+  DashboardOverview,
+  LoginResponse,
+  MaintenanceSchedule,
+  MaintenanceStatus,
+  Report,
+  Room,
+  TechnicianStat,
+  User,
+} from '@/types/api'
+
+const API_BASE = import.meta.env.VITE_API_BASE_URL ?? '/api/v1'
+
+export class ApiError extends Error {
+  status: number
+
+  constructor(message: string, status: number) {
+    super(message)
+    this.status = status
+  }
+}
+
+export async function apiFetch<T>(
+  path: string,
+  options: RequestInit & { token?: string | null } = {},
+): Promise<ApiSuccessResponse<T>> {
+  const { token, headers, ...rest } = options
+
+  const response = await fetch(`${API_BASE}${path}`, {
+    credentials: 'include',
+    headers: {
+      'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      ...headers,
+    },
+    ...rest,
+  })
+
+  const body = await response.json().catch(() => ({}))
+
+  if (!response.ok || body.success === false) {
+    throw new ApiError(body.message ?? 'Request failed', response.status)
+  }
+
+  return body as ApiSuccessResponse<T>
+}
+
+function auth(token: string | null) {
+  return { token }
+}
+
+// Auth
+export const loginRequest = (email: string, password: string) =>
+  apiFetch<LoginResponse>('/auth/login', {
+    method: 'POST',
+    body: JSON.stringify({ email, password }),
+  })
+
+export const registerRequest = (data: {
+  email: string
+  password: string
+  fullName: string
+  phone?: string
+}) =>
+  apiFetch<LoginResponse>('/auth/register', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  })
+
+export const refreshRequest = () =>
+  apiFetch<{ accessToken: string; expiresIn: string }>('/auth/refresh', {
+    method: 'POST',
+    body: JSON.stringify({}),
+  })
+
+export const meRequest = (token: string) =>
+  apiFetch<User>('/auth/me', auth(token))
+
+export const logoutRequest = (token: string) =>
+  apiFetch('/auth/logout', { method: 'POST', ...auth(token) })
+
+// Users
+export const fetchUsers = (token: string, params?: { role?: string }) => {
+  const q = params?.role ? `?role=${params.role}` : ''
+  return apiFetch<User[]>(`/users${q}`, auth(token))
+}
+
+export const createUser = (token: string, data: object) =>
+  apiFetch<User>('/users', { method: 'POST', body: JSON.stringify(data), ...auth(token) })
+
+export const updateUser = (token: string, id: string, data: object) =>
+  apiFetch<User>(`/users/${id}`, { method: 'PATCH', body: JSON.stringify(data), ...auth(token) })
+
+export const deleteUser = (token: string, id: string) =>
+  apiFetch(`/users/${id}`, { method: 'DELETE', ...auth(token) })
+
+export const fetchTechnicians = (token: string) =>
+  apiFetch<User[]>('/users/technicians', auth(token))
+
+// Rooms & Assets
+export const fetchRooms = (token: string, activeOnly = false) =>
+  apiFetch<Room[]>(`/rooms?activeOnly=${activeOnly}`, auth(token))
+
+export const createRoom = (token: string, data: object) =>
+  apiFetch<Room>('/rooms', { method: 'POST', body: JSON.stringify(data), ...auth(token) })
+
+export const updateRoom = (token: string, id: string, data: object) =>
+  apiFetch<Room>(`/rooms/${id}`, { method: 'PATCH', body: JSON.stringify(data), ...auth(token) })
+
+export const deleteRoom = (token: string, id: string) =>
+  apiFetch(`/rooms/${id}`, { method: 'DELETE', ...auth(token) })
+
+export const fetchAssets = (token: string, roomId?: string) => {
+  const q = roomId ? `?roomId=${roomId}` : ''
+  return apiFetch<Asset[]>(`/assets${q}`, auth(token))
+}
+
+export const createAsset = (token: string, data: object) =>
+  apiFetch<Asset>('/assets', { method: 'POST', body: JSON.stringify(data), ...auth(token) })
+
+export const updateAsset = (token: string, id: string, data: object) =>
+  apiFetch<Asset>(`/assets/${id}`, { method: 'PATCH', body: JSON.stringify(data), ...auth(token) })
+
+export const deleteAsset = (token: string, id: string) =>
+  apiFetch(`/assets/${id}`, { method: 'DELETE', ...auth(token) })
+
+// Reports
+export const fetchReports = (
+  token: string,
+  params?: { status?: string; roomId?: string; dateFrom?: string; dateTo?: string },
+) => {
+  const q = new URLSearchParams()
+  if (params?.status) q.set('status', params.status)
+  if (params?.roomId) q.set('roomId', params.roomId)
+  if (params?.dateFrom) q.set('dateFrom', params.dateFrom)
+  if (params?.dateTo) q.set('dateTo', params.dateTo)
+  const qs = q.toString() ? `?${q.toString()}` : ''
+  return apiFetch<Report[]>(`/reports${qs}`, auth(token))
+}
+
+export const fetchReport = (token: string, id: string) =>
+  apiFetch<Report>(`/reports/${id}`, auth(token))
+
+export const createReport = (token: string, data: object) =>
+  apiFetch<Report>('/reports', { method: 'POST', body: JSON.stringify(data), ...auth(token) })
+
+export const updateReportStatus = (token: string, id: string, data: object) =>
+  apiFetch<Report>(`/reports/${id}/status`, {
+    method: 'PATCH',
+    body: JSON.stringify(data),
+    ...auth(token),
+  })
+
+export const chatAi = (token: string, prompt: string) =>
+  apiFetch<{ answer: string }>(`/ai/chat`, {
+    method: 'POST',
+    body: JSON.stringify({ prompt }),
+    ...auth(token),
+  })
+
+export const uploadAttachment = async (token: string, id: string, file: File, type: string = 'DAMAGE') => {
+  const formData = new FormData()
+  formData.append('file', file)
+  formData.append('type', type)
+
+  const response = await fetch(`${API_BASE}/reports/${id}/attachments`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}` },
+    body: formData,
+    credentials: 'include',
+  })
+  
+  const body = await response.json().catch(() => ({}))
+  if (!response.ok || body.success === false) throw new ApiError(body.message ?? 'Upload failed', response.status)
+  return body as ApiSuccessResponse<{ url: string }>
+}
+
+export const assignReport = (token: string, id: string, data: object) =>
+  apiFetch<Report>(`/reports/${id}/assign`, {
+    method: 'POST',
+    body: JSON.stringify(data),
+    ...auth(token),
+  })
+
+export const rateReport = (token: string, id: string, data: object) =>
+  apiFetch(`/reports/${id}/rating`, {
+    method: 'POST',
+    body: JSON.stringify(data),
+    ...auth(token),
+  })
+
+// Analytics
+export const fetchOverview = (token: string) =>
+  apiFetch<DashboardOverview>('/analytics/overview', auth(token))
+
+export const fetchAnalyticsSummary = (token: string) =>
+  apiFetch<DashboardOverview>('/analytics/summary', auth(token))
+
+export const exportReports = (token: string) =>
+  fetch(`${API_BASE}/analytics/export`, {
+    headers: { Authorization: `Bearer ${token}` },
+    credentials: 'include',
+  })
+
+// Comments
+export const fetchComments = (token: string, reportId: string) =>
+  apiFetch<Comment[]>(`/reports/${reportId}/comments`, auth(token))
+
+export const addComment = (token: string, reportId: string, content: string) =>
+  apiFetch<Comment>(`/reports/${reportId}/comments`, {
+    method: 'POST',
+    body: JSON.stringify({ content }),
+    ...auth(token),
+  })
+
+// Maintenance Schedules
+export const fetchMaintenanceSchedules = (
+  token: string,
+  params?: { status?: string; technicianId?: string },
+) => {
+  const q = new URLSearchParams()
+  if (params?.status) q.set('status', params.status)
+  if (params?.technicianId) q.set('technicianId', params.technicianId)
+  const qs = q.toString() ? `?${q.toString()}` : ''
+  return apiFetch<MaintenanceSchedule[]>(`/maintenance${qs}`, auth(token))
+}
+
+export const createMaintenanceSchedule = (token: string, data: object) =>
+  apiFetch<MaintenanceSchedule>('/maintenance', {
+    method: 'POST',
+    body: JSON.stringify(data),
+    ...auth(token),
+  })
+
+export const updateMaintenanceStatus = (token: string, id: string, status: MaintenanceStatus) =>
+  apiFetch<MaintenanceSchedule>(`/maintenance/${id}/status`, {
+    method: 'PATCH',
+    body: JSON.stringify({ status }),
+    ...auth(token),
+  })
+
+export const deleteMaintenanceSchedule = (token: string, id: string) =>
+  apiFetch(`/maintenance/${id}`, { method: 'DELETE', ...auth(token) })
+
+// Technician Stats
+export const fetchTechnicianStats = (token: string) =>
+  apiFetch<TechnicianStat[]>('/analytics/technician-stats', auth(token))
+
+// File exports
+async function downloadBlob(blob: Blob, filename: string) {
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = filename
+  document.body.appendChild(a)
+  a.click()
+  document.body.removeChild(a)
+  URL.revokeObjectURL(url)
+}
+
+export const exportExcel = async (token: string) => {
+  const res = await fetch(`${API_BASE}/reports/export/excel`, {
+    headers: { Authorization: `Bearer ${token}` },
+    credentials: 'include',
+  })
+  if (!res.ok) throw new ApiError('Export failed', res.status)
+  const blob = await res.blob()
+  await downloadBlob(blob, 'e-lapor-laporan.xlsx')
+}
+
+export const exportPdf = async (token: string) => {
+  const res = await fetch(`${API_BASE}/reports/export/pdf`, {
+    headers: { Authorization: `Bearer ${token}` },
+    credentials: 'include',
+  })
+  if (!res.ok) throw new ApiError('Export failed', res.status)
+  const blob = await res.blob()
+  await downloadBlob(blob, 'e-lapor-laporan.pdf')
+}
