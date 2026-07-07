@@ -24,16 +24,18 @@ Proyek ini menggunakan arsitektur _Clean Architecture_ dan dipisahkan menjadi du
 | **Database** | PostgreSQL + Ekstensi `pgvector` (untuk Semantic Search / RAG AI) |
 | **Kueri DB** | _Raw SQL_ melalui `postgres.js` (performa dan kontrol penuh) |
 | **Kecerdasan Buatan (AI)** | Gemini 2.5 Flash (Google Generative AI) & Groq AI (Llama 3.1 sebagai Fallback) |
-| **Runtime & Package** | Bun & Node.js (npm) |
+| **Runtime & Package Manager** | [Bun](https://bun.sh/) 1.3+ (digunakan sebagai runtime **dan** package manager utama) |
 
 ---
 
 ## Panduan Menjalankan Proyek (Quick Start)
 
 ### Persyaratan Sistem
-- [Node.js](https://nodejs.org/) & [Bun](https://bun.sh/) 1.3+
+- [Bun](https://bun.sh/) **1.3+** — digunakan sebagai runtime **dan** package manager (pengganti Node.js/npm).
 - PostgreSQL 16+ dengan ekstensi **pgvector** sudah terpasang.
 - Buat sebuah database kosong di PostgreSQL bernama `fixmind`.
+
+> **⚠️ Penting:** Proyek ini menggunakan **Bun**, bukan `npm` atau `yarn`. Pastikan Bun sudah terinstal sebelum menjalankan perintah apapun. Install Bun: `powershell -c "irm bun.sh/install.ps1 | iex"`
 
 ### 1. Konfigurasi Environment (Variabel Lingkungan)
 Untuk **Backend**:
@@ -51,28 +53,40 @@ cd frontend
 copy .env.example .env
 ```
 
-### 2. Migrasi Database dan Data Awal (Seeding)
+### 2. Instalasi Dependensi
+Instal semua dependensi untuk backend dan frontend.
+```powershell
+# Backend
+cd backend
+bun install
+
+# Frontend (buka terminal baru)
+cd frontend
+bun install
+```
+
+### 3. Migrasi Database dan Data Awal (Seeding)
 Siapkan struktur database dan isi data awal untuk ujicoba.
 ```powershell
 cd backend
-npm run migrate
-npm run seed
+bun run migrate
+bun run seed
 ```
 > **Catatan:** Akun admin default setelah seeding adalah: `admin@fixmind.local` / `Admin123!@#`
 
-### 3. Menjalankan Server Pengembangan
+### 4. Menjalankan Server Pengembangan
 Anda perlu menjalankan Backend dan Frontend di terminal yang terpisah.
 
 **Terminal 1 (Backend):**
 ```powershell
 cd backend
-npm run start:dev
+bun run start:dev
 ```
 
 **Terminal 2 (Frontend):**
 ```powershell
 cd frontend
-npm run dev
+bun run dev
 ```
 
 - **Akses Aplikasi (Frontend):** `http://localhost:5173`
@@ -142,10 +156,10 @@ curl -X GET "http://localhost:3000/api/v1/reports" \
 Selain pengujian manual, proyek backend juga dilengkapi dengan kode pengujian otomatis menggunakan framework **Jest**.
 Pastikan Anda berada di dalam direktori `backend` (`cd backend`), lalu jalankan:
 
-- `npm run test` : Menjalankan semua *unit test* standar.
-- `npm run test:watch` : Menjalankan *unit test* dengan mode pantau (*watch mode*) saat proses pengembangan.
-- `npm run test:cov` : Melihat cakupan kode (*Test Coverage*).
-- `npm run test:e2e` : Menjalankan pengujian *End-to-End* (keseluruhan alur).
+- `bun run test` : Menjalankan semua *unit test* standar.
+- `bun run test:watch` : Menjalankan *unit test* dengan mode pantau (*watch mode*) saat proses pengembangan.
+- `bun run test:cov` : Melihat cakupan kode (*Test Coverage*).
+- `bun run test:e2e` : Menjalankan pengujian *End-to-End* (keseluruhan alur).
 
 ---
 
