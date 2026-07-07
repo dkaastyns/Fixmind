@@ -17,7 +17,8 @@ export class UsersService {
       id: user.id,
       email: user.email,
       fullName: user.full_name,
-      role: user.role,
+      isAdmin: user.is_admin,
+      role: user.is_admin ? 'ADMIN' : 'USER',
       phone: user.phone,
       avatarUrl: user.avatar_url,
       isActive: user.is_active,
@@ -25,8 +26,8 @@ export class UsersService {
     };
   }
 
-  async list(page = 1, limit = 20, role?: UserRow['role']) {
-    const { rows, total } = await this.usersRepository.list({ page, limit, role });
+  async list(page = 1, limit = 20, isAdmin?: boolean) {
+    const { rows, total } = await this.usersRepository.list({ page, limit, isAdmin });
     return {
       data: rows.map((r) => this.toPublic(r)),
       meta: { page, limit, total },
@@ -48,7 +49,7 @@ export class UsersService {
       email: dto.email.toLowerCase(),
       passwordHash,
       fullName: dto.fullName,
-      role: dto.role,
+      isAdmin: dto.isAdmin,
       phone: dto.phone,
     });
     return this.toPublic(user);
@@ -57,14 +58,14 @@ export class UsersService {
   async register(dto: { email: string; password: string; fullName: string; phone?: string }) {
     return this.create({
       ...dto,
-      role: 'USER',
+      isAdmin: false,
     });
   }
 
   async update(id: string, dto: UpdateUserDto) {
     const data: Parameters<UsersRepository['update']>[1] = {};
     if (dto.fullName) data.fullName = dto.fullName;
-    if (dto.role) data.role = dto.role;
+    if (dto.isAdmin !== undefined) data.isAdmin = dto.isAdmin;
     if (dto.phone !== undefined) data.phone = dto.phone;
     if (dto.isActive !== undefined) data.isActive = dto.isActive;
     if (dto.password) data.passwordHash = await bcrypt.hash(dto.password, 12);
@@ -78,10 +79,5 @@ export class UsersService {
     const ok = await this.usersRepository.softDelete(id);
     if (!ok) throw new NotFoundException('User not found');
     return { deleted: true };
-  }
-
-  async listTechnicians() {
-    const rows = await this.usersRepository.listTechnicians();
-    return rows.map((r) => this.toPublic(r));
   }
 }

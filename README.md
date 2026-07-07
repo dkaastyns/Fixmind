@@ -2,14 +2,14 @@
 
 E-Lapor DPRD (dengan nama kode FixMind) adalah sebuah sistem manajemen pelaporan dan pemeliharaan fasilitas modern berbasis _Artificial Intelligence_ (AI) yang dirancang khusus untuk mengelola, melacak, dan menyelesaikan berbagai kerusakan atau kendala fasilitas di lingkungan gedung dewan maupun perkantoran.
 
-Sistem ini membantu mempermudah pelaporan, di mana AI (menggunakan Gemini 2.5 Flash) secara otomatis menganalisis masalah, menentukan prioritas, memberikan estimasi waktu, serta menyajikan rekomendasi perbaikan sebelum diteruskan kepada teknisi yang relevan.
+Sistem ini membantu mempermudah pelaporan, di mana AI (menggunakan Gemini 2.5 Flash) secara otomatis menganalisis masalah, menentukan prioritas, memberikan estimasi waktu, serta menyajikan rekomendasi perbaikan untuk dipantau oleh admin dan pengguna.
 
 ## Fitur Utama
 - **Pelaporan Pintar dengan AI:** Identifikasi prioritas, kategori masalah, dan estimasi pengerjaan otomatis.
 - **Linimasa (Timeline) Pelaporan:** Lacak status tiket dari mulai dibuat, ditugaskan, hingga selesai dikerjakan.
 - **Ekspor Data & Laporan (Analytics):** Analisis kinerja pemeliharaan fasilitas dalam bentuk metrik visual dan ekspor (CSV, Excel, PDF) dengan rentang waktu.
-- **Notifikasi Real-time:** Memberikan pembaruan instan (*WebSockets*) kepada admin, teknisi, maupun pelapor jika status laporan berubah.
-- **Manajemen Pengguna Terpusat:** Admin dapat mengelola peran _User_, _Technician_, dan _Admin_ dengan kontrol akses spesifik.
+- **Notifikasi Real-time:** Memberikan pembaruan instan (*WebSockets*) kepada admin maupun pelapor jika status laporan berubah.
+- **Manajemen Pengguna Terpusat:** Admin dapat mengelola dua jenis akun saja, yaitu _Admin_ dan _User_.
 - **Import Aset dari Excel:** Admin dapat mengimpor data aset inventaris Pemda secara massal dari file `.xlsx`/`.xls` langsung ke database, dilengkapi dengan template yang bisa diunduh.
 
 ---
@@ -113,7 +113,9 @@ cd backend
 bun run migrate
 bun run seed
 ```
-> **Catatan:** Akun admin default setelah seeding adalah: `admin@fixmind.local` / `Admin123!@#`
+> **Catatan:** Akun default setelah seeding adalah:
+> - Admin: `admin@fixmind.local` / `Admin123!@#`
+> - User: `user@fixmind.local` / `User123!@#`
 
 ### 4. Menjalankan Server Pengembangan
 Anda perlu menjalankan Backend dan Frontend di terminal yang terpisah.
@@ -159,7 +161,7 @@ Karena sebagian besar *endpoint* membutuhkan autentikasi, Anda harus *login* ter
     "success": true,
     "data": {
       "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVC...",
-      "user": { "role": "ADMIN", ... }
+      "user": { "role": "ADMIN", "isAdmin": true, ... }
     }
   }
   ```

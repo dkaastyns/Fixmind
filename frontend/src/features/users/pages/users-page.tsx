@@ -9,17 +9,16 @@ import { GlassCard } from '@/components/ui/glass-card'
 import { EmptyState, PageHeader } from '@/components/ui/feedback'
 import { createUser, deleteUser, fetchUsers, updateUser } from '@/lib/api-client'
 import { useAuthStore } from '@/stores/auth-store'
-import type { UserRole } from '@/types/api'
 
 export function UsersPage() {
   const token = useAuthStore((s) => s.accessToken)!
   const qc = useQueryClient()
   const [showForm, setShowForm] = useState(false)
-  const [roleFilter, setRoleFilter] = useState<UserRole | ''>('')
+  const [isAdminFilter, setIsAdminFilter] = useState<boolean | ''>('')
 
   const { data, isLoading } = useQuery({
-    queryKey: ['users', roleFilter],
-    queryFn: () => fetchUsers(token, roleFilter ? { role: roleFilter } : undefined),
+    queryKey: ['users', isAdminFilter],
+    queryFn: () => fetchUsers(token, typeof isAdminFilter === 'boolean' ? { isAdmin: isAdminFilter } : undefined),
   })
 
   const deleteMut = useMutation({
@@ -40,24 +39,24 @@ export function UsersPage() {
     <div>
       <PageHeader
         title="Manajemen Pengguna"
-        description="Kelola administrator, teknisi, dan pengguna aplikasi DPRD"
+        description="Kelola akun admin dan pengguna aplikasi DPRD"
         action={
           <Button onClick={() => setShowForm(true)}><Plus className="h-4 w-4" /> Tambah Pengguna</Button>
         }
       />
 
       <div className="mb-4 flex flex-wrap gap-2">
-        {(['', 'ADMIN', 'TECHNICIAN', 'USER'] as const).map((r) => {
-          const labels: Record<string, string> = { '': 'Semua', ADMIN: 'ADMIN', TECHNICIAN: 'TEKNISI', USER: 'PENGGUNA' }
+        {(['', true, false] as const).map((r) => {
+          const labels: Record<string, string> = { '': 'Semua', true: 'ADMIN', false: 'USER' }
           return (
             <button
-              key={r || 'all'}
-              onClick={() => setRoleFilter(r)}
+              key={r === '' ? 'all' : String(r)}
+              onClick={() => setIsAdminFilter(r)}
               className={`rounded-xl px-3 py-1.5 text-sm ${
-                roleFilter === r ? 'gradient-primary text-white' : 'glass text-muted'
+                isAdminFilter === r ? 'gradient-primary text-white' : 'glass text-muted'
               }`}
             >
-              {labels[r]}
+              {labels[String(r)]}
             </button>
           )
         })}
@@ -94,7 +93,7 @@ export function UsersPage() {
                   <td className="px-4 py-3 text-muted">{u.email}</td>
                   <td className="px-4 py-3">
                     <span className="text-sm font-medium capitalize">
-                      {u.role === 'USER' ? 'Pengguna' : u.role === 'TECHNICIAN' ? 'Teknisi' : 'Admin'}
+                      {u.isAdmin ? 'Admin' : 'Pengguna'}
                     </span>
                   </td>
                   <td className="px-4 py-3">
@@ -129,10 +128,10 @@ function UserForm({ token, onClose, onSuccess }: { token: string; onClose: () =>
   const [fullName, setFullName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [role, setRole] = useState<UserRole>('USER')
+  const [isAdmin, setIsAdmin] = useState(false)
 
   const mutation = useMutation({
-    mutationFn: () => createUser(token, { fullName, email, password, role }),
+    mutationFn: () => createUser(token, { fullName, email, password, isAdmin }),
     onSuccess,
     onError: (e: Error) => toast.error(e.message),
   })
@@ -146,12 +145,11 @@ function UserForm({ token, onClose, onSuccess }: { token: string; onClose: () =>
         <PasswordInput placeholder="Kata sandi" value={password} onChange={(e) => setPassword(e.target.value)} />
         <select
           className="flex h-10 rounded-xl border border-white/60 bg-white/70 px-3 text-sm"
-          value={role}
-          onChange={(e) => setRole(e.target.value as UserRole)}
+          value={String(isAdmin)}
+          onChange={(e) => setIsAdmin(e.target.value === 'true')}
         >
-          <option value="USER">Pengguna</option>
-          <option value="TECHNICIAN">Teknisi</option>
-          <option value="ADMIN">Admin</option>
+          <option value="false">Pengguna</option>
+          <option value="true">Admin</option>
         </select>
       </div>
       <div className="mt-4 flex gap-3">

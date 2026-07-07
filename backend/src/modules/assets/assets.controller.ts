@@ -26,8 +26,9 @@ export class AssetsController {
     @Query('page') page = '1',
     @Query('limit') limit = '50',
     @Query('roomId') roomId?: string,
+    @Query('search') search?: string,
   ) {
-    const result = await this.assetsService.list(Number(page), Number(limit), roomId);
+    const result = await this.assetsService.list(Number(page), Number(limit), roomId, search);
     return { message: 'Assets retrieved', ...result };
   }
 

@@ -9,7 +9,6 @@ import {
   Query,
 } from '@nestjs/common';
 import { Roles } from '../../common/decorators/roles.decorator';
-import type { UserRole } from '../../common/types/database-rows';
 import { CreateUserDto, UpdateUserDto } from './dto/user.dto';
 import { UsersService } from './services/users.service';
 
@@ -22,17 +21,11 @@ export class UsersController {
   async list(
     @Query('page') page = '1',
     @Query('limit') limit = '20',
-    @Query('role') role?: UserRole,
+    @Query('isAdmin') isAdmin?: string,
   ) {
-    const result = await this.usersService.list(Number(page), Number(limit), role);
+    const parsed = isAdmin === undefined ? undefined : isAdmin === 'true';
+    const result = await this.usersService.list(Number(page), Number(limit), parsed);
     return { message: 'Users retrieved', ...result };
-  }
-
-  @Roles('ADMIN', 'TECHNICIAN')
-  @Get('technicians')
-  async technicians() {
-    const data = await this.usersService.listTechnicians();
-    return { message: 'Technicians retrieved', data };
   }
 
   @Roles('ADMIN')

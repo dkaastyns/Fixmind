@@ -26,8 +26,8 @@ const features = [
   },
   {
     icon: Wrench,
-    title: 'Alur Kerja Teknisi',
-    description: 'Menugaskan, memantau kemajuan, unggah foto perbaikan, dan menutup laporan dengan efisien.',
+    title: 'Alur Kerja Ringkas',
+    description: 'Admin dan pengguna bisa memantau progres laporan tanpa alur teknisi yang rumit.',
   },
   {
     icon: BarChart3,
@@ -100,8 +100,8 @@ export function LandingPage() {
               <span className="text-gradient">dengan lebih cerdas</span>
             </h1>
             <p className="mx-auto mt-6 max-w-2xl text-lg text-slate-700 font-medium">
-              FixMind membantu organisasi mengelola laporan kerusakan, menugaskan teknisi,
-              dan memprioritaskan perbaikan melalui dukungan keputusan berbasis AI.
+              FixMind membantu organisasi mengelola laporan kerusakan, memprioritaskan perbaikan,
+              dan menyederhanakan alur kerja melalui dukungan keputusan berbasis AI.
             </p>
             <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
               <Link to="/signup">

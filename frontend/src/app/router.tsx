@@ -10,7 +10,6 @@ import { ReportDetailPage } from '@/features/reports/pages/report-detail-page'
 import { RoomsPage } from '@/features/rooms/pages/rooms-page'
 import { UsersPage } from '@/features/users/pages/users-page'
 import { AnalyticsPage } from '@/features/analytics/pages/analytics-page'
-import { MaintenancePage } from '@/features/maintenance/pages/maintenance-page'
 import { GuestRoute, ProtectedRoute } from './router-guards'
 
 export function AppRouter() {
@@ -38,7 +37,6 @@ export function AppRouter() {
               path="/dashboard/analytics"
               element={<AdminOnly><AnalyticsPage /></AdminOnly>}
             />
-            <Route path="/dashboard/maintenance" element={<MaintenancePage />} />
           </Route>
         </Route>
 

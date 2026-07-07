@@ -1,13 +1,11 @@
 import {
   IsBoolean,
   IsEmail,
-  IsEnum,
   IsNotEmpty,
   IsOptional,
   IsString,
   MinLength,
 } from 'class-validator';
-import type { UserRole } from '../../../common/types/database-rows';
 
 export class CreateUserDto {
   @IsEmail()
@@ -21,8 +19,8 @@ export class CreateUserDto {
   @IsNotEmpty()
   fullName!: string;
 
-  @IsEnum(['ADMIN', 'TECHNICIAN', 'USER'])
-  role!: UserRole;
+  @IsBoolean()
+  isAdmin!: boolean;
 
   @IsOptional()
   @IsString()
@@ -36,8 +34,9 @@ export class UpdateUserDto {
   fullName?: string;
 
   @IsOptional()
-  @IsEnum(['ADMIN', 'TECHNICIAN', 'USER'])
-  role?: UserRole;
+  @IsOptional()
+  @IsBoolean()
+  isAdmin?: boolean;
 
   @IsOptional()
   @IsString()

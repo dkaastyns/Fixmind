@@ -8,7 +8,6 @@ import type {
   MaintenanceStatus,
   Report,
   Room,
-  TechnicianStat,
   User,
 } from '@/types/api'
 
@@ -83,8 +82,8 @@ export const logoutRequest = (token: string) =>
   apiFetch('/auth/logout', { method: 'POST', ...auth(token) })
 
 // Users
-export const fetchUsers = (token: string, params?: { role?: string }) => {
-  const q = params?.role ? `?role=${params.role}` : ''
+export const fetchUsers = (token: string, params?: { isAdmin?: boolean }) => {
+  const q = typeof params?.isAdmin === 'boolean' ? `?isAdmin=${params.isAdmin}` : ''
   return apiFetch<User[]>(`/users${q}`, auth(token))
 }
 
@@ -96,9 +95,6 @@ export const updateUser = (token: string, id: string, data: object) =>
 
 export const deleteUser = (token: string, id: string) =>
   apiFetch(`/users/${id}`, { method: 'DELETE', ...auth(token) })
-
-export const fetchTechnicians = (token: string) =>
-  apiFetch<User[]>('/users/technicians', auth(token))
 
 // Rooms & Assets
 export const fetchRooms = (token: string, activeOnly = false) =>
@@ -113,9 +109,13 @@ export const updateRoom = (token: string, id: string, data: object) =>
 export const deleteRoom = (token: string, id: string) =>
   apiFetch(`/rooms/${id}`, { method: 'DELETE', ...auth(token) })
 
-export const fetchAssets = (token: string, roomId?: string) => {
-  const q = roomId ? `?roomId=${roomId}` : ''
-  return apiFetch<Asset[]>(`/assets${q}`, auth(token))
+export const fetchAssets = (token: string, params?: { roomId?: string; search?: string; limit?: number }) => {
+  const q = new URLSearchParams()
+  if (params?.roomId) q.set('roomId', params.roomId)
+  if (params?.search) q.set('search', params.search)
+  if (params?.limit) q.set('limit', String(params.limit))
+  const qs = q.toString() ? `?${q.toString()}` : ''
+  return apiFetch<Asset[]>(`/assets${qs}`, auth(token))
 }
 
 export const createAsset = (token: string, data: object) =>
@@ -278,10 +278,6 @@ export const updateMaintenanceStatus = (token: string, id: string, status: Maint
 
 export const deleteMaintenanceSchedule = (token: string, id: string) =>
   apiFetch(`/maintenance/${id}`, { method: 'DELETE', ...auth(token) })
-
-// Technician Stats
-export const fetchTechnicianStats = (token: string) =>
-  apiFetch<TechnicianStat[]>('/analytics/technician-stats', auth(token))
 
 // File exports
 async function downloadBlob(blob: Blob, filename: string) {

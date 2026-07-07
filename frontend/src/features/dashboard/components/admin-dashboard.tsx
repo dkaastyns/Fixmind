@@ -1,10 +1,12 @@
+import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { fetchOverview } from '@/lib/api-client'
+import { fetchAssets, fetchOverview } from '@/lib/api-client'
 import { AnimatedGlassCard } from '@/components/ui/animated-glass-card'
-import { PageHeader } from '@/components/ui/feedback'
+import { EmptyState, PageHeader } from '@/components/ui/feedback'
+import { Input } from '@/components/ui/input'
 import { useAuthStore } from '@/stores/auth-store'
 import { motion } from 'framer-motion'
-import { Building2, CheckCircle2, ClipboardList, Star } from 'lucide-react'
+import { Building2, CheckCircle2, ClipboardList, Search, Star } from 'lucide-react'
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   PieChart, Pie, Cell, Legend
@@ -26,13 +28,22 @@ const itemVariants = {
 export function AdminDashboard() {
   const token = useAuthStore((s) => s.accessToken)!
   const user = useAuthStore((s) => s.user)
+  const [search, setSearch] = useState('')
 
   const { data, isLoading } = useQuery({
     queryKey: ['overview'],
     queryFn: () => fetchOverview(token),
   })
 
+  const searchQuery = search.trim()
+  const { data: assetSearchData, isFetching: isSearching } = useQuery({
+    queryKey: ['assets', 'global-search', searchQuery],
+    queryFn: () => fetchAssets(token, { search: searchQuery, limit: 12 }),
+    enabled: searchQuery.length >= 2,
+  })
+
   const stats = data?.data
+  const searchResults = assetSearchData?.data ?? []
 
   const cards = [
     { label: 'Laporan Terbuka', value: stats?.openReports ?? '—', icon: ClipboardList, color: 'text-blue-500' },
@@ -73,6 +84,58 @@ export function AdminDashboard() {
           </AnimatedGlassCard>
         ))}
       </motion.div>
+
+      <AnimatedGlassCard className="space-y-4">
+        <div className="flex items-start justify-between gap-4 flex-wrap">
+          <div>
+            <h2 className="text-lg font-medium">Global Search Aset</h2>
+            <p className="text-sm text-muted">Cari aset, ruangan, kode barang, nomor register, merk, dan type dari satu kotak pencarian.</p>
+          </div>
+          <div className="w-full max-w-md">
+            <div className="relative">
+              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
+              <Input
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Cari aset: AC, TOA, KMP-001, Ruang Paripurna..."
+                className="pl-9"
+              />
+            </div>
+          </div>
+        </div>
+
+        {searchQuery.length < 2 ? (
+          <p className="text-sm text-muted">Mulai ketik minimal 2 karakter untuk mencari aset.</p>
+        ) : isSearching ? (
+          <p className="text-sm text-muted">Mencari aset...</p>
+        ) : searchResults.length === 0 ? (
+          <EmptyState
+            title="Tidak ada aset yang cocok"
+            description="Coba gunakan kode barang, nama barang, nomor register, merk/type, atau nama ruangan."
+          />
+        ) : (
+          <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+            {searchResults.map((asset) => (
+              <div key={asset.id} className="rounded-2xl border border-white/30 bg-white/50 p-4 shadow-sm">
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <p className="font-semibold text-foreground">{asset.namaBarang}</p>
+                    <p className="text-xs text-muted mt-1">{asset.kodeBarang} · {asset.idpemda}</p>
+                  </div>
+                  <span className="rounded-full bg-[#ef629f]/10 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-[#ef629f]">
+                    {asset.status}
+                  </span>
+                </div>
+                <div className="mt-3 space-y-1 text-sm text-muted">
+                  <p><span className="font-medium text-foreground">Merk/Type:</span> {asset.merkType}</p>
+                  <p><span className="font-medium text-foreground">Register:</span> {asset.nomorRegister}</p>
+                  <p><span className="font-medium text-foreground">Ruangan:</span> {asset.roomCode ?? asset.roomId}{asset.roomName ? ` - ${asset.roomName}` : ''}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </AnimatedGlassCard>
 
       <div className="grid gap-6 lg:grid-cols-2 mt-6">
         {stats?.byStatus && (

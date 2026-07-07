@@ -12,10 +12,12 @@ export class AssetsService {
     private readonly roomsRepository: RoomsRepository,
   ) {}
 
-  toPublic(asset: AssetRow) {
+  toPublic(asset: AssetRow & { room_name?: string; room_code?: string }) {
     return {
       id: asset.id,
       roomId: asset.room_id,
+      roomName: asset.room_name,
+      roomCode: asset.room_code,
       idpemda: asset.idpemda,
       kodeBarang: asset.kode_barang,
       nomorRegister: asset.nomor_register,
@@ -26,7 +28,15 @@ export class AssetsService {
     };
   }
 
-  async list(page = 1, limit = 50, roomId?: string) {
+  async list(page = 1, limit = 50, roomId?: string, search?: string) {
+    if (search?.trim()) {
+      const rows = await this.assetsRepository.search({ query: search, limit });
+      return {
+        data: rows.map((r) => this.toPublic(r)),
+        meta: { page, limit, total: rows.length },
+      };
+    }
+
     const { rows, total } = await this.assetsRepository.list({ page, limit, roomId });
 
     return {

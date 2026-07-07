@@ -5,7 +5,6 @@ import { motion, AnimatePresence } from 'framer-motion'
 import {
   BarChart3,
   Building2,
-  Calendar,
   ClipboardList,
   LayoutDashboard,
   LogOut,
@@ -30,7 +29,6 @@ const navItems: Array<{
   { to: '/dashboard', label: 'Dasbor', icon: LayoutDashboard },
   { to: '/dashboard/reports', label: 'Laporan Masalah', icon: ClipboardList },
   { to: '/dashboard/rooms', label: 'Fasilitas & Ruangan', icon: Building2 },
-  { to: '/dashboard/maintenance', label: 'Jadwal Pemeliharaan', icon: Calendar, roles: ['ADMIN', 'TECHNICIAN'] },
   { to: '/dashboard/users', label: 'Pengguna', icon: Users, roles: ['ADMIN'] },
   { to: '/dashboard/analytics', label: 'Analitik', icon: BarChart3, roles: ['ADMIN'] },
 ]

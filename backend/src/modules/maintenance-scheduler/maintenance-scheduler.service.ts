@@ -29,7 +29,7 @@ export class MaintenanceSchedulerService {
       }
 
       // Find an admin user to act as the reporter for scheduled maintenance
-      const { rows: admins } = await this.usersRepository.list({ page: 1, limit: 1, role: 'ADMIN' });
+      const { rows: admins } = await this.usersRepository.list({ page: 1, limit: 1, isAdmin: true });
       const systemAdmin = admins[0];
 
       if (!systemAdmin) {

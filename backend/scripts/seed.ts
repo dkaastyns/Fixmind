@@ -14,21 +14,14 @@ const USERS = [
     email: 'admin@fixmind.local',
     password: 'Admin123!@#',
     fullName: 'System Administrator',
-    role: 'ADMIN' as const,
+    isAdmin: true,
     phone: '081234567890',
-  },
-  {
-    email: 'tech@fixmind.local',
-    password: 'Tech123!@#',
-    fullName: 'Budi Santoso',
-    role: 'TECHNICIAN' as const,
-    phone: '081234567891',
   },
   {
     email: 'user@fixmind.local',
     password: 'User123!@#',
     fullName: 'Ani Wijaya',
-    role: 'USER' as const,
+    isAdmin: false,
     phone: '081234567892',
   },
 ];
@@ -44,10 +37,10 @@ async function seedUsers() {
     }
     const hash = await bcrypt.hash(u.password, 12);
     await sql`
-      INSERT INTO users (email, password_hash, full_name, role, phone)
-      VALUES (${u.email}, ${hash}, ${u.fullName}, ${u.role}, ${u.phone})
+      INSERT INTO users (email, password_hash, full_name, is_admin, phone)
+      VALUES (${u.email}, ${hash}, ${u.fullName}, ${u.isAdmin}, ${u.phone})
     `;
-    console.log(`seeded user ${u.email} (${u.role})`);
+    console.log(`seeded user ${u.email} (${u.isAdmin ? 'ADMIN' : 'USER'})`);
   }
 }
 
@@ -109,9 +102,6 @@ async function seedReports(roomIds: string[]) {
   const [user] = await sql<{ id: string }[]>`
     SELECT id FROM users WHERE email = 'user@fixmind.local' LIMIT 1
   `;
-  const [tech] = await sql<{ id: string }[]>`
-    SELECT id FROM users WHERE email = 'tech@fixmind.local' LIMIT 1
-  `;
   const [asset1] = await sql<{ id: string }[]>`
     SELECT id FROM assets WHERE kode_barang = 'AC-PRP-1' LIMIT 1
   `;
@@ -119,7 +109,7 @@ async function seedReports(roomIds: string[]) {
     SELECT id FROM assets WHERE kode_barang = 'DOR-LOB-1' LIMIT 1
   `;
 
-  if (!user || !tech) return;
+  if (!user) return;
 
   const [report1] = await sql<{ id: string }[]>`
     INSERT INTO reports (reporter_id, room_id, asset_id, title, description, status, priority, ai_analysis_status)
@@ -133,23 +123,10 @@ async function seedReports(roomIds: string[]) {
   `;
 
   await sql`
-    UPDATE reports SET
-      assigned_technician_id = ${tech.id},
-      assigned_at = now(),
-      ai_priority_score = 85,
-      ai_priority_reason = 'Kerusakan fasilitas iklim di ruang sidang utama dapat mengganggu jalannya agenda penting pemerintahan.',
-      ai_recommendation = 'Lakukan pemeriksaan tekanan freon dan bersihkan filter udara sentral segera.',
-      ai_estimated_repair_hours = 3,
-      ai_suggested_action = 'Tugaskan teknisi HVAC segera sebelum rapat paripurna dimulai.'
-    WHERE id = ${report1.id}
-  `;
-
-  await sql`
     INSERT INTO report_histories (report_id, actor_id, action, new_status, note)
     VALUES
       (${report1.id}, ${user.id}, 'CREATED', 'PENDING', 'Laporan dibuat oleh pengguna'),
-      (${report1.id}, NULL, 'AI_ANALYZED', 'AI_ANALYSIS', 'Prioritas AI: TINGGI'),
-      (${report1.id}, NULL, 'ASSIGNED', 'ASSIGNED', 'Laporan ditugaskan ke teknisi Budi Santoso')
+      (${report1.id}, NULL, 'AI_ANALYZED', 'AI_ANALYSIS', 'Prioritas AI: TINGGI')
   `;
 
   await sql`
@@ -172,7 +149,7 @@ async function seed() {
   await seedReports(roomIds);
   console.log('\nSeed complete. Login credentials:');
   for (const u of USERS) {
-    console.log(`  ${u.role.padEnd(11)} ${u.email} / ${u.password}`);
+    console.log(`  ${u.isAdmin ? 'ADMIN' : 'USER'} ${u.email} / ${u.password}`);
   }
   await sql.end();
 }

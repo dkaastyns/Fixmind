@@ -1,6 +1,5 @@
 import { Navigate, Outlet } from 'react-router-dom'
 import { useAuthStore } from '@/stores/auth-store'
-import type { UserRole } from '@/types/api'
 
 export function ProtectedRoute() {
   const { accessToken, isHydrated } = useAuthStore()
@@ -30,15 +29,6 @@ export function AdminRoute() {
 
   if (!isHydrated) return null
   if (!accessToken) return <Navigate to="/login" replace />
-  if (user?.role !== 'ADMIN') return <Navigate to="/dashboard" replace />
-  return <Outlet />
-}
-
-export function RoleRoute({ roles }: { roles: UserRole[] }) {
-  const { user, accessToken, isHydrated } = useAuthStore()
-
-  if (!isHydrated) return null
-  if (!accessToken) return <Navigate to="/login" replace />
-  if (!user || !roles.includes(user.role)) return <Navigate to="/dashboard" replace />
+  if (!user?.isAdmin) return <Navigate to="/dashboard" replace />
   return <Outlet />
 }

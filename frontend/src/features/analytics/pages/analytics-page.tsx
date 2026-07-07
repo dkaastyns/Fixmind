@@ -7,63 +7,14 @@ import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { GlassCard } from '@/components/ui/glass-card'
 import { PageHeader } from '@/components/ui/feedback'
-import {
-  exportExcel,
-  exportPdf,
-  fetchAnalyticsSummary,
-  fetchTechnicianStats,
-} from '@/lib/api-client'
+import { exportExcel, exportPdf, fetchAnalyticsSummary } from '@/lib/api-client'
 import { useAuthStore } from '@/stores/auth-store'
-
-const RANK_COLORS = [
-  'text-yellow-500',   // 1st gold
-  'text-slate-400',    // 2nd silver
-  'text-amber-600',    // 3rd bronze
-]
-
-function StarRating({ value }: { value: number | null }) {
-  if (value === null) return <span className="text-muted text-xs">—</span>
-  const rounded = Math.round(value * 2) / 2
-  return (
-    <span className="inline-flex items-center gap-0.5">
-      {[1, 2, 3, 4, 5].map((i) => (
-        <Star
-          key={i}
-          className={`h-3.5 w-3.5 ${i <= rounded ? 'fill-yellow-400 text-yellow-400' : 'text-white/30'}`}
-        />
-      ))}
-      <span className="ml-1 text-xs text-muted">({value.toFixed(1)})</span>
-    </span>
-  )
-}
-
-function Star({ className }: { className?: string }) {
-  return (
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
-      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-    </svg>
-  )
-}
-
-function Medal({ className }: { className?: string }) {
-  return (
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
-      <path d="M7.21 15 2.66 7.14a2 2 0 0 1 .13-2.2L4.4 2.8A2 2 0 0 1 6 2h12a2 2 0 0 1 1.6.8l1.6 2.14a2 2 0 0 1 .14 2.2L16.79 15" />
-      <path d="M11 12 5.12 2.2" />
-      <path d="m13 12 5.88-9.8" />
-      <path d="M8 7h8" />
-      <circle cx="12" cy="17" r="5" />
-      <path d="M12 18v-2h-.5" />
-    </svg>
-  )
-}
-
 
 export function AnalyticsPage() {
   const token = useAuthStore((s) => s.accessToken)!
 
   const [showExportModal, setShowExportModal] = useState(false)
-  const [exportType, setExportType] = useState<'csv' | 'excel' | 'pdf' | null>(null)
+  const [exportType, setExportType] = useState<'excel' | 'pdf' | null>(null)
   const [startDate, setStartDate] = useState('')
   const [endDate, setEndDate] = useState('')
   const [isAllTime, setIsAllTime] = useState(true)
@@ -73,13 +24,7 @@ export function AnalyticsPage() {
     queryFn: () => fetchAnalyticsSummary(token),
   })
 
-  const { data: statsData } = useQuery({
-    queryKey: ['technician-stats'],
-    queryFn: () => fetchTechnicianStats(token),
-  })
-
   const stats = data?.data
-  const techStats = statsData?.data ?? []
 
   const confirmExport = async () => {
     const sDate = isAllTime ? undefined : (startDate ? new Date(startDate).toISOString() : undefined)
@@ -145,11 +90,11 @@ export function AnalyticsPage() {
                     <X className="h-5 w-5" />
                   </button>
                 </div>
-                
+
                 <div className="space-y-4 mb-6 text-left">
                   <label className="flex items-center gap-2 cursor-pointer">
-                    <input 
-                      type="checkbox" 
+                    <input
+                      type="checkbox"
                       className="rounded border-gray-300 text-[#ef629f] focus:ring-[#ef629f]"
                       checked={isAllTime}
                       onChange={(e) => setIsAllTime(e.target.checked)}
@@ -159,7 +104,7 @@ export function AnalyticsPage() {
 
                   <AnimatePresence>
                     {!isAllTime && (
-                      <motion.div 
+                      <motion.div
                         initial={{ opacity: 0, height: 0 }}
                         animate={{ opacity: 1, height: 'auto' }}
                         exit={{ opacity: 0, height: 0 }}
@@ -200,7 +145,7 @@ export function AnalyticsPage() {
             </div>
           )}
         </AnimatePresence>,
-        document.body
+        document.body,
       )}
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
@@ -264,64 +209,6 @@ export function AnalyticsPage() {
           </div>
         </GlassCard>
       )}
-
-      {/* Technician Leaderboard */}
-      <GlassCard className="overflow-hidden p-0">
-        <div className="p-5 border-b border-white/20">
-          <div className="flex items-center gap-2">
-            <Medal className="h-5 w-5 text-[#ef629f]" />
-            <h2 className="text-lg font-medium">Performa Teknisi</h2>
-          </div>
-          <p className="mt-1 text-sm text-muted">Peringkat teknisi berdasarkan tugas selesai dan rating pengguna</p>
-        </div>
-
-        {techStats.length === 0 ? (
-          <p className="p-6 text-sm text-muted">Belum ada data performa teknisi.</p>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-white/30 text-left text-muted">
-                  <th className="px-5 py-3 font-medium">Peringkat</th>
-                  <th className="px-5 py-3 font-medium">Nama Teknisi</th>
-                  <th className="px-5 py-3 font-medium text-center">Tugas Selesai</th>
-                  <th className="px-5 py-3 font-medium">Rating</th>
-                  <th className="px-5 py-3 font-medium text-center">Rata-rata Waktu (jam)</th>
-                </tr>
-              </thead>
-              <tbody>
-                {techStats.map((t, idx) => (
-                  <tr key={t.technicianId} className="border-b border-white/20 hover:bg-white/30 transition-colors">
-                    <td className="px-5 py-3">
-                      <div className="flex items-center gap-2">
-                        {idx < 3 ? (
-                          <span className={`text-lg font-bold ${RANK_COLORS[idx]}`}>
-                            #{idx + 1}
-                          </span>
-                        ) : (
-                          <span className="text-sm text-muted font-medium">#{idx + 1}</span>
-                        )}
-                      </div>
-                    </td>
-                    <td className="px-5 py-3 font-medium">{t.technicianName}</td>
-                    <td className="px-5 py-3 text-center">
-                      <span className="inline-flex items-center justify-center rounded-lg bg-green-100/60 px-2.5 py-0.5 text-xs font-semibold text-green-600">
-                        {t.completedTasks}
-                      </span>
-                    </td>
-                    <td className="px-5 py-3">
-                      <StarRating value={t.avgRating} />
-                    </td>
-                    <td className="px-5 py-3 text-center text-muted">
-                      {t.avgCompletionHours !== null ? `${t.avgCompletionHours.toFixed(1)} jam` : '—'}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </GlassCard>
     </div>
   )
 }

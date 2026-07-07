@@ -21,7 +21,7 @@ export function NotificationBell({ align = 'right' }: { align?: 'left' | 'right'
 
     // Handler for new report (Admin only)
     const handleReportCreated = (report: any) => {
-      if (user.role !== 'ADMIN') return
+      if (!user.isAdmin) return
       const title = 'Laporan Baru Masuk'
       const body = `${report.reporterName} melaporkan "${report.title}" di ${report.roomName}`
       addNotification({
@@ -38,14 +38,10 @@ export function NotificationBell({ align = 'right' }: { align?: 'left' | 'right'
       let title = 'Laporan Diperbarui'
       let body = `Laporan "${report.title}" telah diperbarui.`
 
-      if (user.role === 'ADMIN') {
+      if (user.isAdmin) {
         notify = true
         body = `Laporan "${report.title}" oleh ${report.reporterName} diperbarui.`
-      } else if (user.role === 'TECHNICIAN' && report.assignedTechnicianId === user.id) {
-        notify = true
-        title = 'Tugas Diperbarui'
-        body = `Tugas "${report.title}" di ${report.roomName} diperbarui.`
-      } else if (user.role === 'USER' && report.reporterId === user.id) {
+      } else if (report.reporterId === user.id) {
         notify = true
         body = `Laporan Anda "${report.title}" diubah statusnya menjadi ${report.status}.`
       }
@@ -60,38 +56,12 @@ export function NotificationBell({ align = 'right' }: { align?: 'left' | 'right'
       }
     }
 
-    // Handler for technician assignment (Admin & Technician)
-    const handleReportAssigned = (report: any) => {
-      let notify = false
-      let title = 'Teknisi Ditugaskan'
-      let body = `Teknisi ${report.technicianName} ditugaskan untuk "${report.title}"`
-
-      if (user.role === 'ADMIN') {
-        notify = true
-      } else if (user.role === 'TECHNICIAN' && report.assignedTechnicianId === user.id) {
-        notify = true
-        title = 'Tugas Baru Ditugaskan'
-        body = `Anda ditugaskan memperbaiki "${report.title}" di ${report.roomName}`
-      }
-
-      if (notify) {
-        addNotification({
-          title,
-          body,
-          link: `/dashboard/reports/${report.id}`,
-        })
-        toast.info(title, { description: body })
-      }
-    }
-
     socket.on('report.created', handleReportCreated)
     socket.on('report.updated', handleReportUpdated)
-    socket.on('report.assigned', handleReportAssigned)
 
     return () => {
       socket.off('report.created', handleReportCreated)
       socket.off('report.updated', handleReportUpdated)
-      socket.off('report.assigned', handleReportAssigned)
     }
   }, [socket, user, addNotification])
 

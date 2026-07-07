@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import type { ReactNode } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Link, useParams } from 'react-router-dom'
@@ -11,12 +11,8 @@ import { PageHeader, StatusBadge } from '@/components/ui/feedback'
 import { ImageLightbox } from '@/components/ui/image-lightbox'
 import {
   addComment,
-  assignReport,
   fetchComments,
   fetchReport,
-  fetchTechnicians,
-  updateReportStatus,
-  uploadAttachment,
 } from '@/lib/api-client'
 import { useAuthStore } from '@/stores/auth-store'
 
@@ -24,7 +20,6 @@ export function ReportDetailPage() {
   const { id } = useParams<{ id: string }>()
   const token = useAuthStore((s) => s.accessToken)!
   const user = useAuthStore((s) => s.user)
-  const qc = useQueryClient()
 
   const { data, isLoading } = useQuery({
     queryKey: ['report', id],
@@ -32,60 +27,8 @@ export function ReportDetailPage() {
     enabled: !!id,
   })
 
-  const techs = useQuery({
-    queryKey: ['technicians'],
-    queryFn: () => fetchTechnicians(token),
-    enabled: user?.role === 'ADMIN',
-  })
-
   const report = data?.data
-  const [techId, setTechId] = useState('')
-  const [repairFile, setRepairFile] = useState<File | null>(null)
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null)
-  const [targetDate, setTargetDate] = useState('')
-  const [adminNotes, setAdminNotes] = useState('')
-
-  useEffect(() => {
-    if (report?.aiSuggestedTargetDate && !targetDate) {
-      setTargetDate(new Date(report.aiSuggestedTargetDate).toISOString().split('T')[0])
-    }
-  }, [report?.aiSuggestedTargetDate])
-
-  const statusMutation = useMutation({
-    mutationFn: (status: string) => updateReportStatus(token, id!, { status }),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ['report', id] })
-      toast.success('Status updated')
-    },
-    onError: (e: Error) => toast.error(e.message),
-  })
-
-  const completeMutation = useMutation({
-    mutationFn: async () => {
-      if (repairFile) {
-        await uploadAttachment(token, id!, repairFile, 'REPAIR')
-      }
-      return updateReportStatus(token, id!, { status: 'COMPLETED' })
-    },
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ['report', id] })
-      toast.success('Status updated')
-    },
-    onError: (e: Error) => toast.error(e.message),
-  })
-
-  const assignMutation = useMutation({
-    mutationFn: () => assignReport(token, id!, { 
-      technicianId: techId,
-      targetCompletionDate: targetDate ? new Date(targetDate).toISOString() : undefined,
-      adminNotes: adminNotes || undefined,
-    }),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ['report', id] })
-      toast.success('Technician assigned')
-    },
-    onError: (e: Error) => toast.error(e.message),
-  })
 
   if (isLoading) return (
     <div className="space-y-6 animate-pulse">
@@ -99,7 +42,6 @@ export function ReportDetailPage() {
   )
   if (!report) return <p className="text-danger">Report not found</p>
 
-  const isTech = user?.role === 'TECHNICIAN' || user?.role === 'ADMIN'
   const lightboxImages = (report.attachments ?? []).map((a) => ({ id: a.id, url: a.url, label: a.type }))
 
   return (
@@ -126,7 +68,6 @@ export function ReportDetailPage() {
           <p className="text-sm leading-relaxed">{report.description}</p>
           <div className="grid gap-2 text-sm text-muted sm:grid-cols-2">
             <p>Pelapor: <span className="text-foreground">{report.reporterName}</span></p>
-            <p>Teknisi: <span className="text-foreground">{report.technicianName ?? 'Belum Ditugaskan'}</span></p>
             <p>Dibuat: {new Date(report.createdAt).toLocaleString('id-ID')}</p>
             {report.assetName && <p>Aset: <span className="text-foreground">{report.assetName}</span></p>}
             {report.targetCompletionDate && <p>Target Selesai: <span className="text-foreground">{new Date(report.targetCompletionDate).toLocaleDateString('id-ID')}</span></p>}
@@ -215,90 +156,12 @@ export function ReportDetailPage() {
         </GlassCard>
 
         <div className="space-y-4">
-          {user?.role === 'ADMIN' && report.status !== 'COMPLETED' && (
+          {user?.isAdmin && report.status !== 'COMPLETED' && (
             <GlassCard>
-              <h3 className="font-medium">Tugaskan Teknisi</h3>
-              <select
-                className="mt-3 flex h-10 w-full rounded-xl border border-white/60 bg-white/70 px-3 text-sm"
-                value={techId}
-                onChange={(e) => setTechId(e.target.value)}
-              >
-                <option value="">Pilih teknisi</option>
-                {techs.data?.data.map((t) => (
-                  <option key={t.id} value={t.id}>{t.fullName}</option>
-                ))}
-              </select>
-              <label className="mt-3 block text-xs font-medium text-foreground/80">Target Tanggal Selesai</label>
-              <input
-                type="date"
-                className="mt-1 flex h-10 w-full rounded-xl border border-white/60 bg-white/70 px-3 text-sm"
-                value={targetDate}
-                onChange={(e) => setTargetDate(e.target.value)}
-              />
-              <textarea
-                className="mt-3 min-h-[80px] w-full rounded-xl border border-white/60 bg-white/70 px-3 py-2 text-sm"
-                placeholder="Instruksi spesifik (apa yang harus dibenarkan)..."
-                value={adminNotes}
-                onChange={(e) => setAdminNotes(e.target.value)}
-              />
-              <Button
-                className="mt-3 w-full"
-                disabled={!techId || assignMutation.isPending}
-                onClick={() => assignMutation.mutate()}
-              >
-                {assignMutation.isPending ? (
-                  <><Loader2 className="h-4 w-4 animate-spin" />Menugaskan...</>
-                ) : 'Tugaskan'}
-              </Button>
-            </GlassCard>
-          )}
-
-          {isTech && report.status === 'ASSIGNED' && (
-            <GlassCard>
-              <h3 className="font-medium">Mulai Pekerjaan</h3>
-              <Button
-                className="mt-3 w-full"
-                disabled={statusMutation.isPending}
-                onClick={() => statusMutation.mutate('IN_PROGRESS')}
-              >
-                {statusMutation.isPending ? (
-                  <><Loader2 className="h-4 w-4 animate-spin" />Memproses...</>
-                ) : 'Tandai Sedang Dikerjakan'}
-              </Button>
-            </GlassCard>
-          )}
-
-          {isTech && report.status === 'IN_PROGRESS' && (
-            <GlassCard>
-              <h3 className="font-medium">Selesaikan Perbaikan</h3>
-              <div className="mt-3">
-                <label className="text-xs font-medium text-foreground/80 mb-1 block">Foto Bukti (Maks 1 foto, maks 1.5MB)</label>
-                <input
-                  type="file"
-                  accept="image/png, image/jpeg, image/jpg"
-                  onChange={(e) => {
-                    const file = e.target.files?.[0];
-                    if (!file) return;
-                    if (file.size > 1.5 * 1024 * 1024) {
-                      toast.error('Ukuran maksimal foto adalah 1.5MB');
-                      setRepairFile(null);
-                      e.target.value = ''; // clear input
-                      return;
-                    }
-                    setRepairFile(file);
-                  }}
-                  className="w-full text-xs file:mr-2 file:rounded-md file:border-0 file:bg-[#ef629f] file:px-2 file:py-1 file:text-white file:font-medium hover:file:bg-[#ef629f]/90"
-                />
-              </div>
-              <Button
-                className="mt-4 w-full"
-                onClick={() => completeMutation.mutate()}
-                disabled={completeMutation.isPending}
-              >
-                {completeMutation.isPending ? (
-                  <><Loader2 className="h-4 w-4 animate-spin" />Menyelesaikan...</>
-                ) : 'Tandai Selesai'}
-              </Button>
+              <h3 className="font-medium">Aksi Admin</h3>
+              <p className="mt-2 text-sm text-muted">
+                Alur penugasan sudah dihapus. Admin tetap bisa memantau status dan menambahkan catatan melalui komentar.
+              </p>
             </GlassCard>
           )}
 

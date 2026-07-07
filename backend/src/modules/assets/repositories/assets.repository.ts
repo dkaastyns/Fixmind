@@ -42,6 +42,27 @@ export class AssetsRepository {
     return { rows, total: Number(count) };
   }
 
+  async search(params: { query: string; limit: number }) {
+    const q = `%${params.query.trim()}%`;
+    return this.sql<AssetRow[]>`
+      SELECT a.*, r.name AS room_name, r.code AS room_code
+      FROM assets a
+      LEFT JOIN rooms r ON r.id = a.room_id
+      WHERE a.deleted_at IS NULL
+        AND (
+          a.idpemda ILIKE ${q}
+          OR a.kode_barang ILIKE ${q}
+          OR a.nomor_register ILIKE ${q}
+          OR a.nama_barang ILIKE ${q}
+          OR a.merk_type ILIKE ${q}
+          OR r.name ILIKE ${q}
+          OR r.code ILIKE ${q}
+        )
+      ORDER BY a.nama_barang ASC
+      LIMIT ${params.limit}
+    `;
+  }
+
   async create(data: {
     roomId: string;
     idpemda: string;

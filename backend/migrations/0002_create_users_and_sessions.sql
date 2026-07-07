@@ -1,13 +1,11 @@
 -- Users & authentication sessions
 
-CREATE TYPE user_role AS ENUM ('ADMIN', 'TECHNICIAN', 'USER');
-
 CREATE TABLE users (
   id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   email           VARCHAR(255) NOT NULL,
   password_hash   VARCHAR(255) NOT NULL,
   full_name       VARCHAR(150) NOT NULL,
-  role            user_role NOT NULL DEFAULT 'USER',
+  is_admin        BOOLEAN NOT NULL DEFAULT FALSE,
   phone           VARCHAR(30),
   avatar_url      TEXT,
   is_active       BOOLEAN NOT NULL DEFAULT TRUE,

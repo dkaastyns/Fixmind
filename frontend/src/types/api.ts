@@ -1,4 +1,4 @@
-export type UserRole = 'ADMIN' | 'TECHNICIAN' | 'USER'
+export type UserRole = 'ADMIN' | 'USER'
 
 export type ReportStatus =
   | 'PENDING'
@@ -28,6 +28,7 @@ export interface User {
   email: string
   fullName: string
   role: UserRole
+  isAdmin: boolean
   phone: string | null
   avatarUrl: string | null
   isActive: boolean
@@ -48,6 +49,8 @@ export interface Room {
 export interface Asset {
   id: string
   roomId: string
+  roomName?: string
+  roomCode?: string
   idpemda: string
   kodeBarang: string
   nomorRegister: string
@@ -147,10 +150,3 @@ export interface MaintenanceSchedule {
   updatedAt: string
 }
 
-export interface TechnicianStat {
-  technicianId: string
-  technicianName: string
-  completedTasks: number
-  avgRating: number | null
-  avgCompletionHours: number | null
-}

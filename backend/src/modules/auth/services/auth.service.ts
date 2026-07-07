@@ -33,7 +33,7 @@ export class AuthService {
     return {
       id: user.id,
       email: user.email,
-      role: user.role,
+      role: user.is_admin ? 'ADMIN' : 'USER',
       fullName: user.full_name,
     };
   }
@@ -43,7 +43,8 @@ export class AuthService {
       id: user.id,
       email: user.email,
       fullName: user.full_name,
-      role: user.role,
+      isAdmin: user.is_admin,
+      role: user.is_admin ? 'ADMIN' : 'USER',
       phone: user.phone,
       avatarUrl: user.avatar_url,
       isActive: user.is_active,
@@ -114,7 +115,7 @@ export class AuthService {
       email: data.email.toLowerCase(),
       passwordHash,
       fullName: data.fullName,
-      role: 'USER',
+      isAdmin: false,
       phone: data.phone,
     });
 
@@ -138,7 +139,7 @@ export class AuthService {
       email: data.email.toLowerCase(),
       passwordHash,
       fullName: data.fullName,
-      role: 'ADMIN',
+      isAdmin: true,
     });
 
     return this.toPublicUser(user);

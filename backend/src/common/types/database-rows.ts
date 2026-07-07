@@ -6,6 +6,7 @@ export interface UserRow {
   password_hash: string;
   full_name: string;
   role: UserRole;
+  is_admin: boolean;
   phone: string | null;
   avatar_url: string | null;
   is_active: boolean;
