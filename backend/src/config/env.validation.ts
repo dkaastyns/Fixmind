@@ -58,6 +58,14 @@ class EnvironmentVariables {
 
   @IsOptional()
   @IsString()
+  GROQ_API_KEY?: string;
+
+  @IsOptional()
+  @IsString()
+  GROQ_MODEL = 'llama-3.1-8b-instant';
+
+  @IsOptional()
+  @IsString()
   CLOUDINARY_CLOUD_NAME?: string;
 
   @IsOptional()

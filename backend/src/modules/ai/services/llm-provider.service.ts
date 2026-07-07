@@ -62,7 +62,7 @@ Deskripsi: ${input.description}`;
 
       if (!response.ok) {
         this.logger.error(`Gemini API error: ${response.status}`);
-        return null;
+        throw new Error(`Gemini API Error: ${response.status}`);
       }
 
       const body = (await response.json()) as {
@@ -70,12 +70,19 @@ Deskripsi: ${input.description}`;
       };
 
       const text = body.candidates?.[0]?.content?.parts?.[0]?.text;
-      if (!text) return null;
+      if (!text) throw new Error('Empty response from Gemini');
 
       return JSON.parse(text) as PriorityAnalysisResult;
     } catch (error) {
-      this.logger.error('AI analysis failed', error);
-      return null;
+      this.logger.warn(`Gemini analysis failed: ${error instanceof Error ? error.message : error}. Attempting Groq fallback...`);
+      const fallbackText = await this.fallbackToGroq(prompt, true);
+      if (!fallbackText) return null;
+      try {
+        return JSON.parse(fallbackText) as PriorityAnalysisResult;
+      } catch (e) {
+        this.logger.error('Failed to parse Groq JSON response', e);
+        return null;
+      }
     }
   }
 
@@ -132,10 +139,54 @@ ${context}
         }
       );
 
+      if (!response.ok) {
+        throw new Error(`Gemini API error: ${response.status}`);
+      }
       const body = await response.json();
-      return body.candidates?.[0]?.content?.parts?.[0]?.text ?? null;
+      const text = body.candidates?.[0]?.content?.parts?.[0]?.text;
+      if (!text) throw new Error('Empty response from Gemini');
+      
+      return text;
     } catch (error) {
-      this.logger.error('Chat response generation failed', error);
+      this.logger.warn(`Gemini chat generation failed: ${error instanceof Error ? error.message : error}. Attempting Groq fallback...`);
+      return this.fallbackToGroq(systemPrompt + '\n\nPERTANYAAN:\n' + prompt, false);
+    }
+  }
+
+  private async fallbackToGroq(prompt: string, expectJson: boolean): Promise<string | null> {
+    const groqKey = this.config.get<string>('GROQ_API_KEY');
+    if (!groqKey) {
+      this.logger.warn('GROQ_API_KEY not set — fallback failed');
+      return null;
+    }
+
+    const groqModel = this.config.get<string>('GROQ_MODEL', 'llama-3.1-8b-instant');
+    this.logger.log(`Falling back to Groq AI using model ${groqModel}`);
+
+    try {
+      const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${groqKey}`
+        },
+        body: JSON.stringify({
+          model: groqModel,
+          messages: [{ role: 'user', content: prompt }],
+          response_format: expectJson ? { type: 'json_object' } : undefined,
+        }),
+        signal: AbortSignal.timeout(15_000),
+      });
+
+      if (!response.ok) {
+        this.logger.error(`Groq API error: ${response.status}`);
+        return null;
+      }
+
+      const body = await response.json();
+      return body.choices?.[0]?.message?.content ?? null;
+    } catch (error) {
+      this.logger.error('Groq fallback failed', error);
       return null;
     }
   }
