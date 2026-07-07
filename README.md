@@ -23,7 +23,7 @@ Proyek ini menggunakan arsitektur _Clean Architecture_ dan dipisahkan menjadi du
 | **Backend** | NestJS 11, JWT (Otentikasi), WebSockets (Socket.io), class-validator |
 | **Database** | PostgreSQL + Ekstensi `pgvector` (untuk Semantic Search / RAG AI) |
 | **Kueri DB** | _Raw SQL_ melalui `postgres.js` (performa dan kontrol penuh) |
-| **Kecerdasan Buatan (AI)** | Gemini 2.5 Flash (Google Generative AI) & Gemini Embedding |
+| **Kecerdasan Buatan (AI)** | Gemini 2.5 Flash (Google Generative AI) & Groq AI (Llama 3.1 sebagai Fallback) |
 | **Runtime & Package** | Bun & Node.js (npm) |
 
 ---
@@ -42,6 +42,7 @@ cd backend
 copy .env.example .env
 # Edit file .env: Sesuaikan DATABASE_URL dengan kredensial PostgreSQL Anda
 # Pastikan juga GEMINI_API_KEY Anda sudah terisi
+# Opsional: Isi GROQ_API_KEY sebagai mesin AI cadangan (fallback) jika Gemini bermasalah
 ```
 
 Untuk **Frontend**:
