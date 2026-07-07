@@ -74,29 +74,29 @@ export function SignupPage() {
           <p className="mt-2 text-sm text-slate-300 drop-shadow-sm">Mulai laporkan dan pantau perbaikan fasilitas</p>
         </div>
 
-        <GlassCard className="p-8 shadow-[0_8px_30px_rgb(0,0,0,0.3)] border-white/20 bg-white/10 backdrop-blur-xl">
+        <GlassCard className="p-8 shadow-[0_8px_30px_rgb(0,0,0,0.3)] border-white/60 bg-white/80 backdrop-blur-xl">
           <form className="space-y-4" onSubmit={form.handleSubmit((v) => mutation.mutate(v))}>
             <div className="space-y-2">
-              <label className="text-sm font-medium text-slate-100" htmlFor="fullName">Nama Lengkap</label>
-              <Input id="fullName" placeholder="John Doe" {...form.register('fullName')} className="bg-white/70 focus:bg-white transition-colors border-white/20" />
+              <label className="text-sm font-medium text-slate-700" htmlFor="fullName">Nama Lengkap</label>
+              <Input id="fullName" placeholder="John Doe" {...form.register('fullName')} className="bg-white/90 focus:bg-white transition-colors border-white/60 text-slate-900 placeholder:text-slate-400" />
               {form.formState.errors.fullName && (
                 <p className="text-xs text-danger">{form.formState.errors.fullName.message}</p>
               )}
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium text-slate-100" htmlFor="email">Email</label>
-              <Input id="email" type="email" placeholder="nama@email.com" {...form.register('email')} className="bg-white/70 focus:bg-white transition-colors border-white/20" />
+              <label className="text-sm font-medium text-slate-700" htmlFor="email">Email</label>
+              <Input id="email" type="email" placeholder="nama@email.com" {...form.register('email')} className="bg-white/90 focus:bg-white transition-colors border-white/60 text-slate-900 placeholder:text-slate-400" />
               {form.formState.errors.email && (
                 <p className="text-xs text-danger">{form.formState.errors.email.message}</p>
               )}
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium text-slate-100" htmlFor="phone">Telepon (Opsional)</label>
-              <Input id="phone" placeholder="08123456789" {...form.register('phone')} className="bg-white/70 focus:bg-white transition-colors border-white/20" />
+              <label className="text-sm font-medium text-slate-700" htmlFor="phone">Telepon (Opsional)</label>
+              <Input id="phone" placeholder="08123456789" {...form.register('phone')} className="bg-white/90 focus:bg-white transition-colors border-white/60 text-slate-900 placeholder:text-slate-400" />
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium text-slate-100" htmlFor="password">Kata Sandi</label>
-              <PasswordInput id="password" placeholder="••••••••" {...form.register('password')} className="bg-white/70 focus:bg-white transition-colors border-white/20" />
+              <label className="text-sm font-medium text-slate-700" htmlFor="password">Kata Sandi</label>
+              <PasswordInput id="password" placeholder="••••••••" {...form.register('password')} className="bg-white/90 focus:bg-white transition-colors border-white/60 text-slate-900 placeholder:text-slate-400" />
               {form.formState.errors.password && (
                 <p className="text-xs text-danger">{form.formState.errors.password.message}</p>
               )}
@@ -106,9 +106,9 @@ export function SignupPage() {
               {mutation.isPending ? 'Sedang Mendaftar...' : 'Daftar Sekarang'}
             </Button>
           </form>
-          <p className="mt-6 text-center text-sm text-slate-300">
+          <p className="mt-6 text-center text-sm text-slate-600">
             Sudah punya akun?{' '}
-            <Link to="/login" className="font-semibold text-pink-400 hover:text-pink-300 hover:underline">
+            <Link to="/login" className="font-semibold text-[#ef629f] hover:text-pink-500 hover:underline">
               Masuk di sini
             </Link>
           </p>
