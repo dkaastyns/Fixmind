@@ -80,34 +80,71 @@ npm run dev
 
 ---
 
-## Panduan Pengujian (Testing) Backend
+## Panduan Pengujian (Testing) Backend API
 
-Proyek backend menggunakan framework pengujian **Jest**. Berikut adalah perintah-perintah yang dapat dijalankan untuk menguji backend:
+### 1. Pengujian Manual API (Endpoint GET, POST, dll)
+Untuk menguji dan berinteraksi langsung dengan API (seperti mengambil data atau mengirim data), Anda dapat menggunakan aplikasi *REST Client* seperti **Postman**, **Insomnia**, atau **Thunder Client** di VSCode. Anda juga dapat menggunakan perintah `cURL` dari terminal.
 
-Pastikan Anda berada di dalam direktori `backend` (`cd backend`), lalu jalankan salah satu perintah berikut:
+**URL Dasar API:** `http://localhost:3000/api/v1`
 
-- **Menjalankan semua unit test:**
-  ```powershell
-  npm run test
+**A. Langkah 1: Login & Dapatkan Token Autentikasi (POST)**
+Karena sebagian besar *endpoint* membutuhkan autentikasi, Anda harus *login* terlebih dahulu untuk mendapatkan `accessToken`.
+- **Endpoint:** `POST /auth/login`
+- **Body (JSON):**
+  ```json
+  {
+    "email": "admin@fixmind.local",
+    "password": "Admin123!@#"
+  }
+  ```
+- **Contoh Response:**
+  ```json
+  {
+    "success": true,
+    "data": {
+      "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVC...",
+      "user": { "role": "ADMIN", ... }
+    }
+  }
   ```
 
-- **Menjalankan unit test dengan mode pantau (_watch mode_):**
-  Berguna saat masa pengembangan. Tes akan otomatis berjalan setiap kali ada file yang diubah.
-  ```powershell
-  npm run test:watch
+**B. Langkah 2: Menggunakan Token untuk Request Selanjutnya (GET, POST, dll)**
+Salin `accessToken` dari hasil *login* di atas, lalu masukkan ke dalam **Headers** (*Authorization: Bearer <token>*) pada setiap *request* yang membutuhkan izin.
+
+*Contoh 1: Mengambil Data Laporan (GET)*
+- **Endpoint:** `GET /reports`
+- **Headers:** `Authorization: Bearer eyJhb...`
+- **Hasil:** Mengembalikan daftar laporan masalah fasilitas.
+
+*Contoh 2: Membuat Laporan Baru (POST)*
+- **Endpoint:** `POST /reports`
+- **Headers:** `Authorization: Bearer eyJhb...`
+- **Body (JSON):**
+  ```json
+  {
+    "title": "AC Ruangan Rapat Mati",
+    "description": "AC tidak dingin sama sekali",
+    "roomId": "123-uuid-ruangan"
+  }
   ```
 
-- **Melihat cakupan kode (Test Coverage):**
-  Untuk melihat seberapa banyak kode yang telah tercakup oleh *unit test*.
-  ```powershell
-  npm run test:cov
-  ```
+*Contoh Menggunakan cURL (Terminal):*
+```bash
+curl -X GET "http://localhost:3000/api/v1/reports" \
+     -H "Authorization: Bearer MASUKKAN_TOKEN_ANDA_DISINI"
+```
+> **Catatan:** Untuk melihat daftar lengkap seluruh *endpoint* yang tersedia (termasuk *routes* untuk _Users_, _Rooms_, _Analytics_, dll), silakan merujuk pada file [docs/API.md](docs/API.md).
 
-- **Menjalankan pengujian End-to-End (E2E):**
-  Menguji alur sistem secara utuh dari ujung ke ujung.
-  ```powershell
-  npm run test:e2e
-  ```
+---
+
+### 2. Pengujian Otomatis (Unit Test & E2E)
+Selain pengujian manual, proyek backend juga dilengkapi dengan kode pengujian otomatis menggunakan framework **Jest**.
+Pastikan Anda berada di dalam direktori `backend` (`cd backend`), lalu jalankan:
+
+- `npm run test` : Menjalankan semua *unit test* standar.
+- `npm run test:watch` : Menjalankan *unit test* dengan mode pantau (*watch mode*) saat proses pengembangan.
+- `npm run test:cov` : Melihat cakupan kode (*Test Coverage*).
+- `npm run test:e2e` : Menjalankan pengujian *End-to-End* (keseluruhan alur).
 
 ---
 
