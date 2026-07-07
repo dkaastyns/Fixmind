@@ -8,7 +8,7 @@ import { useAuthStore } from '@/stores/auth-store'
 import { AnimatePresence, motion } from 'framer-motion'
 import { cn } from '@/lib/utils'
 
-export function NotificationBell() {
+export function NotificationBell({ align = 'right' }: { align?: 'left' | 'right' }) {
   const socket = useSocket()
   const user = useAuthStore((s) => s.user)
   const { notifications, addNotification, markAllAsRead, clearAll } = useNotificationStore()
@@ -118,7 +118,10 @@ export function NotificationBell() {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 10, scale: 0.95 }}
               transition={{ duration: 0.15 }}
-              className="absolute right-0 mt-2 z-50 w-80 rounded-2xl border border-white/30 bg-white/90 shadow-xl backdrop-blur-md overflow-hidden"
+              className={cn(
+                "absolute mt-2 z-50 w-80 rounded-2xl border border-white/30 bg-white/90 shadow-xl backdrop-blur-md overflow-hidden",
+                align === 'right' ? 'right-0' : 'left-0'
+              )}
             >
               <div className="flex items-center justify-between border-b border-white/20 p-3 bg-[#ef629f]/5">
                 <span className="text-sm font-semibold">Notifikasi</span>

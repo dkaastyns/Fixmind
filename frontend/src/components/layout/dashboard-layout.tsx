@@ -66,7 +66,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
             <p className="text-xs text-muted">Kota Semarang</p>
           </div>
         </div>
-        <NotificationBell />
+        <NotificationBell align="left" />
       </div>
 
       <nav className="flex flex-1 flex-col gap-1 relative">
