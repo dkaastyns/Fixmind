@@ -70,17 +70,26 @@ export function ReportsPage() {
 
       {/* Status filter tabs */}
       <div className="mb-3 flex flex-wrap gap-2">
-        {(['', 'PENDING', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED'] as const).map((s) => (
-          <button
-            key={s || 'all'}
-            onClick={() => setStatusFilter(s)}
-            className={`rounded-xl px-3 py-1.5 text-sm transition-colors ${
-              statusFilter === s ? 'gradient-primary text-white' : 'glass text-muted hover:text-foreground'
-            }`}
-          >
-            {s ? s.replace(/_/g, ' ') : 'Semua'}
-          </button>
-        ))}
+        {(['', 'PENDING', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED'] as const).map((s) => {
+          const labels: Record<string, string> = {
+            '': 'Semua',
+            PENDING: 'MENUNGGU',
+            IN_PROGRESS: 'DIPROSES',
+            COMPLETED: 'SELESAI',
+            CANCELLED: 'DIBATALKAN',
+          }
+          return (
+            <button
+              key={s || 'all'}
+              onClick={() => setStatusFilter(s)}
+              className={`rounded-xl px-3 py-1.5 text-sm transition-colors ${
+                statusFilter === s ? 'gradient-primary text-white' : 'glass text-muted hover:text-foreground'
+              }`}
+            >
+              {labels[s]}
+            </button>
+          )
+        })}
 
         <button
           onClick={() => setShowAdvanced((v) => !v)}
