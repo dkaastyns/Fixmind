@@ -155,12 +155,12 @@ export function DashboardLayout() {
 
   return (
     <div className="flex min-h-screen">
-      <aside className="glass m-4 hidden w-64 shrink-0 flex-col p-4 lg:flex">
+      <aside className="glass relative z-40 m-4 hidden w-64 shrink-0 flex-col p-4 lg:flex">
         <SidebarContent />
       </aside>
 
       <div className="flex flex-1 flex-col">
-        <header className="glass mx-4 mt-4 flex items-center justify-between px-4 py-3 lg:hidden">
+        <header className="glass relative z-40 mx-4 mt-4 flex items-center justify-between px-4 py-3 lg:hidden">
           <div className="flex items-center gap-2">
             <Wrench className="h-5 w-5 text-[#ef629f]" />
             <span className="font-semibold">E-Lapor DPRD</span>
