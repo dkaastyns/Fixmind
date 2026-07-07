@@ -10,6 +10,47 @@ Sistem ini membantu mempermudah pelaporan, di mana AI (menggunakan Gemini 2.5 Fl
 - **Ekspor Data & Laporan (Analytics):** Analisis kinerja pemeliharaan fasilitas dalam bentuk metrik visual dan ekspor (CSV, Excel, PDF) dengan rentang waktu.
 - **Notifikasi Real-time:** Memberikan pembaruan instan (*WebSockets*) kepada admin, teknisi, maupun pelapor jika status laporan berubah.
 - **Manajemen Pengguna Terpusat:** Admin dapat mengelola peran _User_, _Technician_, dan _Admin_ dengan kontrol akses spesifik.
+- **Import Aset dari Excel:** Admin dapat mengimpor data aset inventaris Pemda secara massal dari file `.xlsx`/`.xls` langsung ke database, dilengkapi dengan template yang bisa diunduh.
+
+---
+
+## Fitur Import Aset (Excel)
+
+Fitur ini memungkinkan admin mengimpor data aset inventaris dari **file Excel (.xlsx/.xls)** ke dalam database secara massal — tanpa perlu menginput satu per satu.
+
+### Cara Penggunaan
+
+1. **Buka halaman** `Fasilitas & Ruangan` di dashboard admin.
+2. Klik tombol **⬇ Template** di pojok kanan atas untuk mengunduh file template Excel yang sudah terformat.
+3. Isi data aset di file template sesuai kolom yang tersedia.
+4. Klik tombol **📊 Import Excel** di pojok kanan atas (di samping "Tambah Ruangan").
+5. Pilih file `.xlsx` / `.xls` yang sudah diisi.
+   - Jika ruangan sudah dipilih sebelumnya → data langsung diimport ke ruangan tersebut.
+   - Jika belum memilih ruangan → modal otomatis muncul untuk memilih ruangan tujuan.
+6. Klik **Import** dan tunggu notifikasi sukses.
+
+### Format Kolom Excel
+
+| Nama Kolom | Keterangan | Contoh |
+|------------|------------|--------|
+| `idpemda` | ID Pemda / kode aset dari Pemkot | `1.3.2.01.10.001` |
+| `kode_barang` | Kode barang singkat (unik) | `KMP-001` |
+| `nomor_register` | Nomor register barang | `REG-2024-001` |
+| `nama_barang` | Nama lengkap barang | `Kursi Pimpinan` |
+| `merk_type` | Merk dan type / spesifikasi | `Chitose / Type-A` |
+
+> **Catatan:**
+> - Nama kolom harus **persis** seperti di atas (header baris pertama).
+> - Jika `kode_barang` sudah ada di database, data akan **diperbarui** (upsert).
+> - Baris kosong di tengah data akan diabaikan.
+> - Sistem juga mendukung alias kolom seperti `id_pemda`, `no_register`, `nama_brg`, `merk`, dll.
+
+### Endpoint API Import
+
+| Method | Endpoint | Deskripsi |
+|--------|----------|-----------|
+| `GET` | `/assets/import/template` | Download template Excel |
+| `POST` | `/assets/import?roomId=<uuid>` | Upload file Excel untuk import |
 
 ---
 
