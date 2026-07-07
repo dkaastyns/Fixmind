@@ -104,6 +104,8 @@ export interface ReportRow {
   ai_analysis_status: 'PENDING' | 'COMPLETED' | 'FAILED';
   assigned_technician_id: string | null;
   assigned_at: Date | null;
+  target_completion_date: Date | null;
+  ai_suggested_target_date: Date | null;
   completed_at: Date | null;
   admin_notes: string | null;
   created_at: Date;

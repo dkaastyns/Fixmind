@@ -44,7 +44,7 @@ export class AnalyticsRepository {
     };
   }
 
-  async exportRows() {
+  async exportRows(startDate?: string, endDate?: string) {
     return this.sql`
       SELECT r.id, r.title, r.status::text, r.priority::text,
         rm.name AS room, u.full_name AS reporter,
@@ -54,6 +54,8 @@ export class AnalyticsRepository {
       JOIN users u ON u.id = r.reporter_id
       LEFT JOIN users t ON t.id = r.assigned_technician_id
       WHERE r.deleted_at IS NULL
+        ${startDate ? this.sql`AND r.created_at >= ${startDate}` : this.sql``}
+        ${endDate ? this.sql`AND r.created_at <= ${endDate}::timestamp + interval '1 day' - interval '1 millisecond'` : this.sql``}
       ORDER BY r.created_at DESC
     `;
   }

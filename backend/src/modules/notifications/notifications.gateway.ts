@@ -10,6 +10,7 @@ import {
 import { Server, Socket } from 'socket.io';
 import { Injectable, Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 @WebSocketGateway({
@@ -25,7 +26,10 @@ export class NotificationsGateway implements OnGatewayConnection, OnGatewayDisco
   private userSockets = new Map<string, string[]>(); // userId -> socketIds[]
   private adminSockets = new Set<string>();
 
-  constructor(private readonly jwtService: JwtService) {}
+  constructor(
+    private readonly jwtService: JwtService,
+    private readonly config: ConfigService
+  ) {}
 
   async handleConnection(client: Socket) {
     try {
@@ -35,7 +39,8 @@ export class NotificationsGateway implements OnGatewayConnection, OnGatewayDisco
         return;
       }
 
-      const decoded = this.jwtService.verify(token);
+      const secret = this.config.get<string>('JWT_ACCESS_SECRET');
+      const decoded = this.jwtService.verify(token, { secret });
       const userId = decoded.sub;
       const role = decoded.role;
 

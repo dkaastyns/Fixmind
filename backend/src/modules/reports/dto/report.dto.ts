@@ -1,4 +1,5 @@
 import {
+  IsDateString,
   IsEnum,
   IsInt,
   IsNotEmpty,
@@ -52,6 +53,10 @@ export class AssignReportDto {
   @IsOptional()
   @IsString()
   adminNotes?: string;
+
+  @IsOptional()
+  @IsDateString()
+  targetCompletionDate?: string;
 }
 
 export class CreateRatingDto {

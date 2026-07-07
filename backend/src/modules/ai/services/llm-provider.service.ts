@@ -8,6 +8,7 @@ export interface PriorityAnalysisResult {
   recommendation: string;
   estimatedRepairHours: number;
   suggestedAction: string;
+  suggestedTargetDate?: string;
 }
 
 @Injectable()
@@ -28,20 +29,22 @@ export class LlmProviderService {
     }
 
     const model = this.config.get<string>('GEMINI_MODEL', 'gemini-2.5-flash');
-    const prompt = `You are a facility maintenance decision support system.
-Analyze the report and respond ONLY with valid JSON (no markdown):
+    const prompt = `Anda adalah sistem pendukung keputusan pemeliharaan fasilitas.
+Analisis laporan dan berikan respons HANYA dengan JSON valid (tanpa markdown). Gunakan bahasa Indonesia untuk isian teks:
 {
   "priority": "LOW|MEDIUM|HIGH|CRITICAL",
   "score": 0-100,
-  "reason": "brief explanation",
-  "recommendation": "maintenance recommendation",
-  "estimatedRepairHours": number,
-  "suggestedAction": "concrete next step"
+  "reason": "penjelasan singkat",
+  "recommendation": "rekomendasi pemeliharaan",
+  "estimatedRepairHours": angka,
+  "suggestedAction": "langkah selanjutnya yang konkret",
+  "suggestedTargetDate": "Tanggal target selesai (ISO 8601 string) disesuaikan dengan urgensi"
 }
 
-Room: ${input.roomName}
-Asset: ${input.assetName ?? 'Not specified'}
-Description: ${input.description}`;
+Waktu saat ini (sebagai referensi): ${new Date().toISOString()}
+Ruangan: ${input.roomName}
+Aset: ${input.assetName ?? 'Tidak disebutkan'}
+Deskripsi: ${input.description}`;
 
     try {
       const response = await fetch(
@@ -82,13 +85,14 @@ Description: ${input.description}`;
 
     try {
       const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/text-embedding-004:embedContent?key=${apiKey}`,
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-embedding-2:embedContent?key=${apiKey}`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            model: 'models/text-embedding-004',
+            model: 'models/gemini-embedding-2',
             content: { parts: [{ text }] },
+            outputDimensionality: 768,
           }),
         },
       );
@@ -106,11 +110,11 @@ Description: ${input.description}`;
     if (!apiKey) return null;
     
     const model = this.config.get<string>('GEMINI_MODEL', 'gemini-2.5-flash');
-    const systemPrompt = `You are an expert facility maintenance AI assistant.
-Use the following context from the knowledge base to answer the technician's question.
-If the context doesn't contain the answer, say so. Do not invent information.
+    const systemPrompt = `Anda adalah asisten AI ahli pemeliharaan fasilitas.
+Gunakan konteks berikut dari basis pengetahuan untuk menjawab pertanyaan teknisi. Jawab dalam bahasa Indonesia.
+Jika konteks tidak berisi jawaban, katakan demikian. Jangan mengarang informasi.
 
-CONTEXT:
+KONTEKS:
 ${context}
 `;
 
@@ -122,7 +126,7 @@ ${context}
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             contents: [
-              { role: 'user', parts: [{ text: systemPrompt + '\n\nQUESTION:\n' + prompt }] }
+              { role: 'user', parts: [{ text: systemPrompt + '\n\nPERTANYAAN:\n' + prompt }] }
             ],
           }),
         }

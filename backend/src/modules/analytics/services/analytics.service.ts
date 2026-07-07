@@ -9,9 +9,9 @@ export class AnalyticsService {
     return this.analyticsRepository.summary();
   }
 
-  async exportCsv(): Promise<string> {
-    const rows = await this.analyticsRepository.exportRows();
-    const header = 'id,title,status,priority,room,reporter,technician,created_at,completed_at\n';
+  async exportCsv(startDate?: string, endDate?: string): Promise<string> {
+    const rows = await this.analyticsRepository.exportRows(startDate, endDate);
+    const header = 'ID,Judul Laporan,Status,Prioritas,Ruangan,Pelapor,Teknisi,Dibuat Pada,Selesai Pada\n';
     const body = rows
       .map((r) =>
         [

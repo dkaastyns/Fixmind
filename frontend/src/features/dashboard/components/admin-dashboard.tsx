@@ -35,10 +35,10 @@ export function AdminDashboard() {
   const stats = data?.data
 
   const cards = [
-    { label: 'Open Reports', value: stats?.openReports ?? '—', icon: ClipboardList, color: 'text-blue-500' },
-    { label: 'In Progress', value: stats?.inProgress ?? '—', icon: Building2, color: 'text-orange-500' },
-    { label: 'Completed (30d)', value: stats?.completedLast30Days ?? '—', icon: CheckCircle2, color: 'text-green-500' },
-    { label: 'Avg. Rating', value: stats?.avgRating != null ? stats.avgRating.toFixed(1) : '—', icon: Star, color: 'text-yellow-500' },
+    { label: 'Laporan Terbuka', value: stats?.openReports ?? '—', icon: ClipboardList, color: 'text-blue-500' },
+    { label: 'Sedang Dikerjakan', value: stats?.inProgress ?? '—', icon: Building2, color: 'text-orange-500' },
+    { label: 'Selesai (30h)', value: stats?.completedLast30Days ?? '—', icon: CheckCircle2, color: 'text-green-500' },
+    { label: 'Rata-rata Penilaian', value: stats?.avgRating != null ? stats.avgRating.toFixed(1) : '—', icon: Star, color: 'text-yellow-500' },
   ]
 
   return (
@@ -49,8 +49,8 @@ export function AdminDashboard() {
       transition={{ duration: 0.3 }}
     >
       <PageHeader
-        title={`Welcome back, ${user?.fullName?.split(' ')[0] ?? 'Admin'}`}
-        description="Global overview of facility maintenance activity"
+        title={`Selamat datang kembali, ${user?.fullName?.split(' ')[0] ?? 'Admin'}`}
+        description="Ringkasan global aktivitas pemeliharaan fasilitas"
         action={
           <button
             onClick={() => {
@@ -58,7 +58,7 @@ export function AdminDashboard() {
             }}
             className="flex items-center gap-2 rounded-xl gradient-primary px-4 py-2 text-sm font-medium text-white transition-all hover:opacity-90 hover:shadow-md"
           >
-            <ClipboardList className="h-4 w-4" /> Export CSV
+            <ClipboardList className="h-4 w-4" /> Ekspor CSV
           </button>
         }
       />
@@ -95,7 +95,19 @@ export function AdminDashboard() {
               <h2 className="text-lg font-medium mb-4">Laporan berdasarkan Status</h2>
               <div className="h-64 w-full">
                 <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={Object.entries(stats.byStatus).map(([name, value]) => ({ name: name.replace(/_/g, ' ').toLowerCase(), value }))} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                  <BarChart data={Object.entries(stats.byStatus).map(([name, value]) => {
+                    const statusMap: Record<string, string> = {
+                      PENDING: 'menunggu',
+                      AI_ANALYSIS: 'analisis ai',
+                      REVIEWED: 'ditinjau',
+                      ASSIGNED: 'ditugaskan',
+                      IN_PROGRESS: 'sedang dikerjakan',
+                      COMPLETED: 'selesai',
+                      CANCELLED: 'dibatalkan',
+                      REJECTED: 'ditolak',
+                    };
+                    return { name: statusMap[name] ?? name.replace(/_/g, ' ').toLowerCase(), value };
+                  })} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.2)" vertical={false} />
                     <XAxis dataKey="name" tick={{ fill: '#64748B', fontSize: 12 }} axisLine={false} tickLine={false} />
                     <YAxis tick={{ fill: '#64748B', fontSize: 12 }} axisLine={false} tickLine={false} />
@@ -129,7 +141,15 @@ export function AdminDashboard() {
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
                     <Pie
-                      data={Object.entries(stats.byPriority).map(([name, value]) => ({ name, value }))}
+                      data={Object.entries(stats.byPriority).map(([name, value]) => {
+                        const priorityMap: Record<string, string> = {
+                          LOW: 'Rendah',
+                          MEDIUM: 'Sedang',
+                          HIGH: 'Tinggi',
+                          CRITICAL: 'Kritis'
+                        };
+                        return { name: priorityMap[name] ?? name, value };
+                      })}
                       cx="50%"
                       cy="50%"
                       innerRadius={60}

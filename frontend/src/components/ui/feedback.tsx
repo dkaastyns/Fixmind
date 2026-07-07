@@ -75,6 +75,21 @@ export function StatusBadge({ status }: { status: string }) {
     CRITICAL: 'bg-danger/20 text-danger',
   }
 
+  const labels: Record<string, string> = {
+    PENDING: 'Menunggu',
+    AI_ANALYSIS: 'Analisis AI',
+    REVIEWED: 'Ditinjau',
+    ASSIGNED: 'Ditugaskan',
+    IN_PROGRESS: 'Sedang Dikerjakan',
+    COMPLETED: 'Selesai',
+    CANCELLED: 'Dibatalkan',
+    REJECTED: 'Ditolak',
+    LOW: 'Rendah',
+    MEDIUM: 'Sedang',
+    HIGH: 'Tinggi',
+    CRITICAL: 'Kritis',
+  }
+
   return (
     <span
       className={cn(
@@ -82,7 +97,7 @@ export function StatusBadge({ status }: { status: string }) {
         colors[status] ?? 'bg-white/50 text-muted',
       )}
     >
-      {status.replace(/_/g, ' ').toLowerCase()}
+      {labels[status] ?? status.replace(/_/g, ' ').toLowerCase()}
     </span>
   )
 }

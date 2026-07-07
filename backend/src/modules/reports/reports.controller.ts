@@ -36,8 +36,13 @@ export class ReportsController {
 
   @Roles('ADMIN')
   @Get('export/excel')
-  async exportExcel(@CurrentUser() _user: AuthUser, @Res() res: Response) {
-    const { rows } = await this.reportsService.exportAllForExcel();
+  async exportExcel(
+    @CurrentUser() _user: AuthUser, 
+    @Res() res: Response,
+    @Query('startDate') startDate?: string,
+    @Query('endDate') endDate?: string
+  ) {
+    const { rows } = await this.reportsService.exportAllForExcel(startDate, endDate);
 
     const workbook = new ExcelJS.Workbook();
     workbook.creator = 'E-Lapor DPRD';
@@ -46,14 +51,14 @@ export class ReportsController {
     const sheet = workbook.addWorksheet('Reports');
     sheet.columns = [
       { header: 'ID', key: 'id', width: 38 },
-      { header: 'Title', key: 'title', width: 40 },
+      { header: 'Judul Laporan', key: 'title', width: 40 },
       { header: 'Status', key: 'status', width: 16 },
-      { header: 'Priority', key: 'priority', width: 12 },
-      { header: 'Room', key: 'room_name', width: 24 },
-      { header: 'Reporter', key: 'reporter_name', width: 24 },
-      { header: 'Technician', key: 'technician_name', width: 24 },
-      { header: 'Created At', key: 'created_at', width: 22 },
-      { header: 'Completed At', key: 'completed_at', width: 22 },
+      { header: 'Prioritas', key: 'priority', width: 12 },
+      { header: 'Ruangan', key: 'room_name', width: 24 },
+      { header: 'Pelapor', key: 'reporter_name', width: 24 },
+      { header: 'Teknisi', key: 'technician_name', width: 24 },
+      { header: 'Dibuat Pada', key: 'created_at', width: 22 },
+      { header: 'Selesai Pada', key: 'completed_at', width: 22 },
     ];
 
     // Style header row
@@ -89,18 +94,23 @@ export class ReportsController {
 
   @Roles('ADMIN')
   @Get('export/pdf')
-  async exportPdf(@CurrentUser() _user: AuthUser, @Res() res: Response) {
-    const { rows } = await this.reportsService.exportAllForExcel();
+  async exportPdf(
+    @CurrentUser() _user: AuthUser, 
+    @Res() res: Response,
+    @Query('startDate') startDate?: string,
+    @Query('endDate') endDate?: string
+  ) {
+    const { rows } = await this.reportsService.exportAllForExcel(startDate, endDate);
 
     const doc = new jsPDF({ orientation: 'landscape', unit: 'pt', format: 'a4' });
     doc.setFontSize(16);
-    doc.text('E-Lapor DPRD – Reports Export', 40, 40);
+    doc.text('E-Lapor DPRD – Ekspor Laporan', 40, 40);
     doc.setFontSize(10);
-    doc.text(`Generated: ${new Date().toISOString()}`, 40, 58);
+    doc.text(`Dibuat: ${new Date().toISOString()}`, 40, 58);
 
     autoTable(doc, {
       startY: 70,
-      head: [['Title', 'Status', 'Priority', 'Room', 'Reporter', 'Technician', 'Created At']],
+      head: [['Judul', 'Status', 'Prioritas', 'Ruangan', 'Pelapor', 'Teknisi', 'Dibuat Pada']],
       body: rows.map((r) => [
         String(r.title),
         String(r.status),

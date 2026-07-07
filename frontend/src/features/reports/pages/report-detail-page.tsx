@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Link, useParams } from 'react-router-dom'
@@ -45,6 +45,14 @@ export function ReportDetailPage() {
   const [ratingComment, setRatingComment] = useState('')
   const [repairFile, setRepairFile] = useState<File | null>(null)
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null)
+  const [targetDate, setTargetDate] = useState('')
+  const [adminNotes, setAdminNotes] = useState('')
+
+  useEffect(() => {
+    if (report?.aiSuggestedTargetDate && !targetDate) {
+      setTargetDate(new Date(report.aiSuggestedTargetDate).toISOString().split('T')[0])
+    }
+  }, [report?.aiSuggestedTargetDate])
 
   const statusMutation = useMutation({
     mutationFn: (status: string) => updateReportStatus(token, id!, { status }),
@@ -70,7 +78,11 @@ export function ReportDetailPage() {
   })
 
   const assignMutation = useMutation({
-    mutationFn: () => assignReport(token, id!, { technicianId: techId }),
+    mutationFn: () => assignReport(token, id!, { 
+      technicianId: techId,
+      targetCompletionDate: targetDate ? new Date(targetDate).toISOString() : undefined,
+      adminNotes: adminNotes || undefined,
+    }),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['report', id] })
       toast.success('Technician assigned')
@@ -118,18 +130,29 @@ export function ReportDetailPage() {
           </div>
           <p className="text-sm leading-relaxed">{report.description}</p>
           <div className="grid gap-2 text-sm text-muted sm:grid-cols-2">
-            <p>Reporter: <span className="text-foreground">{report.reporterName}</span></p>
-            <p>Technician: <span className="text-foreground">{report.technicianName ?? 'Unassigned'}</span></p>
-            <p>Created: {new Date(report.createdAt).toLocaleString()}</p>
-            {report.assetName && <p>Asset: <span className="text-foreground">{report.assetName}</span></p>}
+            <p>Pelapor: <span className="text-foreground">{report.reporterName}</span></p>
+            <p>Teknisi: <span className="text-foreground">{report.technicianName ?? 'Belum Ditugaskan'}</span></p>
+            <p>Dibuat: {new Date(report.createdAt).toLocaleString('id-ID')}</p>
+            {report.assetName && <p>Aset: <span className="text-foreground">{report.assetName}</span></p>}
+            {report.targetCompletionDate && <p>Target Selesai: <span className="text-foreground">{new Date(report.targetCompletionDate).toLocaleDateString('id-ID')}</span></p>}
           </div>
+
+          {report.adminNotes && (
+            <div className="mt-4 rounded-xl border border-[#ef629f]/20 bg-[#ef629f]/5 p-4">
+              <h3 className="font-medium text-[#ef629f] mb-1">Instruksi Admin</h3>
+              <p className="text-sm">{report.adminNotes}</p>
+            </div>
+          )}
 
           {report.aiAnalysisStatus === 'COMPLETED' && (
             <div className="rounded-xl bg-white/50 p-4">
-              <h3 className="font-medium text-gradient">AI Analysis</h3>
+              <h3 className="font-medium text-gradient">Analisis AI</h3>
               <p className="mt-2 text-sm">{report.aiPriorityReason}</p>
-              <p className="mt-2 text-sm"><strong>Recommendation:</strong> {report.aiRecommendation}</p>
-              <p className="mt-1 text-sm text-muted">Est. {report.aiEstimatedRepairHours}h — {report.aiSuggestedAction}</p>
+              <p className="mt-2 text-sm"><strong>Rekomendasi:</strong> {report.aiRecommendation}</p>
+              <p className="mt-1 text-sm text-muted">Est. {report.aiEstimatedRepairHours} jam — {report.aiSuggestedAction}</p>
+              {report.aiSuggestedTargetDate && (
+                <p className="mt-1 text-sm text-[#ef629f] font-medium">Target Selesai yang Disarankan AI: {new Date(report.aiSuggestedTargetDate).toLocaleDateString('id-ID')}</p>
+              )}
             </div>
           )}
 
@@ -161,28 +184,41 @@ export function ReportDetailPage() {
         <div className="space-y-4">
           {user?.role === 'ADMIN' && report.status !== 'COMPLETED' && (
             <GlassCard>
-              <h3 className="font-medium">Assign Technician</h3>
+              <h3 className="font-medium">Tugaskan Teknisi</h3>
               <select
                 className="mt-3 flex h-10 w-full rounded-xl border border-white/60 bg-white/70 px-3 text-sm"
                 value={techId}
                 onChange={(e) => setTechId(e.target.value)}
               >
-                <option value="">Select technician</option>
+                <option value="">Pilih teknisi</option>
                 {techs.data?.data.map((t) => (
                   <option key={t.id} value={t.id}>{t.fullName}</option>
                 ))}
               </select>
+              <label className="mt-3 block text-xs font-medium text-foreground/80">Target Tanggal Selesai</label>
+              <input
+                type="date"
+                className="mt-1 flex h-10 w-full rounded-xl border border-white/60 bg-white/70 px-3 text-sm"
+                value={targetDate}
+                onChange={(e) => setTargetDate(e.target.value)}
+              />
+              <textarea
+                className="mt-3 min-h-[80px] w-full rounded-xl border border-white/60 bg-white/70 px-3 py-2 text-sm"
+                placeholder="Instruksi spesifik (apa yang harus dibenarkan)..."
+                value={adminNotes}
+                onChange={(e) => setAdminNotes(e.target.value)}
+              />
               <Button className="mt-3 w-full" disabled={!techId} onClick={() => assignMutation.mutate()}>
-                Assign
+                Tugaskan
               </Button>
             </GlassCard>
           )}
 
           {isTech && report.status === 'ASSIGNED' && (
             <GlassCard>
-              <h3 className="font-medium">Start Work</h3>
+              <h3 className="font-medium">Mulai Pekerjaan</h3>
               <Button className="mt-3 w-full" onClick={() => statusMutation.mutate('IN_PROGRESS')}>
-                Mark In Progress
+                Tandai Sedang Dikerjakan
               </Button>
             </GlassCard>
           )}
@@ -217,39 +253,47 @@ export function ReportDetailPage() {
 
           {canRate && (
             <GlassCard>
-              <h3 className="font-medium">Rate this repair</h3>
+              <h3 className="font-medium">Beri nilai perbaikan ini</h3>
               <select
                 className="mt-3 flex h-10 w-full rounded-xl border border-white/60 bg-white/70 px-3 text-sm"
                 value={rating}
                 onChange={(e) => setRating(Number(e.target.value))}
               >
                 {[5, 4, 3, 2, 1].map((n) => (
-                  <option key={n} value={n}>{n} stars</option>
+                  <option key={n} value={n}>{n} bintang</option>
                 ))}
               </select>
               <textarea
                 className="mt-2 min-h-[60px] w-full rounded-xl border border-white/60 bg-white/70 px-3 py-2 text-sm"
-                placeholder="Optional comment"
+                placeholder="Komentar (opsional)"
                 value={ratingComment}
                 onChange={(e) => setRatingComment(e.target.value)}
               />
               <Button className="mt-3 w-full" onClick={() => rateMutation.mutate()}>
-                Submit Rating
+                Kirim Penilaian
               </Button>
             </GlassCard>
           )}
 
           {report.histories && report.histories.length > 0 && (
             <GlassCard>
-              <h3 className="font-medium">Timeline</h3>
+              <h3 className="font-medium">Linimasa</h3>
               <ul className="mt-3 space-y-3">
-                {report.histories.map((h) => (
-                  <li key={h.id} className="border-l-2 border-[#ef629f]/30 pl-3 text-sm">
-                    <p className="font-medium capitalize">{h.action.replace(/_/g, ' ').toLowerCase()}</p>
+                {report.histories.map((h) => {
+                  const actionMap: Record<string, string> = {
+                    CREATED: 'Dibuat',
+                    AI_ANALYZED: 'Dianalisis AI',
+                    ASSIGNED: 'Ditugaskan',
+                    STATUS_UPDATED: 'Status Diperbarui',
+                  }
+                  return (
+                    <li key={h.id} className="border-l-2 border-[#ef629f]/30 pl-3 text-sm">
+                      <p className="font-medium capitalize">{actionMap[h.action] ?? h.action.replace(/_/g, ' ').toLowerCase()}</p>
                     {h.note && <p className="text-muted">{h.note}</p>}
-                    <p className="text-xs text-muted">{new Date(h.createdAt).toLocaleString()}</p>
+                    <p className="text-xs text-muted">{new Date(h.createdAt).toLocaleString('id-ID')}</p>
                   </li>
-                ))}
+                  )
+                })}
               </ul>
             </GlassCard>
           )}

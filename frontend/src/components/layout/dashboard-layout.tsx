@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { createPortal } from 'react-dom'
 import { NavLink, Outlet, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
@@ -39,7 +40,9 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
   const navigate = useNavigate()
   const { user, accessToken, clearSession } = useAuthStore()
 
-  const handleLogout = async () => {
+  const [showLogoutModal, setShowLogoutModal] = useState(false)
+
+  const confirmLogout = async () => {
     if (accessToken) {
       try { await logoutRequest(accessToken) } catch { /* ignore */ }
     }
@@ -102,10 +105,47 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
         ))}
       </nav>
 
-      <Button variant="ghost" className="justify-start mt-2" onClick={handleLogout}>
+      <Button variant="ghost" className="justify-start mt-2" onClick={() => setShowLogoutModal(true)}>
         <LogOut className="h-4 w-4" />
         Keluar
       </Button>
+
+      {typeof document !== 'undefined' && createPortal(
+        <AnimatePresence>
+          {showLogoutModal && (
+            <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="absolute inset-0 bg-black/20 backdrop-blur-[2px]"
+                onClick={() => setShowLogoutModal(false)}
+              />
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95, y: 10 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.95, y: 10 }}
+                className="relative w-full max-w-sm overflow-hidden rounded-2xl bg-white p-6 text-center shadow-2xl border border-gray-100"
+              >
+                <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-[#ef629f]/10">
+                  <LogOut className="h-6 w-6 text-[#ef629f]" />
+                </div>
+                <h3 className="mb-2 text-lg font-semibold text-gray-900">Keluar dari Akun</h3>
+                <p className="mb-6 text-sm text-gray-500">Apakah Anda yakin ingin keluar dari akun ini?</p>
+                <div className="flex gap-3">
+                  <Button variant="secondary" className="flex-1 rounded-xl text-gray-700 bg-gray-100 hover:bg-gray-200" onClick={() => setShowLogoutModal(false)}>
+                    Batal
+                  </Button>
+                  <Button className="flex-1 rounded-xl bg-[#ef629f] text-white hover:bg-[#ef629f]/90" onClick={confirmLogout}>
+                    Ya, Keluar
+                  </Button>
+                </div>
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>,
+        document.body
+      )}
     </>
   )
 }

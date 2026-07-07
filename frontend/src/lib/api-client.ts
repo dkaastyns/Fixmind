@@ -199,11 +199,16 @@ export const fetchOverview = (token: string) =>
 export const fetchAnalyticsSummary = (token: string) =>
   apiFetch<DashboardOverview>('/analytics/summary', auth(token))
 
-export const exportReports = (token: string) =>
-  fetch(`${API_BASE}/analytics/export`, {
+export const exportReports = (token: string, startDate?: string, endDate?: string) => {
+  const q = new URLSearchParams()
+  if (startDate) q.set('startDate', startDate)
+  if (endDate) q.set('endDate', endDate)
+  const qs = q.toString() ? `?${q.toString()}` : ''
+  return fetch(`${API_BASE}/analytics/export${qs}`, {
     headers: { Authorization: `Bearer ${token}` },
     credentials: 'include',
   })
+}
 
 // Comments
 export const fetchComments = (token: string, reportId: string) =>
@@ -261,8 +266,12 @@ async function downloadBlob(blob: Blob, filename: string) {
   URL.revokeObjectURL(url)
 }
 
-export const exportExcel = async (token: string) => {
-  const res = await fetch(`${API_BASE}/reports/export/excel`, {
+export const exportExcel = async (token: string, startDate?: string, endDate?: string) => {
+  const q = new URLSearchParams()
+  if (startDate) q.set('startDate', startDate)
+  if (endDate) q.set('endDate', endDate)
+  const qs = q.toString() ? `?${q.toString()}` : ''
+  const res = await fetch(`${API_BASE}/reports/export/excel${qs}`, {
     headers: { Authorization: `Bearer ${token}` },
     credentials: 'include',
   })
@@ -271,8 +280,12 @@ export const exportExcel = async (token: string) => {
   await downloadBlob(blob, 'e-lapor-laporan.xlsx')
 }
 
-export const exportPdf = async (token: string) => {
-  const res = await fetch(`${API_BASE}/reports/export/pdf`, {
+export const exportPdf = async (token: string, startDate?: string, endDate?: string) => {
+  const q = new URLSearchParams()
+  if (startDate) q.set('startDate', startDate)
+  if (endDate) q.set('endDate', endDate)
+  const qs = q.toString() ? `?${q.toString()}` : ''
+  const res = await fetch(`${API_BASE}/reports/export/pdf${qs}`, {
     headers: { Authorization: `Bearer ${token}` },
     credentials: 'include',
   })

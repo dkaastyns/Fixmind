@@ -79,6 +79,8 @@ export interface Report {
   assignedTechnicianId: string | null
   assignedAt: string | null
   completedAt: string | null
+  targetCompletionDate: string | null
+  aiSuggestedTargetDate: string | null
   adminNotes: string | null
   createdAt: string
   updatedAt: string

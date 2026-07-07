@@ -51,6 +51,8 @@ export class ReportsRepository {
     reporterId?: string;
     technicianId?: string;
     status?: ReportStatus;
+    startDate?: string;
+    endDate?: string;
   }) {
     const offset = (params.page - 1) * params.limit;
 
@@ -69,6 +71,8 @@ export class ReportsRepository {
         ${params.reporterId ? this.sql`AND r.reporter_id = ${params.reporterId}` : this.sql``}
         ${params.technicianId ? this.sql`AND r.assigned_technician_id = ${params.technicianId}` : this.sql``}
         ${params.status ? this.sql`AND r.status = ${params.status}` : this.sql``}
+        ${params.startDate ? this.sql`AND r.created_at >= ${params.startDate}` : this.sql``}
+        ${params.endDate ? this.sql`AND r.created_at <= ${params.endDate}::timestamp + interval '1 day' - interval '1 millisecond'` : this.sql``}
       ORDER BY r.created_at DESC
       LIMIT ${params.limit} OFFSET ${offset}
     `;
@@ -79,6 +83,8 @@ export class ReportsRepository {
         ${params.reporterId ? this.sql`AND r.reporter_id = ${params.reporterId}` : this.sql``}
         ${params.technicianId ? this.sql`AND r.assigned_technician_id = ${params.technicianId}` : this.sql``}
         ${params.status ? this.sql`AND r.status = ${params.status}` : this.sql``}
+        ${params.startDate ? this.sql`AND r.created_at >= ${params.startDate}` : this.sql``}
+        ${params.endDate ? this.sql`AND r.created_at <= ${params.endDate}::timestamp + interval '1 day' - interval '1 millisecond'` : this.sql``}
     `;
 
     return { rows, total: Number(count) };
@@ -103,6 +109,7 @@ export class ReportsRepository {
     completedAt?: Date | null;
     assignedTechnicianId?: string | null;
     assignedAt?: Date | null;
+    targetCompletionDate?: Date | null;
     adminNotes?: string;
     priority?: ReportPriority;
   }): Promise<ReportRow | null> {
@@ -115,6 +122,7 @@ export class ReportsRepository {
         completed_at = ${extra?.completedAt !== undefined ? extra.completedAt : existing.completed_at},
         assigned_technician_id = ${extra?.assignedTechnicianId !== undefined ? extra.assignedTechnicianId : existing.assigned_technician_id},
         assigned_at = ${extra?.assignedAt !== undefined ? extra.assignedAt : existing.assigned_at},
+        target_completion_date = ${extra?.targetCompletionDate !== undefined ? extra.targetCompletionDate : existing.target_completion_date},
         admin_notes = ${extra?.adminNotes !== undefined ? extra.adminNotes : existing.admin_notes},
         priority = ${extra?.priority !== undefined ? extra.priority : existing.priority},
         updated_at = now()
@@ -130,6 +138,7 @@ export class ReportsRepository {
     aiPriorityReason?: string;
     aiRecommendation?: string;
     aiEstimatedRepairHours?: number;
+    aiSuggestedTargetDate?: Date;
     aiSuggestedAction?: string;
     aiAnalysisStatus: 'COMPLETED' | 'FAILED';
   }): Promise<void> {
@@ -141,6 +150,7 @@ export class ReportsRepository {
         ai_priority_reason = ${data.aiPriorityReason ?? null},
         ai_recommendation = ${data.aiRecommendation ?? null},
         ai_estimated_repair_hours = ${data.aiEstimatedRepairHours ?? null},
+        ai_suggested_target_date = ${data.aiSuggestedTargetDate ?? null},
         ai_suggested_action = ${data.aiSuggestedAction ?? null},
         ai_analysis_status = ${data.aiAnalysisStatus},
         updated_at = now()

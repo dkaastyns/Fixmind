@@ -1,4 +1,4 @@
-import { Controller, Get, Header, Res } from '@nestjs/common';
+import { Controller, Get, Header, Res, Query } from '@nestjs/common';
 import type { Response } from 'express';
 import { CurrentUser, type AuthUser } from '../../common/decorators/current-user.decorator';
 import { Roles } from '../../common/decorators/roles.decorator';
@@ -52,8 +52,12 @@ export class AnalyticsController {
   @Roles('ADMIN')
   @Get('export')
   @Header('Content-Type', 'text/csv')
-  async export(@Res() res: Response) {
-    const csv = await this.analyticsService.exportCsv();
+  async export(
+    @Query('startDate') startDate: string,
+    @Query('endDate') endDate: string,
+    @Res() res: Response
+  ) {
+    const csv = await this.analyticsService.exportCsv(startDate, endDate);
     res.setHeader('Content-Disposition', 'attachment; filename="fixmind-reports.csv"');
     res.send(csv);
   }

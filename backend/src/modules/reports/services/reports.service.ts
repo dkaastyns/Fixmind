@@ -199,6 +199,7 @@ export class ReportsService {
     const updated = await this.reportsRepository.updateStatus(id, 'ASSIGNED', {
       assignedTechnicianId: dto.technicianId,
       assignedAt: new Date(),
+      targetCompletionDate: dto.targetCompletionDate ? new Date(dto.targetCompletionDate) : undefined,
       adminNotes: dto.adminNotes,
     });
     if (!updated) throw new NotFoundException('Report not found');
@@ -321,6 +322,7 @@ export class ReportsService {
         aiPriorityReason: result.reason,
         aiRecommendation: result.recommendation,
         aiEstimatedRepairHours: result.estimatedRepairHours,
+        aiSuggestedTargetDate: result.suggestedTargetDate ? new Date(result.suggestedTargetDate) : undefined,
         aiSuggestedAction: result.suggestedAction,
         aiAnalysisStatus: 'COMPLETED',
       });
@@ -328,7 +330,7 @@ export class ReportsService {
       await this.reportsRepository.addHistory({
         reportId,
         action: 'AI_ANALYZED',
-        note: `AI priority: ${result.priority}`,
+        note: `Prioritas AI: ${result.priority === 'LOW' ? 'RENDAH' : result.priority === 'MEDIUM' ? 'SEDANG' : result.priority === 'HIGH' ? 'TINGGI' : 'KRITIS'}`,
         metadata: { score: result.score },
       });
     } catch {
@@ -381,8 +383,8 @@ export class ReportsService {
     }));
   }
 
-  async exportAllForExcel() {
-    return this.reportsRepository.list({ page: 1, limit: 100000 });
+  async exportAllForExcel(startDate?: string, endDate?: string) {
+    return this.reportsRepository.list({ page: 1, limit: 100000, startDate, endDate });
   }
 }
 
