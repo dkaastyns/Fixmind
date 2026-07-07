@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { createPortal } from 'react-dom'
-import { NavLink, Outlet, useNavigate } from 'react-router-dom'
+import { NavLink, Outlet, useNavigate, useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   BarChart3,
@@ -11,7 +11,6 @@ import {
   LogOut,
   Menu,
   Users,
-  Wrench,
   X,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -58,8 +57,8 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
     <>
       <div className="mb-8 flex items-center justify-between px-2">
         <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl gradient-primary">
-            <Wrench className="h-5 w-5 text-white" />
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl overflow-hidden bg-white shadow-sm p-1">
+            <img src="/logo.png" alt="Logo Semarang" className="h-full w-full object-contain" />
           </div>
           <div>
             <p className="font-semibold text-[15px] leading-tight">E-Lapor DPRD</p>
@@ -91,7 +90,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
                   <motion.div
                     layoutId="sidebar-active-indicator"
                     className="absolute inset-0 rounded-xl gradient-primary shadow-sm"
-                    transition={{ type: "spring", stiffness: 350, damping: 30 }}
+                    transition={{ type: 'spring', damping: 25, stiffness: 200 }}
                     style={{ zIndex: 0 }}
                   />
                 )}
@@ -152,6 +151,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
 
 export function DashboardLayout() {
   const [mobileOpen, setMobileOpen] = useState(false)
+  const location = useLocation()
 
   return (
     <div className="flex min-h-screen">
@@ -162,7 +162,7 @@ export function DashboardLayout() {
       <div className="flex flex-1 flex-col">
         <header className="glass relative z-40 mx-4 mt-4 flex items-center justify-between px-4 py-3 lg:hidden">
           <div className="flex items-center gap-2">
-            <Wrench className="h-5 w-5 text-[#ef629f]" />
+            <img src="/logo.png" alt="Logo" className="h-7 w-7 object-contain" />
             <span className="font-semibold">E-Lapor DPRD</span>
           </div>
           <div className="flex items-center gap-3">
@@ -199,14 +199,18 @@ export function DashboardLayout() {
           )}
         </AnimatePresence>
 
-        <main className="flex-1 p-4 lg:p-6">
-          <motion.div
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.2 }}
-          >
-            <Outlet />
-          </motion.div>
+        <main className="flex-1 p-4 lg:p-6 overflow-x-hidden">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={location.pathname}
+              initial={{ opacity: 0, y: 10, scale: 0.99 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -10, scale: 0.99 }}
+              transition={{ duration: 0.25, ease: 'easeOut' }}
+            >
+              <Outlet />
+            </motion.div>
+          </AnimatePresence>
         </main>
 
         {/* Global Chatbot AI */}
