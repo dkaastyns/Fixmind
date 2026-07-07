@@ -28,6 +28,9 @@ export function RoomsPage() {
   const [showRoomForm, setShowRoomForm] = useState(false)
   const [showAssetForm, setShowAssetForm] = useState(false)
 
+  const [isDeletingRooms, setIsDeletingRooms] = useState(false)
+  const [isDeletingAssets, setIsDeletingAssets] = useState(false)
+
   const [selectedRoomsToDelete, setSelectedRoomsToDelete] = useState<string[]>([])
   const [selectedAssetsToDelete, setSelectedAssetsToDelete] = useState<string[]>([])
   
@@ -48,6 +51,7 @@ export function RoomsPage() {
     onSuccess: () => { 
       qc.invalidateQueries({ queryKey: ['rooms'] })
       setSelectedRoomsToDelete([])
+      setIsDeletingRooms(false)
       setShowConfirmRoomDelete(false)
       toast.success('Ruangan terpilih berhasil dihapus') 
     },
@@ -61,6 +65,7 @@ export function RoomsPage() {
     onSuccess: () => { 
       qc.invalidateQueries({ queryKey: ['assets'] })
       setSelectedAssetsToDelete([])
+      setIsDeletingAssets(false)
       setShowConfirmAssetDelete(false)
       toast.success('Aset terpilih berhasil dihapus') 
     },
@@ -97,11 +102,23 @@ export function RoomsPage() {
         <GlassCard className="p-0 overflow-hidden">
           <div className="flex items-center justify-between border-b border-white/40 px-4 py-3">
             <span className="font-medium">Ruangan</span>
-            {isAdmin && selectedRoomsToDelete.length > 0 && (
-              <Button size="sm" variant="danger" onClick={() => setShowConfirmRoomDelete(true)} className="h-8">
-                <Trash2 className="h-4 w-4 mr-1" /> Hapus Terpilih ({selectedRoomsToDelete.length})
-              </Button>
-            )}
+            <div className="flex items-center gap-2">
+              {isAdmin && !isDeletingRooms && rooms.data?.data && rooms.data.data.length > 0 && (
+                <Button size="sm" variant="ghost" onClick={() => setIsDeletingRooms(true)} className="h-8">
+                  <Trash2 className="h-4 w-4 mr-1" /> Hapus
+                </Button>
+              )}
+              {isAdmin && isDeletingRooms && (
+                <>
+                  <Button size="sm" variant="ghost" onClick={() => { setIsDeletingRooms(false); setSelectedRoomsToDelete([]); }} className="h-8">
+                    Batal
+                  </Button>
+                  <Button size="sm" variant="danger" onClick={() => setShowConfirmRoomDelete(true)} disabled={selectedRoomsToDelete.length === 0} className="h-8">
+                    Hapus Terpilih ({selectedRoomsToDelete.length})
+                  </Button>
+                </>
+              )}
+            </div>
           </div>
           {!rooms.data?.data.length ? (
             <EmptyState title="Tidak ada ruangan" />
@@ -112,12 +129,18 @@ export function RoomsPage() {
                   key={r.id}
                   className={cn(
                     'group flex cursor-pointer items-center justify-between border-b border-white/20 px-4 py-3 transition-all duration-200 hover:bg-white/50',
-                    selectedRoom === r.id ? 'bg-white/60 border-l-4 border-l-[#ef629f] pl-3' : 'border-l-4 border-l-transparent'
+                    selectedRoom === r.id && !isDeletingRooms ? 'bg-white/60 border-l-4 border-l-[#ef629f] pl-3' : 'border-l-4 border-l-transparent'
                   )}
-                  onClick={() => setSelectedRoom(r.id)}
+                  onClick={() => {
+                    if (isDeletingRooms) {
+                      toggleRoomDelete(r.id)
+                    } else {
+                      setSelectedRoom(r.id)
+                    }
+                  }}
                 >
                   <div className="flex items-center gap-3">
-                    {isAdmin && (
+                    {isAdmin && isDeletingRooms && (
                       <input 
                         type="checkbox" 
                         checked={selectedRoomsToDelete.includes(r.id)} 
@@ -127,7 +150,7 @@ export function RoomsPage() {
                       />
                     )}
                     <div>
-                      <p className={cn('font-medium', selectedRoom === r.id ? 'text-[#ef629f]' : 'text-foreground')}>{r.code}</p>
+                      <p className={cn('font-medium', selectedRoom === r.id && !isDeletingRooms ? 'text-[#ef629f]' : 'text-foreground')}>{r.code}</p>
                       <p className="text-sm text-muted">{r.name} · {r.building ?? '—'}</p>
                     </div>
                   </div>
@@ -141,15 +164,27 @@ export function RoomsPage() {
           <div className="flex items-center justify-between border-b border-white/40 px-4 py-3">
             <span className="font-medium">Aset</span>
             <div className="flex items-center gap-2">
-              {isAdmin && selectedAssetsToDelete.length > 0 && (
-                <Button size="sm" variant="danger" onClick={() => setShowConfirmAssetDelete(true)} className="h-8">
-                  <Trash2 className="h-4 w-4 mr-1" /> Hapus ({selectedAssetsToDelete.length})
-                </Button>
+              {isAdmin && selectedRoom && !isDeletingAssets && (
+                <>
+                  {assets.data?.data && assets.data.data.length > 0 && (
+                    <Button size="sm" variant="ghost" onClick={() => setIsDeletingAssets(true)} className="h-8">
+                      <Trash2 className="h-4 w-4 mr-1" /> Hapus
+                    </Button>
+                  )}
+                  <Button size="sm" variant="ghost" onClick={() => setShowAssetForm(true)} className="h-8">
+                    <Plus className="h-4 w-4 mr-1" /> Tambah
+                  </Button>
+                </>
               )}
-              {isAdmin && selectedRoom && (
-                <Button size="sm" variant="ghost" onClick={() => setShowAssetForm(true)}>
-                  <Plus className="h-4 w-4" /> Tambah
-                </Button>
+              {isAdmin && selectedRoom && isDeletingAssets && (
+                <>
+                  <Button size="sm" variant="ghost" onClick={() => { setIsDeletingAssets(false); setSelectedAssetsToDelete([]); }} className="h-8">
+                    Batal
+                  </Button>
+                  <Button size="sm" variant="danger" onClick={() => setShowConfirmAssetDelete(true)} disabled={selectedAssetsToDelete.length === 0} className="h-8">
+                    Hapus Terpilih ({selectedAssetsToDelete.length})
+                  </Button>
+                </>
               )}
             </div>
           </div>
@@ -160,13 +195,25 @@ export function RoomsPage() {
           ) : (
             <ul>
               {assets.data.data.map((a) => (
-                <li key={a.id} className="flex items-center justify-between border-b border-white/20 px-4 py-3 transition-colors hover:bg-white/30">
+                <li 
+                  key={a.id} 
+                  className={cn(
+                    "flex items-center justify-between border-b border-white/20 px-4 py-3 transition-colors hover:bg-white/30",
+                    isDeletingAssets ? "cursor-pointer" : ""
+                  )}
+                  onClick={() => {
+                    if (isDeletingAssets) {
+                      toggleAssetDelete(a.id)
+                    }
+                  }}
+                >
                   <div className="flex items-center gap-3">
-                    {isAdmin && (
+                    {isAdmin && isDeletingAssets && (
                       <input 
                         type="checkbox" 
                         checked={selectedAssetsToDelete.includes(a.id)} 
                         onChange={() => toggleAssetDelete(a.id)}
+                        onClick={(e) => e.stopPropagation()}
                         className="h-4 w-4 rounded border-gray-300 text-[#ef629f] focus:ring-[#ef629f] cursor-pointer"
                       />
                     )}
