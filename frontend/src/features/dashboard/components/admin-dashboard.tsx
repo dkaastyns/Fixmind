@@ -138,7 +138,7 @@ export function AdminDashboard() {
                           HIGH: 'Tinggi',
                           CRITICAL: 'Kritis'
                         };
-                        return { name: priorityMap[name] ?? name, value };
+                        return { name: priorityMap[name] ?? name, value, priority: name };
                       })}
                       cx="50%"
                       cy="50%"
@@ -147,9 +147,15 @@ export function AdminDashboard() {
                       paddingAngle={5}
                       dataKey="value"
                     >
-                      {Object.entries(stats.byPriority).map((_entry, index) => {
-                        const colors = ['#EF4444', '#F59E0B', '#3B82F6', '#22C55E', '#8B5CF6'];
-                        return <Cell key={`cell-${index}`} fill={colors[index % colors.length]} stroke="rgba(255,255,255,0.5)" strokeWidth={2} />
+                      {Object.entries(stats.byPriority).map(([key]) => {
+                        const priorityColors: Record<string, string> = {
+                          CRITICAL: '#EF4444', // Merah
+                          HIGH: '#F97316',     // Orange
+                          MEDIUM: '#EAB308',   // Kuning
+                          LOW: '#22C55E',      // Hijau
+                        };
+                        const color = priorityColors[key] ?? '#8B5CF6';
+                        return <Cell key={`cell-${key}`} fill={color} stroke="rgba(255,255,255,0.5)" strokeWidth={2} />
                       })}
                     </Pie>
                     <Tooltip 
