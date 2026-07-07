@@ -13,7 +13,6 @@ import { RoomsRepository } from '../../rooms/repositories/rooms.repository';
 import { UsersRepository } from '../../users/repositories/users.repository';
 import {
   AssignReportDto,
-  CreateRatingDto,
   CreateReportDto,
   UpdateReportStatusDto,
 } from '../dto/report.dto';
@@ -33,7 +32,7 @@ export class ReportsService {
     private readonly notificationsGateway: NotificationsGateway,
   ) {}
 
-  toPublic(row: ReportListRow | ReportRow, extras?: { histories?: unknown[]; rating?: unknown; attachments?: unknown[] }) {
+  toPublic(row: ReportListRow | ReportRow, extras?: { histories?: unknown[]; attachments?: unknown[] }) {
     const isDetail = 'room_name' in row;
     return {
       id: row.id,
@@ -90,8 +89,6 @@ export class ReportsService {
     this.assertCanView(user, report);
 
     const histories = await this.reportsRepository.getHistories(id);
-    const rating = await this.reportsRepository.getRating(id);
-
     return this.toPublic(report, {
       histories: histories.map((h) => ({
         id: h.id,
@@ -101,9 +98,6 @@ export class ReportsService {
         note: h.note,
         createdAt: h.created_at,
       })),
-      rating: rating
-        ? { score: rating.score, comment: rating.comment, createdAt: rating.created_at }
-        : null,
       attachments: await this.reportsRepository.getAttachments(id),
     });
   }
@@ -223,36 +217,6 @@ export class ReportsService {
     return result;
   }
 
-  async rate(user: AuthUser, id: string, dto: CreateRatingDto) {
-    const report = await this.reportsRepository.findById(id);
-    if (!report) throw new NotFoundException('Report not found');
-    if (report.reporter_id !== user.id) throw new ForbiddenException('Only reporter can rate');
-    if (report.status !== 'COMPLETED') throw new BadRequestException('Report not completed');
-
-    const existing = await this.reportsRepository.getRating(id);
-    if (existing) throw new BadRequestException('Already rated');
-
-    const rating = await this.reportsRepository.createRating({
-      reportId: id,
-      userId: user.id,
-      score: dto.score,
-      comment: dto.comment,
-    });
-
-    await this.reportsRepository.addHistory({
-      reportId: id,
-      actorId: user.id,
-      action: 'RATED',
-      note: `Rating: ${dto.score}/5`,
-    });
-
-    return {
-      score: rating.score,
-      comment: rating.comment,
-      createdAt: rating.created_at,
-    };
-  }
-
   async uploadAttachment(user: AuthUser, reportId: string, file: Express.Multer.File, type: string) {
     const report = await this.reportsRepository.findById(reportId);
     if (!report) throw new NotFoundException('Report not found');
@@ -302,7 +266,7 @@ export class ReportsService {
       let assetName: string | undefined;
       if (assetId) {
         const asset = await this.assetsRepository.findById(assetId);
-        assetName = asset?.name;
+        assetName = asset?.nama_barang;
       }
 
       const result = await this.priorityEngine.analyzeReport({

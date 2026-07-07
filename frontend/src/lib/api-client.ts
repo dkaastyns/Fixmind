@@ -127,6 +127,42 @@ export const updateAsset = (token: string, id: string, data: object) =>
 export const deleteAsset = (token: string, id: string) =>
   apiFetch(`/assets/${id}`, { method: 'DELETE', ...auth(token) })
 
+export const importAssets = async (token: string, roomId: string, file: File) => {
+  const formData = new FormData()
+  formData.append('file', file)
+
+  const response = await fetch(`${API_BASE}/assets/import?roomId=${roomId}`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}` },
+    body: formData,
+    credentials: 'include',
+  })
+
+  const body = await response.json().catch(() => ({}))
+  if (!response.ok || body.success === false) {
+    throw new ApiError(body.message ?? 'Import failed', response.status)
+  }
+  return body as ApiSuccessResponse<{ imported: number; data: Asset[] }>
+}
+
+export const downloadAssetTemplate = async (token: string) => {
+  const res = await fetch(`${API_BASE}/assets/import/template`, {
+    headers: { Authorization: `Bearer ${token}` },
+    credentials: 'include',
+  })
+  if (!res.ok) throw new ApiError('Download template gagal', res.status)
+  const blob = await res.blob()
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = 'template_import_aset.xlsx'
+  document.body.appendChild(a)
+  a.click()
+  document.body.removeChild(a)
+  URL.revokeObjectURL(url)
+}
+
+
 // Reports
 export const fetchReports = (
   token: string,
@@ -180,13 +216,6 @@ export const uploadAttachment = async (token: string, id: string, file: File, ty
 
 export const assignReport = (token: string, id: string, data: object) =>
   apiFetch<Report>(`/reports/${id}/assign`, {
-    method: 'POST',
-    body: JSON.stringify(data),
-    ...auth(token),
-  })
-
-export const rateReport = (token: string, id: string, data: object) =>
-  apiFetch(`/reports/${id}/rating`, {
     method: 'POST',
     body: JSON.stringify(data),
     ...auth(token),

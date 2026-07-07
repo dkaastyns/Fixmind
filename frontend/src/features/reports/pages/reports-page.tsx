@@ -339,7 +339,7 @@ function CreateReportForm({
           >
             <option value="">Tanpa Aset Spesifik</option>
             {assets.data?.data.map((a) => (
-              <option key={a.id} value={a.id}>{a.assetCode} — {a.name}</option>
+              <option key={a.id} value={a.id}>{a.kodeBarang} - {a.namaBarang}</option>
             ))}
           </select>
         </div>

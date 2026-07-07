@@ -20,7 +20,7 @@ export class AssetsRepository {
       ? await this.sql<AssetRow[]>`
           SELECT * FROM assets WHERE deleted_at IS NULL AND room_id = ${params.roomId}
           ${params.status ? this.sql`AND status = ${params.status}` : this.sql``}
-          ORDER BY name ASC LIMIT ${params.limit} OFFSET ${offset}
+          ORDER BY nama_barang ASC LIMIT ${params.limit} OFFSET ${offset}
         `
       : await this.sql<AssetRow[]>`
           SELECT * FROM assets WHERE deleted_at IS NULL
@@ -44,17 +44,62 @@ export class AssetsRepository {
 
   async create(data: {
     roomId: string;
-    name: string;
-    assetCode: string;
-    category: string;
-    description?: string;
+    idpemda: string;
+    kodeBarang: string;
+    nomorRegister: string;
+    namaBarang: string;
+    merkType: string;
   }): Promise<AssetRow> {
     const [row] = await this.sql<AssetRow[]>`
-      INSERT INTO assets (room_id, name, asset_code, category, description)
-      VALUES (${data.roomId}, ${data.name}, ${data.assetCode}, ${data.category}, ${data.description ?? null})
+      INSERT INTO assets (room_id, idpemda, kode_barang, nomor_register, nama_barang, merk_type)
+      VALUES (
+        ${data.roomId},
+        ${data.idpemda},
+        ${data.kodeBarang},
+        ${data.nomorRegister},
+        ${data.namaBarang},
+        ${data.merkType}
+      )
       RETURNING *
     `;
     return row;
+  }
+
+  async upsertMany(rows: Array<{
+    roomId: string;
+    idpemda: string;
+    kodeBarang: string;
+    nomorRegister: string;
+    namaBarang: string;
+    merkType: string;
+  }>): Promise<AssetRow[]> {
+    const imported: AssetRow[] = [];
+
+    for (const data of rows) {
+      const [row] = await this.sql<AssetRow[]>`
+        INSERT INTO assets (room_id, idpemda, kode_barang, nomor_register, nama_barang, merk_type)
+        VALUES (
+          ${data.roomId},
+          ${data.idpemda},
+          ${data.kodeBarang},
+          ${data.nomorRegister},
+          ${data.namaBarang},
+          ${data.merkType}
+        )
+        ON CONFLICT (kode_barang) DO UPDATE SET
+          room_id = EXCLUDED.room_id,
+          idpemda = EXCLUDED.idpemda,
+          nomor_register = EXCLUDED.nomor_register,
+          nama_barang = EXCLUDED.nama_barang,
+          merk_type = EXCLUDED.merk_type,
+          deleted_at = NULL,
+          updated_at = now()
+        RETURNING *
+      `;
+      imported.push(row);
+    }
+
+    return imported;
   }
 
   async update(id: string, data: Partial<AssetRow>): Promise<AssetRow | null> {
@@ -64,10 +109,11 @@ export class AssetsRepository {
     const [row] = await this.sql<AssetRow[]>`
       UPDATE assets SET
         room_id = ${data.room_id ?? existing.room_id},
-        name = ${data.name ?? existing.name},
-        asset_code = ${data.asset_code ?? existing.asset_code},
-        category = ${data.category ?? existing.category},
-        description = ${data.description !== undefined ? data.description : existing.description},
+        idpemda = ${data.idpemda ?? existing.idpemda},
+        kode_barang = ${data.kode_barang ?? existing.kode_barang},
+        nomor_register = ${data.nomor_register ?? existing.nomor_register},
+        nama_barang = ${data.nama_barang ?? existing.nama_barang},
+        merk_type = ${data.merk_type ?? existing.merk_type},
         status = ${data.status ?? existing.status},
         updated_at = now()
       WHERE id = ${id} AND deleted_at IS NULL

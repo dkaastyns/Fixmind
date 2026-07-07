@@ -38,11 +38,11 @@ export class MaintenanceSchedulerService {
       }
 
       for (const asset of assets) {
-        this.logger.log(`Creating scheduled report for asset: ${asset.name}`);
+        this.logger.log(`Creating scheduled report for asset: ${asset.nama_barang}`);
         
         await this.reportsService.create(systemAdmin as any, {
-          title: `Scheduled Maintenance: ${asset.name}`,
-          description: `Routine scheduled maintenance required for ${asset.name} (${asset.asset_code}). Please inspect and perform necessary servicing.`,
+          title: `Scheduled Maintenance: ${asset.nama_barang}`,
+          description: `Routine scheduled maintenance required for ${asset.nama_barang} (${asset.kode_barang}). Please inspect and perform necessary servicing.`,
           roomId: asset.room_id,
           assetId: asset.id,
         });

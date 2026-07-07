@@ -7,19 +7,23 @@ export class CreateAssetDto {
 
   @IsString()
   @IsNotEmpty()
-  name!: string;
+  idpemda!: string;
 
   @IsString()
   @IsNotEmpty()
-  assetCode!: string;
+  kodeBarang!: string;
 
   @IsString()
   @IsNotEmpty()
-  category!: string;
+  nomorRegister!: string;
 
-  @IsOptional()
   @IsString()
-  description?: string;
+  @IsNotEmpty()
+  namaBarang!: string;
+
+  @IsString()
+  @IsNotEmpty()
+  merkType!: string;
 }
 
 export class UpdateAssetDto {
@@ -29,21 +33,30 @@ export class UpdateAssetDto {
 
   @IsOptional()
   @IsString()
-  name?: string;
+  idpemda?: string;
 
   @IsOptional()
   @IsString()
-  assetCode?: string;
+  kodeBarang?: string;
 
   @IsOptional()
   @IsString()
-  category?: string;
+  nomorRegister?: string;
 
   @IsOptional()
   @IsString()
-  description?: string;
+  namaBarang?: string;
+
+  @IsOptional()
+  @IsString()
+  merkType?: string;
 
   @IsOptional()
   @IsEnum(['OPERATIONAL', 'NEEDS_MAINTENANCE', 'OUT_OF_SERVICE'])
   status?: AssetStatus;
+}
+
+export class ImportAssetsQueryDto {
+  @IsUUID()
+  roomId!: string;
 }

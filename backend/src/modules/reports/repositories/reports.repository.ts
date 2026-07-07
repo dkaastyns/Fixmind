@@ -1,7 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { SQL_TOKEN, type Sql } from '../../../database/sql';
 import type {
-  RatingRow,
   ReportHistoryRow,
   ReportPriority,
   ReportRow,
@@ -31,7 +30,7 @@ export class ReportsRepository {
     const [row] = await this.sql<ReportListRow[]>`
       SELECT r.*,
         rm.name AS room_name, rm.code AS room_code,
-        a.name AS asset_name,
+        a.nama_barang AS asset_name,
         u.full_name AS reporter_name,
         t.full_name AS technician_name
       FROM reports r
@@ -59,7 +58,7 @@ export class ReportsRepository {
     const rows = await this.sql<ReportListRow[]>`
       SELECT r.*,
         rm.name AS room_name, rm.code AS room_code,
-        a.name AS asset_name,
+        a.nama_barang AS asset_name,
         u.full_name AS reporter_name,
         t.full_name AS technician_name
       FROM reports r
@@ -188,27 +187,6 @@ export class ReportsRepository {
     `;
   }
 
-  async createRating(data: {
-    reportId: string;
-    userId: string;
-    score: number;
-    comment?: string;
-  }): Promise<RatingRow> {
-    const [row] = await this.sql<RatingRow[]>`
-      INSERT INTO ratings (report_id, user_id, score, comment)
-      VALUES (${data.reportId}, ${data.userId}, ${data.score}, ${data.comment ?? null})
-      RETURNING *
-    `;
-    return row;
-  }
-
-  async getRating(reportId: string): Promise<RatingRow | null> {
-    const [row] = await this.sql<RatingRow[]>`
-      SELECT * FROM ratings WHERE report_id = ${reportId} LIMIT 1
-    `;
-    return row ?? null;
-  }
-
   async countByStatus(): Promise<Record<string, number>> {
     const rows = await this.sql<{ status: string; count: string }[]>`
       SELECT status::text, COUNT(*)::text AS count
@@ -216,13 +194,6 @@ export class ReportsRepository {
       GROUP BY status
     `;
     return Object.fromEntries(rows.map((r) => [r.status, Number(r.count)]));
-  }
-
-  async avgRating(): Promise<number | null> {
-    const [row] = await this.sql<{ avg: string | null }[]>`
-      SELECT AVG(score)::text AS avg FROM ratings
-    `;
-    return row?.avg ? Number(row.avg) : null;
   }
 
   async countCompletedLast30Days(): Promise<number> {

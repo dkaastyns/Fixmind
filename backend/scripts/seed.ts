@@ -74,28 +74,30 @@ async function seedFacilities() {
   }
 
   const assets = [
-    { roomIdx: 5, name: 'Sistem Audio Paripurna', assetCode: 'AUD-PRP-1', category: 'Elektronik' },
-    { roomIdx: 5, name: 'AC Sentral 5PK', assetCode: 'AC-PRP-1', category: 'HVAC' },
-    { roomIdx: 0, name: 'Proyektor Resolusi Tinggi', assetCode: 'PRJ-RSG-1', category: 'Elektronik' },
-    { roomIdx: 4, name: 'Pintu Geser Otomatis', assetCode: 'DOR-LOB-1', category: 'Bangunan', status: 'NEEDS_MAINTENANCE' },
-    { roomIdx: 3, name: 'Mesin Fotokopi Heavy Duty', assetCode: 'PRN-PSD-1', category: 'Elektronik' },
-    { roomIdx: 1, name: 'Brankas Dokumen Keuangan', assetCode: 'SF-KEU-1', category: 'Perabotan' },
-    { roomIdx: 2, name: 'Dispenser Air Panas/Dingin', assetCode: 'DSP-UMM-1', category: 'Elektronik' },
-    { roomIdx: 6, name: 'Kamera DSLR Dokumentasi', assetCode: 'CAM-HMS-1', category: 'Elektronik' },
+    { roomIdx: 5, idpemda: 'PEMDA-001', kodeBarang: 'AUD-PRP-1', nomorRegister: 'REG-001', namaBarang: 'Sistem Audio Paripurna', merkType: 'TOA ZA-2240' },
+    { roomIdx: 5, idpemda: 'PEMDA-002', kodeBarang: 'AC-PRP-1', nomorRegister: 'REG-002', namaBarang: 'AC Sentral 5PK', merkType: 'Daikin 5PK' },
+    { roomIdx: 0, idpemda: 'PEMDA-003', kodeBarang: 'PRJ-RSG-1', nomorRegister: 'REG-003', namaBarang: 'Proyektor Resolusi Tinggi', merkType: 'Epson EB-2255U' },
+    { roomIdx: 4, idpemda: 'PEMDA-004', kodeBarang: 'DOR-LOB-1', nomorRegister: 'REG-004', namaBarang: 'Pintu Geser Otomatis', merkType: 'Geze Slimdrive', status: 'NEEDS_MAINTENANCE' },
+    { roomIdx: 3, idpemda: 'PEMDA-005', kodeBarang: 'PRN-PSD-1', nomorRegister: 'REG-005', namaBarang: 'Mesin Fotokopi Heavy Duty', merkType: 'Canon iR 2525' },
+    { roomIdx: 1, idpemda: 'PEMDA-006', kodeBarang: 'SF-KEU-1', nomorRegister: 'REG-006', namaBarang: 'Brankas Dokumen Keuangan', merkType: 'Chubb Safes' },
+    { roomIdx: 2, idpemda: 'PEMDA-007', kodeBarang: 'DSP-UMM-1', nomorRegister: 'REG-007', namaBarang: 'Dispenser Air Panas/Dingin', merkType: 'Miyako WDP-300' },
+    { roomIdx: 6, idpemda: 'PEMDA-008', kodeBarang: 'CAM-HMS-1', nomorRegister: 'REG-008', namaBarang: 'Kamera DSLR Dokumentasi', merkType: 'Canon EOS 80D' },
   ];
 
   for (const a of assets) {
     await sql`
-      INSERT INTO assets (room_id, name, asset_code, category, status)
+      INSERT INTO assets (room_id, idpemda, kode_barang, nomor_register, nama_barang, merk_type, status)
       VALUES (
         ${roomIds[a.roomIdx]},
-        ${a.name},
-        ${a.assetCode},
-        ${a.category},
+        ${a.idpemda},
+        ${a.kodeBarang},
+        ${a.nomorRegister},
+        ${a.namaBarang},
+        ${a.merkType},
         ${(a as { status?: string }).status ?? 'OPERATIONAL'}
       )
     `;
-    console.log(`seeded asset ${a.assetCode}`);
+    console.log(`seeded asset ${a.kodeBarang}`);
   }
 
   return { roomIds };
@@ -111,10 +113,10 @@ async function seedReports(roomIds: string[]) {
     SELECT id FROM users WHERE email = 'tech@fixmind.local' LIMIT 1
   `;
   const [asset1] = await sql<{ id: string }[]>`
-    SELECT id FROM assets WHERE asset_code = 'AC-PRP-1' LIMIT 1
+    SELECT id FROM assets WHERE kode_barang = 'AC-PRP-1' LIMIT 1
   `;
   const [asset2] = await sql<{ id: string }[]>`
-    SELECT id FROM assets WHERE asset_code = 'DOR-LOB-1' LIMIT 1
+    SELECT id FROM assets WHERE kode_barang = 'DOR-LOB-1' LIMIT 1
   `;
 
   if (!user || !tech) return;

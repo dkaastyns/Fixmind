@@ -7,9 +7,14 @@ import {
   Patch,
   Post,
   Query,
+  Res,
+  UploadedFile,
+  UseInterceptors,
 } from '@nestjs/common';
+import type { Response } from 'express';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { Roles } from '../../common/decorators/roles.decorator';
-import { CreateAssetDto, UpdateAssetDto } from './dto/asset.dto';
+import { CreateAssetDto, ImportAssetsQueryDto, UpdateAssetDto } from './dto/asset.dto';
 import { AssetsService } from './services/assets.service';
 
 @Controller('assets')
@@ -26,6 +31,23 @@ export class AssetsController {
     return { message: 'Assets retrieved', ...result };
   }
 
+  /**
+   * Download template Excel untuk import aset.
+   * Endpoint ini harus dideklarasikan SEBELUM :id agar tidak
+   * disalah-artikan sebagai parameter id.
+   */
+  @Roles('ADMIN')
+  @Get('import/template')
+  async downloadTemplate(@Res() res: Response) {
+    const buffer = await this.assetsService.generateImportTemplate();
+    res.set({
+      'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      'Content-Disposition': 'attachment; filename="template_import_aset.xlsx"',
+      'Content-Length': buffer.length,
+    });
+    res.end(buffer);
+  }
+
   @Get(':id')
   async getOne(@Param('id') id: string) {
     const data = await this.assetsService.getById(id);
@@ -37,6 +59,17 @@ export class AssetsController {
   async create(@Body() dto: CreateAssetDto) {
     const data = await this.assetsService.create(dto);
     return { message: 'Asset created', data };
+  }
+
+  @Roles('ADMIN')
+  @Post('import')
+  @UseInterceptors(FileInterceptor('file'))
+  async importExcel(
+    @Query() query: ImportAssetsQueryDto,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    const data = await this.assetsService.importExcel(query.roomId, file);
+    return { message: 'Assets imported', data };
   }
 
   @Roles('ADMIN')

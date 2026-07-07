@@ -43,10 +43,11 @@ export interface RoomRow {
 export interface AssetRow {
   id: string;
   room_id: string;
-  name: string;
-  asset_code: string;
-  category: string;
-  description: string | null;
+  idpemda: string;
+  kode_barang: string;
+  nomor_register: string;
+  nama_barang: string;
+  merk_type: string;
   status: AssetStatus;
   created_at: Date;
   updated_at: Date;
@@ -63,16 +64,6 @@ export interface ReportHistoryRow {
   note: string | null;
   metadata: Record<string, unknown>;
   created_at: Date;
-}
-
-export interface RatingRow {
-  id: string;
-  report_id: string;
-  user_id: string;
-  score: number;
-  comment: string | null;
-  created_at: Date;
-  updated_at: Date;
 }
 
 export type ReportStatus =

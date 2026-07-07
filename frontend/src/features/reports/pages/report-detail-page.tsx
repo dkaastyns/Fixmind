@@ -15,7 +15,6 @@ import {
   fetchComments,
   fetchReport,
   fetchTechnicians,
-  rateReport,
   updateReportStatus,
   uploadAttachment,
 } from '@/lib/api-client'
@@ -41,8 +40,6 @@ export function ReportDetailPage() {
 
   const report = data?.data
   const [techId, setTechId] = useState('')
-  const [rating, setRating] = useState(5)
-  const [ratingComment, setRatingComment] = useState('')
   const [repairFile, setRepairFile] = useState<File | null>(null)
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null)
   const [targetDate, setTargetDate] = useState('')
@@ -90,15 +87,6 @@ export function ReportDetailPage() {
     onError: (e: Error) => toast.error(e.message),
   })
 
-  const rateMutation = useMutation({
-    mutationFn: () => rateReport(token, id!, { score: rating, comment: ratingComment }),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ['report', id] })
-      toast.success('Thank you for your rating!')
-    },
-    onError: (e: Error) => toast.error(e.message),
-  })
-
   if (isLoading) return (
     <div className="space-y-6 animate-pulse">
       <div className="h-4 w-40 rounded-lg bg-white/40" />
@@ -112,8 +100,6 @@ export function ReportDetailPage() {
   if (!report) return <p className="text-danger">Report not found</p>
 
   const isTech = user?.role === 'TECHNICIAN' || user?.role === 'ADMIN'
-  const isReporter = user?.id === report.reporterId
-  const canRate = isReporter && report.status === 'COMPLETED' && !report.rating
   const lightboxImages = (report.attachments ?? []).map((a) => ({ id: a.id, url: a.url, label: a.type }))
 
   return (
@@ -312,36 +298,6 @@ export function ReportDetailPage() {
                 {completeMutation.isPending ? (
                   <><Loader2 className="h-4 w-4 animate-spin" />Menyelesaikan...</>
                 ) : 'Tandai Selesai'}
-              </Button>
-            </GlassCard>
-          )}
-
-          {canRate && (
-            <GlassCard>
-              <h3 className="font-medium">Beri nilai perbaikan ini</h3>
-              <select
-                className="mt-3 flex h-10 w-full rounded-xl border border-white/60 bg-white/70 px-3 text-sm"
-                value={rating}
-                onChange={(e) => setRating(Number(e.target.value))}
-              >
-                {[5, 4, 3, 2, 1].map((n) => (
-                  <option key={n} value={n}>{n} bintang</option>
-                ))}
-              </select>
-              <textarea
-                className="mt-2 min-h-[60px] w-full rounded-xl border border-white/60 bg-white/70 px-3 py-2 text-sm"
-                placeholder="Komentar (opsional)"
-                value={ratingComment}
-                onChange={(e) => setRatingComment(e.target.value)}
-              />
-              <Button
-                className="mt-3 w-full"
-                onClick={() => rateMutation.mutate()}
-                disabled={rateMutation.isPending}
-              >
-                {rateMutation.isPending ? (
-                  <><Loader2 className="h-4 w-4 animate-spin" />Mengirim...</>
-                ) : 'Kirim Penilaian'}
               </Button>
             </GlassCard>
           )}

@@ -1,13 +1,10 @@
 import {
   IsDateString,
   IsEnum,
-  IsInt,
   IsNotEmpty,
   IsOptional,
   IsString,
   IsUUID,
-  Max,
-  Min,
 } from 'class-validator';
 import type { ReportStatus } from '../../../common/types/database-rows';
 
@@ -59,13 +56,3 @@ export class AssignReportDto {
   targetCompletionDate?: string;
 }
 
-export class CreateRatingDto {
-  @IsInt()
-  @Min(1)
-  @Max(5)
-  score!: number;
-
-  @IsOptional()
-  @IsString()
-  comment?: string;
-}

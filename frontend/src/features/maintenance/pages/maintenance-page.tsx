@@ -335,7 +335,7 @@ function CreateMaintenanceForm({
           <select className={selectCls} value={form.assetId} onChange={set('assetId')} disabled={!form.roomId}>
             <option value="">Tanpa Aset Spesifik</option>
             {assets.data?.data.map((a) => (
-              <option key={a.id} value={a.id}>{a.assetCode} — {a.name}</option>
+              <option key={a.id} value={a.id}>{a.kodeBarang} - {a.namaBarang}</option>
             ))}
           </select>
         </div>

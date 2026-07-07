@@ -48,10 +48,11 @@ export interface Room {
 export interface Asset {
   id: string
   roomId: string
-  name: string
-  assetCode: string
-  category: string
-  description: string | null
+  idpemda: string
+  kodeBarang: string
+  nomorRegister: string
+  namaBarang: string
+  merkType: string
   status: string
   createdAt: string
 }
@@ -92,7 +93,6 @@ export interface Report {
     note: string | null
     createdAt: string
   }>
-  rating?: { score: number; comment: string | null; createdAt: string } | null
   attachments?: Array<{
     id: string
     type: 'DAMAGE' | 'REPAIR' | 'OTHER'

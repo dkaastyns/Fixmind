@@ -19,15 +19,16 @@ CREATE TABLE rooms (
 CREATE TABLE assets (
   id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   room_id     UUID NOT NULL REFERENCES rooms (id) ON DELETE RESTRICT,
-  name        VARCHAR(150) NOT NULL,
-  asset_code  VARCHAR(50) NOT NULL,
-  category    VARCHAR(80) NOT NULL,
-  description TEXT,
+  idpemda     VARCHAR(80) NOT NULL,
+  kode_barang VARCHAR(50) NOT NULL,
+  nomor_register VARCHAR(80) NOT NULL,
+  nama_barang VARCHAR(150) NOT NULL,
+  merk_type   VARCHAR(150) NOT NULL,
   status      asset_status NOT NULL DEFAULT 'OPERATIONAL',
   created_at  TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at  TIMESTAMPTZ NOT NULL DEFAULT now(),
   deleted_at  TIMESTAMPTZ,
-  CONSTRAINT assets_asset_code_unique UNIQUE (asset_code)
+  CONSTRAINT assets_kode_barang_unique UNIQUE (kode_barang)
 );
 
 CREATE INDEX idx_assets_room_id ON assets (room_id) WHERE deleted_at IS NULL;

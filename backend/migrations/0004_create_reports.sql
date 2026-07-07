@@ -77,17 +77,6 @@ CREATE TABLE report_attachments (
   created_at          TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
-CREATE TABLE ratings (
-  id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  report_id   UUID NOT NULL REFERENCES reports (id) ON DELETE CASCADE,
-  user_id     UUID NOT NULL REFERENCES users (id) ON DELETE RESTRICT,
-  score       SMALLINT NOT NULL CHECK (score BETWEEN 1 AND 5),
-  comment     TEXT,
-  created_at  TIMESTAMPTZ NOT NULL DEFAULT now(),
-  updated_at  TIMESTAMPTZ NOT NULL DEFAULT now(),
-  CONSTRAINT ratings_report_unique UNIQUE (report_id)
-);
-
 CREATE INDEX idx_reports_reporter_id ON reports (reporter_id) WHERE deleted_at IS NULL;
 CREATE INDEX idx_reports_status ON reports (status) WHERE deleted_at IS NULL;
 CREATE INDEX idx_reports_assigned_technician ON reports (assigned_technician_id) WHERE deleted_at IS NULL;

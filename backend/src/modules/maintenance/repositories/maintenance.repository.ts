@@ -41,7 +41,7 @@ export class MaintenanceRepository {
     const [row] = await this.sql<MaintenanceDetailRow[]>`
       SELECT ms.*,
         rm.name AS room_name,
-        a.name AS asset_name, a.asset_code,
+        a.nama_barang AS asset_name, a.kode_barang AS asset_code,
         u.full_name AS technician_name
       FROM maintenance_schedules ms
       LEFT JOIN rooms rm ON rm.id = ms.room_id
@@ -65,7 +65,7 @@ export class MaintenanceRepository {
     const rows = await this.sql<MaintenanceDetailRow[]>`
       SELECT ms.*,
         rm.name AS room_name,
-        a.name AS asset_name, a.asset_code,
+        a.nama_barang AS asset_name, a.kode_barang AS asset_code,
         u.full_name AS technician_name
       FROM maintenance_schedules ms
       LEFT JOIN rooms rm ON rm.id = ms.room_id
@@ -138,4 +138,3 @@ export class MaintenanceRepository {
     return result.count > 0;
   }
 }
-

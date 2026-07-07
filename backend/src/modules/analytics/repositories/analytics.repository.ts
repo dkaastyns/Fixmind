@@ -11,7 +11,6 @@ export class AnalyticsRepository {
 
   async summary() {
     const byStatus = await this.reportsRepository.countByStatus();
-    const avgRating = await this.reportsRepository.avgRating();
     const completedLast30 = await this.reportsRepository.countCompletedLast30Days();
 
     const openStatuses = ['PENDING', 'AI_ANALYSIS', 'REVIEWED', 'ASSIGNED', 'IN_PROGRESS'];
@@ -37,7 +36,7 @@ export class AnalyticsRepository {
       openReports,
       inProgress: byStatus['IN_PROGRESS'] ?? 0,
       completedLast30Days: completedLast30,
-      avgRating,
+      avgRating: null,
       byStatus,
       byPriority: Object.fromEntries(byPriority.map((r) => [r.priority, Number(r.count)])),
       byRoom: byRoom.map((r) => ({ room: r.room_name, count: Number(r.count) })),
@@ -74,13 +73,12 @@ export class AnalyticsRepository {
         u.full_name AS name,
         COUNT(r.id)::text AS assigned,
         COUNT(r.id) FILTER (WHERE r.status = 'COMPLETED')::text AS completed,
-        AVG(rt.score)::text AS avg_rating,
+        NULL::text AS avg_rating,
         AVG(
           EXTRACT(EPOCH FROM (r.completed_at - r.assigned_at)) / 3600.0
         ) FILTER (WHERE r.completed_at IS NOT NULL AND r.assigned_at IS NOT NULL)::text AS avg_completion_hours
       FROM users u
       LEFT JOIN reports r ON r.assigned_technician_id = u.id AND r.deleted_at IS NULL
-      LEFT JOIN ratings rt ON rt.report_id = r.id
       WHERE u.role = 'TECHNICIAN' AND u.deleted_at IS NULL
       GROUP BY u.id, u.full_name
       ORDER BY completed DESC

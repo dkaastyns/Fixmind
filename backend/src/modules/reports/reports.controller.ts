@@ -20,7 +20,6 @@ import { Roles } from '../../common/decorators/roles.decorator';
 import type { ReportStatus } from '../../common/types/database-rows';
 import {
   AssignReportDto,
-  CreateRatingDto,
   CreateReportDto,
   UpdateReportStatusDto,
 } from './dto/report.dto';
@@ -177,17 +176,6 @@ export class ReportsController {
   ) {
     const data = await this.reportsService.assign(user, id, dto);
     return { message: 'Technician assigned', data };
-  }
-
-  @Roles('USER')
-  @Post(':id/rating')
-  async rate(
-    @CurrentUser() user: AuthUser,
-    @Param('id') id: string,
-    @Body() dto: CreateRatingDto,
-  ) {
-    const data = await this.reportsService.rate(user, id, dto);
-    return { message: 'Rating submitted', data };
   }
 
   @Post(':id/attachments')
