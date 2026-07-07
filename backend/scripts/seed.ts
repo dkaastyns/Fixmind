@@ -79,6 +79,9 @@ async function seedFacilities() {
     { roomIdx: 0, name: 'Proyektor Resolusi Tinggi', assetCode: 'PRJ-RSG-1', category: 'Elektronik' },
     { roomIdx: 4, name: 'Pintu Geser Otomatis', assetCode: 'DOR-LOB-1', category: 'Bangunan', status: 'NEEDS_MAINTENANCE' },
     { roomIdx: 3, name: 'Mesin Fotokopi Heavy Duty', assetCode: 'PRN-PSD-1', category: 'Elektronik' },
+    { roomIdx: 1, name: 'Brankas Dokumen Keuangan', assetCode: 'SF-KEU-1', category: 'Perabotan' },
+    { roomIdx: 2, name: 'Dispenser Air Panas/Dingin', assetCode: 'DSP-UMM-1', category: 'Elektronik' },
+    { roomIdx: 6, name: 'Kamera DSLR Dokumentasi', assetCode: 'CAM-HMS-1', category: 'Elektronik' },
   ];
 
   for (const a of assets) {
