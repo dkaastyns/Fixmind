@@ -1,7 +1,8 @@
 import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { motion } from 'framer-motion'
+import { Loader2 } from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion'
 import { useMutation } from '@tanstack/react-query'
 import { Link, useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
@@ -77,23 +78,38 @@ export function LoginPage() {
           <form className="space-y-4" onSubmit={form.handleSubmit((v) => mutation.mutate(v))}>
             <div className="space-y-2">
               <label className="text-sm font-medium text-slate-700" htmlFor="email">Email</label>
-              <Input id="email" type="email" placeholder="nama@email.com" {...form.register('email')} className="bg-white/90 focus:bg-white transition-colors border-white/60 text-slate-900 placeholder:text-slate-400" />
+              <Input id="email" type="email" placeholder="nama@email.com" {...form.register('email')} disabled={mutation.isPending} className="bg-white/90 focus:bg-white transition-colors border-white/60 text-slate-900 placeholder:text-slate-400 disabled:opacity-60" />
               {form.formState.errors.email && (
                 <p className="text-xs text-danger">{form.formState.errors.email.message}</p>
               )}
             </div>
             <div className="space-y-2">
               <label className="text-sm font-medium text-slate-700" htmlFor="password">Kata Sandi</label>
-              <PasswordInput id="password" placeholder="••••••••" {...form.register('password')} className="bg-white/90 focus:bg-white transition-colors border-white/60 text-slate-900 placeholder:text-slate-400" />
+              <PasswordInput id="password" placeholder="••••••••" {...form.register('password')} disabled={mutation.isPending} className="bg-white/90 focus:bg-white transition-colors border-white/60 text-slate-900 placeholder:text-slate-400 disabled:opacity-60" />
               {form.formState.errors.password && (
                 <p className="text-xs text-danger">{form.formState.errors.password.message}</p>
               )}
             </div>
             {mutation.isError && <Alert>{(mutation.error as Error).message}</Alert>}
             <Button type="submit" className="w-full mt-2 h-11 text-base shadow-lg hover:shadow-xl transition-all" disabled={mutation.isPending}>
-              {mutation.isPending ? 'Sedang Masuk...' : 'Masuk'}
+              {mutation.isPending ? (
+                <><Loader2 className="h-4 w-4 animate-spin" />Memverifikasi...</>
+              ) : 'Masuk'}
             </Button>
           </form>
+          <AnimatePresence>
+            {mutation.isPending && (
+              <motion.div
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 8 }}
+                className="mt-4 flex items-center justify-center gap-2 text-sm text-slate-500"
+              >
+                <Loader2 className="h-3.5 w-3.5 animate-spin text-[#ef629f]" />
+                <span>Sedang menghubungi server...</span>
+              </motion.div>
+            )}
+          </AnimatePresence>
           <p className="mt-6 text-center text-sm text-slate-600">
             Belum punya akun?{' '}
             <Link to="/signup" className="font-semibold text-[#ef629f] hover:text-pink-500 hover:underline">

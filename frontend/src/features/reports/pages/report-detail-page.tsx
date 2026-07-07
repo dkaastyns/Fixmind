@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Link, useParams } from 'react-router-dom'
-import { ArrowLeft, MessageCircle, Reply, Send, ZoomIn } from 'lucide-react'
+import { ArrowLeft, MessageCircle, Reply, Send, ZoomIn, Loader2, Bot, CheckCircle2 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
@@ -99,7 +99,16 @@ export function ReportDetailPage() {
     onError: (e: Error) => toast.error(e.message),
   })
 
-  if (isLoading) return <p className="text-muted">Loading...</p>
+  if (isLoading) return (
+    <div className="space-y-6 animate-pulse">
+      <div className="h-4 w-40 rounded-lg bg-white/40" />
+      <div className="h-8 w-2/3 rounded-xl bg-white/40" />
+      <div className="grid gap-4 lg:grid-cols-3">
+        <div className="lg:col-span-2 h-64 rounded-2xl bg-white/40" />
+        <div className="h-48 rounded-2xl bg-white/40" />
+      </div>
+    </div>
+  )
   if (!report) return <p className="text-danger">Report not found</p>
 
   const isTech = user?.role === 'TECHNICIAN' || user?.role === 'ADMIN'
@@ -144,17 +153,55 @@ export function ReportDetailPage() {
             </div>
           )}
 
-          {report.aiAnalysisStatus === 'COMPLETED' && (
-            <div className="rounded-xl bg-white/50 p-4">
-              <h3 className="font-medium text-gradient">Analisis AI</h3>
+          {/* AI Analysis status */}
+          {report.aiAnalysisStatus === 'PENDING' || report.aiAnalysisStatus === 'PROCESSING' ? (
+            <motion.div
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="rounded-xl border border-[#ef629f]/20 bg-gradient-to-r from-[#ef629f]/5 to-purple-500/5 p-4"
+            >
+              <div className="flex items-center gap-3">
+                <div className="relative">
+                  <Bot className="h-5 w-5 text-[#ef629f]" />
+                  <span className="absolute -top-1 -right-1 flex h-2.5 w-2.5">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#ef629f] opacity-75" />
+                    <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#ef629f]" />
+                  </span>
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-[#ef629f]">AI sedang menganalisis laporan...</p>
+                  <p className="text-xs text-muted mt-0.5">Menentukan prioritas dan rekomendasi perbaikan</p>
+                </div>
+                <Loader2 className="ml-auto h-4 w-4 animate-spin text-[#ef629f]/60" />
+              </div>
+              <div className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-[#ef629f]/10">
+                <motion.div
+                  className="h-full rounded-full bg-gradient-to-r from-[#ef629f] to-purple-500"
+                  animate={{ x: ['-100%', '100%'] }}
+                  transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
+                  style={{ width: '60%' }}
+                />
+              </div>
+            </motion.div>
+          ) : report.aiAnalysisStatus === 'COMPLETED' ? (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.97 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.3 }}
+              className="rounded-xl bg-gradient-to-br from-white/60 to-white/40 border border-[#ef629f]/20 p-4 shadow-sm"
+            >
+              <div className="flex items-center gap-2 mb-3">
+                <CheckCircle2 className="h-4 w-4 text-[#ef629f]" />
+                <h3 className="font-semibold text-gradient">Analisis AI</h3>
+              </div>
               <p className="mt-2 text-sm">{report.aiPriorityReason}</p>
               <p className="mt-2 text-sm"><strong>Rekomendasi:</strong> {report.aiRecommendation}</p>
               <p className="mt-1 text-sm text-muted">Est. {report.aiEstimatedRepairHours} jam — {report.aiSuggestedAction}</p>
               {report.aiSuggestedTargetDate && (
                 <p className="mt-1 text-sm text-[#ef629f] font-medium">Target Selesai yang Disarankan AI: {new Date(report.aiSuggestedTargetDate).toLocaleDateString('id-ID')}</p>
               )}
-            </div>
-          )}
+            </motion.div>
+          ) : null}
 
           {report.attachments && report.attachments.length > 0 && (
             <div className="mt-4">
@@ -208,8 +255,14 @@ export function ReportDetailPage() {
                 value={adminNotes}
                 onChange={(e) => setAdminNotes(e.target.value)}
               />
-              <Button className="mt-3 w-full" disabled={!techId} onClick={() => assignMutation.mutate()}>
-                Tugaskan
+              <Button
+                className="mt-3 w-full"
+                disabled={!techId || assignMutation.isPending}
+                onClick={() => assignMutation.mutate()}
+              >
+                {assignMutation.isPending ? (
+                  <><Loader2 className="h-4 w-4 animate-spin" />Menugaskan...</>
+                ) : 'Tugaskan'}
               </Button>
             </GlassCard>
           )}
@@ -217,8 +270,14 @@ export function ReportDetailPage() {
           {isTech && report.status === 'ASSIGNED' && (
             <GlassCard>
               <h3 className="font-medium">Mulai Pekerjaan</h3>
-              <Button className="mt-3 w-full" onClick={() => statusMutation.mutate('IN_PROGRESS')}>
-                Tandai Sedang Dikerjakan
+              <Button
+                className="mt-3 w-full"
+                disabled={statusMutation.isPending}
+                onClick={() => statusMutation.mutate('IN_PROGRESS')}
+              >
+                {statusMutation.isPending ? (
+                  <><Loader2 className="h-4 w-4 animate-spin" />Memproses...</>
+                ) : 'Tandai Sedang Dikerjakan'}
               </Button>
             </GlassCard>
           )}
@@ -245,8 +304,14 @@ export function ReportDetailPage() {
                   className="w-full text-xs file:mr-2 file:rounded-md file:border-0 file:bg-[#ef629f] file:px-2 file:py-1 file:text-white file:font-medium hover:file:bg-[#ef629f]/90"
                 />
               </div>
-              <Button className="mt-4 w-full" onClick={() => completeMutation.mutate()} disabled={completeMutation.isPending}>
-                Tandai Selesai
+              <Button
+                className="mt-4 w-full"
+                onClick={() => completeMutation.mutate()}
+                disabled={completeMutation.isPending}
+              >
+                {completeMutation.isPending ? (
+                  <><Loader2 className="h-4 w-4 animate-spin" />Menyelesaikan...</>
+                ) : 'Tandai Selesai'}
               </Button>
             </GlassCard>
           )}
@@ -269,8 +334,14 @@ export function ReportDetailPage() {
                 value={ratingComment}
                 onChange={(e) => setRatingComment(e.target.value)}
               />
-              <Button className="mt-3 w-full" onClick={() => rateMutation.mutate()}>
-                Kirim Penilaian
+              <Button
+                className="mt-3 w-full"
+                onClick={() => rateMutation.mutate()}
+                disabled={rateMutation.isPending}
+              >
+                {rateMutation.isPending ? (
+                  <><Loader2 className="h-4 w-4 animate-spin" />Mengirim...</>
+                ) : 'Kirim Penilaian'}
               </Button>
             </GlassCard>
           )}

@@ -1,7 +1,8 @@
 import { useState } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Link, useNavigate } from 'react-router-dom'
-import { ChevronDown, ChevronUp, Filter, Plus, X } from 'lucide-react'
+import { ChevronDown, ChevronUp, Filter, Plus, X, Loader2, Bot } from 'lucide-react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { GlassCard } from '@/components/ui/glass-card'
@@ -379,11 +380,55 @@ function CreateReportForm({
           )}
         </div>
       </div>
-      <div className="mt-4 flex gap-3">
-        <Button onClick={() => mutation.mutate()} disabled={!title || !description || !roomId || mutation.isPending}>
-          Kirim Laporan
-        </Button>
-        <Button variant="ghost" onClick={onClose}>Batal</Button>
+      <div className="mt-6 flex flex-col gap-3">
+        <div className="flex gap-3">
+          <Button onClick={() => mutation.mutate()} disabled={!title || !description || !roomId || mutation.isPending} className="min-w-[160px] shadow-sm">
+            {mutation.isPending ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Menganalisis...
+              </>
+            ) : (
+              'Kirim Laporan'
+            )}
+          </Button>
+          <Button variant="ghost" onClick={onClose} disabled={mutation.isPending}>Batal</Button>
+        </div>
+
+        <AnimatePresence>
+          {mutation.isPending && (
+            <motion.div
+              initial={{ opacity: 0, y: -8, height: 0 }}
+              animate={{ opacity: 1, y: 0, height: 'auto' }}
+              exit={{ opacity: 0, y: -8, height: 0 }}
+              transition={{ duration: 0.3, ease: 'easeOut' }}
+              className="overflow-hidden"
+            >
+              <div className="flex items-center gap-3 rounded-xl border border-[#ef629f]/20 bg-gradient-to-r from-[#ef629f]/5 to-purple-500/5 px-4 py-3">
+                <div className="relative flex-shrink-0">
+                  <Bot className="h-5 w-5 text-[#ef629f]" />
+                  <span className="absolute -top-1 -right-1 flex h-2.5 w-2.5">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#ef629f] opacity-75" />
+                    <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#ef629f]" />
+                  </span>
+                </div>
+                <div className="flex-1">
+                  <p className="text-sm font-semibold text-[#ef629f]">AI sedang menganalisis laporan Anda...</p>
+                  <p className="text-xs text-muted mt-0.5">Menentukan prioritas, estimasi waktu, dan rekomendasi perbaikan</p>
+                </div>
+                <Loader2 className="h-4 w-4 animate-spin text-[#ef629f]/60 flex-shrink-0" />
+              </div>
+              <div className="mt-2 h-1 w-full overflow-hidden rounded-full bg-[#ef629f]/10">
+                <motion.div
+                  className="h-full rounded-full bg-gradient-to-r from-[#ef629f] to-purple-500"
+                  animate={{ x: ['-100%', '100%'] }}
+                  transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
+                  style={{ width: '60%' }}
+                />
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </GlassCard>
   )
