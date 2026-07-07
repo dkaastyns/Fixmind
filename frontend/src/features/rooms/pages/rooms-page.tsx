@@ -1,6 +1,8 @@
 import { useState } from 'react'
+import { createPortal } from 'react-dom'
+import { motion, AnimatePresence } from 'framer-motion'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { Plus } from 'lucide-react'
+import { Plus, Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -26,6 +28,12 @@ export function RoomsPage() {
   const [showRoomForm, setShowRoomForm] = useState(false)
   const [showAssetForm, setShowAssetForm] = useState(false)
 
+  const [selectedRoomsToDelete, setSelectedRoomsToDelete] = useState<string[]>([])
+  const [selectedAssetsToDelete, setSelectedAssetsToDelete] = useState<string[]>([])
+  
+  const [showConfirmRoomDelete, setShowConfirmRoomDelete] = useState(false)
+  const [showConfirmAssetDelete, setShowConfirmAssetDelete] = useState(false)
+
   const rooms = useQuery({ queryKey: ['rooms'], queryFn: () => fetchRooms(token) })
   const assets = useQuery({
     queryKey: ['assets', selectedRoom],
@@ -34,16 +42,38 @@ export function RoomsPage() {
   })
 
   const deleteRoomMut = useMutation({
-    mutationFn: (id: string) => deleteRoom(token, id),
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ['rooms'] }); toast.success('Room deleted') },
+    mutationFn: async (ids: string[]) => {
+      await Promise.all(ids.map(id => deleteRoom(token, id)))
+    },
+    onSuccess: () => { 
+      qc.invalidateQueries({ queryKey: ['rooms'] })
+      setSelectedRoomsToDelete([])
+      setShowConfirmRoomDelete(false)
+      toast.success('Ruangan terpilih berhasil dihapus') 
+    },
     onError: (e: Error) => toast.error(e.message),
   })
 
   const deleteAssetMut = useMutation({
-    mutationFn: (id: string) => deleteAsset(token, id),
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ['assets'] }); toast.success('Aset berhasil dihapus') },
+    mutationFn: async (ids: string[]) => {
+      await Promise.all(ids.map(id => deleteAsset(token, id)))
+    },
+    onSuccess: () => { 
+      qc.invalidateQueries({ queryKey: ['assets'] })
+      setSelectedAssetsToDelete([])
+      setShowConfirmAssetDelete(false)
+      toast.success('Aset terpilih berhasil dihapus') 
+    },
     onError: (e: Error) => toast.error(e.message),
   })
+
+  const toggleRoomDelete = (id: string) => {
+    setSelectedRoomsToDelete(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id])
+  }
+
+  const toggleAssetDelete = (id: string) => {
+    setSelectedAssetsToDelete(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id])
+  }
 
   return (
     <div>
@@ -65,9 +95,16 @@ export function RoomsPage() {
 
       <div className="grid gap-4 lg:grid-cols-2">
         <GlassCard className="p-0 overflow-hidden">
-          <div className="border-b border-white/40 px-4 py-3 font-medium">Ruangan</div>
+          <div className="flex items-center justify-between border-b border-white/40 px-4 py-3">
+            <span className="font-medium">Ruangan</span>
+            {isAdmin && selectedRoomsToDelete.length > 0 && (
+              <Button size="sm" variant="danger" onClick={() => setShowConfirmRoomDelete(true)} className="h-8">
+                <Trash2 className="h-4 w-4 mr-1" /> Hapus Terpilih ({selectedRoomsToDelete.length})
+              </Button>
+            )}
+          </div>
           {!rooms.data?.data.length ? (
-            <EmptyState title="No rooms" />
+            <EmptyState title="Tidak ada ruangan" />
           ) : (
             <ul>
               {rooms.data.data.map((r) => (
@@ -79,15 +116,21 @@ export function RoomsPage() {
                   )}
                   onClick={() => setSelectedRoom(r.id)}
                 >
-                  <div>
-                    <p className={cn('font-medium', selectedRoom === r.id ? 'text-[#ef629f]' : 'text-foreground')}>{r.code}</p>
-                    <p className="text-sm text-muted">{r.name} · {r.building ?? '—'}</p>
+                  <div className="flex items-center gap-3">
+                    {isAdmin && (
+                      <input 
+                        type="checkbox" 
+                        checked={selectedRoomsToDelete.includes(r.id)} 
+                        onChange={() => toggleRoomDelete(r.id)}
+                        onClick={(e) => e.stopPropagation()}
+                        className="h-4 w-4 rounded border-gray-300 text-[#ef629f] focus:ring-[#ef629f] cursor-pointer"
+                      />
+                    )}
+                    <div>
+                      <p className={cn('font-medium', selectedRoom === r.id ? 'text-[#ef629f]' : 'text-foreground')}>{r.code}</p>
+                      <p className="text-sm text-muted">{r.name} · {r.building ?? '—'}</p>
+                    </div>
                   </div>
-                  {isAdmin && (
-                    <Button variant="ghost" size="sm" onClick={(e) => { e.stopPropagation(); deleteRoomMut.mutate(r.id) }}>
-                      Hapus
-                    </Button>
-                  )}
                 </li>
               ))}
             </ul>
@@ -97,11 +140,18 @@ export function RoomsPage() {
         <GlassCard className="p-0 overflow-hidden">
           <div className="flex items-center justify-between border-b border-white/40 px-4 py-3">
             <span className="font-medium">Aset</span>
-            {isAdmin && selectedRoom && (
-              <Button size="sm" variant="ghost" onClick={() => setShowAssetForm(true)}>
-                <Plus className="h-4 w-4" /> Tambah
-              </Button>
-            )}
+            <div className="flex items-center gap-2">
+              {isAdmin && selectedAssetsToDelete.length > 0 && (
+                <Button size="sm" variant="danger" onClick={() => setShowConfirmAssetDelete(true)} className="h-8">
+                  <Trash2 className="h-4 w-4 mr-1" /> Hapus ({selectedAssetsToDelete.length})
+                </Button>
+              )}
+              {isAdmin && selectedRoom && (
+                <Button size="sm" variant="ghost" onClick={() => setShowAssetForm(true)}>
+                  <Plus className="h-4 w-4" /> Tambah
+                </Button>
+              )}
+            </div>
           </div>
           {!selectedRoom ? (
             <p className="p-6 text-sm text-muted">Pilih ruangan untuk melihat aset</p>
@@ -111,15 +161,22 @@ export function RoomsPage() {
             <ul>
               {assets.data.data.map((a) => (
                 <li key={a.id} className="flex items-center justify-between border-b border-white/20 px-4 py-3 transition-colors hover:bg-white/30">
-                  <div>
-                    <p className="font-medium">{a.assetCode} — {a.name}</p>
-                    <p className="text-sm text-muted">{a.category}</p>
+                  <div className="flex items-center gap-3">
+                    {isAdmin && (
+                      <input 
+                        type="checkbox" 
+                        checked={selectedAssetsToDelete.includes(a.id)} 
+                        onChange={() => toggleAssetDelete(a.id)}
+                        className="h-4 w-4 rounded border-gray-300 text-[#ef629f] focus:ring-[#ef629f] cursor-pointer"
+                      />
+                    )}
+                    <div>
+                      <p className="font-medium">{a.assetCode} — {a.name}</p>
+                      <p className="text-sm text-muted">{a.category}</p>
+                    </div>
                   </div>
                   <div className="flex items-center gap-2">
                     <StatusBadge status={a.status} />
-                    {isAdmin && (
-                      <Button variant="ghost" size="sm" onClick={() => deleteAssetMut.mutate(a.id)}>Hapus</Button>
-                    )}
                   </div>
                 </li>
               ))}
@@ -136,7 +193,66 @@ export function RoomsPage() {
           onSuccess={() => { qc.invalidateQueries({ queryKey: ['assets'] }); setShowAssetForm(false); toast.success('Aset berhasil ditambahkan') }}
         />
       )}
+
+      {/* Confirmation Modals */}
+      <DeleteConfirmationModal
+        isOpen={showConfirmRoomDelete}
+        onClose={() => setShowConfirmRoomDelete(false)}
+        onConfirm={() => deleteRoomMut.mutate(selectedRoomsToDelete)}
+        title="Hapus Ruangan"
+        description={`Apakah Anda yakin ingin menghapus ${selectedRoomsToDelete.length} ruangan yang dipilih? Semua aset di dalamnya juga akan terhapus secara permanen.`}
+        isLoading={deleteRoomMut.isPending}
+      />
+
+      <DeleteConfirmationModal
+        isOpen={showConfirmAssetDelete}
+        onClose={() => setShowConfirmAssetDelete(false)}
+        onConfirm={() => deleteAssetMut.mutate(selectedAssetsToDelete)}
+        title="Hapus Aset"
+        description={`Apakah Anda yakin ingin menghapus ${selectedAssetsToDelete.length} aset yang dipilih secara permanen?`}
+        isLoading={deleteAssetMut.isPending}
+      />
     </div>
+  )
+}
+
+function DeleteConfirmationModal({ isOpen, onClose, onConfirm, title, description, isLoading }: { isOpen: boolean, onClose: () => void, onConfirm: () => void, title: string, description: string, isLoading: boolean }) {
+  if (typeof document === 'undefined') return null
+  return createPortal(
+    <AnimatePresence>
+      {isOpen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="absolute inset-0 bg-black/20 backdrop-blur-[2px]"
+            onClick={onClose}
+          />
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95, y: 10 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: 10 }}
+            className="relative w-full max-w-sm overflow-hidden rounded-2xl bg-white p-6 text-center shadow-2xl border border-gray-100"
+          >
+            <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-danger/10">
+              <Trash2 className="h-6 w-6 text-danger" />
+            </div>
+            <h3 className="mb-2 text-lg font-semibold text-gray-900">{title}</h3>
+            <p className="mb-6 text-sm text-gray-500">{description}</p>
+            <div className="flex gap-3">
+              <Button variant="secondary" className="flex-1 rounded-xl text-gray-700 bg-gray-100 hover:bg-gray-200" onClick={onClose} disabled={isLoading}>
+                Batal
+              </Button>
+              <Button variant="danger" className="flex-1 rounded-xl" onClick={onConfirm} disabled={isLoading}>
+                {isLoading ? 'Menghapus...' : 'Ya, Hapus'}
+              </Button>
+            </div>
+          </motion.div>
+        </div>
+      )}
+    </AnimatePresence>,
+    document.body
   )
 }
 
