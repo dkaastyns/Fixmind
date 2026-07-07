@@ -51,16 +51,6 @@ export function AdminDashboard() {
       <PageHeader
         title={`Selamat datang kembali, ${user?.fullName?.split(' ')[0] ?? 'Admin'}`}
         description="Ringkasan global aktivitas pemeliharaan fasilitas"
-        action={
-          <button
-            onClick={() => {
-              window.open(`${import.meta.env.VITE_API_BASE_URL?.replace('/api/v1', '') || 'http://localhost:3000'}/api/v1/analytics/export?token=${token}`, '_blank')
-            }}
-            className="flex items-center gap-2 rounded-xl gradient-primary px-4 py-2 text-sm font-medium text-white transition-all hover:opacity-90 hover:shadow-md"
-          >
-            <ClipboardList className="h-4 w-4" /> Ekspor CSV
-          </button>
-        }
       />
 
       <motion.div 

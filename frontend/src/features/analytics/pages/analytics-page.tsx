@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { motion, AnimatePresence } from 'framer-motion'
 import { createPortal } from 'react-dom'
-import { Download, FileSpreadsheet, FileText, X } from 'lucide-react'
+import { FileSpreadsheet, FileText, X } from 'lucide-react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { GlassCard } from '@/components/ui/glass-card'
@@ -10,7 +10,6 @@ import { PageHeader } from '@/components/ui/feedback'
 import {
   exportExcel,
   exportPdf,
-  exportReports,
   fetchAnalyticsSummary,
   fetchTechnicianStats,
 } from '@/lib/api-client'
@@ -89,17 +88,7 @@ export function AnalyticsPage() {
     setShowExportModal(false)
 
     try {
-      if (exportType === 'csv') {
-        const res = await exportReports(token, sDate, eDate)
-        const blob = await res.blob()
-        const url = URL.createObjectURL(blob)
-        const a = document.createElement('a')
-        a.href = url
-        a.download = 'fixmind-reports.csv'
-        a.click()
-        URL.revokeObjectURL(url)
-        toast.success('Export CSV berhasil diunduh')
-      } else if (exportType === 'excel') {
+      if (exportType === 'excel') {
         await exportExcel(token, sDate, eDate)
         toast.success('File Excel berhasil diunduh')
       } else if (exportType === 'pdf') {
@@ -111,7 +100,7 @@ export function AnalyticsPage() {
     }
   }
 
-  const triggerExport = (type: 'csv' | 'excel' | 'pdf') => {
+  const triggerExport = (type: 'excel' | 'pdf') => {
     setExportType(type)
     setShowExportModal(true)
   }
@@ -123,9 +112,6 @@ export function AnalyticsPage() {
         description="Performa pemeliharaan dan statistik laporan fasilitas"
         action={
           <div className="flex flex-wrap gap-2">
-            <Button variant="secondary" onClick={() => triggerExport('csv')}>
-              <Download className="h-4 w-4" /> Export CSV
-            </Button>
             <Button variant="secondary" onClick={() => triggerExport('excel')}>
               <FileSpreadsheet className="h-4 w-4" /> Export Excel
             </Button>
