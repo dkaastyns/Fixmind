@@ -16,23 +16,23 @@ import { useAuthStore } from '@/stores/auth-store'
 const features = [
   {
     icon: ClipboardList,
-    title: 'Smart Reporting',
-    description: 'Employees report facility issues with photos and track status in real time.',
+    title: 'Pelaporan Cerdas',
+    description: 'Pegawai dapat melaporkan masalah fasilitas dengan foto dan memantau status secara langsung.',
   },
   {
     icon: Bot,
-    title: 'AI Prioritization',
-    description: 'Gemini analyzes reports and recommends priority — administrators decide.',
+    title: 'Prioritas Berbasis AI',
+    description: 'Sistem menganalisis laporan dan merekomendasikan prioritas perbaikan.',
   },
   {
     icon: Wrench,
-    title: 'Technician Workflow',
-    description: 'Assign, track progress, upload repair photos, and close reports efficiently.',
+    title: 'Alur Kerja Teknisi',
+    description: 'Menugaskan, memantau kemajuan, unggah foto perbaikan, dan menutup laporan dengan efisien.',
   },
   {
     icon: BarChart3,
-    title: 'Analytics Dashboard',
-    description: 'Monitor maintenance KPIs, room activity, and export reports for compliance.',
+    title: 'Dasbor Analitik',
+    description: 'Pantau kinerja pemeliharaan, aktivitas ruangan, dan ekspor laporan untuk kepatuhan.',
   },
 ]
 
@@ -48,19 +48,19 @@ export function LandingPage() {
     <div className="min-h-screen">
       <header className="glass mx-4 mt-4 flex items-center justify-between px-6 py-4 lg:mx-8">
         <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl gradient-primary">
-            <Wrench className="h-5 w-5 text-white" />
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl overflow-hidden bg-white shadow-sm p-1">
+            <img src="/logo.png" alt="Logo Semarang" className="h-full w-full object-contain" />
           </div>
           <span className="text-lg font-semibold">FixMind</span>
         </div>
         <div className="flex items-center gap-3">
           <Link to="/login">
             <Button variant="ghost" size="sm">
-              Sign in
+              Masuk
             </Button>
           </Link>
           <Link to="/signup">
-            <Button size="sm">Get started</Button>
+            <Button size="sm">Mulai</Button>
           </Link>
         </div>
       </header>
@@ -73,27 +73,27 @@ export function LandingPage() {
         >
           <div className="mx-auto mb-6 inline-flex items-center gap-2 rounded-full border border-white/50 bg-white/60 px-4 py-1.5 text-sm text-muted backdrop-blur-sm">
             <Shield className="h-4 w-4 text-[#ef629f]" />
-            Enterprise facility maintenance
+            Pemeliharaan fasilitas tingkat perusahaan
           </div>
           <h1 className="text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">
-            Maintain your facilities
+            Kelola fasilitas Anda
             <br />
-            <span className="text-gradient">with intelligence</span>
+            <span className="text-gradient">dengan lebih cerdas</span>
           </h1>
           <p className="mx-auto mt-6 max-w-2xl text-lg text-muted">
-            FixMind helps organizations manage maintenance reports, assign technicians,
-            and prioritize repairs with AI-powered decision support.
+            FixMind membantu organisasi mengelola laporan kerusakan, menugaskan teknisi,
+            dan memprioritaskan perbaikan melalui dukungan keputusan berbasis AI.
           </p>
           <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
             <Link to="/signup">
               <Button size="lg" className="min-w-[160px]">
-                Start free
+                Daftar Sekarang
                 <ArrowRight className="h-4 w-4" />
               </Button>
             </Link>
             <Link to="/login">
               <Button variant="secondary" size="lg" className="min-w-[160px]">
-                Sign in
+                Masuk
               </Button>
             </Link>
           </div>
@@ -122,7 +122,7 @@ export function LandingPage() {
       </section>
 
       <footer className="border-t border-white/40 py-8 text-center text-sm text-muted">
-        © {new Date().getFullYear()} FixMind. Intelligent Facility Maintenance.
+        © {new Date().getFullYear()} FixMind. Pemeliharaan Fasilitas Cerdas.
       </footer>
     </div>
   )
