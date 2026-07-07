@@ -42,7 +42,7 @@ export function SignupPage() {
   })
 
   return (
-    <div className="flex min-h-screen items-center justify-center p-4 relative overflow-hidden bg-slate-900">
+    <div className="flex min-h-screen items-center justify-center p-4 relative overflow-hidden bg-white">
       {/* Full-screen Background Image with slow zoom animation */}
       <motion.div
         initial={{ scale: 1.1, opacity: 0 }}
@@ -55,8 +55,9 @@ export function SignupPage() {
           alt="Latar Belakang DPRD"
           className="h-full w-full object-cover"
         />
-        {/* Dark overlay for better form visibility */}
-        <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-[6px]" />
+        {/* Light overlay matching landing page */}
+        <div className="absolute inset-0 bg-white/60 backdrop-blur-[4px]" />
+        <div className="absolute inset-0 bg-gradient-to-b from-white/30 via-white/60 to-white/95" />
       </motion.div>
 
       <motion.div
@@ -65,13 +66,13 @@ export function SignupPage() {
         className="w-full max-w-md relative z-10"
       >
         <div className="mb-8 text-center">
-          <Link to="/" className="mx-auto mb-6 flex h-24 w-24 items-center justify-center rounded-3xl bg-white/60 backdrop-blur-md shadow-xl border border-white/40 overflow-hidden p-2 transition-transform hover:scale-105">
+          <Link to="/" className="mx-auto mb-6 flex h-24 w-24 items-center justify-center rounded-3xl bg-white/80 backdrop-blur-md shadow-xl border border-white/60 overflow-hidden p-2 transition-transform hover:scale-105">
             <img src="/logo.png" alt="Logo Semarang" className="h-full w-full object-contain" />
           </Link>
-          <h1 className="text-2xl font-semibold text-white drop-shadow-sm">
+          <h1 className="text-2xl font-semibold text-slate-900 drop-shadow-sm">
             Daftar ke <span className="text-gradient font-bold drop-shadow">FixMind</span>
           </h1>
-          <p className="mt-2 text-sm text-slate-300 drop-shadow-sm">Mulai laporkan dan pantau perbaikan fasilitas</p>
+          <p className="mt-2 text-sm text-slate-700 font-medium drop-shadow-sm">Mulai laporkan dan pantau perbaikan fasilitas</p>
         </div>
 
         <GlassCard className="p-8 shadow-[0_8px_30px_rgb(0,0,0,0.3)] border-white/60 bg-white/80 backdrop-blur-xl">
