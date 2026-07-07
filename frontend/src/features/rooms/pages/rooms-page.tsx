@@ -15,6 +15,7 @@ import {
   fetchRooms,
 } from '@/lib/api-client'
 import { useAuthStore } from '@/stores/auth-store'
+import { cn } from '@/lib/utils'
 
 export function RoomsPage() {
   const token = useAuthStore((s) => s.accessToken)!
@@ -72,13 +73,14 @@ export function RoomsPage() {
               {rooms.data.data.map((r) => (
                 <li
                   key={r.id}
-                  className={`flex cursor-pointer items-center justify-between border-b border-white/20 px-4 py-3 hover:bg-white/30 ${
-                    selectedRoom === r.id ? 'bg-white/40' : ''
-                  }`}
+                  className={cn(
+                    'group flex cursor-pointer items-center justify-between border-b border-white/20 px-4 py-3 transition-all duration-200 hover:bg-white/50',
+                    selectedRoom === r.id ? 'bg-white/60 border-l-4 border-l-[#ef629f] pl-3' : 'border-l-4 border-l-transparent'
+                  )}
                   onClick={() => setSelectedRoom(r.id)}
                 >
                   <div>
-                    <p className="font-medium">{r.code}</p>
+                    <p className={cn('font-medium', selectedRoom === r.id ? 'text-[#ef629f]' : 'text-foreground')}>{r.code}</p>
                     <p className="text-sm text-muted">{r.name} · {r.building ?? '—'}</p>
                   </div>
                   {isAdmin && (
@@ -108,7 +110,7 @@ export function RoomsPage() {
           ) : (
             <ul>
               {assets.data.data.map((a) => (
-                <li key={a.id} className="flex items-center justify-between border-b border-white/20 px-4 py-3">
+                <li key={a.id} className="flex items-center justify-between border-b border-white/20 px-4 py-3 transition-colors hover:bg-white/30">
                   <div>
                     <p className="font-medium">{a.assetCode} — {a.name}</p>
                     <p className="text-sm text-muted">{a.category}</p>
