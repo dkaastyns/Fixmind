@@ -42,17 +42,17 @@ Fitur ini memperluas alur aplikasi dari sekadar pengaduan masalah menjadi juga p
 
 ## Fitur Import Aset (Excel)
 
-Fitur ini memungkinkan admin mengimpor data aset inventaris dari **file Excel (.xlsx/.xls)** ke dalam database secara massal â€” tanpa perlu menginput satu per satu.
+Fitur ini memungkinkan admin mengimpor data aset inventaris dari **file Excel (.xlsx/.xls)** ke dalam database secara massal - tanpa perlu menginput satu per satu.
 
 ### Cara Penggunaan
 
 1. **Buka halaman** `Fasilitas & Ruangan` di dashboard admin.
-2. Klik tombol **â¬‡ Template** di pojok kanan atas untuk mengunduh file template Excel yang sudah terformat.
+2. Klik tombol **⬇ Template** di pojok kanan atas untuk mengunduh file template Excel yang sudah terformat.
 3. Isi data aset di file template sesuai kolom yang tersedia.
-4. Klik tombol **ðŸ“Š Import Excel** di pojok kanan atas (di samping "Tambah Ruangan").
+4. Klik tombol **📊 Import Excel** di pojok kanan atas (di samping "Tambah Ruangan").
 5. Pilih file `.xlsx` / `.xls` yang sudah diisi.
-   - Jika ruangan sudah dipilih sebelumnya â†’ data langsung diimport ke ruangan tersebut.
-   - Jika belum memilih ruangan â†’ modal otomatis muncul untuk memilih ruangan tujuan.
+   - Jika ruangan sudah dipilih sebelumnya -> data langsung diimport ke ruangan tersebut.
+   - Jika belum memilih ruangan -> modal otomatis muncul untuk memilih ruangan tujuan.
 6. Klik **Import** dan tunggu notifikasi sukses.
 
 ### Format Kolom Excel
@@ -99,11 +99,11 @@ Proyek ini menggunakan arsitektur _Clean Architecture_ dan dipisahkan menjadi du
 ## Panduan Menjalankan Proyek (Quick Start)
 
 ### Persyaratan Sistem
-- [Bun](https://bun.sh/) **1.3+** â€” digunakan sebagai runtime **dan** package manager (pengganti Node.js/npm).
+- [Bun](https://bun.sh/) **1.3+** - digunakan sebagai runtime **dan** package manager (pengganti Node.js/npm).
 - PostgreSQL 16+ dengan ekstensi **pgvector** sudah terpasang.
 - Buat sebuah database kosong di PostgreSQL bernama `fixmind`.
 
-> **âš ï¸ Penting:** Proyek ini menggunakan **Bun**, bukan `npm` atau `yarn`. Pastikan Bun sudah terinstal sebelum menjalankan perintah apapun. Install Bun: `powershell -c "irm bun.sh/install.ps1 | iex"`
+> **⚠️ Penting:** Proyek ini menggunakan **Bun**, bukan `npm` atau `yarn`. Pastikan Bun sudah terinstal sebelum menjalankan perintah apapun. Install Bun: `powershell -c "irm bun.sh/install.ps1 | iex"`
 
 ### 1. Konfigurasi Environment (Variabel Lingkungan)
 Untuk **Backend**:
