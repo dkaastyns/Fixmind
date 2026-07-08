@@ -47,8 +47,8 @@ export function UserDashboard() {
       transition={{ duration: 0.3 }}
     >
       <PageHeader
-        title={`Welcome, ${user?.fullName?.split(' ')[0] ?? 'User'}`}
-        description="Track your reported issues or submit a new one."
+        title={`Selamat Datang, ${user?.fullName?.split(' ')[0] ?? 'Pengguna'}`}
+        description="Pantau laporan masalah Anda atau ajukan laporan baru."
       />
 
       <div className="grid gap-4 sm:grid-cols-3">
@@ -67,8 +67,8 @@ export function UserDashboard() {
             >
               <PlusCircle className="w-12 h-12 mb-3 opacity-90" />
             </motion.div>
-            <h3 className="text-xl font-semibold">Report Damage</h3>
-            <p className="text-sm opacity-80 mt-1 text-center">Found an issue? Let us know immediately.</p>
+            <h3 className="text-xl font-semibold">Laporkan Masalah</h3>
+            <p className="text-sm opacity-80 mt-1 text-center">Menemukan masalah? Beritahu kami segera.</p>
           </div>
         </motion.div>
 
@@ -77,7 +77,7 @@ export function UserDashboard() {
             <div className="p-2 rounded-lg bg-blue-500/10 text-blue-500">
               <ClipboardList className="w-5 h-5" />
             </div>
-            <p className="text-sm font-medium text-muted">My Reports</p>
+            <p className="text-sm font-medium text-muted">Laporan Saya</p>
           </div>
           <p className="text-3xl font-semibold text-gradient">
             {loadingStats ? '...' : (stats?.total ?? '0')}
@@ -89,7 +89,7 @@ export function UserDashboard() {
             <div className="p-2 rounded-lg bg-green-500/10 text-green-500">
               <CheckCircle2 className="w-5 h-5" />
             </div>
-            <p className="text-sm font-medium text-muted">Resolved</p>
+            <p className="text-sm font-medium text-muted">Selesai</p>
           </div>
           <p className="text-3xl font-semibold text-gradient">
             {loadingStats ? '...' : (stats?.completedLast30Days ?? '0')}
@@ -104,16 +104,16 @@ export function UserDashboard() {
       >
         <AnimatedGlassCard className="p-0 overflow-hidden">
           <div className="p-5 border-b border-white/20 flex justify-between items-center">
-            <h2 className="text-lg font-medium">Recent Activity</h2>
+            <h2 className="text-lg font-medium">Aktivitas Terbaru</h2>
             <Button variant="ghost" size="sm" onClick={() => navigate('/dashboard/reports')}>
-              View All
+              Lihat Semua
             </Button>
           </div>
           
           {loadingReports ? (
-            <p className="p-6 text-sm text-muted">Loading recent reports...</p>
+            <p className="p-6 text-sm text-muted">Memuat laporan terbaru...</p>
           ) : recentReports.length === 0 ? (
-            <EmptyState title="No reports yet" description="Your submitted reports will appear here." />
+            <EmptyState title="Belum ada laporan" description="Laporan yang Anda ajukan akan muncul di sini." />
           ) : (
             <motion.ul 
               className="divide-y divide-white/20"

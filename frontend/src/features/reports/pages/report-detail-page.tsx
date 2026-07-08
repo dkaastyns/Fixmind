@@ -52,7 +52,7 @@ export function ReportDetailPage() {
       </div>
     </div>
   )
-  if (!report) return <p className="text-danger">Report not found</p>
+  if (!report) return <p className="text-danger">Laporan tidak ditemukan</p>
 
   const lightboxImages = (report.attachments ?? []).map((a) => ({ id: a.id, url: a.url, label: a.type }))
 

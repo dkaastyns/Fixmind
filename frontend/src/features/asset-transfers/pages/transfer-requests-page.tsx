@@ -1,4 +1,4 @@
-﻿import { useState } from 'react'
+import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { CheckCircle2, Filter, ShieldAlert, XCircle } from 'lucide-react'
 import { toast } from 'sonner'
@@ -62,9 +62,9 @@ export function TransferRequestsPage() {
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value as AssetTransferStatus | 'ALL')}
             >
-              <option value="PENDING">Pending</option>
-              <option value="APPROVED">Approved</option>
-              <option value="REJECTED">Rejected</option>
+              <option value="PENDING">Menunggu</option>
+              <option value="APPROVED">Disetujui</option>
+              <option value="REJECTED">Ditolak</option>
               <option value="ALL">Semua</option>
             </select>
           </div>

@@ -174,7 +174,12 @@ export function AnalyticsPage() {
               return (
                 <div key={priority}>
                   <div className="mb-1 flex justify-between text-sm">
-                    <span className="capitalize">{priority.toLowerCase()}</span>
+                    <span className="capitalize">
+                      {priority === 'CRITICAL' ? 'Kritis' :
+                       priority === 'HIGH' ? 'Tinggi' :
+                       priority === 'MEDIUM' ? 'Sedang' :
+                       priority === 'LOW' ? 'Rendah' : priority.toLowerCase()}
+                    </span>
                     <span className="text-muted">{count}</span>
                   </div>
                   <div className="h-2 overflow-hidden rounded-full bg-white/50">
