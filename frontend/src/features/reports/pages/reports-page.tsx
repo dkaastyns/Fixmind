@@ -45,18 +45,30 @@ export function ReportsPage() {
 
   const hasAdvancedFilter = !!(advFilter.roomId || advFilter.dateFrom || advFilter.dateTo)
 
+  const [page, setPage] = useState(1)
+  const LIMIT = 10
+
+  useEffect(() => {
+    setPage(1)
+  }, [statusFilter, advFilter])
+
   const { data, isLoading } = useQuery({
-    queryKey: ['reports', statusFilter, advFilter],
+    queryKey: ['reports', statusFilter, advFilter, page],
     queryFn: () =>
       fetchReports(token, {
         status: statusFilter || undefined,
         roomId: advFilter.roomId || undefined,
         dateFrom: advFilter.dateFrom || undefined,
         dateTo: advFilter.dateTo || undefined,
+        page,
+        limit: LIMIT,
       }),
   })
 
   const reports = data?.data ?? []
+  const meta = data?.meta
+  const totalReports = meta?.total ?? 0
+  const totalPages = Math.ceil(totalReports / LIMIT)
   const canCreate = user?.role === 'USER' || user?.role === 'ADMIN'
 
   const clearAdvancedFilter = () => {
@@ -193,38 +205,100 @@ export function ReportsPage() {
         ) : reports.length === 0 ? (
           <EmptyState title="Belum ada laporan" description="Buat laporan jika Anda menemukan kerusakan fasilitas." />
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-white/40 text-left text-muted">
-                  <th className="px-4 py-3 font-medium">Judul Laporan</th>
-                  <th className="px-4 py-3 font-medium">Ruangan</th>
-                  <th className="px-4 py-3 font-medium">Status</th>
-                  <th className="px-4 py-3 font-medium">Prioritas</th>
-                  <th className="px-4 py-3 font-medium">Tanggal</th>
-                </tr>
-              </thead>
-              <tbody>
-                {reports.map((r) => (
-                  <tr key={r.id} className="border-b border-white/20 hover:bg-white/30">
-                    <td className="px-4 py-3">
-                      <Link to={`/dashboard/reports/${r.id}`} className="font-medium hover:text-[#ef629f]">
-                        {r.title}
-                      </Link>
-                    </td>
-                    <td className="px-4 py-3 text-muted">{r.roomName ?? r.roomCode}</td>
-                    <td className="px-4 py-3"><StatusBadge status={r.status} /></td>
-                    <td className="px-4 py-3">
-                      {r.priority ? <StatusBadge status={r.priority} /> : '—'}
-                    </td>
-                    <td className="px-4 py-3 text-muted">
-                      {new Date(r.createdAt).toLocaleDateString('id-ID')}
-                    </td>
+          <>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-white/40 text-left text-muted">
+                    <th className="px-4 py-3 font-medium">Judul Laporan</th>
+                    <th className="px-4 py-3 font-medium">Ruangan</th>
+                    <th className="px-4 py-3 font-medium">Status</th>
+                    <th className="px-4 py-3 font-medium">Prioritas</th>
+                    <th className="px-4 py-3 font-medium">Tanggal</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody>
+                  {reports.map((r) => (
+                    <tr key={r.id} className="border-b border-white/20 hover:bg-white/30">
+                      <td className="px-4 py-3">
+                        <Link to={`/dashboard/reports/${r.id}`} className="font-medium hover:text-[#ef629f]">
+                          {r.title}
+                        </Link>
+                      </td>
+                      <td className="px-4 py-3 text-muted">{r.roomName ?? r.roomCode}</td>
+                      <td className="px-4 py-3"><StatusBadge status={r.status} /></td>
+                      <td className="px-4 py-3">
+                        {r.priority ? <StatusBadge status={r.priority} /> : '—'}
+                      </td>
+                      <td className="px-4 py-3 text-muted">
+                        {new Date(r.createdAt).toLocaleDateString('id-ID')}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            {totalPages > 1 && (
+              <div className="flex flex-col sm:flex-row justify-between items-center gap-4 p-4 border-t border-white/20 bg-white/10">
+                <p className="text-xs text-slate-500 font-semibold">
+                  Menampilkan {Math.min((page - 1) * LIMIT + 1, totalReports)} - {Math.min(page * LIMIT, totalReports)} dari {totalReports} laporan
+                </p>
+                <div className="flex items-center gap-1">
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    className="h-8 text-xs rounded-xl"
+                    onClick={() => setPage((p) => Math.max(p - 1, 1))}
+                    disabled={page === 1}
+                  >
+                    Sebelumnya
+                  </Button>
+                  {Array.from({ length: totalPages }).map((_, i) => {
+                    const pNum = i + 1
+                    if (
+                      pNum === 1 ||
+                      pNum === totalPages ||
+                      Math.abs(pNum - page) <= 1
+                    ) {
+                      return (
+                        <button
+                          key={pNum}
+                          onClick={() => setPage(pNum)}
+                          className={`w-8 h-8 rounded-xl text-xs font-bold transition-all ${
+                            page === pNum
+                              ? 'gradient-primary text-white shadow-sm'
+                              : 'text-slate-500 hover:text-slate-800 hover:bg-white/30'
+                          }`}
+                        >
+                          {pNum}
+                        </button>
+                      )
+                    }
+                    if (
+                      (pNum === 2 && page > 3) ||
+                      (pNum === totalPages - 1 && page < totalPages - 2)
+                    ) {
+                      return (
+                        <span key={pNum} className="text-slate-400 text-xs px-1 font-bold">
+                          ...
+                        </span>
+                      )
+                    }
+                    return null
+                  })}
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    className="h-8 text-xs rounded-xl"
+                    onClick={() => setPage((p) => Math.min(p + 1, totalPages))}
+                    disabled={page === totalPages}
+                  >
+                    Selanjutnya
+                  </Button>
+                </div>
+              </div>
+            )}
+          </>
         )}
       </GlassCard>
     </div>

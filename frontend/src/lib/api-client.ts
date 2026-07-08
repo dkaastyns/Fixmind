@@ -255,13 +255,15 @@ export const downloadAssetTemplate = async (token: string) => {
 // Reports
 export const fetchReports = (
   token: string,
-  params?: { status?: string; roomId?: string; dateFrom?: string; dateTo?: string },
+  params?: { status?: string; roomId?: string; dateFrom?: string; dateTo?: string; page?: number; limit?: number },
 ) => {
   const q = new URLSearchParams()
   if (params?.status) q.set('status', params.status)
   if (params?.roomId) q.set('roomId', params.roomId)
   if (params?.dateFrom) q.set('dateFrom', params.dateFrom)
   if (params?.dateTo) q.set('dateTo', params.dateTo)
+  if (params?.page) q.set('page', String(params.page))
+  if (params?.limit) q.set('limit', String(params.limit))
   const qs = q.toString() ? `?${q.toString()}` : ''
   return apiFetch<Report[]>(`/reports${qs}`, auth(token))
 }
