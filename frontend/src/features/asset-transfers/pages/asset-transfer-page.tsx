@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { ArrowRightLeft, Send, Sparkles, Package, Search, Building, ArrowRight, ClipboardList, HelpCircle } from 'lucide-react'
+import { ArrowRightLeft, Send, Sparkles, Package, Building, ArrowRight, ClipboardList, HelpCircle } from 'lucide-react'
 import { toast } from 'sonner'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Button } from '@/components/ui/button'
@@ -28,8 +28,7 @@ export function AssetTransferPage() {
   const [reason, setReason] = useState('')
   const [showConfirm, setShowConfirm] = useState(false)
 
-  // Local state for searching & filtering history
-  const [searchQuery, setSearchQuery] = useState('')
+  // Local state for filtering history
   const [historyStatusFilter, setHistoryStatusFilter] = useState<'ALL' | 'PENDING' | 'APPROVED' | 'REJECTED'>('ALL')
 
   const rooms = useQuery({
@@ -95,19 +94,8 @@ export function AssetTransferPage() {
     if (historyStatusFilter !== 'ALL') {
       list = list.filter((t) => t.status === historyStatusFilter)
     }
-    if (searchQuery.trim()) {
-      const q = searchQuery.toLowerCase()
-      list = list.filter(
-        (t) =>
-          (t.assetName?.toLowerCase() ?? '').includes(q) ||
-          (t.assetKode?.toLowerCase() ?? '').includes(q) ||
-          (t.reason?.toLowerCase() ?? '').includes(q) ||
-          (t.fromRoomCode?.toLowerCase() ?? '').includes(q) ||
-          (t.toRoomCode?.toLowerCase() ?? '').includes(q)
-      )
-    }
     return list
-  }, [myTransfers.data?.data, historyStatusFilter, searchQuery])
+  }, [myTransfers.data?.data, historyStatusFilter])
 
   return (
     <div className="space-y-6">
@@ -309,20 +297,8 @@ export function AssetTransferPage() {
             </div>
           </div>
 
-          {/* Search and Filter Inputs */}
+          {/* Filter Status Tabs */}
           <div className="space-y-3 pt-1">
-            <div className="relative">
-              <Search className="absolute left-3.5 top-3 h-4 w-4 text-slate-400" />
-              <input
-                type="text"
-                placeholder="Cari aset, ruangan, alasan..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-white/60 bg-white/70 text-xs shadow-sm outline-none transition focus:border-[#ef629f] focus:ring-2 focus:ring-[#ef629f]/20 font-medium text-slate-800"
-              />
-            </div>
-
-            {/* Filter Status Tabs */}
             <div className="flex gap-1 bg-slate-200/50 p-1 rounded-xl border border-slate-200/40 text-[11px] overflow-x-auto">
               {(['ALL', 'PENDING', 'APPROVED', 'REJECTED'] as const).map((status) => (
                 <button
@@ -347,7 +323,7 @@ export function AssetTransferPage() {
             ) : filteredTransfers.length === 0 ? (
               <EmptyState
                 title="Tidak ada pengajuan"
-                description={searchQuery || historyStatusFilter !== 'ALL' ? 'Tidak ada data pengajuan yang cocok dengan filter.' : 'Silakan ajukan perpindahan aset dari form di sebelah kiri.'}
+                description={historyStatusFilter !== 'ALL' ? 'Tidak ada data pengajuan yang cocok dengan filter.' : 'Silakan ajukan perpindahan aset dari form di sebelah kiri.'}
               />
             ) : (
               <div className="space-y-3">
