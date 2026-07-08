@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { Plus, Search, Users, UserCheck, Shield, Trash2, KeyRound, X, Lock, Mail, User } from 'lucide-react'
+import { Plus, Users, UserCheck, Shield, Trash2, KeyRound, X, Lock, Mail, User } from 'lucide-react'
 import { toast } from 'sonner'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Button } from '@/components/ui/button'
@@ -31,7 +31,6 @@ export function UsersPage() {
   
   const [showForm, setShowForm] = useState(false)
   const [isAdminFilter, setIsAdminFilter] = useState<boolean | ''>('')
-  const [searchQuery, setSearchQuery] = useState('')
   
   // Password reset states
   const [resetUserId, setResetUserId] = useState<string | null>(null)
@@ -81,19 +80,10 @@ export function UsersPage() {
 
   const users = data?.data ?? []
 
-  // Local filtering based on search query
+  // Local filtering
   const filteredUsers = useMemo(() => {
-    let list = users
-    if (searchQuery.trim()) {
-      const q = searchQuery.toLowerCase()
-      list = list.filter(
-        (u) =>
-          (u.fullName?.toLowerCase() ?? '').includes(q) ||
-          (u.email?.toLowerCase() ?? '').includes(q)
-      )
-    }
-    return list
-  }, [users, searchQuery])
+    return users
+  }, [users])
 
   // Statistics calculation
   const stats = useMemo(() => {
@@ -178,20 +168,8 @@ export function UsersPage() {
       </AnimatePresence>
 
       <GlassCard className="space-y-4 border border-white/40 overflow-hidden">
-        {/* Filters and Search Bar */}
-        <div className="flex flex-col sm:flex-row justify-between gap-4 p-4 border-b border-white/20">
-          {/* Keyword Search Input */}
-          <div className="relative flex-1 sm:max-w-xs">
-            <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
-            <input
-              type="text"
-              placeholder="Cari nama atau email..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-3 py-2 rounded-xl border border-white/60 bg-white/70 text-xs shadow-sm outline-none transition focus:border-[#ef629f] focus:ring-2 focus:ring-[#ef629f]/20 font-medium text-slate-800"
-            />
-          </div>
-
+        {/* Filters */}
+        <div className="flex flex-col sm:flex-row justify-end gap-4 p-4 border-b border-white/20">
           {/* Filter Status Tabs */}
           <div className="flex gap-1 bg-slate-200/50 p-1 rounded-xl border border-slate-200/40 text-xs overflow-x-auto self-start">
             {(['', true, false] as const).map((r) => {
@@ -219,7 +197,7 @@ export function UsersPage() {
         ) : filteredUsers.length === 0 ? (
           <EmptyState 
             title="Tidak ada pengguna ditemukan" 
-            description={searchQuery ? 'Tidak ada pengguna yang cocok dengan kriteria pencarian.' : 'Belum ada pengguna dalam kategori filter ini.'}
+            description="Belum ada pengguna dalam kategori filter ini."
           />
         ) : (
           <div className="overflow-x-auto">
