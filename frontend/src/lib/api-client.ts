@@ -11,6 +11,8 @@ import type {
   User,
 } from '@/types/api'
 
+import { useAuthStore } from '@/stores/auth-store'
+
 const API_BASE = import.meta.env.VITE_API_BASE_URL ?? '/api/v1'
 
 export class ApiError extends Error {
@@ -39,6 +41,39 @@ export async function apiFetch<T>(
   })
 
   const body = await response.json().catch(() => ({}))
+
+  if (response.status === 401 && path !== '/auth/refresh' && path !== '/auth/login') {
+    try {
+      const refreshResponse = await fetch(`${API_BASE}/auth/refresh`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+      })
+      if (refreshResponse.ok) {
+        const refreshBody = await refreshResponse.json()
+        const newAccessToken = refreshBody.data?.accessToken
+        if (newAccessToken) {
+          useAuthStore.getState().setAccessToken(newAccessToken)
+          const retryResponse = await fetch(`${API_BASE}${path}`, {
+            credentials: 'include',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${newAccessToken}`,
+              ...headers,
+            },
+            ...rest,
+          })
+          const retryBody = await retryResponse.json().catch(() => ({}))
+          if (!retryResponse.ok || retryBody.success === false) {
+            throw new ApiError(retryBody.message ?? 'Request failed', retryResponse.status)
+          }
+          return retryBody as ApiSuccessResponse<T>
+        }
+      }
+    } catch (refreshErr) {
+      // ignore and fall through to throw original 401 error
+    }
+  }
 
   if (!response.ok || body.success === false) {
     throw new ApiError(body.message ?? 'Request failed', response.status)
