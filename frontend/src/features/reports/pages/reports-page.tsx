@@ -303,8 +303,8 @@ function CreateReportForm({
   }
 
   return (
-    <GlassCard className="mb-6">
-      <h2 className="text-lg font-medium">Formulir Laporan Kerusakan</h2>
+    <GlassCard className="mb-6 p-6 shadow-xl shadow-[#ef629f]/5 border-white/60">
+      <h2 className="text-xl font-semibold text-slate-800">Formulir Laporan Kerusakan</h2>
 
       {/* Quick templates */}
       <div className="mt-3 space-y-2">
@@ -327,7 +327,7 @@ function CreateReportForm({
         <div className="sm:col-span-2 space-y-2">
           <label className="text-sm font-medium text-foreground/80">Judul Masalah</label>
           <input
-            className="flex h-11 w-full rounded-xl border border-white/20 bg-white/40 px-4 text-sm shadow-sm backdrop-blur-md transition-all hover:bg-white/50 focus:border-[#ef629f]/50 focus:bg-white/60 focus:outline-none focus:ring-4 focus:ring-[#ef629f]/10"
+            className="flex h-11 w-full rounded-xl border border-white/40 bg-white/60 px-4 text-sm shadow-sm backdrop-blur-md transition-all hover:bg-white/80 focus:border-[#ef629f]/50 focus:bg-white focus:outline-none focus:ring-4 focus:ring-[#ef629f]/10"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             placeholder="Contoh: AC Paripurna tidak dingin"
@@ -336,7 +336,7 @@ function CreateReportForm({
         <div className="space-y-2">
           <label className="text-sm font-medium text-foreground/80">Ruangan / Fasilitas</label>
           <select
-            className="flex h-11 w-full appearance-none rounded-xl border border-white/20 bg-white/40 px-4 text-sm shadow-sm backdrop-blur-md transition-all hover:bg-white/50 focus:border-[#ef629f]/50 focus:bg-white/60 focus:outline-none focus:ring-4 focus:ring-[#ef629f]/10"
+            className="flex h-11 w-full rounded-xl border border-white/40 bg-white/60 px-4 text-sm shadow-sm backdrop-blur-md transition-all hover:bg-white/80 focus:border-[#ef629f]/50 focus:bg-white focus:outline-none focus:ring-4 focus:ring-[#ef629f]/10"
             value={roomId}
             onChange={(e) => { setRoomId(e.target.value); setAssetId('') }}
           >
@@ -349,7 +349,7 @@ function CreateReportForm({
         <div className="space-y-2">
           <label className="text-sm font-medium text-foreground/80">Aset (Opsional)</label>
           <select
-            className="flex h-11 w-full appearance-none rounded-xl border border-white/20 bg-white/40 px-4 text-sm shadow-sm backdrop-blur-md transition-all hover:bg-white/50 focus:border-[#ef629f]/50 focus:bg-white/60 focus:outline-none focus:ring-4 focus:ring-[#ef629f]/10"
+            className="flex h-11 w-full rounded-xl border border-white/40 bg-white/60 px-4 text-sm shadow-sm backdrop-blur-md transition-all hover:bg-white/80 focus:border-[#ef629f]/50 focus:bg-white focus:outline-none focus:ring-4 focus:ring-[#ef629f]/10 disabled:opacity-50"
             value={assetId}
             onChange={(e) => setAssetId(e.target.value)}
             disabled={!roomId}
@@ -363,7 +363,7 @@ function CreateReportForm({
         <div className="sm:col-span-2 space-y-2">
           <label className="text-sm font-medium text-foreground/80">Deskripsi Lengkap</label>
           <textarea
-            className="min-h-[120px] w-full resize-y rounded-xl border border-white/20 bg-white/40 px-4 py-3 text-sm shadow-sm backdrop-blur-md transition-all hover:bg-white/50 focus:border-[#ef629f]/50 focus:bg-white/60 focus:outline-none focus:ring-4 focus:ring-[#ef629f]/10"
+            className="min-h-[120px] w-full resize-y rounded-xl border border-white/40 bg-white/60 px-4 py-3 text-sm shadow-sm backdrop-blur-md transition-all hover:bg-white/80 focus:border-[#ef629f]/50 focus:bg-white focus:outline-none focus:ring-4 focus:ring-[#ef629f]/10"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             placeholder="Jelaskan detail kerusakan yang terjadi secara jelas..."
@@ -371,7 +371,7 @@ function CreateReportForm({
         </div>
         <div className="sm:col-span-2 space-y-2">
           <label className="text-sm font-medium text-foreground/80">Foto Bukti Kerusakan (Maks 3 foto, ukuran 1.5MB/foto)</label>
-          <div className="rounded-xl border border-dashed border-white/40 bg-white/20 p-4 transition-all hover:bg-white/30 text-center">
+          <div className="relative rounded-xl border-2 border-dashed border-[#ef629f]/30 bg-white/50 p-6 transition-all hover:bg-white/80 hover:border-[#ef629f]/50 text-center">
             <input
               type="file"
               multiple
@@ -389,17 +389,30 @@ function CreateReportForm({
                 }
                 setFiles(selected)
               }}
-              className="mx-auto flex w-full max-w-sm cursor-pointer text-sm file:mr-4 file:cursor-pointer file:rounded-full file:border-0 file:bg-[#ef629f] file:px-4 file:py-2 file:text-sm file:font-medium file:text-white hover:file:bg-[#ef629f]/90"
+              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
             />
+            <div className="flex flex-col items-center justify-center gap-2 pointer-events-none">
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#ef629f]/10 text-[#ef629f]">
+                <Plus className="h-6 w-6" />
+              </div>
+              <p className="text-sm font-medium text-slate-700">Klik atau seret foto ke sini</p>
+              <p className="text-xs text-muted">Format: JPG/PNG. Maks: 3 File.</p>
+            </div>
           </div>
           {files.length > 0 && (
-            <p className="text-xs text-muted mt-2">{files.length} foto dipilih.</p>
+            <div className="mt-3 flex flex-wrap gap-2">
+              {files.map((file, i) => (
+                <div key={i} className="inline-flex items-center gap-1.5 rounded-lg bg-white/80 border border-slate-200 px-3 py-1.5 text-xs font-medium shadow-sm">
+                  <span className="truncate max-w-[150px]">{file.name}</span>
+                </div>
+              ))}
+            </div>
           )}
         </div>
       </div>
       <div className="mt-6 flex flex-col gap-3">
         <div className="flex gap-3">
-          <Button onClick={() => mutation.mutate()} disabled={!title || !description || !roomId || mutation.isPending} className="min-w-[160px] shadow-sm">
+          <Button onClick={() => mutation.mutate()} disabled={!title || !description || !roomId || mutation.isPending} className="min-w-[160px] shadow-[0_0_20px_rgba(239,98,159,0.3)] hover:shadow-[0_0_30px_rgba(239,98,159,0.5)] hover:-translate-y-1 transition-all duration-300">
             {mutation.isPending ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -409,7 +422,7 @@ function CreateReportForm({
               'Kirim Laporan'
             )}
           </Button>
-          <Button variant="ghost" onClick={onClose} disabled={mutation.isPending}>Batal</Button>
+          <Button variant="secondary" onClick={onClose} disabled={mutation.isPending} className="bg-white/60 hover:bg-white border border-slate-300 shadow-sm transition-all duration-300">Batal</Button>
         </div>
 
         <AnimatePresence>
