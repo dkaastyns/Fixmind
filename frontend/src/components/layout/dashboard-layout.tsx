@@ -1,4 +1,4 @@
-﻿import { useState } from 'react'
+import { useState } from 'react'
 import { createPortal } from 'react-dom'
 import { NavLink, Outlet, useNavigate, useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -27,11 +27,12 @@ const navItems: Array<{
   label: string
   icon: typeof LayoutDashboard
   roles?: UserRole[]
+  end?: boolean
 }> = [
-  { to: '/dashboard', label: 'Dasbor', icon: LayoutDashboard },
+  { to: '/dashboard', label: 'Dasbor', icon: LayoutDashboard, end: true },
   { to: '/dashboard/reports', label: 'Laporan Masalah', icon: ClipboardList },
   { to: '/dashboard/rooms', label: 'Fasilitas & Ruangan', icon: Building2 },
-  { to: '/dashboard/asset-transfers', label: 'Pengajuan Transfer', icon: ArrowRightLeft },
+  { to: '/dashboard/asset-transfers', label: 'Pengajuan Transfer', icon: ArrowRightLeft, end: true },
   { to: '/dashboard/asset-transfers/review', label: 'Approval Transfer', icon: ClipboardCheck, roles: ['ADMIN'] },
   { to: '/dashboard/users', label: 'Pengguna', icon: Users, roles: ['ADMIN'] },
   { to: '/dashboard/analytics', label: 'Analitik', icon: BarChart3, roles: ['ADMIN'] },
@@ -75,7 +76,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
           <NavLink
             key={item.to}
             to={item.to}
-            end={item.to === '/dashboard'}
+            end={item.end}
             onClick={onNavigate}
             className={({ isActive }) =>
               cn(
