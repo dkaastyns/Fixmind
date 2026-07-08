@@ -23,6 +23,7 @@ import { UpdateProfileDto, ChangePasswordDto } from './dto/profile.dto';
 import { AuthService } from './services/auth.service';
 import { UsersRepository } from '../users/repositories/users.repository';
 import { UsersService } from '../users/services/users.service';
+import { Throttle } from '@nestjs/throttler';
 
 const REFRESH_COOKIE = 'fixmind_refresh';
 
@@ -35,6 +36,7 @@ export class AuthController {
     private readonly config: ConfigService,
   ) {}
 
+  @Throttle({ default: { limit: 5, ttl: 60000 } })
   @Public()
   @Post('register')
   @HttpCode(HttpStatus.CREATED)
@@ -61,6 +63,7 @@ export class AuthController {
     };
   }
 
+  @Throttle({ default: { limit: 10, ttl: 60000 } })
   @Public()
   @Post('login')
   @HttpCode(HttpStatus.OK)
@@ -187,7 +190,7 @@ export class AuthController {
     res.cookie(REFRESH_COOKIE, token, {
       httpOnly: true,
       secure: isProd,
-      sameSite: isProd ? 'strict' : 'lax',
+      sameSite: 'strict',
       maxAge: 7 * 24 * 60 * 60 * 1000,
       path: '/api/v1/auth',
     });

@@ -1,67 +1,41 @@
+version: '3.8'
+
 services:
-  postgres:
-    image: pgvector/pgvector:pg16
-    container_name: fixmind-postgres
-    restart: unless-stopped
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
-      POSTGRES_DB: fixmind
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
     ports:
-      - '5432:5432'
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U postgres -d fixmind']
-      interval: 10s
-      timeout: 5s
-      retries: 5
+      - "80:80"
+    depends_on:
+      - backend
 
   backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    container_name: fixmind-backend
-    restart: unless-stopped
-    depends_on:
-      postgres:
-        condition: service_healthy
-    environment:
-      DATABASE_URL: postgresql://postgres:${POSTGRES_PASSWORD:-postgres}@postgres:5432/fixmind
-      NODE_ENV: production
-      PORT: 3000
-      CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost}
-      JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET}
-      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET}
-      GEMINI_API_KEY: ${GEMINI_API_KEY}
-    expose:
-      - '3000'
-
-  frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-      args:
-        VITE_API_BASE_URL: ${VITE_API_BASE_URL:-/api/v1}
-    container_name: fixmind-frontend
-    restart: unless-stopped
-    expose:
-      - '80'
-
-  nginx:
-    image: nginx:1.27-alpine
-    container_name: fixmind-nginx
-    restart: unless-stopped
-    depends_on:
-      - backend
-      - frontend
     ports:
-      - '80:80'
-      - '443:443'
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - DATABASE_URL=${DATABASE_URL:-postgresql://postgres:password@db:5432/fixmind}
+      - JWT_SECRET=${JWT_SECRET:-changeme}
+      - CLOUDINARY_URL=${CLOUDINARY_URL}
+      - CORS_ORIGIN=http://localhost
+    depends_on:
+      - db
+
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: fixmind
+    ports:
+      - "5432:5432"
     volumes:
-      - ./infra/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
-      - ./infra/nginx/conf.d:/etc/nginx/conf.d:ro
-      - ./infra/nginx/certs:/etc/nginx/certs:ro
+      - pgdata:/var/lib/postgresql/data
 
 volumes:
-  postgres_data:
+  pgdata:

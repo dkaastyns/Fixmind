@@ -75,13 +75,7 @@ export default defineConfig({
             url: '/dashboard/reports',
             icons: [{ src: '/icons/icon-96x96.png', sizes: '96x96' }],
           },
-          {
-            name: 'Jadwal Pemeliharaan',
-            short_name: 'Pemeliharaan',
-            description: 'Lihat jadwal pemeliharaan',
-            url: '/dashboard/maintenance',
-            icons: [{ src: '/icons/icon-96x96.png', sizes: '96x96' }],
-          },
+
         ],
       },
       workbox: {
