@@ -59,8 +59,26 @@ export function LandingPage() {
           className="h-full w-full object-cover"
         />
         {/* Overlay to ensure text readability */}
-        <div className="absolute inset-0 bg-white/60 backdrop-blur-[4px]" />
-        <div className="absolute inset-0 bg-gradient-to-b from-white/30 via-white/60 to-white/95" />
+        <div className="absolute inset-0 bg-white/70 backdrop-blur-[6px]" />
+        
+        {/* AI Glowing Orbs */}
+        <motion.div 
+          animate={{ x: [0, 40, 0], y: [0, 30, 0] }} 
+          transition={{ repeat: Infinity, duration: 8, ease: "easeInOut" }}
+          className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-[#ef629f]/20 rounded-full mix-blend-multiply filter blur-[120px]" 
+        />
+        <motion.div 
+          animate={{ x: [0, -30, 0], y: [0, -40, 0] }} 
+          transition={{ repeat: Infinity, duration: 10, ease: "easeInOut" }}
+          className="absolute top-1/3 right-1/4 w-[400px] h-[400px] bg-blue-400/20 rounded-full mix-blend-multiply filter blur-[100px]" 
+        />
+        <motion.div 
+          animate={{ x: [0, 30, 0], y: [0, -30, 0] }} 
+          transition={{ repeat: Infinity, duration: 9, ease: "easeInOut" }}
+          className="absolute bottom-1/4 left-1/3 w-[600px] h-[600px] bg-purple-400/15 rounded-full mix-blend-multiply filter blur-[120px]" 
+        />
+
+        <div className="absolute inset-0 bg-gradient-to-b from-white/30 via-transparent to-white/95" />
       </motion.div>
 
       {/* Main Content */}
@@ -105,13 +123,13 @@ export function LandingPage() {
             </p>
             <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
               <Link to="/signup">
-                <Button size="lg" className="min-w-[160px] shadow-xl hover:scale-105 transition-transform">
+                <Button size="lg" className="min-w-[160px] shadow-[0_0_25px_rgba(239,98,159,0.35)] hover:shadow-[0_0_35px_rgba(239,98,159,0.55)] hover:-translate-y-1 hover:scale-105 transition-all duration-300">
                   Daftar Sekarang
-                  <ArrowRight className="h-4 w-4" />
+                  <ArrowRight className="h-4 w-4 ml-2" />
                 </Button>
               </Link>
               <Link to="/login">
-                <Button variant="secondary" size="lg" className="min-w-[160px] bg-white/80 backdrop-blur shadow hover:bg-white transition-all">
+                <Button variant="outline" size="lg" className="min-w-[160px] bg-white/60 backdrop-blur-md border-slate-300 text-slate-700 shadow-sm hover:bg-white hover:text-[#ef629f] hover:border-[#ef629f]/50 transition-all duration-300 hover:-translate-y-1">
                   Masuk
                 </Button>
               </Link>
@@ -119,21 +137,23 @@ export function LandingPage() {
           </motion.div>
         </section>
 
-        <section className="mx-auto max-w-6xl px-4 pb-24">
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <section className="mx-auto max-w-6xl px-4 pb-24 relative z-10">
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {features.map((f, i) => (
               <motion.div
                 key={f.title}
                 initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, delay: 0.4 + i * 0.1 }}
+                whileHover={{ y: -8, scale: 1.02 }}
+                className="h-full"
               >
-                <GlassCard className="h-full p-5 bg-white/70 hover:bg-white/90 transition-colors shadow-lg border-white/60">
-                  <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl gradient-primary shadow-sm">
-                    <f.icon className="h-5 w-5 text-white" />
+                <GlassCard className="h-full p-6 bg-white/80 hover:bg-white/95 transition-all duration-300 shadow-xl hover:shadow-2xl hover:shadow-[#ef629f]/15 border-white/80">
+                  <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-2xl gradient-primary shadow-md">
+                    <f.icon className="h-6 w-6 text-white" />
                   </div>
-                  <h3 className="font-semibold text-slate-800">{f.title}</h3>
-                  <p className="mt-2 text-sm text-slate-600">{f.description}</p>
+                  <h3 className="font-bold text-slate-800 text-lg mb-2">{f.title}</h3>
+                  <p className="text-sm text-slate-600 leading-relaxed">{f.description}</p>
                 </GlassCard>
               </motion.div>
             ))}
