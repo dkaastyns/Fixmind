@@ -11,6 +11,7 @@ import {
   LayoutDashboard,
   LogOut,
   Menu,
+  User,
   Users,
   X,
 } from 'lucide-react'
@@ -36,6 +37,7 @@ const navItems: Array<{
   { to: '/dashboard/asset-transfers/review', label: 'Approval Transfer', icon: ClipboardCheck, roles: ['ADMIN'] },
   { to: '/dashboard/users', label: 'Pengguna', icon: Users, roles: ['ADMIN'] },
   { to: '/dashboard/analytics', label: 'Analitik', icon: BarChart3, roles: ['ADMIN'] },
+  { to: '/dashboard/profile', label: 'Profil Saya', icon: User, end: true },
 ]
 
 function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {

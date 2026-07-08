@@ -3,20 +3,26 @@ import {
   Controller,
   Get,
   Post,
+  Patch,
   Req,
   Res,
   HttpCode,
   HttpStatus,
   ForbiddenException,
+  BadRequestException,
+  NotFoundException,
 } from '@nestjs/common';
 import type { Request, Response } from 'express';
 import { ConfigService } from '@nestjs/config';
+import * as bcrypt from 'bcrypt';
 import { CurrentUser, type AuthUser } from '../../common/decorators/current-user.decorator';
 import { Public } from '../../common/decorators/roles.decorator';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from '../users/dto/user.dto';
+import { UpdateProfileDto, ChangePasswordDto } from './dto/profile.dto';
 import { AuthService } from './services/auth.service';
 import { UsersRepository } from '../users/repositories/users.repository';
+import { UsersService } from '../users/services/users.service';
 
 const REFRESH_COOKIE = 'fixmind_refresh';
 
@@ -25,6 +31,7 @@ export class AuthController {
   constructor(
     private readonly authService: AuthService,
     private readonly usersRepository: UsersRepository,
+    private readonly usersService: UsersService,
     private readonly config: ConfigService,
   ) {}
 
@@ -131,6 +138,46 @@ export class AuthController {
     return {
       message: 'Profile retrieved',
       data: this.authService.toPublicUser(row),
+    };
+  }
+
+  @Patch('profile')
+  async updateProfile(
+    @CurrentUser() user: AuthUser,
+    @Body() dto: UpdateProfileDto,
+  ) {
+    const updated = await this.usersService.update(user.id, {
+      fullName: dto.fullName,
+      phone: dto.phone,
+    });
+    return {
+      message: 'Profile updated successfully',
+      data: updated,
+    };
+  }
+
+  @Post('change-password')
+  @HttpCode(HttpStatus.OK)
+  async changePassword(
+    @CurrentUser() user: AuthUser,
+    @Body() dto: ChangePasswordDto,
+  ) {
+    const dbUser = await this.usersRepository.findById(user.id);
+    if (!dbUser) {
+      throw new NotFoundException('User not found');
+    }
+
+    const isValid = await bcrypt.compare(dto.oldPassword, dbUser.password_hash);
+    if (!isValid) {
+      throw new BadRequestException('Incorrect old password');
+    }
+
+    await this.usersService.update(user.id, {
+      password: dto.newPassword,
+    });
+
+    return {
+      message: 'Password changed successfully',
     };
   }
 

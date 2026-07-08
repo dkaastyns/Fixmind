@@ -1,4 +1,4 @@
-﻿import type {
+import type {
   ApiSuccessResponse,
   Asset,
   AssetTransfer,
@@ -82,6 +82,26 @@ export const meRequest = (token: string) =>
 
 export const logoutRequest = (token: string) =>
   apiFetch('/auth/logout', { method: 'POST', ...auth(token) })
+
+export const updateProfileRequest = (
+  token: string,
+  data: { fullName: string; phone?: string },
+) =>
+  apiFetch<User>('/auth/profile', {
+    method: 'PATCH',
+    body: JSON.stringify(data),
+    ...auth(token),
+  })
+
+export const changePasswordRequest = (
+  token: string,
+  data: { oldPassword: string; newPassword: string },
+) =>
+  apiFetch<{ message: string }>('/auth/change-password', {
+    method: 'POST',
+    body: JSON.stringify(data),
+    ...auth(token),
+  })
 
 // Users
 export const fetchUsers = (token: string, params?: { isAdmin?: boolean }) => {
