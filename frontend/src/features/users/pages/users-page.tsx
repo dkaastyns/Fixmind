@@ -16,6 +16,12 @@ export function UsersPage() {
   const qc = useQueryClient()
   const [showForm, setShowForm] = useState(false)
   const [isAdminFilter, setIsAdminFilter] = useState<boolean | ''>('')
+  
+  // Password reset states
+  const [resetUserId, setResetUserId] = useState<string | null>(null)
+  const [resetUserName, setResetUserName] = useState('')
+  const [newPassword, setNewPassword] = useState('')
+  const [showResetModal, setShowResetModal] = useState(false)
 
   const { data, isLoading } = useQuery({
     queryKey: ['users', isAdminFilter],
@@ -24,7 +30,7 @@ export function UsersPage() {
 
   const deleteMut = useMutation({
     mutationFn: (id: string) => deleteUser(token, id),
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ['users'] }); toast.success('User deleted') },
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ['users'] }); toast.success('Pengguna berhasil dihapus') },
     onError: (e: Error) => toast.error(e.message),
   })
 
@@ -33,6 +39,23 @@ export function UsersPage() {
     onSuccess: () => { qc.invalidateQueries({ queryKey: ['users'] }); toast.success('Status diperbarui') },
     onError: (e: Error) => toast.error(e.message),
   })
+
+  const resetPasswordMut = useMutation({
+    mutationFn: (password: string) => updateUser(token, resetUserId!, { password }),
+    onSuccess: () => {
+      toast.success(`Kata sandi untuk ${resetUserName} berhasil di-reset`)
+      setShowResetModal(false)
+      setNewPassword('')
+    },
+    onError: (e: Error) => toast.error(e.message),
+  })
+
+  const triggerResetPassword = (id: string, name: string) => {
+    setResetUserId(id)
+    setResetUserName(name)
+    setNewPassword('')
+    setShowResetModal(true)
+  }
 
   const users = data?.data ?? []
 
@@ -112,8 +135,9 @@ export function UsersPage() {
                     </button>
                     <span className="ml-2 text-xs text-muted">{u.isActive ? 'Aktif' : 'Tidak Aktif'}</span>
                   </td>
-                  <td className="px-4 py-3">
-                    <Button variant="ghost" size="sm" onClick={() => deleteMut.mutate(u.id)}>Hapus</Button>
+                  <td className="px-4 py-3 flex items-center justify-end gap-2">
+                    <Button variant="secondary" size="sm" className="h-8 text-xs rounded-xl" onClick={() => triggerResetPassword(u.id, u.fullName)}>Reset Sandi</Button>
+                    <Button variant="ghost" size="sm" className="h-8 text-xs rounded-xl text-red-500 hover:text-red-700 hover:bg-red-50" onClick={() => deleteMut.mutate(u.id)}>Hapus</Button>
                   </td>
                 </tr>
               ))}
@@ -121,6 +145,42 @@ export function UsersPage() {
           </table>
         )}
       </GlassCard>
+
+      {showResetModal && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/20 backdrop-blur-[2px]" onClick={() => setShowResetModal(false)} />
+          <div className="relative w-full max-w-md overflow-hidden rounded-2xl bg-white p-6 shadow-2xl border border-gray-100">
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">Reset Kata Sandi</h3>
+            <p className="text-sm text-muted mb-4">
+              Masukkan kata sandi baru untuk <strong>{resetUserName}</strong>. Minimal 8 karakter.
+            </p>
+            <div className="space-y-4 mb-6">
+              <PasswordInput
+                placeholder="Kata sandi baru"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+              />
+            </div>
+            <div className="flex gap-3">
+              <Button
+                variant="secondary"
+                className="flex-1 rounded-xl text-gray-700 bg-gray-100 hover:bg-gray-200 border-none"
+                onClick={() => setShowResetModal(false)}
+                disabled={resetPasswordMut.isPending}
+              >
+                Batal
+              </Button>
+              <Button
+                className="flex-1 rounded-xl bg-[#ef629f] text-white hover:bg-[#ef629f]/90"
+                onClick={() => resetPasswordMut.mutate(newPassword)}
+                disabled={newPassword.length < 8 || resetPasswordMut.isPending}
+              >
+                {resetPasswordMut.isPending ? 'Menyimpan...' : 'Simpan Sandi'}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
