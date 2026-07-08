@@ -1,15 +1,30 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+﻿import {
+  BadRequestException,
+  ForbiddenException,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import { SQL_TOKEN, type Sql } from '../../../database/sql';
 import ExcelJS from 'exceljs';
+import type { AuthUser } from '../../../common/decorators/current-user.decorator';
+import type {
+  AssetRow,
+  AssetTransferRow,
+  AssetTransferStatus,
+} from '../../../common/types/database-rows';
 import { RoomsRepository } from '../../rooms/repositories/rooms.repository';
-import type { AssetRow } from '../../../common/types/database-rows';
-import { CreateAssetDto, UpdateAssetDto } from '../dto/asset.dto';
+import { CreateAssetDto, CreateAssetTransferDto, ReviewAssetTransferDto, UpdateAssetDto } from '../dto/asset.dto';
 import { AssetsRepository } from '../repositories/assets.repository';
+import { TransferRepository } from '../repositories/transfer.repository';
 
 @Injectable()
 export class AssetsService {
   constructor(
     private readonly assetsRepository: AssetsRepository,
+    private readonly transferRepository: TransferRepository,
     private readonly roomsRepository: RoomsRepository,
+    @Inject(SQL_TOKEN) private readonly sql: Sql,
   ) {}
 
   toPublic(asset: AssetRow & { room_name?: string; room_code?: string }) {
@@ -25,6 +40,31 @@ export class AssetsService {
       merkType: asset.merk_type,
       status: asset.status,
       createdAt: asset.created_at,
+    };
+  }
+
+  toTransferPublic(transfer: AssetTransferRow) {
+    return {
+      id: transfer.id,
+      assetId: transfer.asset_id,
+      assetName: transfer.asset_name ?? null,
+      assetKode: transfer.asset_kode ?? null,
+      requesterId: transfer.requester_id,
+      requesterName: transfer.requester_name ?? null,
+      fromRoomId: transfer.from_room_id,
+      fromRoomName: transfer.from_room_name ?? null,
+      fromRoomCode: transfer.from_room_code ?? null,
+      toRoomId: transfer.to_room_id,
+      toRoomName: transfer.to_room_name ?? null,
+      toRoomCode: transfer.to_room_code ?? null,
+      reason: transfer.reason,
+      status: transfer.status,
+      reviewedBy: transfer.reviewed_by,
+      reviewedByName: transfer.reviewer_name ?? null,
+      reviewedAt: transfer.reviewed_at,
+      reviewerNotes: transfer.reviewer_notes,
+      createdAt: transfer.created_at,
+      updatedAt: transfer.updated_at,
     };
   }
 
@@ -89,6 +129,98 @@ export class AssetsService {
     const ok = await this.assetsRepository.softDelete(id);
     if (!ok) throw new NotFoundException('Asset not found');
     return { deleted: true };
+  }
+
+  async listTransfers(
+    user: AuthUser,
+    page = 1,
+    limit = 20,
+    status?: AssetTransferStatus,
+    mineOnly = false,
+  ) {
+    const requesterId = user.role === 'ADMIN' && !mineOnly ? undefined : user.id;
+    const { rows, total } = await this.transferRepository.list({
+      page,
+      limit,
+      status,
+      requesterId,
+    });
+
+    return {
+      data: rows.map((row) => this.toTransferPublic(row)),
+      meta: { page, limit, total },
+    };
+  }
+
+  async getTransferById(user: AuthUser, id: string) {
+    const transfer = await this.transferRepository.findById(id);
+    if (!transfer) throw new NotFoundException('Transfer not found');
+    this.assertCanViewTransfer(user, transfer);
+    return this.toTransferPublic(transfer);
+  }
+
+  async createTransfer(user: AuthUser, dto: CreateAssetTransferDto) {
+    const asset = await this.assetsRepository.findById(dto.assetId);
+    if (!asset) throw new NotFoundException('Asset not found');
+
+    const fromRoom = await this.roomsRepository.findById(asset.room_id);
+    if (!fromRoom) throw new NotFoundException('Current room not found');
+
+    const toRoom = await this.roomsRepository.findById(dto.toRoomId);
+    if (!toRoom) throw new NotFoundException('Target room not found');
+
+    if (asset.room_id === dto.toRoomId) {
+      throw new BadRequestException('Target room must be different from current room');
+    }
+
+    const pending = await this.transferRepository.hasPending(dto.assetId);
+    if (pending) {
+      throw new BadRequestException('Asset already has a pending transfer request');
+    }
+
+    try {
+      const transfer = await this.transferRepository.create({
+        assetId: dto.assetId,
+        requesterId: user.id,
+        fromRoomId: asset.room_id,
+        toRoomId: dto.toRoomId,
+        reason: dto.reason,
+      });
+      const detail = await this.transferRepository.findById(transfer.id);
+      return this.toTransferPublic(detail ?? transfer);
+    } catch (error) {
+      if (this.isUniqueViolation(error)) {
+        throw new BadRequestException('Asset already has a pending transfer request');
+      }
+      throw error;
+    }
+  }
+
+  async reviewTransfer(user: AuthUser, id: string, dto: ReviewAssetTransferDto) {
+    const transfer = await this.transferRepository.findById(id);
+    if (!transfer) throw new NotFoundException('Transfer not found');
+    if (transfer.status !== 'PENDING') {
+      throw new BadRequestException('Transfer has already been reviewed');
+    }
+
+    const updated = await this.sql.begin(async (tx) => {
+      const reviewed = await this.transferRepository.review(id, user.id, dto.decision, dto.notes, tx as unknown as Sql);
+      if (!reviewed) {
+        throw new BadRequestException('Transfer has already been reviewed');
+      }
+
+      if (dto.decision === 'APPROVED') {
+        const moved = await this.assetsRepository.moveToRoom(reviewed.asset_id, reviewed.to_room_id, tx as unknown as Sql);
+        if (!moved) {
+          throw new NotFoundException('Asset not found');
+        }
+      }
+
+      return reviewed;
+    });
+
+    const detail = await this.transferRepository.findById(id);
+    return this.toTransferPublic(detail ?? updated);
   }
 
   async importExcel(roomId: string, file?: Express.Multer.File) {
@@ -292,4 +424,15 @@ export class AssetsService {
     if (typeof value === 'object' && 'result' in value) return String(value.result ?? '').trim();
     return String(value).trim();
   }
+
+  private assertCanViewTransfer(user: AuthUser, transfer: AssetTransferRow) {
+    if (user.role === 'ADMIN') return;
+    if (transfer.requester_id === user.id) return;
+    throw new ForbiddenException('Access denied');
+  }
+
+  private isUniqueViolation(error: unknown) {
+    return typeof error === 'object' && error !== null && 'code' in error && (error as { code?: string }).code === '23505';
+  }
 }
+

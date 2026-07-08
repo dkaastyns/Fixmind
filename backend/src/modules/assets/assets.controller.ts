@@ -1,4 +1,4 @@
-import {
+﻿import {
   Body,
   Controller,
   Delete,
@@ -13,9 +13,11 @@ import {
 } from '@nestjs/common';
 import type { Response } from 'express';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { CurrentUser, type AuthUser } from '../../common/decorators/current-user.decorator';
 import { Roles } from '../../common/decorators/roles.decorator';
-import { CreateAssetDto, ImportAssetsQueryDto, UpdateAssetDto } from './dto/asset.dto';
+import { CreateAssetDto, CreateAssetTransferDto, ImportAssetsQueryDto, ReviewAssetTransferDto, UpdateAssetDto } from './dto/asset.dto';
 import { AssetsService } from './services/assets.service';
+import type { AssetTransferStatus } from '../../common/types/database-rows';
 
 @Controller('assets')
 export class AssetsController {
@@ -30,6 +32,41 @@ export class AssetsController {
   ) {
     const result = await this.assetsService.list(Number(page), Number(limit), roomId, search);
     return { message: 'Assets retrieved', ...result };
+  }
+
+  @Get('transfers')
+  async listTransfers(
+    @CurrentUser() user: AuthUser,
+    @Query('page') page = '1',
+    @Query('limit') limit = '20',
+    @Query('status') status?: AssetTransferStatus,
+    @Query('mineOnly') mineOnly = 'false',
+  ) {
+    const result = await this.assetsService.listTransfers(
+      user,
+      Number(page),
+      Number(limit),
+      status,
+      mineOnly === 'true',
+    );
+    return { message: 'Asset transfers retrieved', ...result };
+  }
+
+  @Get('transfers/:id')
+  async getTransfer(@CurrentUser() user: AuthUser, @Param('id') id: string) {
+    const data = await this.assetsService.getTransferById(user, id);
+    return { message: 'Asset transfer retrieved', data };
+  }
+
+  @Roles('ADMIN')
+  @Patch('transfers/:id')
+  async reviewTransfer(
+    @CurrentUser() user: AuthUser,
+    @Param('id') id: string,
+    @Body() dto: ReviewAssetTransferDto,
+  ) {
+    const data = await this.assetsService.reviewTransfer(user, id, dto);
+    return { message: 'Asset transfer reviewed', data };
   }
 
   /**
@@ -71,6 +108,12 @@ export class AssetsController {
   ) {
     const data = await this.assetsService.importExcel(query.roomId, file);
     return { message: 'Assets imported', data };
+  }
+
+  @Post('transfers')
+  async createTransfer(@CurrentUser() user: AuthUser, @Body() dto: CreateAssetTransferDto) {
+    const data = await this.assetsService.createTransfer(user, dto);
+    return { message: 'Asset transfer requested', data };
   }
 
   @Roles('ADMIN')

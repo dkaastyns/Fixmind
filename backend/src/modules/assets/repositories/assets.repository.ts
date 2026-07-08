@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+﻿import { Inject, Injectable } from '@nestjs/common';
 import { SQL_TOKEN, type Sql } from '../../../database/sql';
 import type { AssetRow, AssetStatus } from '../../../common/types/database-rows';
 
@@ -6,8 +6,8 @@ import type { AssetRow, AssetStatus } from '../../../common/types/database-rows'
 export class AssetsRepository {
   constructor(@Inject(SQL_TOKEN) private readonly sql: Sql) {}
 
-  async findById(id: string): Promise<AssetRow | null> {
-    const [row] = await this.sql<AssetRow[]>`
+  async findById(id: string, sql: Sql = this.sql): Promise<AssetRow | null> {
+    const [row] = await sql<AssetRow[]>`
       SELECT * FROM assets WHERE id = ${id} AND deleted_at IS NULL LIMIT 1
     `;
     return row ?? null;
@@ -136,6 +136,17 @@ export class AssetsRepository {
         nama_barang = ${data.nama_barang ?? existing.nama_barang},
         merk_type = ${data.merk_type ?? existing.merk_type},
         status = ${data.status ?? existing.status},
+        updated_at = now()
+      WHERE id = ${id} AND deleted_at IS NULL
+      RETURNING *
+    `;
+    return row ?? null;
+  }
+
+  async moveToRoom(id: string, roomId: string, sql: Sql = this.sql): Promise<AssetRow | null> {
+    const [row] = await sql<AssetRow[]>`
+      UPDATE assets SET
+        room_id = ${roomId},
         updated_at = now()
       WHERE id = ${id} AND deleted_at IS NULL
       RETURNING *

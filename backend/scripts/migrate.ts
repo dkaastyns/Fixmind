@@ -1,9 +1,8 @@
-import { readdir, readFile } from 'node:fs/promises';
-import { dirname, join } from 'node:path';
-import { fileURLToPath } from 'node:url';
+﻿import { readdir, readFile } from 'node:fs/promises';
+import { join } from 'node:path';
 import postgres from 'postgres';
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
+const migrationsDir = join(process.cwd(), 'migrations');
 
 const DATABASE_URL = process.env.DATABASE_URL;
 if (!DATABASE_URL) {
@@ -31,7 +30,6 @@ async function getAppliedMigrations(): Promise<Set<string>> {
 }
 
 async function run() {
-  const migrationsDir = join(__dirname, '..', 'migrations');
   const files = (await readdir(migrationsDir))
     .filter((f) => f.endsWith('.sql'))
     .sort();
@@ -64,3 +62,5 @@ run().catch((err) => {
   console.error(err);
   process.exit(1);
 });
+
+

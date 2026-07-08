@@ -1,4 +1,4 @@
-import { IsEnum, IsNotEmpty, IsOptional, IsString, IsUUID } from 'class-validator';
+﻿import { IsIn, IsNotEmpty, IsOptional, IsString, IsUUID } from 'class-validator';
 import type { AssetStatus } from '../../../common/types/database-rows';
 
 export class CreateAssetDto {
@@ -52,11 +52,32 @@ export class UpdateAssetDto {
   merkType?: string;
 
   @IsOptional()
-  @IsEnum(['OPERATIONAL', 'NEEDS_MAINTENANCE', 'OUT_OF_SERVICE'])
+  @IsIn(['OPERATIONAL', 'NEEDS_MAINTENANCE', 'OUT_OF_SERVICE'])
   status?: AssetStatus;
 }
 
 export class ImportAssetsQueryDto {
   @IsUUID()
   roomId!: string;
+}
+
+export class CreateAssetTransferDto {
+  @IsUUID()
+  assetId!: string;
+
+  @IsUUID()
+  toRoomId!: string;
+
+  @IsString()
+  @IsNotEmpty()
+  reason!: string;
+}
+
+export class ReviewAssetTransferDto {
+  @IsIn(['APPROVED', 'REJECTED'])
+  decision!: 'APPROVED' | 'REJECTED';
+
+  @IsOptional()
+  @IsString()
+  notes?: string;
 }

@@ -1,4 +1,4 @@
-export type UserRole = 'ADMIN' | 'USER'
+﻿export type UserRole = 'ADMIN' | 'TECHNICIAN' | 'USER'
 
 export type ReportStatus =
   | 'PENDING'
@@ -9,6 +9,8 @@ export type ReportStatus =
   | 'COMPLETED'
   | 'CANCELLED'
   | 'REJECTED'
+
+export type AssetTransferStatus = 'PENDING' | 'APPROVED' | 'REJECTED'
 
 export interface ApiMeta {
   page: number
@@ -58,6 +60,29 @@ export interface Asset {
   merkType: string
   status: string
   createdAt: string
+}
+
+export interface AssetTransfer {
+  id: string
+  assetId: string
+  assetName: string | null
+  assetKode: string | null
+  requesterId: string
+  requesterName: string | null
+  fromRoomId: string
+  fromRoomName: string | null
+  fromRoomCode: string | null
+  toRoomId: string
+  toRoomName: string | null
+  toRoomCode: string | null
+  reason: string
+  status: AssetTransferStatus
+  reviewedBy: string | null
+  reviewedByName: string | null
+  reviewedAt: string | null
+  reviewerNotes: string | null
+  createdAt: string
+  updatedAt: string
 }
 
 export interface Report {
@@ -149,4 +174,3 @@ export interface MaintenanceSchedule {
   createdAt: string
   updatedAt: string
 }
-

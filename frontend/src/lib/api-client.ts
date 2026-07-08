@@ -1,6 +1,8 @@
-import type {
+﻿import type {
   ApiSuccessResponse,
   Asset,
+  AssetTransfer,
+  AssetTransferStatus,
   Comment,
   DashboardOverview,
   LoginResponse,
@@ -126,6 +128,40 @@ export const updateAsset = (token: string, id: string, data: object) =>
 
 export const deleteAsset = (token: string, id: string) =>
   apiFetch(`/assets/${id}`, { method: 'DELETE', ...auth(token) })
+
+export const fetchAssetTransfers = (
+  token: string,
+  params?: { status?: AssetTransferStatus; mineOnly?: boolean; page?: number; limit?: number },
+) => {
+  const q = new URLSearchParams()
+  if (params?.status) q.set('status', params.status)
+  if (typeof params?.mineOnly === 'boolean') q.set('mineOnly', String(params.mineOnly))
+  if (params?.page) q.set('page', String(params.page))
+  if (params?.limit) q.set('limit', String(params.limit))
+  const qs = q.toString() ? `?${q.toString()}` : ''
+  return apiFetch<AssetTransfer[]>(`/assets/transfers${qs}`, auth(token))
+}
+
+export const fetchAssetTransfer = (token: string, id: string) =>
+  apiFetch<AssetTransfer>(`/assets/transfers/${id}`, auth(token))
+
+export const createAssetTransfer = (token: string, data: { assetId: string; toRoomId: string; reason: string }) =>
+  apiFetch<AssetTransfer>('/assets/transfers', {
+    method: 'POST',
+    body: JSON.stringify(data),
+    ...auth(token),
+  })
+
+export const reviewAssetTransfer = (
+  token: string,
+  id: string,
+  data: { decision: 'APPROVED' | 'REJECTED'; notes?: string },
+) =>
+  apiFetch<AssetTransfer>(`/assets/transfers/${id}`, {
+    method: 'PATCH',
+    body: JSON.stringify(data),
+    ...auth(token),
+  })
 
 export const importAssets = async (token: string, roomId: string, file: File) => {
   const formData = new FormData()

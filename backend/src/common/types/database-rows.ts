@@ -1,4 +1,4 @@
-export type UserRole = 'ADMIN' | 'TECHNICIAN' | 'USER';
+﻿export type UserRole = 'ADMIN' | 'TECHNICIAN' | 'USER';
 
 export interface UserRow {
   id: string;
@@ -103,6 +103,31 @@ export interface ReportRow {
   created_at: Date;
   updated_at: Date;
   deleted_at: Date | null;
+}
+
+export type AssetTransferStatus = 'PENDING' | 'APPROVED' | 'REJECTED';
+
+export interface AssetTransferRow {
+  id: string;
+  asset_id: string;
+  requester_id: string;
+  from_room_id: string;
+  to_room_id: string;
+  reason: string;
+  status: AssetTransferStatus;
+  reviewed_by: string | null;
+  reviewed_at: Date | null;
+  reviewer_notes: string | null;
+  created_at: Date;
+  updated_at: Date;
+  asset_name?: string | null;
+  asset_kode?: string | null;
+  from_room_name?: string | null;
+  from_room_code?: string | null;
+  to_room_name?: string | null;
+  to_room_code?: string | null;
+  requester_name?: string | null;
+  reviewer_name?: string | null;
 }
 
 export type AttachmentType = 'DAMAGE' | 'REPAIR' | 'OTHER';

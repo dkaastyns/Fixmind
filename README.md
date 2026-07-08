@@ -1,4 +1,4 @@
-# E-Lapor DPRD (FixMind)
+﻿# E-Lapor DPRD (FixMind)
 
 E-Lapor DPRD (dengan nama kode FixMind) adalah sebuah sistem manajemen pelaporan dan pemeliharaan fasilitas modern berbasis _Artificial Intelligence_ (AI) yang dirancang khusus untuk mengelola, melacak, dan menyelesaikan berbagai kerusakan atau kendala fasilitas di lingkungan gedung dewan maupun perkantoran.
 
@@ -7,6 +7,7 @@ Sistem ini membantu mempermudah pelaporan, di mana AI (menggunakan Gemini 2.5 Fl
 ## Fitur Utama
 - **Pelaporan Pintar dengan AI:** Identifikasi prioritas, kategori masalah, dan estimasi pengerjaan otomatis.
 - **Linimasa (Timeline) Pelaporan:** Lacak status tiket dari mulai dibuat, ditugaskan, hingga selesai dikerjakan.
+- **Pengajuan Pemindahan Aset:** User dapat mengajukan perpindahan aset antar ruangan, lalu admin meninjau dan menyetujuinya sebelum lokasi aset otomatis diubah di database.
 - **Ekspor Data & Laporan (Analytics):** Analisis kinerja pemeliharaan fasilitas dalam bentuk metrik visual dan ekspor (CSV, Excel, PDF) dengan rentang waktu.
 - **Notifikasi Real-time:** Memberikan pembaruan instan (*WebSockets*) kepada admin maupun pelapor jika status laporan berubah.
 - **Manajemen Pengguna Terpusat:** Admin dapat mengelola dua jenis akun saja, yaitu _Admin_ dan _User_.
@@ -14,19 +15,44 @@ Sistem ini membantu mempermudah pelaporan, di mana AI (menggunakan Gemini 2.5 Fl
 
 ---
 
+## Fitur Pengajuan Pemindahan Aset
+
+Fitur ini memperluas alur aplikasi dari sekadar pengaduan masalah menjadi juga pengelolaan perpindahan aset antar ruangan.
+
+### Alur Penggunaan
+
+1. **User** membuka menu **Pengajuan Transfer** di dashboard.
+2. User memilih **ruangan asal**, **aset**, **ruangan tujuan**, lalu menuliskan **alasan pemindahan**.
+3. Pengajuan tersimpan dengan status **PENDING**.
+4. **Admin** membuka menu **Approval Transfer** di dashboard.
+5. Admin meninjau detail pengajuan lalu memilih **Setuju** atau **Tolak**.
+6. Jika **disetujui**, sistem otomatis mengubah `room_id` aset ke ruangan tujuan di database.
+7. Status pengajuan berubah menjadi **APPROVED** atau **REJECTED** dan riwayatnya tetap bisa dilihat.
+
+### Endpoint API Baru
+
+| Method | Endpoint | Deskripsi |
+|--------|----------|-----------|
+| `GET` | `/assets/transfers` | Daftar pengajuan transfer (user melihat miliknya sendiri, admin melihat semua) |
+| `GET` | `/assets/transfers/:id` | Detail satu pengajuan transfer |
+| `POST` | `/assets/transfers` | Membuat pengajuan transfer aset baru |
+| `PATCH` | `/assets/transfers/:id` | Review transfer oleh admin (`APPROVED` / `REJECTED`) |
+
+---
+
 ## Fitur Import Aset (Excel)
 
-Fitur ini memungkinkan admin mengimpor data aset inventaris dari **file Excel (.xlsx/.xls)** ke dalam database secara massal — tanpa perlu menginput satu per satu.
+Fitur ini memungkinkan admin mengimpor data aset inventaris dari **file Excel (.xlsx/.xls)** ke dalam database secara massal â€” tanpa perlu menginput satu per satu.
 
 ### Cara Penggunaan
 
 1. **Buka halaman** `Fasilitas & Ruangan` di dashboard admin.
-2. Klik tombol **⬇ Template** di pojok kanan atas untuk mengunduh file template Excel yang sudah terformat.
+2. Klik tombol **â¬‡ Template** di pojok kanan atas untuk mengunduh file template Excel yang sudah terformat.
 3. Isi data aset di file template sesuai kolom yang tersedia.
-4. Klik tombol **📊 Import Excel** di pojok kanan atas (di samping "Tambah Ruangan").
+4. Klik tombol **ðŸ“Š Import Excel** di pojok kanan atas (di samping "Tambah Ruangan").
 5. Pilih file `.xlsx` / `.xls` yang sudah diisi.
-   - Jika ruangan sudah dipilih sebelumnya → data langsung diimport ke ruangan tersebut.
-   - Jika belum memilih ruangan → modal otomatis muncul untuk memilih ruangan tujuan.
+   - Jika ruangan sudah dipilih sebelumnya â†’ data langsung diimport ke ruangan tersebut.
+   - Jika belum memilih ruangan â†’ modal otomatis muncul untuk memilih ruangan tujuan.
 6. Klik **Import** dan tunggu notifikasi sukses.
 
 ### Format Kolom Excel
@@ -72,11 +98,11 @@ Proyek ini menggunakan arsitektur _Clean Architecture_ dan dipisahkan menjadi du
 ## Panduan Menjalankan Proyek (Quick Start)
 
 ### Persyaratan Sistem
-- [Bun](https://bun.sh/) **1.3+** — digunakan sebagai runtime **dan** package manager (pengganti Node.js/npm).
+- [Bun](https://bun.sh/) **1.3+** â€” digunakan sebagai runtime **dan** package manager (pengganti Node.js/npm).
 - PostgreSQL 16+ dengan ekstensi **pgvector** sudah terpasang.
 - Buat sebuah database kosong di PostgreSQL bernama `fixmind`.
 
-> **⚠️ Penting:** Proyek ini menggunakan **Bun**, bukan `npm` atau `yarn`. Pastikan Bun sudah terinstal sebelum menjalankan perintah apapun. Install Bun: `powershell -c "irm bun.sh/install.ps1 | iex"`
+> **âš ï¸ Penting:** Proyek ini menggunakan **Bun**, bukan `npm` atau `yarn`. Pastikan Bun sudah terinstal sebelum menjalankan perintah apapun. Install Bun: `powershell -c "irm bun.sh/install.ps1 | iex"`
 
 ### 1. Konfigurasi Environment (Variabel Lingkungan)
 Untuk **Backend**:

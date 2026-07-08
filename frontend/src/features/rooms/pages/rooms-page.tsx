@@ -281,20 +281,6 @@ export function RoomsPage() {
                     className="hidden"
                     onChange={handlePanelImportFileChange}
                   />
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    onClick={() => assetImportInputRef.current?.click()}
-                    disabled={importAssetsMut.isPending}
-                    className="h-8"
-                    title="Import aset dari Excel"
-                  >
-                    <Upload className="h-4 w-4 mr-1" />
-                    {importAssetsMut.isPending ? 'Import...' : 'Import Excel'}
-                  </Button>
-                  <Button size="sm" variant="ghost" onClick={() => setShowAssetForm(true)} className="h-8">
-                    <Plus className="h-4 w-4 mr-1" /> Tambah
-                  </Button>
                 </>
               )}
               {isAdmin && selectedRoom && isDeletingAssets && (
@@ -314,23 +300,6 @@ export function RoomsPage() {
           ) : !assets.data?.data.length ? (
             <div className="p-6">
               <EmptyState title="Tidak ada aset di ruangan ini" />
-              {isAdmin && (
-                <div className="mt-4 flex flex-wrap gap-3">
-                  <Button
-                    size="sm"
-                    variant="secondary"
-                    onClick={() => assetImportInputRef.current?.click()}
-                    disabled={importAssetsMut.isPending}
-                  >
-                    <Upload className="h-4 w-4" />
-                    {importAssetsMut.isPending ? 'Mengimport...' : 'Import Excel'}
-                  </Button>
-                  <Button size="sm" variant="ghost" onClick={() => setShowAssetForm(true)}>
-                    <Plus className="h-4 w-4" />
-                    Tambah Manual
-                  </Button>
-                </div>
-              )}
             </div>
           ) : (
             <ul>

@@ -1,10 +1,12 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 import { createPortal } from 'react-dom'
 import { NavLink, Outlet, useNavigate, useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
+  ArrowRightLeft,
   BarChart3,
   Building2,
+  ClipboardCheck,
   ClipboardList,
   LayoutDashboard,
   LogOut,
@@ -29,6 +31,8 @@ const navItems: Array<{
   { to: '/dashboard', label: 'Dasbor', icon: LayoutDashboard },
   { to: '/dashboard/reports', label: 'Laporan Masalah', icon: ClipboardList },
   { to: '/dashboard/rooms', label: 'Fasilitas & Ruangan', icon: Building2 },
+  { to: '/dashboard/asset-transfers', label: 'Pengajuan Transfer', icon: ArrowRightLeft },
+  { to: '/dashboard/asset-transfers/review', label: 'Approval Transfer', icon: ClipboardCheck, roles: ['ADMIN'] },
   { to: '/dashboard/users', label: 'Pengguna', icon: Users, roles: ['ADMIN'] },
   { to: '/dashboard/analytics', label: 'Analitik', icon: BarChart3, roles: ['ADMIN'] },
 ]

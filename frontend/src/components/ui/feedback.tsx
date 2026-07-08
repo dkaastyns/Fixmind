@@ -1,4 +1,4 @@
-import { cn } from '@/lib/utils'
+﻿import { cn } from '@/lib/utils'
 
 const variants = {
   default: 'bg-danger/10 text-danger',
@@ -69,6 +69,7 @@ export function StatusBadge({ status }: { status: string }) {
     COMPLETED: 'bg-success/15 text-success',
     CANCELLED: 'bg-muted/20 text-muted',
     REJECTED: 'bg-danger/15 text-danger',
+    APPROVED: 'bg-success/15 text-success',
     LOW: 'bg-success/15 text-success',
     MEDIUM: 'bg-warning/15 text-warning',
     HIGH: 'bg-danger/15 text-danger',
@@ -84,6 +85,7 @@ export function StatusBadge({ status }: { status: string }) {
     COMPLETED: 'Selesai',
     CANCELLED: 'Dibatalkan',
     REJECTED: 'Ditolak',
+    APPROVED: 'Disetujui',
     LOW: 'Rendah',
     MEDIUM: 'Sedang',
     HIGH: 'Tinggi',
