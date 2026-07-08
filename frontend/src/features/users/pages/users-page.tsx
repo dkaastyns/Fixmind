@@ -100,9 +100,11 @@ export function UsersPage() {
         title="Manajemen Pengguna"
         description="Kelola akun administrator dan pengguna aplikasi E-Lapor DPRD Kota Semarang."
         action={
-          <Button onClick={() => setShowForm(true)} className="gap-2 shadow-sm">
-            <Plus className="h-4 w-4" /> Tambah Pengguna
-          </Button>
+          <div className="w-fit">
+            <Button onClick={() => setShowForm(true)} className="gap-2 shadow-sm">
+              <Plus className="h-4 w-4" /> Tambah Pengguna
+            </Button>
+          </div>
         }
       />
 
@@ -200,104 +202,179 @@ export function UsersPage() {
             description="Belum ada pengguna dalam kategori filter ini."
           />
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm border-collapse">
-              <thead>
-                <tr className="border-b border-white/20 text-left text-xs font-bold text-slate-400 uppercase tracking-wider bg-white/10">
-                  <th className="px-5 py-3.5">Nama Lengkap</th>
-                  <th className="px-5 py-3.5">Email</th>
-                  <th className="px-5 py-3.5">Peran</th>
-                  <th className="px-5 py-3.5">Status</th>
-                  <th className="px-5 py-3.5 text-right">Aksi</th>
-                </tr>
-              </thead>
-              <motion.tbody
-                variants={containerVariants}
-                initial="hidden"
-                animate="show"
-                className="divide-y divide-white/15"
-              >
-                {filteredUsers.map((u) => (
-                  <motion.tr 
-                    key={u.id} 
-                    variants={itemVariants}
-                    className="hover:bg-white/30 transition-colors"
-                  >
-                    {/* User profile avatar initials & name */}
-                    <td className="px-5 py-3.5 font-semibold text-slate-800">
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-full gradient-primary flex items-center justify-center text-white text-xs font-extrabold shadow-sm">
-                          {u.fullName?.charAt(0).toUpperCase() ?? 'U'}
-                        </div>
-                        <span className="truncate max-w-[180px]">{u.fullName}</span>
+          <>
+            {/* Mobile View: Cards */}
+            <div className="grid gap-4 p-4 md:hidden">
+              {filteredUsers.map((u) => (
+                <div key={u.id} className="p-4 rounded-xl border border-white/50 bg-white/70 shadow-sm space-y-3">
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-full gradient-primary flex items-center justify-center text-white text-xs font-extrabold shadow-sm">
+                        {u.fullName?.charAt(0).toUpperCase() ?? 'U'}
                       </div>
-                    </td>
-                    <td className="px-5 py-3.5 text-slate-500 font-medium">{u.email}</td>
-                    
-                    {/* Role badge tag */}
-                    <td className="px-5 py-3.5">
-                      {u.isAdmin ? (
-                        <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-purple-500/10 text-purple-700 border border-purple-200/50">
-                          <Shield className="w-3 h-3" /> Admin
-                        </span>
-                      ) : (
-                        <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-700 border border-blue-200/50">
-                          <User className="w-3 h-3" /> Pengguna
-                        </span>
-                      )}
-                    </td>
+                      <div className="min-w-0">
+                        <p className="font-bold text-slate-800 text-sm truncate">{u.fullName}</p>
+                        <p className="text-xs text-slate-500 truncate">{u.email}</p>
+                      </div>
+                    </div>
+                    {u.isAdmin ? (
+                      <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-purple-500/10 text-purple-700 border border-purple-200/50">
+                        <Shield className="w-3 h-3" /> Admin
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-700 border border-blue-200/50">
+                        <User className="w-3 h-3" /> Pengguna
+                      </span>
+                    )}
+                  </div>
 
-                    {/* Active toggle button */}
-                    <td className="px-5 py-3.5">
-                      <div className="flex items-center gap-2">
-                        <button
-                          onClick={() => updateMut.mutate({ id: u.id, isActive: !u.isActive })}
-                          className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors focus:outline-none shadow-inner border border-slate-200/50 ${
-                            u.isActive ? 'bg-green-500' : 'bg-slate-300'
+                  <div className="flex items-center justify-between border-t border-slate-100 pt-2.5">
+                    <span className="text-xs text-slate-400 font-bold uppercase tracking-wider">Status Akun</span>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => updateMut.mutate({ id: u.id, isActive: !u.isActive })}
+                        className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors focus:outline-none shadow-inner border border-slate-200/50 ${
+                          u.isActive ? 'bg-green-500' : 'bg-slate-300'
+                        }`}
+                      >
+                        <span
+                          className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white transition-transform shadow-sm ${
+                            u.isActive ? 'translate-x-4' : 'translate-x-0.5'
                           }`}
-                        >
-                          <span
-                            className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white transition-transform shadow-sm ${
-                              u.isActive ? 'translate-x-4' : 'translate-x-0.5'
-                            }`}
-                          />
-                        </button>
-                        <span className={`text-xs font-bold ${u.isActive ? 'text-green-600' : 'text-slate-400'}`}>
-                          {u.isActive ? 'Aktif' : 'Nonaktif'}
-                        </span>
-                      </div>
-                    </td>
+                        />
+                      </button>
+                      <span className={`text-xs font-bold ${u.isActive ? 'text-green-600' : 'text-slate-400'}`}>
+                        {u.isActive ? 'Aktif' : 'Nonaktif'}
+                      </span>
+                    </div>
+                  </div>
 
-                    {/* Actions panel */}
-                    <td className="px-5 py-3.5 text-right">
-                      <div className="flex items-center justify-end gap-1.5">
-                        <Button 
-                          variant="secondary" 
-                          size="sm" 
-                          className="h-8 text-xs rounded-xl flex items-center gap-1" 
-                          onClick={() => triggerResetPassword(u.id, u.fullName)}
-                        >
-                          <KeyRound className="w-3.5 h-3.5 text-slate-500" /> Reset Sandi
-                        </Button>
-                        <Button 
-                          variant="ghost" 
-                          size="sm" 
-                          className="h-8 text-xs rounded-xl text-red-500 hover:text-red-700 hover:bg-red-500/5 border border-transparent hover:border-red-200/40 gap-1" 
-                          onClick={() => {
-                            if (confirm(`Apakah Anda yakin ingin menghapus pengguna ${u.fullName}?`)) {
-                              deleteMut.mutate(u.id)
-                            }
-                          }}
-                        >
-                          <Trash2 className="w-3.5 h-3.5" /> Hapus
-                        </Button>
-                      </div>
-                    </td>
-                  </motion.tr>
-                ))}
-              </motion.tbody>
-            </table>
-          </div>
+                  <div className="flex gap-2 border-t border-slate-100 pt-2.5">
+                    <Button 
+                      variant="secondary" 
+                      size="sm" 
+                      className="flex-1 h-9 text-xs rounded-xl flex items-center justify-center gap-1" 
+                      onClick={() => triggerResetPassword(u.id, u.fullName)}
+                    >
+                      <KeyRound className="w-3.5 h-3.5 text-slate-500" /> Reset Sandi
+                    </Button>
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      className="flex-1 h-9 text-xs rounded-xl text-red-500 hover:text-red-700 hover:bg-red-500/5 border border-transparent hover:border-red-200/40 gap-1 flex items-center justify-center" 
+                      onClick={() => {
+                        if (confirm(`Apakah Anda yakin ingin menghapus pengguna ${u.fullName}?`)) {
+                          deleteMut.mutate(u.id)
+                        }
+                      }}
+                    >
+                      <Trash2 className="w-3.5 h-3.5" /> Hapus
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Desktop View: Table */}
+            <div className="hidden md:block overflow-x-auto">
+              <table className="w-full text-sm border-collapse">
+                <thead>
+                  <tr className="border-b border-white/20 text-left text-xs font-bold text-slate-400 uppercase tracking-wider bg-white/10">
+                    <th className="px-5 py-3.5">Nama Lengkap</th>
+                    <th className="px-5 py-3.5">Email</th>
+                    <th className="px-5 py-3.5">Peran</th>
+                    <th className="px-5 py-3.5">Status</th>
+                    <th className="px-5 py-3.5 text-right">Aksi</th>
+                  </tr>
+                </thead>
+                <motion.tbody
+                  variants={containerVariants}
+                  initial="hidden"
+                  animate="show"
+                  className="divide-y divide-white/15"
+                >
+                  {filteredUsers.map((u) => (
+                    <motion.tr 
+                      key={u.id} 
+                      variants={itemVariants}
+                      className="hover:bg-white/30 transition-colors"
+                    >
+                      {/* User profile avatar initials & name */}
+                      <td className="px-5 py-3.5 font-semibold text-slate-800">
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 rounded-full gradient-primary flex items-center justify-center text-white text-xs font-extrabold shadow-sm">
+                            {u.fullName?.charAt(0).toUpperCase() ?? 'U'}
+                          </div>
+                          <span className="truncate max-w-[180px]">{u.fullName}</span>
+                        </div>
+                      </td>
+                      <td className="px-5 py-3.5 text-slate-500 font-medium">{u.email}</td>
+                      
+                      {/* Role badge tag */}
+                      <td className="px-5 py-3.5">
+                        {u.isAdmin ? (
+                          <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-purple-500/10 text-purple-700 border border-purple-200/50">
+                            <Shield className="w-3 h-3" /> Admin
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-700 border border-blue-200/50">
+                            <User className="w-3 h-3" /> Pengguna
+                          </span>
+                        )}
+                      </td>
+
+                      {/* Active toggle button */}
+                      <td className="px-5 py-3.5">
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={() => updateMut.mutate({ id: u.id, isActive: !u.isActive })}
+                            className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors focus:outline-none shadow-inner border border-slate-200/50 ${
+                              u.isActive ? 'bg-green-500' : 'bg-slate-300'
+                            }`}
+                          >
+                            <span
+                              className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white transition-transform shadow-sm ${
+                                u.isActive ? 'translate-x-4' : 'translate-x-0.5'
+                              }`}
+                            />
+                          </button>
+                          <span className={`text-xs font-bold ${u.isActive ? 'text-green-600' : 'text-slate-400'}`}>
+                            {u.isActive ? 'Aktif' : 'Nonaktif'}
+                          </span>
+                        </div>
+                      </td>
+
+                      {/* Actions panel */}
+                      <td className="px-5 py-3.5 text-right">
+                        <div className="flex items-center justify-end gap-1.5">
+                          <Button 
+                            variant="secondary" 
+                            size="sm" 
+                            className="h-8 text-xs rounded-xl flex items-center gap-1" 
+                            onClick={() => triggerResetPassword(u.id, u.fullName)}
+                          >
+                            <KeyRound className="w-3.5 h-3.5 text-slate-500" /> Reset Sandi
+                          </Button>
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            className="h-8 text-xs rounded-xl text-red-500 hover:text-red-700 hover:bg-red-500/5 border border-transparent hover:border-red-200/40 gap-1" 
+                            onClick={() => {
+                              if (confirm(`Apakah Anda yakin ingin menghapus pengguna ${u.fullName}?`)) {
+                                deleteMut.mutate(u.id)
+                              }
+                            }}
+                          >
+                            <Trash2 className="w-3.5 h-3.5" /> Hapus
+                          </Button>
+                        </div>
+                      </td>
+                    </motion.tr>
+                  ))}
+                </motion.tbody>
+              </table>
+            </div>
+          </>
         )}
       </GlassCard>
 
