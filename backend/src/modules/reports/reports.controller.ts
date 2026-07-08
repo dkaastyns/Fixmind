@@ -19,7 +19,6 @@ import { CurrentUser, type AuthUser } from '../../common/decorators/current-user
 import { Roles } from '../../common/decorators/roles.decorator';
 import type { ReportStatus } from '../../common/types/database-rows';
 import {
-  AssignReportDto,
   CreateReportDto,
   UpdateReportStatusDto,
 } from './dto/report.dto';
@@ -55,7 +54,6 @@ export class ReportsController {
       { header: 'Prioritas', key: 'priority', width: 12 },
       { header: 'Ruangan', key: 'room_name', width: 24 },
       { header: 'Pelapor', key: 'reporter_name', width: 24 },
-      { header: 'Teknisi', key: 'technician_name', width: 24 },
       { header: 'Dibuat Pada', key: 'created_at', width: 22 },
       { header: 'Selesai Pada', key: 'completed_at', width: 22 },
     ];
@@ -78,7 +76,6 @@ export class ReportsController {
         priority: r.priority ?? '',
         room_name: r.room_name,
         reporter_name: r.reporter_name,
-        technician_name: r.technician_name ?? '',
         created_at: r.created_at ? new Date(r.created_at).toISOString() : '',
         completed_at: r.completed_at ? new Date(r.completed_at).toISOString() : '',
       });
@@ -109,14 +106,13 @@ export class ReportsController {
 
     autoTable(doc, {
       startY: 70,
-      head: [['Judul', 'Status', 'Prioritas', 'Ruangan', 'Pelapor', 'Teknisi', 'Dibuat Pada']],
+      head: [['Judul', 'Status', 'Prioritas', 'Ruangan', 'Pelapor', 'Dibuat Pada']],
       body: rows.map((r) => [
         String(r.title),
         String(r.status),
         r.priority ?? '-',
         r.room_name,
         r.reporter_name,
-        r.technician_name ?? '-',
         r.created_at ? new Date(r.created_at).toLocaleDateString('id-ID') : '-',
       ]),
       styles: { fontSize: 8, cellPadding: 3 },
@@ -156,7 +152,7 @@ export class ReportsController {
     return { message: 'Report created', data };
   }
 
-  @Roles('TECHNICIAN', 'ADMIN')
+  @Roles('ADMIN')
   @Patch(':id/status')
   async updateStatus(
     @CurrentUser() user: AuthUser,
@@ -165,17 +161,6 @@ export class ReportsController {
   ) {
     const data = await this.reportsService.updateStatus(user, id, dto);
     return { message: 'Report status updated', data };
-  }
-
-  @Roles('ADMIN')
-  @Post(':id/assign')
-  async assign(
-    @CurrentUser() user: AuthUser,
-    @Param('id') id: string,
-    @Body() dto: AssignReportDto,
-  ) {
-    const data = await this.reportsService.assign(user, id, dto);
-    return { message: 'Technician assigned', data };
   }
 
   @Post(':id/attachments')

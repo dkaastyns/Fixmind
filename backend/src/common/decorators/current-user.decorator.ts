@@ -4,7 +4,7 @@ import type { Request } from 'express';
 export interface AuthUser {
   id: string;
   email: string;
-  role: 'ADMIN' | 'TECHNICIAN' | 'USER';
+  role: 'ADMIN' | 'USER';
   fullName: string;
 }
 

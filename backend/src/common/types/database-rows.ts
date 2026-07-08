@@ -1,4 +1,4 @@
-﻿export type UserRole = 'ADMIN' | 'TECHNICIAN' | 'USER';
+export type UserRole = 'ADMIN' | 'USER';
 
 export interface UserRow {
   id: string;
@@ -94,8 +94,6 @@ export interface ReportRow {
   ai_estimated_repair_hours: string | null;
   ai_suggested_action: string | null;
   ai_analysis_status: 'PENDING' | 'COMPLETED' | 'FAILED';
-  assigned_technician_id: string | null;
-  assigned_at: Date | null;
   target_completion_date: Date | null;
   ai_suggested_target_date: Date | null;
   completed_at: Date | null;

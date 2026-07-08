@@ -263,7 +263,6 @@ function AdminActionPanel({
     onError: (e: Error) => toast.error(e.message),
   })
 
-  const currentOption = ADMIN_STATUS_OPTIONS.find((o) => o.value === currentStatus)
   const isDirty = selectedStatus !== currentStatus || note.trim() !== ''
 
   return (

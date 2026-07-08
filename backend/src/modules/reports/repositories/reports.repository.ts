@@ -12,7 +12,6 @@ export interface ReportListRow extends ReportRow {
   room_code: string;
   asset_name: string | null;
   reporter_name: string;
-  technician_name: string | null;
 }
 
 @Injectable()
@@ -31,13 +30,11 @@ export class ReportsRepository {
       SELECT r.*,
         rm.name AS room_name, rm.code AS room_code,
         a.nama_barang AS asset_name,
-        u.full_name AS reporter_name,
-        t.full_name AS technician_name
+        u.full_name AS reporter_name
       FROM reports r
       JOIN rooms rm ON rm.id = r.room_id
       JOIN users u ON u.id = r.reporter_id
       LEFT JOIN assets a ON a.id = r.asset_id
-      LEFT JOIN users t ON t.id = r.assigned_technician_id
       WHERE r.id = ${id} AND r.deleted_at IS NULL
       LIMIT 1
     `;
@@ -48,7 +45,6 @@ export class ReportsRepository {
     page: number;
     limit: number;
     reporterId?: string;
-    technicianId?: string;
     status?: ReportStatus;
     startDate?: string;
     endDate?: string;
@@ -59,16 +55,13 @@ export class ReportsRepository {
       SELECT r.*,
         rm.name AS room_name, rm.code AS room_code,
         a.nama_barang AS asset_name,
-        u.full_name AS reporter_name,
-        t.full_name AS technician_name
+        u.full_name AS reporter_name
       FROM reports r
       JOIN rooms rm ON rm.id = r.room_id
       JOIN users u ON u.id = r.reporter_id
       LEFT JOIN assets a ON a.id = r.asset_id
-      LEFT JOIN users t ON t.id = r.assigned_technician_id
       WHERE r.deleted_at IS NULL
         ${params.reporterId ? this.sql`AND r.reporter_id = ${params.reporterId}` : this.sql``}
-        ${params.technicianId ? this.sql`AND r.assigned_technician_id = ${params.technicianId}` : this.sql``}
         ${params.status ? this.sql`AND r.status = ${params.status}` : this.sql``}
         ${params.startDate ? this.sql`AND r.created_at >= ${params.startDate}` : this.sql``}
         ${params.endDate ? this.sql`AND r.created_at <= ${params.endDate}::timestamp + interval '1 day' - interval '1 millisecond'` : this.sql``}
@@ -80,7 +73,6 @@ export class ReportsRepository {
       SELECT COUNT(*)::text AS count FROM reports r
       WHERE r.deleted_at IS NULL
         ${params.reporterId ? this.sql`AND r.reporter_id = ${params.reporterId}` : this.sql``}
-        ${params.technicianId ? this.sql`AND r.assigned_technician_id = ${params.technicianId}` : this.sql``}
         ${params.status ? this.sql`AND r.status = ${params.status}` : this.sql``}
         ${params.startDate ? this.sql`AND r.created_at >= ${params.startDate}` : this.sql``}
         ${params.endDate ? this.sql`AND r.created_at <= ${params.endDate}::timestamp + interval '1 day' - interval '1 millisecond'` : this.sql``}
@@ -106,8 +98,6 @@ export class ReportsRepository {
 
   async updateStatus(id: string, status: ReportStatus, extra?: {
     completedAt?: Date | null;
-    assignedTechnicianId?: string | null;
-    assignedAt?: Date | null;
     targetCompletionDate?: Date | null;
     adminNotes?: string;
     priority?: ReportPriority;
@@ -119,8 +109,6 @@ export class ReportsRepository {
       UPDATE reports SET
         status = ${status},
         completed_at = ${extra?.completedAt !== undefined ? extra.completedAt : existing.completed_at},
-        assigned_technician_id = ${extra?.assignedTechnicianId !== undefined ? extra.assignedTechnicianId : existing.assigned_technician_id},
-        assigned_at = ${extra?.assignedAt !== undefined ? extra.assignedAt : existing.assigned_at},
         target_completion_date = ${extra?.targetCompletionDate !== undefined ? extra.targetCompletionDate : existing.target_completion_date},
         admin_notes = ${extra?.adminNotes !== undefined ? extra.adminNotes : existing.admin_notes},
         priority = ${extra?.priority !== undefined ? extra.priority : existing.priority},

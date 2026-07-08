@@ -22,20 +22,13 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
       qc.invalidateQueries({ queryKey: ['report', report.id] })
     }
 
-    const handleReportAssigned = (report: Report) => {
-      toast.success(`You were assigned to: ${report.title}`)
-      qc.invalidateQueries({ queryKey: ['reports'] })
-      qc.invalidateQueries({ queryKey: ['report', report.id] })
-    }
 
     socket.on('report.created', handleReportCreated)
     socket.on('report.updated', handleReportUpdated)
-    socket.on('report.assigned', handleReportAssigned)
 
     return () => {
       socket.off('report.created', handleReportCreated)
       socket.off('report.updated', handleReportUpdated)
-      socket.off('report.assigned', handleReportAssigned)
     }
   }, [socket, qc])
 

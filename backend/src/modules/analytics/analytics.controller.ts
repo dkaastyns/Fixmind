@@ -19,10 +19,7 @@ export class AnalyticsController {
       return { message: 'Dashboard overview', data };
     }
 
-    const filters =
-      user.role === 'USER'
-        ? { reporterId: user.id, page: 1, limit: 1 }
-        : { technicianId: user.id, page: 1, limit: 1 };
+    const filters = { reporterId: user.id, page: 1, limit: 1 };
 
     const all = await this.reportsRepository.list({ ...filters, page: 1, limit: 1000 });
     const byStatus: Record<string, number> = {};
@@ -62,10 +59,5 @@ export class AnalyticsController {
     res.send(csv);
   }
 
-  @Roles('ADMIN')
-  @Get('technician-stats')
-  async technicianStats() {
-    const data = await this.analyticsService.technicianStats();
-    return { message: 'Technician stats retrieved', data };
-  }
+
 }

@@ -10,9 +10,7 @@ import type { ReportRow, ReportStatus } from '../../../common/types/database-row
 import { PriorityEngineService } from '../../ai/services/priority-engine.service';
 import { AssetsRepository } from '../../assets/repositories/assets.repository';
 import { RoomsRepository } from '../../rooms/repositories/rooms.repository';
-import { UsersRepository } from '../../users/repositories/users.repository';
 import {
-  AssignReportDto,
   CreateReportDto,
   UpdateReportStatusDto,
 } from '../dto/report.dto';
@@ -26,7 +24,6 @@ export class ReportsService {
     private readonly reportsRepository: ReportsRepository,
     private readonly roomsRepository: RoomsRepository,
     private readonly assetsRepository: AssetsRepository,
-    private readonly usersRepository: UsersRepository,
     private readonly priorityEngine: PriorityEngineService,
     private readonly cloudinaryService: CloudinaryService,
     private readonly notificationsGateway: NotificationsGateway,
@@ -51,8 +48,6 @@ export class ReportsService {
       reporterId: row.reporter_id,
       roomId: row.room_id,
       assetId: row.asset_id,
-      assignedTechnicianId: row.assigned_technician_id,
-      assignedAt: row.assigned_at,
       completedAt: row.completed_at,
       adminNotes: row.admin_notes,
       createdAt: row.created_at,
@@ -63,7 +58,6 @@ export class ReportsService {
             roomCode: row.room_code,
             assetName: row.asset_name,
             reporterName: row.reporter_name,
-            technicianName: row.technician_name,
           }
         : {}),
       ...extras,
@@ -74,7 +68,6 @@ export class ReportsService {
     const filters: Parameters<ReportsRepository['list']>[0] = { page, limit, status };
 
     if (user.role === 'USER') filters.reporterId = user.id;
-    else if (user.role === 'TECHNICIAN') filters.technicianId = user.id;
 
     const { rows, total } = await this.reportsRepository.list(filters);
     return {
@@ -142,16 +135,6 @@ export class ReportsService {
     const report = await this.reportsRepository.findById(id);
     if (!report) throw new NotFoundException('Report not found');
 
-    if (user.role === 'TECHNICIAN') {
-      if (report.assigned_technician_id !== user.id) {
-        throw new ForbiddenException('Not assigned to this report');
-      }
-      const allowed: ReportStatus[] = ['IN_PROGRESS', 'COMPLETED'];
-      if (!allowed.includes(dto.status)) {
-        throw new ForbiddenException('Technicians can only set IN_PROGRESS or COMPLETED');
-      }
-    }
-
     const completedAt =
       dto.status === 'COMPLETED' ? new Date() : report.completed_at;
 
@@ -173,46 +156,7 @@ export class ReportsService {
     const result = this.toPublic(detail ?? updated);
 
     this.notificationsGateway.notifyAdmins('report.updated', result);
-    if (result.assignedTechnicianId) {
-      this.notificationsGateway.notifyTechnician(result.assignedTechnicianId, 'report.updated', result);
-    }
     this.notificationsGateway.notifyUser(result.reporterId, 'report.updated', result);
-
-    return result;
-  }
-
-  async assign(user: AuthUser, id: string, dto: AssignReportDto) {
-    const report = await this.reportsRepository.findById(id);
-    if (!report) throw new NotFoundException('Report not found');
-
-    const tech = await this.usersRepository.findById(dto.technicianId);
-    if (!tech || tech.role !== 'TECHNICIAN' || !tech.is_active) {
-      throw new BadRequestException('Invalid technician');
-    }
-
-    const updated = await this.reportsRepository.updateStatus(id, 'ASSIGNED', {
-      assignedTechnicianId: dto.technicianId,
-      assignedAt: new Date(),
-      targetCompletionDate: dto.targetCompletionDate ? new Date(dto.targetCompletionDate) : undefined,
-      adminNotes: dto.adminNotes,
-    });
-    if (!updated) throw new NotFoundException('Report not found');
-
-    await this.reportsRepository.addHistory({
-      reportId: id,
-      actorId: user.id,
-      action: 'ASSIGNED',
-      oldStatus: report.status,
-      newStatus: 'ASSIGNED',
-      note: dto.adminNotes,
-      metadata: { technicianId: dto.technicianId },
-    });
-
-    const detail = await this.reportsRepository.findDetail(id);
-    const result = this.toPublic(detail ?? updated);
-
-    this.notificationsGateway.notifyAdmins('report.assigned', result);
-    this.notificationsGateway.notifyTechnician(dto.technicianId, 'report.assigned', result);
 
     return result;
   }
@@ -225,9 +169,7 @@ export class ReportsService {
     if (user.role === 'USER' && report.reporter_id !== user.id) {
       throw new ForbiddenException('Not your report');
     }
-    if (user.role === 'TECHNICIAN' && report.assigned_technician_id !== user.id) {
-      throw new ForbiddenException('Not assigned to this report');
-    }
+
 
     const currentAttachments = await this.reportsRepository.getAttachments(reportId);
     if (currentAttachments.length >= 3) {
@@ -252,7 +194,6 @@ export class ReportsService {
   private assertCanView(user: AuthUser, report: ReportListRow) {
     if (user.role === 'ADMIN') return;
     if (user.role === 'USER' && report.reporter_id === user.id) return;
-    if (user.role === 'TECHNICIAN' && report.assigned_technician_id === user.id) return;
     throw new ForbiddenException('Access denied');
   }
 
@@ -306,12 +247,9 @@ export class ReportsService {
     const report = await this.reportsRepository.findById(reportId);
     if (!report) throw new NotFoundException('Report not found');
 
-    // Authorization: admin can comment on any, reporter and assigned technician can comment on their own
+    // Authorization: admin can comment on any, reporter can comment on their own
     if (user.role === 'USER' && report.reporter_id !== user.id) {
       throw new ForbiddenException('Access denied');
-    }
-    if (user.role === 'TECHNICIAN' && report.assigned_technician_id !== user.id) {
-      throw new ForbiddenException('Not assigned to this report');
     }
 
     const comment = await this.reportsRepository.addComment(reportId, user.id, content);
@@ -330,9 +268,6 @@ export class ReportsService {
 
     if (user.role === 'USER' && report.reporter_id !== user.id) {
       throw new ForbiddenException('Access denied');
-    }
-    if (user.role === 'TECHNICIAN' && report.assigned_technician_id !== user.id) {
-      throw new ForbiddenException('Not assigned to this report');
     }
 
     const comments = await this.reportsRepository.getComments(reportId);

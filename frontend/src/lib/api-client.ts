@@ -6,8 +6,6 @@ import type {
   Comment,
   DashboardOverview,
   LoginResponse,
-  MaintenanceSchedule,
-  MaintenanceStatus,
   Report,
   Room,
   User,
@@ -306,34 +304,7 @@ export const addComment = (token: string, reportId: string, content: string) =>
     ...auth(token),
   })
 
-// Maintenance Schedules
-export const fetchMaintenanceSchedules = (
-  token: string,
-  params?: { status?: string; technicianId?: string },
-) => {
-  const q = new URLSearchParams()
-  if (params?.status) q.set('status', params.status)
-  if (params?.technicianId) q.set('technicianId', params.technicianId)
-  const qs = q.toString() ? `?${q.toString()}` : ''
-  return apiFetch<MaintenanceSchedule[]>(`/maintenance${qs}`, auth(token))
-}
 
-export const createMaintenanceSchedule = (token: string, data: object) =>
-  apiFetch<MaintenanceSchedule>('/maintenance', {
-    method: 'POST',
-    body: JSON.stringify(data),
-    ...auth(token),
-  })
-
-export const updateMaintenanceStatus = (token: string, id: string, status: MaintenanceStatus) =>
-  apiFetch<MaintenanceSchedule>(`/maintenance/${id}/status`, {
-    method: 'PATCH',
-    body: JSON.stringify({ status }),
-    ...auth(token),
-  })
-
-export const deleteMaintenanceSchedule = (token: string, id: string) =>
-  apiFetch(`/maintenance/${id}`, { method: 'DELETE', ...auth(token) })
 
 // File exports
 async function downloadBlob(blob: Blob, filename: string) {

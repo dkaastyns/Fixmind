@@ -97,8 +97,4 @@ export class NotificationsGateway implements OnGatewayConnection, OnGatewayDisco
       });
     }
   }
-
-  notifyTechnician(technicianId: string, event: string, payload: any) {
-    this.notifyUser(technicianId, event, payload);
-  }
 }

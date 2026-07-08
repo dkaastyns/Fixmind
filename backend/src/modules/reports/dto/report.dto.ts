@@ -43,16 +43,5 @@ export class UpdateReportStatusDto {
   note?: string;
 }
 
-export class AssignReportDto {
-  @IsUUID()
-  technicianId!: string;
 
-  @IsOptional()
-  @IsString()
-  adminNotes?: string;
-
-  @IsOptional()
-  @IsDateString()
-  targetCompletionDate?: string;
-}
 

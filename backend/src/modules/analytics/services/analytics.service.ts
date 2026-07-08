@@ -11,7 +11,7 @@ export class AnalyticsService {
 
   async exportCsv(startDate?: string, endDate?: string): Promise<string> {
     const rows = await this.analyticsRepository.exportRows(startDate, endDate);
-    const header = 'ID,Judul Laporan,Status,Prioritas,Ruangan,Pelapor,Teknisi,Dibuat Pada,Selesai Pada\n';
+    const header = 'ID,Judul Laporan,Status,Prioritas,Ruangan,Pelapor,Dibuat Pada,Selesai Pada\n';
     const body = rows
       .map((r) =>
         [
@@ -21,25 +21,11 @@ export class AnalyticsService {
           r.priority ?? '',
           `"${String(r.room).replace(/"/g, '""')}"`,
           `"${String(r.reporter).replace(/"/g, '""')}"`,
-          r.technician ? `"${String(r.technician).replace(/"/g, '""')}"` : '',
           r.created_at,
           r.completed_at ?? '',
         ].join(','),
       )
       .join('\n');
     return header + body;
-  }
-
-  async technicianStats() {
-    const rows = await this.analyticsRepository.technicianStats();
-    return rows.map((r) => ({
-      technicianId: r.technician_id,
-      technicianName: r.name,
-      completedTasks: Number(r.completed),
-      avgRating: r.avg_rating ? Number(parseFloat(r.avg_rating).toFixed(2)) : null,
-      avgCompletionHours: r.avg_completion_hours
-        ? Number(parseFloat(r.avg_completion_hours).toFixed(2))
-        : null,
-    }));
   }
 }

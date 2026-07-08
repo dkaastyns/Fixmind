@@ -1,4 +1,4 @@
-﻿export type UserRole = 'ADMIN' | 'TECHNICIAN' | 'USER'
+export type UserRole = 'ADMIN' | 'USER'
 
 export type ReportStatus =
   | 'PENDING'
@@ -104,9 +104,6 @@ export interface Report {
   roomCode?: string
   assetName?: string | null
   reporterName?: string
-  technicianName?: string | null
-  assignedTechnicianId: string | null
-  assignedAt: string | null
   completedAt: string | null
   targetCompletionDate: string | null
   aiSuggestedTargetDate: string | null
@@ -146,8 +143,6 @@ export interface LoginResponse {
   expiresIn: string
 }
 
-export type MaintenanceStatus = 'SCHEDULED' | 'IN_PROGRESS' | 'DONE' | 'OVERDUE'
-
 export interface Comment {
   id: string
   reportId: string
@@ -156,21 +151,4 @@ export interface Comment {
   authorRole?: string
   content: string
   createdAt: string
-}
-
-export interface MaintenanceSchedule {
-  id: string
-  title: string
-  description: string | null
-  roomId: string
-  roomName?: string
-  assetId: string | null
-  assetName?: string | null
-  technicianId: string
-  technicianName?: string
-  scheduledDate: string
-  frequency: 'ONCE' | 'DAILY' | 'WEEKLY' | 'MONTHLY'
-  status: MaintenanceStatus
-  createdAt: string
-  updatedAt: string
 }

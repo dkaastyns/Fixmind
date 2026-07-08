@@ -47,41 +47,14 @@ export class AnalyticsRepository {
     return this.sql`
       SELECT r.id, r.title, r.status::text, r.priority::text,
         rm.name AS room, u.full_name AS reporter,
-        t.full_name AS technician, r.created_at, r.completed_at
+        r.created_at, r.completed_at
       FROM reports r
       JOIN rooms rm ON rm.id = r.room_id
       JOIN users u ON u.id = r.reporter_id
-      LEFT JOIN users t ON t.id = r.assigned_technician_id
       WHERE r.deleted_at IS NULL
         ${startDate ? this.sql`AND r.created_at >= ${startDate}` : this.sql``}
         ${endDate ? this.sql`AND r.created_at <= ${endDate}::timestamp + interval '1 day' - interval '1 millisecond'` : this.sql``}
       ORDER BY r.created_at DESC
-    `;
-  }
-
-  async technicianStats() {
-    return this.sql<{
-      technician_id: string;
-      name: string;
-      assigned: string;
-      completed: string;
-      avg_rating: string | null;
-      avg_completion_hours: string | null;
-    }[]>`
-      SELECT
-        u.id AS technician_id,
-        u.full_name AS name,
-        COUNT(r.id)::text AS assigned,
-        COUNT(r.id) FILTER (WHERE r.status = 'COMPLETED')::text AS completed,
-        NULL::text AS avg_rating,
-        AVG(
-          EXTRACT(EPOCH FROM (r.completed_at - r.assigned_at)) / 3600.0
-        ) FILTER (WHERE r.completed_at IS NOT NULL AND r.assigned_at IS NOT NULL)::text AS avg_completion_hours
-      FROM users u
-      LEFT JOIN reports r ON r.assigned_technician_id = u.id AND r.deleted_at IS NULL
-      WHERE u.role = 'TECHNICIAN' AND u.deleted_at IS NULL
-      GROUP BY u.id, u.full_name
-      ORDER BY completed DESC
     `;
   }
 }

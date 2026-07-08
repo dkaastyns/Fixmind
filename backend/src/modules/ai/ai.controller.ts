@@ -7,7 +7,7 @@ import { RagService } from './services/rag.service';
 export class AiController {
   constructor(private readonly ragService: RagService) {}
 
-  @Roles('USER', 'TECHNICIAN', 'ADMIN')
+  @Roles('USER', 'ADMIN')
   @Post('chat')
   async chat(@CurrentUser() user: AuthUser, @Body('prompt') prompt: string) {
     if (!prompt) return { answer: 'Please provide a prompt.' };

@@ -18,8 +18,6 @@ import { AnalyticsModule } from './modules/analytics/analytics.module';
 import { CloudinaryModule } from './modules/cloudinary/cloudinary.module';
 import { NotificationsModule } from './modules/notifications/notifications.module';
 import { ScheduleModule } from '@nestjs/schedule';
-import { MaintenanceSchedulerModule } from './modules/maintenance-scheduler/maintenance-scheduler.module';
-import { MaintenanceModule } from './modules/maintenance/maintenance.module';
 
 @Module({
   imports: [
@@ -45,8 +43,6 @@ import { MaintenanceModule } from './modules/maintenance/maintenance.module';
     AiModule,
     CloudinaryModule,
     NotificationsModule,
-    MaintenanceSchedulerModule,
-    MaintenanceModule,
   ],
   providers: [
     { provide: APP_FILTER, useClass: AllExceptionsFilter },
