@@ -3,6 +3,7 @@ import { useSearchParams } from 'react-router-dom'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { ArrowRightLeft, Send, Sparkles } from 'lucide-react'
 import { toast } from 'sonner'
+import { motion } from 'framer-motion'
 import { Button } from '@/components/ui/button'
 import { GlassCard } from '@/components/ui/glass-card'
 import { EmptyState, PageHeader, StatusBadge } from '@/components/ui/feedback'
@@ -25,6 +26,7 @@ export function AssetTransferPage() {
   const [assetId, setAssetId] = useState(searchParams.get('assetId') ?? '')
   const [toRoomId, setToRoomId] = useState('')
   const [reason, setReason] = useState('')
+  const [showConfirm, setShowConfirm] = useState(false)
 
   const rooms = useQuery({
     queryKey: ['asset-transfer-rooms'],
@@ -177,7 +179,7 @@ export function AssetTransferPage() {
 
           <div className="flex flex-wrap items-center gap-3">
             <Button
-              onClick={() => createMutation.mutate()}
+              onClick={() => setShowConfirm(true)}
               disabled={!canSubmit || createMutation.isPending}
               className="gap-2"
             >
@@ -253,6 +255,38 @@ export function AssetTransferPage() {
         <p className="text-xs text-muted">
           Akun admin juga dapat membuka menu Approval Transfer untuk meninjau semua pengajuan.
         </p>
+      )}
+
+      {/* Confirmation Modal */}
+      {showConfirm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm p-4">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="w-full max-w-md"
+          >
+            <GlassCard className="p-6 bg-white shadow-2xl border-white">
+              <h3 className="text-lg font-bold text-slate-800">Konfirmasi Pengajuan</h3>
+              <p className="mt-2 text-sm text-slate-600">
+                Apakah Anda yakin data pengajuan perpindahan aset sudah benar?
+              </p>
+              <div className="mt-6 flex justify-end gap-3">
+                <Button variant="secondary" onClick={() => setShowConfirm(false)} disabled={createMutation.isPending}>
+                  Tidak, Batal
+                </Button>
+                <Button 
+                  onClick={() => {
+                    createMutation.mutate()
+                    setShowConfirm(false)
+                  }}
+                  disabled={createMutation.isPending}
+                >
+                  Ya, Kirim
+                </Button>
+              </div>
+            </GlassCard>
+          </motion.div>
+        </div>
       )}
     </div>
   )
