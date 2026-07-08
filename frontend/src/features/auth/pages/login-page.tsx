@@ -55,8 +55,26 @@ export function LoginPage() {
           className="h-full w-full object-cover"
         />
         {/* Light overlay matching landing page */}
-        <div className="absolute inset-0 bg-white/60 backdrop-blur-[4px]" />
-        <div className="absolute inset-0 bg-gradient-to-b from-white/30 via-white/60 to-white/95" />
+        <div className="absolute inset-0 bg-white/70 backdrop-blur-[6px]" />
+        
+        {/* AI Glowing Orbs */}
+        <motion.div 
+          animate={{ x: [0, 40, 0], y: [0, 30, 0] }} 
+          transition={{ repeat: Infinity, duration: 8, ease: "easeInOut" }}
+          className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-[#ef629f]/20 rounded-full mix-blend-multiply filter blur-[120px]" 
+        />
+        <motion.div 
+          animate={{ x: [0, -30, 0], y: [0, -40, 0] }} 
+          transition={{ repeat: Infinity, duration: 10, ease: "easeInOut" }}
+          className="absolute top-1/3 right-1/4 w-[400px] h-[400px] bg-blue-400/20 rounded-full mix-blend-multiply filter blur-[100px]" 
+        />
+        <motion.div 
+          animate={{ x: [0, 30, 0], y: [0, -30, 0] }} 
+          transition={{ repeat: Infinity, duration: 9, ease: "easeInOut" }}
+          className="absolute bottom-1/4 left-1/3 w-[600px] h-[600px] bg-purple-400/15 rounded-full mix-blend-multiply filter blur-[120px]" 
+        />
+
+        <div className="absolute inset-0 bg-gradient-to-b from-white/30 via-transparent to-white/95" />
       </motion.div>
 
       <motion.div
@@ -65,16 +83,21 @@ export function LoginPage() {
         className="w-full max-w-md relative z-10"
       >
         <div className="mb-8 text-center">
-          <Link to="/" className="mx-auto mb-6 flex h-24 w-24 items-center justify-center rounded-3xl bg-white/80 backdrop-blur-md shadow-xl border border-white/60 overflow-hidden p-2 transition-transform hover:scale-105">
-            <img src="/logo.png" alt="Logo Semarang" className="h-full w-full object-contain" />
-          </Link>
+          <motion.div
+            animate={{ y: [-5, 5, -5] }}
+            transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
+          >
+            <Link to="/" className="mx-auto mb-6 flex h-24 w-24 items-center justify-center rounded-3xl bg-white/80 backdrop-blur-md shadow-xl border border-white/80 overflow-hidden p-2 transition-transform hover:scale-105">
+              <img src="/logo.png" alt="Logo Semarang" className="h-full w-full object-contain" />
+            </Link>
+          </motion.div>
           <h1 className="text-2xl font-semibold text-slate-900 drop-shadow-sm">
             Selamat Datang di <span className="text-gradient font-bold drop-shadow">FixMind</span>
           </h1>
           <p className="mt-2 text-sm text-slate-700 font-medium drop-shadow-sm">Masuk ke akun Anda untuk melanjutkan</p>
         </div>
 
-        <GlassCard className="p-8 shadow-[0_8px_30px_rgb(0,0,0,0.3)] border-white/60 bg-white/80 backdrop-blur-xl">
+        <GlassCard className="p-8 shadow-2xl shadow-[#ef629f]/15 border-white/80 bg-white/80 backdrop-blur-xl">
           <form className="space-y-4" onSubmit={form.handleSubmit((v) => mutation.mutate(v))}>
             <div className="space-y-2">
               <label className="text-sm font-medium text-slate-700" htmlFor="email">Email</label>
@@ -91,7 +114,7 @@ export function LoginPage() {
               )}
             </div>
             {mutation.isError && <Alert>{(mutation.error as Error).message}</Alert>}
-            <Button type="submit" className="w-full mt-2 h-11 text-base shadow-lg hover:shadow-xl transition-all" disabled={mutation.isPending}>
+            <Button type="submit" className="w-full mt-2 h-11 text-base shadow-[0_0_20px_rgba(239,98,159,0.3)] hover:shadow-[0_0_30px_rgba(239,98,159,0.5)] hover:-translate-y-1 transition-all duration-300" disabled={mutation.isPending}>
               {mutation.isPending ? (
                 <><Loader2 className="h-4 w-4 animate-spin" />Memverifikasi...</>
               ) : 'Masuk'}
