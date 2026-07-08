@@ -2,7 +2,7 @@ import { useRef, useState } from 'react'
 import type { ReactNode } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Link, useParams } from 'react-router-dom'
-import { ArrowLeft, MessageCircle, Reply, Send, ZoomIn, Loader2, Bot, CheckCircle2 } from 'lucide-react'
+import { ArrowLeft, MessageCircle, Reply, Send, ZoomIn, Loader2, Bot, CheckCircle2, ChevronDown, Save } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
@@ -13,8 +13,19 @@ import {
   addComment,
   fetchComments,
   fetchReport,
+  updateReportStatus,
 } from '@/lib/api-client'
 import { useAuthStore } from '@/stores/auth-store'
+
+// Status options available for admin
+const ADMIN_STATUS_OPTIONS = [
+  { value: 'PENDING',      label: 'Menunggu',       color: 'text-yellow-600' },
+  { value: 'REVIEWED',     label: 'Ditinjau',        color: 'text-blue-600' },
+  { value: 'IN_PROGRESS',  label: 'Sedang Dikerjakan', color: 'text-indigo-600' },
+  { value: 'COMPLETED',    label: 'Selesai',         color: 'text-green-600' },
+  { value: 'CANCELLED',    label: 'Dibatalkan',      color: 'text-gray-500' },
+  { value: 'REJECTED',     label: 'Ditolak',         color: 'text-red-600' },
+] as const
 
 export function ReportDetailPage() {
   const { id } = useParams<{ id: string }>()
@@ -27,6 +38,7 @@ export function ReportDetailPage() {
     enabled: !!id,
   })
 
+  const qc = useQueryClient()
   const report = data?.data
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null)
 
@@ -156,13 +168,15 @@ export function ReportDetailPage() {
         </GlassCard>
 
         <div className="space-y-4">
-          {user?.isAdmin && report.status !== 'COMPLETED' && (
-            <GlassCard>
-              <h3 className="font-medium">Aksi Admin</h3>
-              <p className="mt-2 text-sm text-muted">
-                Alur penugasan sudah dihapus. Admin tetap bisa memantau status dan menambahkan catatan melalui komentar.
-              </p>
-            </GlassCard>
+          {user?.isAdmin && (
+            <AdminActionPanel
+              token={token}
+              reportId={report.id}
+              currentStatus={report.status}
+              onSuccess={() => {
+                qc.invalidateQueries({ queryKey: ['report', id] })
+              }}
+            />
           )}
 
           {report.histories && report.histories.length > 0 && (
@@ -193,6 +207,99 @@ export function ReportDetailPage() {
       {/* Comments Section */}
       <CommentSection token={token} reportId={id!} />
     </div>
+  )
+}
+
+function AdminActionPanel({
+  token,
+  reportId,
+  currentStatus,
+  onSuccess,
+}: {
+  token: string
+  reportId: string
+  currentStatus: string
+  onSuccess: () => void
+}) {
+  const [selectedStatus, setSelectedStatus] = useState(currentStatus)
+  const [note, setNote] = useState('')
+
+  const mutation = useMutation({
+    mutationFn: () =>
+      updateReportStatus(token, reportId, {
+        status: selectedStatus,
+        note: note.trim() || undefined,
+      }),
+    onSuccess: () => {
+      toast.success('Status laporan berhasil diperbarui')
+      setNote('')
+      onSuccess()
+    },
+    onError: (e: Error) => toast.error(e.message),
+  })
+
+  const currentOption = ADMIN_STATUS_OPTIONS.find((o) => o.value === currentStatus)
+  const isDirty = selectedStatus !== currentStatus || note.trim() !== ''
+
+  return (
+    <GlassCard className="space-y-4">
+      <h3 className="font-medium">Aksi Admin</h3>
+
+      {/* Current status info */}
+      <div className="flex items-center gap-2 rounded-xl bg-white/40 px-3 py-2 text-sm">
+        <span className="text-muted">Status saat ini:</span>
+        <StatusBadge status={currentStatus} />
+      </div>
+
+      {/* Status selector */}
+      <div>
+        <label className="mb-1.5 block text-xs font-medium text-muted">
+          Ubah status ke
+        </label>
+        <div className="relative">
+          <select
+            value={selectedStatus}
+            onChange={(e) => setSelectedStatus(e.target.value)}
+            className="w-full appearance-none rounded-xl border border-white/30 bg-white/50 px-3 py-2.5 pr-8 text-sm font-medium focus:border-[#ef629f]/50 focus:outline-none focus:ring-4 focus:ring-[#ef629f]/10 transition-all"
+            disabled={mutation.isPending}
+          >
+            {ADMIN_STATUS_OPTIONS.map((o) => (
+              <option key={o.value} value={o.value}>
+                {o.label}
+              </option>
+            ))}
+          </select>
+          <ChevronDown className="pointer-events-none absolute right-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
+        </div>
+      </div>
+
+      {/* Note / catatan */}
+      <div>
+        <label className="mb-1.5 block text-xs font-medium text-muted">
+          Catatan (opsional)
+        </label>
+        <textarea
+          value={note}
+          onChange={(e) => setNote(e.target.value)}
+          rows={3}
+          placeholder="Tambahkan catatan progres untuk teknisi atau pelapor..."
+          className="w-full resize-none rounded-xl border border-white/30 bg-white/50 px-3 py-2.5 text-sm focus:border-[#ef629f]/50 focus:outline-none focus:ring-4 focus:ring-[#ef629f]/10 transition-all"
+          disabled={mutation.isPending}
+        />
+      </div>
+
+      <Button
+        className="w-full gap-2"
+        onClick={() => mutation.mutate()}
+        disabled={!isDirty || mutation.isPending}
+      >
+        {mutation.isPending ? (
+          <><Loader2 className="h-4 w-4 animate-spin" /> Menyimpan...</>
+        ) : (
+          <><Save className="h-4 w-4" /> Simpan Perubahan</>
+        )}
+      </Button>
+    </GlassCard>
   )
 }
 
