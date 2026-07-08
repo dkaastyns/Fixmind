@@ -1,4 +1,4 @@
-﻿-- Asset Transfer Requests
+-- Asset Transfer Requests
 
 CREATE TYPE asset_transfer_status AS ENUM ('PENDING', 'APPROVED', 'REJECTED');
 
