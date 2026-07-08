@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import { NavLink, Outlet, useNavigate, useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -11,6 +11,7 @@ import {
   LayoutDashboard,
   LogOut,
   Menu,
+  Search,
   User,
   Users,
   X,
@@ -21,6 +22,7 @@ import { useAuthStore } from '@/stores/auth-store'
 import { cn } from '@/lib/utils'
 import { NotificationBell } from '@/components/ui/notification-bell'
 import { ChatWidget } from '@/components/ui/chat-widget'
+import { GlobalSearchModal } from '@/components/ui/global-search-modal'
 import type { UserRole } from '@/types/api'
 
 const navItems: Array<{
@@ -70,7 +72,16 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
             <p className="text-xs text-muted">Kota Semarang</p>
           </div>
         </div>
-        <NotificationBell align="left" />
+        <div className="flex items-center gap-1.5">
+          <button
+            onClick={() => window.dispatchEvent(new CustomEvent('open-global-search'))}
+            className="flex h-8 w-8 items-center justify-center rounded-xl bg-white hover:bg-white/80 text-muted hover:text-foreground shadow-sm border border-white/50 transition-colors"
+            title="Cari Aset"
+          >
+            <Search className="h-4 w-4" />
+          </button>
+          <NotificationBell align="left" />
+        </div>
       </div>
 
       <nav className="flex flex-1 flex-col gap-1 relative">
@@ -156,7 +167,14 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
 
 export function DashboardLayout() {
   const [mobileOpen, setMobileOpen] = useState(false)
+  const [searchOpen, setSearchOpen] = useState(false)
   const location = useLocation()
+
+  useEffect(() => {
+    const handleOpenSearch = () => setSearchOpen(true)
+    window.addEventListener('open-global-search', handleOpenSearch)
+    return () => window.removeEventListener('open-global-search', handleOpenSearch)
+  }, [])
 
   return (
     <div className="flex min-h-screen">
@@ -171,6 +189,13 @@ export function DashboardLayout() {
             <span className="font-semibold">E-Lapor DPRD</span>
           </div>
           <div className="flex items-center gap-3">
+            <button
+              onClick={() => window.dispatchEvent(new CustomEvent('open-global-search'))}
+              className="flex h-8 w-8 items-center justify-center rounded-xl bg-white hover:bg-white/80 text-muted hover:text-foreground shadow-sm border border-white/50 transition-colors"
+              title="Cari Aset"
+            >
+              <Search className="h-4 w-4" />
+            </button>
             <NotificationBell />
             <button onClick={() => setMobileOpen(true)} aria-label="Buka menu">
               <Menu className="h-6 w-6" />
@@ -221,6 +246,13 @@ export function DashboardLayout() {
         {/* Global Chatbot AI */}
         <ChatWidget />
       </div>
+
+      {/* Global Search Modal */}
+      <AnimatePresence>
+        {searchOpen && (
+          <GlobalSearchModal isOpen={searchOpen} onClose={() => setSearchOpen(false)} />
+        )}
+      </AnimatePresence>
     </div>
   )
 }

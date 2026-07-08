@@ -1,7 +1,7 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { ChevronDown, ChevronUp, Filter, Plus, X, Loader2, Bot } from 'lucide-react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
@@ -33,6 +33,13 @@ export function ReportsPage() {
   const [statusFilter, setStatusFilter] = useState<ReportStatus | ''>('')
   const [showAdvanced, setShowAdvanced] = useState(false)
   const [advFilter, setAdvFilter] = useState<FilterState>({ roomId: '', dateFrom: '', dateTo: '' })
+  const [searchParams] = useSearchParams()
+
+  useEffect(() => {
+    if (searchParams.get('openForm') === 'true') {
+      setShowForm(true)
+    }
+  }, [searchParams])
 
   const rooms = useQuery({ queryKey: ['rooms'], queryFn: () => fetchRooms(token, true) })
 
@@ -165,13 +172,18 @@ export function ReportsPage() {
       {showForm && (
         <CreateReportForm
           token={token}
-          onClose={() => setShowForm(false)}
+          onClose={() => {
+            setShowForm(false)
+            navigate('/dashboard/reports', { replace: true })
+          }}
           onSuccess={(id) => {
             qc.invalidateQueries({ queryKey: ['reports'] })
             setShowForm(false)
             toast.success('Laporan berhasil dikirim')
             navigate(`/dashboard/reports/${id}`)
           }}
+          initialRoomId={searchParams.get('roomId') ?? ''}
+          initialAssetId={searchParams.get('assetId') ?? ''}
         />
       )}
 
@@ -251,15 +263,19 @@ function CreateReportForm({
   token,
   onClose,
   onSuccess,
+  initialRoomId = '',
+  initialAssetId = '',
 }: {
   token: string
   onClose: () => void
   onSuccess: (id: string) => void
+  initialRoomId?: string
+  initialAssetId?: string
 }) {
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
-  const [roomId, setRoomId] = useState('')
-  const [assetId, setAssetId] = useState('')
+  const [roomId, setRoomId] = useState(initialRoomId)
+  const [assetId, setAssetId] = useState(initialAssetId)
   const [files, setFiles] = useState<File[]>([])
 
   const rooms = useQuery({ queryKey: ['rooms'], queryFn: () => fetchRooms(token, true) })
