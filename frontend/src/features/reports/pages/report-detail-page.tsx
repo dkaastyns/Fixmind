@@ -189,13 +189,38 @@ export function ReportDetailPage() {
                     AI_ANALYZED: 'Dianalisis AI',
                     ASSIGNED: 'Ditugaskan',
                     STATUS_UPDATED: 'Status Diperbarui',
+                    STATUS_CHANGED: 'Status Diperbarui',
                   }
+                  const statusLabelMap: Record<string, string> = {
+                    PENDING: 'Menunggu',
+                    AI_ANALYSIS: 'Analisis AI',
+                    REVIEWED: 'Ditinjau',
+                    ASSIGNED: 'Ditugaskan',
+                    IN_PROGRESS: 'Sedang Dikerjakan',
+                    COMPLETED: 'Selesai',
+                    CANCELLED: 'Dibatalkan',
+                    REJECTED: 'Ditolak',
+                  }
+                  const isStatusChange = h.action === 'STATUS_CHANGED' || h.action === 'STATUS_UPDATED'
+                  const oldLabel = h.oldStatus ? (statusLabelMap[h.oldStatus] ?? h.oldStatus) : null
+                  const newLabel = h.newStatus ? (statusLabelMap[h.newStatus] ?? h.newStatus) : null
+
                   return (
                     <li key={h.id} className="border-l-2 border-[#ef629f]/30 pl-3 text-sm">
-                      <p className="font-medium capitalize">{actionMap[h.action] ?? h.action.replace(/_/g, ' ').toLowerCase()}</p>
-                    {h.note && <p className="text-muted">{h.note}</p>}
-                    <p className="text-xs text-muted">{new Date(h.createdAt).toLocaleString('id-ID')}</p>
-                  </li>
+                      <p className="font-medium">
+                        {actionMap[h.action] ?? h.action.replace(/_/g, ' ').toLowerCase()}
+                      </p>
+                      {/* Show old → new status for status changes */}
+                      {isStatusChange && oldLabel && newLabel && (
+                        <p className="mt-0.5 flex items-center gap-1.5 text-xs">
+                          <span className="rounded-md bg-gray-100 px-1.5 py-0.5 text-gray-500">{oldLabel}</span>
+                          <span className="text-muted">→</span>
+                          <span className="rounded-md bg-[#ef629f]/10 px-1.5 py-0.5 font-medium text-[#ef629f]">{newLabel}</span>
+                        </p>
+                      )}
+                      {h.note && <p className="mt-0.5 text-muted">{h.note}</p>}
+                      <p className="mt-0.5 text-xs text-muted">{new Date(h.createdAt).toLocaleString('id-ID')}</p>
+                    </li>
                   )
                 })}
               </ul>
