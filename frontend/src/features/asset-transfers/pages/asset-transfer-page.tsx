@@ -1,4 +1,4 @@
-﻿import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { ArrowRightLeft, Send, Sparkles } from 'lucide-react'
@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { GlassCard } from '@/components/ui/glass-card'
 import { EmptyState, PageHeader, StatusBadge } from '@/components/ui/feedback'
+import { ListSkeleton } from '@/components/ui/skeleton'
 import {
   createAssetTransfer,
   fetchAssetTransfers,
@@ -210,7 +211,7 @@ export function AssetTransferPage() {
           </div>
 
           {myTransfers.isLoading ? (
-            <p className="text-sm text-muted">Memuat riwayat pengajuan...</p>
+            <ListSkeleton count={3} />
           ) : (myTransfers.data?.data ?? []).length === 0 ? (
             <EmptyState
               title="Belum ada pengajuan"

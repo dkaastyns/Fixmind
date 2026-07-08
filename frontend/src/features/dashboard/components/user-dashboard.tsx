@@ -7,6 +7,7 @@ import { motion } from 'framer-motion'
 import { ClipboardList, PlusCircle, CheckCircle2 } from 'lucide-react'
 import { Link, useNavigate } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
+import { Skeleton, ListSkeleton } from '@/components/ui/skeleton'
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -80,7 +81,7 @@ export function UserDashboard() {
             <p className="text-sm font-medium text-muted">Laporan Saya</p>
           </div>
           <p className="text-3xl font-semibold text-gradient">
-            {loadingStats ? '...' : (stats?.total ?? '0')}
+            {loadingStats ? <Skeleton className="h-9 w-16" /> : (stats?.total ?? '0')}
           </p>
         </AnimatedGlassCard>
 
@@ -92,7 +93,7 @@ export function UserDashboard() {
             <p className="text-sm font-medium text-muted">Selesai</p>
           </div>
           <p className="text-3xl font-semibold text-gradient">
-            {loadingStats ? '...' : (stats?.completedLast30Days ?? '0')}
+            {loadingStats ? <Skeleton className="h-9 w-16" /> : (stats?.completedLast30Days ?? '0')}
           </p>
         </AnimatedGlassCard>
       </div>
@@ -111,7 +112,7 @@ export function UserDashboard() {
           </div>
           
           {loadingReports ? (
-            <p className="p-6 text-sm text-muted">Memuat laporan terbaru...</p>
+            <ListSkeleton count={3} />
           ) : recentReports.length === 0 ? (
             <EmptyState title="Belum ada laporan" description="Laporan yang Anda ajukan akan muncul di sini." />
           ) : (

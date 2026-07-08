@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input'
 import { PasswordInput } from '@/components/ui/password-input'
 import { GlassCard } from '@/components/ui/glass-card'
 import { EmptyState, PageHeader } from '@/components/ui/feedback'
+import { TableSkeleton } from '@/components/ui/skeleton'
 import { createUser, deleteUser, fetchUsers, updateUser } from '@/lib/api-client'
 import { useAuthStore } from '@/stores/auth-store'
 
@@ -72,7 +73,7 @@ export function UsersPage() {
 
       <GlassCard className="overflow-hidden p-0">
         {isLoading ? (
-          <p className="p-6 text-sm text-muted">Memuat...</p>
+          <TableSkeleton rows={5} cols={4} />
         ) : users.length === 0 ? (
           <EmptyState title="Tidak ada pengguna ditemukan" />
         ) : (

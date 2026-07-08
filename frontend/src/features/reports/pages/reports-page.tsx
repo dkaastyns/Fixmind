@@ -7,6 +7,7 @@ import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { GlassCard } from '@/components/ui/glass-card'
 import { EmptyState, PageHeader, StatusBadge } from '@/components/ui/feedback'
+import { TableSkeleton } from '@/components/ui/skeleton'
 import {
   createReport,
   fetchReports,
@@ -176,7 +177,7 @@ export function ReportsPage() {
 
       <GlassCard className="overflow-hidden p-0">
         {isLoading ? (
-          <p className="p-6 text-sm text-muted">Memuat data...</p>
+          <TableSkeleton rows={5} cols={5} />
         ) : reports.length === 0 ? (
           <EmptyState title="Belum ada laporan" description="Buat laporan jika Anda menemukan kerusakan fasilitas." />
         ) : (

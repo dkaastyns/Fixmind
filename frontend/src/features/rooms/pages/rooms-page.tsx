@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { GlassCard } from '@/components/ui/glass-card'
 import { EmptyState, PageHeader, StatusBadge } from '@/components/ui/feedback'
+import { ListSkeleton } from '@/components/ui/skeleton'
 import {
   createAsset,
   createRoom,
@@ -222,7 +223,9 @@ export function RoomsPage() {
               )}
             </div>
           </div>
-          {!rooms.data?.data.length ? (
+          {rooms.isLoading ? (
+            <ListSkeleton count={5} />
+          ) : !rooms.data?.data.length ? (
             <EmptyState title="Tidak ada ruangan" />
           ) : (
             <ul>
@@ -297,6 +300,8 @@ export function RoomsPage() {
           </div>
           {!selectedRoom ? (
             <p className="p-6 text-sm text-muted">Pilih ruangan untuk melihat aset</p>
+          ) : assets.isLoading ? (
+            <ListSkeleton count={4} />
           ) : !assets.data?.data.length ? (
             <div className="p-6">
               <EmptyState title="Tidak ada aset di ruangan ini" />

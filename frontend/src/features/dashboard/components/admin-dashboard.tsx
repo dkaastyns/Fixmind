@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input'
 import { useAuthStore } from '@/stores/auth-store'
 import { motion } from 'framer-motion'
 import { Building2, CheckCircle2, ClipboardList, Search, Star } from 'lucide-react'
+import { Skeleton } from '@/components/ui/skeleton'
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   PieChart, Pie, Cell, Legend
@@ -75,7 +76,7 @@ export function AdminDashboard() {
             <div>
               <p className="text-sm text-muted">{stat.label}</p>
               <p className="mt-2 text-3xl font-semibold text-gradient">
-                {isLoading ? '...' : stat.value}
+                {isLoading ? <Skeleton className="h-9 w-16" /> : stat.value}
               </p>
             </div>
             <div className={`p-3 rounded-xl bg-white/40 backdrop-blur-sm ${stat.color}`}>
