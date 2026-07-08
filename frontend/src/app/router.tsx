@@ -1,50 +1,61 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import { DashboardLayout } from '@/components/layout/dashboard-layout'
 import { AdminOnly } from '@/app/admin-only'
-import { LoginPage } from '@/features/auth/pages/login-page'
-import { SignupPage } from '@/features/auth/pages/signup-page'
-import { LandingPage } from '@/features/landing/pages/landing-page'
-import { DashboardHomePage } from '@/features/dashboard/pages/dashboard-home-page'
-import { ReportsPage } from '@/features/reports/pages/reports-page'
-import { ReportDetailPage } from '@/features/reports/pages/report-detail-page'
-import { RoomsPage } from '@/features/rooms/pages/rooms-page'
-import { UsersPage } from '@/features/users/pages/users-page'
-import { AnalyticsPage } from '@/features/analytics/pages/analytics-page'
-import { AssetTransferPage } from '@/features/asset-transfers/pages/asset-transfer-page'
-import { TransferRequestsPage } from '@/features/asset-transfers/pages/transfer-requests-page'
-import { ProfilePage } from '@/features/profile/pages/profile-page'
+import React, { Suspense } from 'react'
+import { PageTransition, PageTransitionSkeleton } from '@/components/ui/page-transition'
 import { GuestRoute, ProtectedRoute } from './router-guards'
+
+const LoginPage = React.lazy(() => import('@/features/auth/pages/login-page').then(m => ({ default: m.LoginPage })))
+const SignupPage = React.lazy(() => import('@/features/auth/pages/signup-page').then(m => ({ default: m.SignupPage })))
+const LandingPage = React.lazy(() => import('@/features/landing/pages/landing-page').then(m => ({ default: m.LandingPage })))
+const DashboardHomePage = React.lazy(() => import('@/features/dashboard/pages/dashboard-home-page').then(m => ({ default: m.DashboardHomePage })))
+const ReportsPage = React.lazy(() => import('@/features/reports/pages/reports-page').then(m => ({ default: m.ReportsPage })))
+const ReportDetailPage = React.lazy(() => import('@/features/reports/pages/report-detail-page').then(m => ({ default: m.ReportDetailPage })))
+const RoomsPage = React.lazy(() => import('@/features/rooms/pages/rooms-page').then(m => ({ default: m.RoomsPage })))
+const UsersPage = React.lazy(() => import('@/features/users/pages/users-page').then(m => ({ default: m.UsersPage })))
+const AnalyticsPage = React.lazy(() => import('@/features/analytics/pages/analytics-page').then(m => ({ default: m.AnalyticsPage })))
+const AssetTransferPage = React.lazy(() => import('@/features/asset-transfers/pages/asset-transfer-page').then(m => ({ default: m.AssetTransferPage })))
+const TransferRequestsPage = React.lazy(() => import('@/features/asset-transfers/pages/transfer-requests-page').then(m => ({ default: m.TransferRequestsPage })))
+const ProfilePage = React.lazy(() => import('@/features/profile/pages/profile-page').then(m => ({ default: m.ProfilePage })))
+
+const LazyPage = ({ children }: { children: React.ReactNode }) => (
+  <Suspense fallback={<PageTransitionSkeleton />}>
+    <PageTransition>
+      {children}
+    </PageTransition>
+  </Suspense>
+)
 
 export function AppRouter() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<LandingPage />} />
+        <Route path="/" element={<LazyPage><LandingPage /></LazyPage>} />
 
         <Route element={<GuestRoute />}>
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/signup" element={<SignupPage />} />
+          <Route path="/login" element={<LazyPage><LoginPage /></LazyPage>} />
+          <Route path="/signup" element={<LazyPage><SignupPage /></LazyPage>} />
         </Route>
 
         <Route element={<ProtectedRoute />}>
           <Route element={<DashboardLayout />}>
-            <Route path="/dashboard" element={<DashboardHomePage />} />
-            <Route path="/dashboard/reports" element={<ReportsPage />} />
-            <Route path="/dashboard/reports/:id" element={<ReportDetailPage />} />
-            <Route path="/dashboard/rooms" element={<RoomsPage />} />
-            <Route path="/dashboard/asset-transfers" element={<AssetTransferPage />} />
-            <Route path="/dashboard/profile" element={<ProfilePage />} />
+            <Route path="/dashboard" element={<LazyPage><DashboardHomePage /></LazyPage>} />
+            <Route path="/dashboard/reports" element={<LazyPage><ReportsPage /></LazyPage>} />
+            <Route path="/dashboard/reports/:id" element={<LazyPage><ReportDetailPage /></LazyPage>} />
+            <Route path="/dashboard/rooms" element={<LazyPage><RoomsPage /></LazyPage>} />
+            <Route path="/dashboard/asset-transfers" element={<LazyPage><AssetTransferPage /></LazyPage>} />
+            <Route path="/dashboard/profile" element={<LazyPage><ProfilePage /></LazyPage>} />
             <Route
               path="/dashboard/asset-transfers/review"
-              element={<AdminOnly><TransferRequestsPage /></AdminOnly>}
+              element={<AdminOnly><LazyPage><TransferRequestsPage /></LazyPage></AdminOnly>}
             />
             <Route
               path="/dashboard/users"
-              element={<AdminOnly><UsersPage /></AdminOnly>}
+              element={<AdminOnly><LazyPage><UsersPage /></LazyPage></AdminOnly>}
             />
             <Route
               path="/dashboard/analytics"
-              element={<AdminOnly><AnalyticsPage /></AdminOnly>}
+              element={<AdminOnly><LazyPage><AnalyticsPage /></LazyPage></AdminOnly>}
             />
           </Route>
         </Route>

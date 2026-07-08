@@ -1,4 +1,4 @@
-﻿# E-Lapor DPRD (FixMind)
+# E-Lapor DPRD (FixMind)
 
 E-Lapor DPRD (dengan nama kode FixMind) adalah sebuah sistem manajemen pelaporan dan pemeliharaan fasilitas modern berbasis _Artificial Intelligence_ (AI) yang dirancang khusus untuk mengelola, melacak, dan menyelesaikan berbagai kerusakan atau kendala fasilitas di lingkungan gedung dewan maupun perkantoran.
 
@@ -8,7 +8,7 @@ Sistem ini membantu mempermudah pelaporan, di mana AI (menggunakan Gemini 2.5 Fl
 - **Pelaporan Pintar dengan AI:** Identifikasi prioritas, kategori masalah, dan estimasi pengerjaan otomatis.
 - **Linimasa (Timeline) Pelaporan:** Lacak status tiket dari mulai dibuat, ditugaskan, hingga selesai dikerjakan.
 - **Pengajuan Pemindahan Aset:** User dapat mengajukan perpindahan aset antar ruangan, lalu admin meninjau dan menyetujuinya sebelum lokasi aset otomatis diubah di database.
-- **Ekspor Data & Laporan (Analytics):** Analisis kinerja pemeliharaan fasilitas dalam bentuk metrik visual dan ekspor (CSV, Excel, PDF) dengan rentang waktu.
+- **Ekspor Data & Laporan (Analytics):** Analisis kinerja pelaporan fasilitas dalam bentuk metrik visual dan ekspor (CSV, Excel, PDF) dengan rentang waktu.
 - **Notifikasi Real-time:** Memberikan pembaruan instan (*WebSockets*) kepada admin maupun pelapor jika status laporan berubah.
 - **Manajemen Pengguna Terpusat:** Admin dapat mengelola dua jenis akun saja, yaitu _Admin_ dan _User_.
 - **Import Aset dari Excel:** Admin dapat mengimpor data aset inventaris Pemda secara massal dari file `.xlsx`/`.xls` langsung ke database, dilengkapi dengan template yang bisa diunduh.
@@ -92,6 +92,7 @@ Proyek ini menggunakan arsitektur _Clean Architecture_ dan dipisahkan menjadi du
 | **Kueri DB** | _Raw SQL_ melalui `postgres.js` (performa dan kontrol penuh) |
 | **Kecerdasan Buatan (AI)** | Gemini 2.5 Flash (Google Generative AI) & Groq AI (Llama 3.1 sebagai Fallback) |
 | **Runtime & Package Manager** | [Bun](https://bun.sh/) 1.3+ (digunakan sebagai runtime **dan** package manager utama) |
+| **Infrastruktur (Produksi)** | Docker & Docker Compose, GZIP Compression, Rate Limiting (Throttler), Strict Cookies |
 
 ---
 
@@ -161,6 +162,19 @@ bun run dev
 - **Akses Aplikasi (Frontend):** `http://localhost:5173`
 - **Akses API (Backend):** `http://localhost:3000/api/v1`
 - **Pengecekan Status Server:** `http://localhost:3000/api/v1/health`
+
+### 5. Menjalankan Mode Produksi (Dengan Docker)
+Aplikasi ini sudah _production-ready_ dan dilengkapi dengan Docker. Untuk menjalankan di server produksi:
+
+```powershell
+docker-compose up -d --build
+```
+Aplikasi secara otomatis akan mengatur:
+- **Database PostgreSQL** berjalan pada port `5432`
+- **Backend NestJS** berjalan pada port `3000`
+- **Frontend Vite SPA (Nginx)** berjalan pada port `80`
+
+Anda dapat langsung mengakses aplikasi melalui `http://localhost`.
 
 ---
 
