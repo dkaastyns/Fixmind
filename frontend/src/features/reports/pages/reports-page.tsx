@@ -281,7 +281,7 @@ function CreateReportForm({
   const rooms = useQuery({ queryKey: ['rooms'], queryFn: () => fetchRooms(token, true) })
   const assets = useQuery({
     queryKey: ['assets', roomId],
-    queryFn: () => fetchAssets(token, roomId),
+    queryFn: () => fetchAssets(token, { roomId }),
     enabled: !!roomId,
   })
 

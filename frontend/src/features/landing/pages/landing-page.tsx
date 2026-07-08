@@ -129,7 +129,7 @@ export function LandingPage() {
                 </Button>
               </Link>
               <Link to="/login">
-                <Button variant="outline" size="lg" className="min-w-[160px] bg-white/60 backdrop-blur-md border-slate-300 text-slate-700 shadow-sm hover:bg-white hover:text-[#ef629f] hover:border-[#ef629f]/50 transition-all duration-300 hover:-translate-y-1">
+                <Button variant="secondary" size="lg" className="min-w-[160px] bg-white/60 backdrop-blur-md border-slate-300 text-slate-700 shadow-sm hover:bg-white hover:text-[#ef629f] hover:border-[#ef629f]/50 transition-all duration-300 hover:-translate-y-1">
                   Masuk
                 </Button>
               </Link>

@@ -51,7 +51,7 @@ export function RoomsPage() {
   const rooms = useQuery({ queryKey: ['rooms'], queryFn: () => fetchRooms(token) })
   const assets = useQuery({
     queryKey: ['assets', selectedRoom],
-    queryFn: () => fetchAssets(token, selectedRoom ?? undefined),
+    queryFn: () => fetchAssets(token, { roomId: selectedRoom ?? undefined }),
     enabled: !!selectedRoom,
   })
 
