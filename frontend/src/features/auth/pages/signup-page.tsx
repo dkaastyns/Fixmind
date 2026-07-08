@@ -103,7 +103,7 @@ export function SignupPage() {
           <form className="space-y-4" onSubmit={form.handleSubmit((v) => mutation.mutate(v))}>
             <div className="space-y-2">
               <label className="text-sm font-medium text-slate-700" htmlFor="fullName">Nama Lengkap</label>
-              <Input id="fullName" placeholder="John Doe" {...form.register('fullName')} disabled={mutation.isPending} className="bg-white/90 focus:bg-white transition-colors border-white/60 text-slate-900 placeholder:text-slate-400 disabled:opacity-60" />
+              <Input id="fullName" placeholder="Goat Satoru" {...form.register('fullName')} disabled={mutation.isPending} className="bg-white/90 focus:bg-white transition-colors border-white/60 text-slate-900 placeholder:text-slate-400 disabled:opacity-60" />
               {form.formState.errors.fullName && (
                 <p className="text-xs text-danger">{form.formState.errors.fullName.message}</p>
               )}
