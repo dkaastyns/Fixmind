@@ -114,18 +114,273 @@ export function AssetTransferPage() {
     return list
   }, [myTransfers.data?.data, historyStatusFilter])
 
+  if (isAdmin) {
+    return (
+      <div className="space-y-6">
+        <PageHeader
+          title="Pemindahan Aset"
+          description="Pindahkan aset antar ruangan secara instan dan kelola riwayat pemindahan Anda."
+        />
+
+        <GlassCard className="max-w-4xl mx-auto border border-white/40 p-6 md:p-8 bg-white/80 backdrop-blur-xl">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {/* Left Column: Form Pemindahan */}
+            <div className="space-y-5 flex flex-col justify-between">
+              <div className="space-y-5">
+                <div className="flex items-start gap-3">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#ef629f]/10 text-[#ef629f] shadow-inner">
+                    <ArrowRightLeft className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <h2 className="text-base font-bold text-slate-800">Form Pemindahan Aset</h2>
+                    <p className="text-xs text-slate-500">
+                      Pilih ruangan asal, aset, dan ruangan tujuan untuk memindahkan aset secara instan.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  {/* Ruangan Asal */}
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
+                      <Building className="w-3.5 h-3.5" /> Ruangan Asal
+                    </label>
+                    <select
+                      className="w-full rounded-xl border border-white/60 bg-white/70 px-3.5 py-2.5 text-sm shadow-sm outline-none transition focus:border-[#ef629f] focus:ring-2 focus:ring-[#ef629f]/20 font-medium text-slate-800"
+                      value={roomId}
+                      onChange={(e) => {
+                        setRoomId(e.target.value)
+                        setAssetId('')
+                        setToRoomId('')
+                      }}
+                    >
+                      <option value="">Pilih ruangan asal</option>
+                      {(rooms.data?.data ?? []).map((room) => (
+                        <option key={room.id} value={room.id}>
+                          {room.code} - {room.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {/* Aset */}
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
+                      <Package className="w-3.5 h-3.5" /> Aset / Inventaris
+                    </label>
+                    <select
+                      className="w-full rounded-xl border border-white/60 bg-white/70 px-3.5 py-2.5 text-sm shadow-sm outline-none transition focus:border-[#ef629f] focus:ring-2 focus:ring-[#ef629f]/20 disabled:opacity-60 font-medium text-slate-800"
+                      value={assetId}
+                      onChange={(e) => setAssetId(e.target.value)}
+                      disabled={!roomId || assets.isLoading}
+                    >
+                      <option value="">{roomId ? 'Pilih aset' : 'Pilih ruangan asal dulu'}</option>
+                      {(assets.data?.data ?? []).map((asset) => (
+                        <option key={asset.id} value={asset.id}>
+                          {asset.kodeBarang} - {asset.namaBarang}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {/* Ruangan Tujuan */}
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
+                      <Building className="w-3.5 h-3.5" /> Ruangan Tujuan
+                    </label>
+                    <select
+                      className="w-full rounded-xl border border-white/60 bg-white/70 px-3.5 py-2.5 text-sm shadow-sm outline-none transition focus:border-[#ef629f] focus:ring-2 focus:ring-[#ef629f]/20 disabled:opacity-60 font-medium text-slate-800"
+                      value={toRoomId}
+                      onChange={(e) => setToRoomId(e.target.value)}
+                      disabled={!assetId}
+                    >
+                      <option value="">{assetId ? 'Pilih ruangan tujuan' : 'Pilih aset dulu'}</option>
+                      {availableTargetRooms.map((room) => (
+                        <option key={room.id} value={room.id}>
+                          {room.code} - {room.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-3 pt-4 border-t border-slate-200/40">
+                <Button
+                  onClick={() => setShowConfirm(true)}
+                  disabled={!canSubmit || directMoveMutation.isPending}
+                  className="gap-2"
+                >
+                  <Send className="h-4 w-4" />
+                  {directMoveMutation.isPending ? 'Memindahkan...' : 'Pindahkan Langsung'}
+                </Button>
+                <Button
+                  variant="secondary"
+                  onClick={() => {
+                    setToRoomId('')
+                    setReason('')
+                  }}
+                >
+                  Reset
+                </Button>
+              </div>
+            </div>
+
+            {/* Right Column: Preview & Details */}
+            <div className="flex flex-col justify-center bg-slate-500/5 rounded-2xl p-5 border border-slate-200/10 min-h-[300px]">
+              {selectedAsset ? (
+                <div className="space-y-5 h-full flex flex-col justify-between">
+                  <div className="space-y-4">
+                    {/* Selected Asset Details Box */}
+                    <div className="rounded-xl border border-slate-100 bg-white p-4 shadow-sm flex items-center gap-3.5">
+                      <div className="p-3 bg-amber-500/10 text-amber-600 rounded-xl shadow-inner">
+                        <Package className="w-6 h-6" />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Aset Terpilih</p>
+                        <p className="font-bold text-slate-800 text-sm truncate">
+                          {selectedAsset.namaBarang}
+                        </p>
+                        <p className="text-xs text-slate-500 mt-0.5 font-semibold">
+                          Kode: {selectedAsset.kodeBarang}
+                        </p>
+                        <p className="text-[11px] text-slate-500 mt-1 flex items-center gap-1 font-medium">
+                          <span>📍</span> Lokasi saat ini: <strong className="text-slate-700">{selectedAsset.roomName ?? selectedAsset.roomCode}</strong>
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Visual Route flow */}
+                    {roomId && toRoomId && (
+                      <div className="bg-white border border-slate-100 rounded-xl p-4 flex items-center justify-between text-center relative overflow-hidden shadow-sm">
+                        <div className="flex-1 min-w-0">
+                          <span className="text-[9px] uppercase font-bold text-blue-500 tracking-wider block">Ruangan Asal</span>
+                          <p className="text-sm font-extrabold text-slate-800 truncate mt-0.5">
+                            {selectedSourceRoom?.code ?? 'Asal'}
+                          </p>
+                          <p className="text-[10px] text-slate-500 truncate">{selectedSourceRoom?.name}</p>
+                        </div>
+                        <div className="px-4 flex flex-col items-center">
+                          <motion.div
+                            animate={{ x: [-4, 4, -4] }}
+                            transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
+                            className="text-[#ef629f]"
+                          >
+                            <ArrowRightLeft className="w-5 h-5" />
+                          </motion.div>
+                          <span className="text-[9px] font-bold text-slate-400 mt-1 uppercase tracking-widest">Rute</span>
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <span className="text-[9px] uppercase font-bold text-purple-500 tracking-wider block">Ruangan Tujuan</span>
+                          <p className="text-sm font-extrabold text-slate-800 truncate mt-0.5">
+                            {selectedTargetRoom?.code ?? 'Tujuan'}
+                          </p>
+                          <p className="text-[10px] text-slate-500 truncate">{selectedTargetRoom?.name}</p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Info Banner */}
+                  <div className="bg-blue-500/10 border border-blue-500/20 text-blue-700 text-xs p-3.5 rounded-xl flex gap-2 items-start">
+                    <span className="text-base leading-none">💡</span>
+                    <span>
+                      <strong>Otoritas Penuh:</strong> Pemindahan ini bersifat langsung dan instan. Lokasi aset di database akan langsung diperbarui setelah Anda mengonfirmasi.
+                    </span>
+                  </div>
+                </div>
+              ) : (
+                <div className="text-center p-6 space-y-3">
+                  <div className="mx-auto w-12 h-12 rounded-full bg-slate-200/50 flex items-center justify-center text-slate-400">
+                    <Package className="w-6 h-6" />
+                  </div>
+                  <h4 className="text-sm font-bold text-slate-700">Menunggu Aset Terpilih</h4>
+                  <p className="text-xs text-slate-500 max-w-[250px] mx-auto leading-relaxed">
+                    Silakan pilih ruangan asal dan aset terlebih dahulu untuk melihat informasi lokasi serta ilustrasi rute pemindahan.
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
+        </GlassCard>
+
+        {/* Confirmation Modal */}
+        <AnimatePresence>
+          {showConfirm && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="absolute inset-0 bg-slate-950/40 backdrop-blur-md"
+                onClick={() => setShowConfirm(false)}
+              />
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95, y: 15 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.95, y: 15 }}
+                className="w-full max-w-md relative z-10"
+              >
+                <GlassCard className="p-6 bg-white shadow-2xl border-white/80 space-y-4">
+                  <div className="flex items-center gap-3">
+                    <div className="p-3 bg-amber-500/10 text-amber-600 rounded-xl">
+                      <ArrowRightLeft className="w-6 h-6" />
+                    </div>
+                    <div>
+                      <h3 className="text-base font-bold text-slate-800">Konfirmasi Pemindahan Langsung</h3>
+                      <p className="text-xs text-slate-500 font-medium">Aset akan dipindahkan ke ruangan tujuan secara instan.</p>
+                    </div>
+                  </div>
+
+                  <div className="border border-slate-100 rounded-xl divide-y divide-slate-100 text-xs bg-slate-50/50">
+                    <div className="p-3 flex justify-between gap-4">
+                      <span className="text-slate-400 font-semibold">Aset</span>
+                      <span className="font-bold text-slate-800 text-right truncate">
+                        {selectedAsset?.namaBarang} ({selectedAsset?.kodeBarang})
+                      </span>
+                    </div>
+                    <div className="p-3 flex justify-between gap-4">
+                      <span className="text-slate-400 font-semibold">Dari</span>
+                      <span className="font-bold text-slate-800">{selectedSourceRoom?.code} - {selectedSourceRoom?.name}</span>
+                    </div>
+                    <div className="p-3 flex justify-between gap-4">
+                      <span className="text-slate-400 font-semibold">Ke</span>
+                      <span className="font-bold text-slate-800">{selectedTargetRoom?.code} - {selectedTargetRoom?.name}</span>
+                    </div>
+                  </div>
+
+                  <div className="flex justify-end gap-3 pt-2">
+                    <Button variant="secondary" onClick={() => setShowConfirm(false)} disabled={directMoveMutation.isPending}>
+                      Tidak, Batal
+                    </Button>
+                    <Button 
+                      onClick={() => {
+                        directMoveMutation.mutate()
+                        setShowConfirm(false)
+                      }}
+                      disabled={directMoveMutation.isPending}
+                      className="gap-2"
+                    >
+                      {directMoveMutation.isPending ? 'Memindahkan...' : 'Ya, Pindahkan'}
+                    </Button>
+                  </div>
+                </GlassCard>
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>
+      </div>
+    )
+  }
+
   return (
     <div className="space-y-6">
       <PageHeader
-        title={isAdmin ? 'Pemindahan Aset' : 'Pengajuan Pemindahan Aset'}
-        description={
-          isAdmin
-            ? 'Pindahkan aset antar ruangan secara instan dan kelola riwayat pemindahan Anda.'
-            : 'Ajukan perpindahan aset antar ruangan, lalu admin akan meninjau dan mengubah lokasi aset jika disetujui.'
-        }
+        title="Pengajuan Pemindahan Aset"
+        description="Ajukan perpindahan aset antar ruangan, lalu admin akan meninjau dan mengubah lokasi aset jika disetujui."
       />
 
-      <div className={isAdmin ? 'max-w-2xl mx-auto w-full' : 'grid gap-6 xl:grid-cols-[1.1fr_0.9fr]'}>
+      <div className="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
         {/* Left Column: Form Pengajuan */}
         <GlassCard className="space-y-6 border border-white/40">
           <div className="flex items-start gap-3">
@@ -133,13 +388,9 @@ export function AssetTransferPage() {
               <ArrowRightLeft className="h-5 w-5" />
             </div>
             <div>
-              <h2 className="text-base font-bold text-slate-800">
-                {isAdmin ? 'Form Pemindahan Aset' : 'Form Pengajuan'}
-              </h2>
+              <h2 className="text-base font-bold text-slate-800">Form Pengajuan</h2>
               <p className="text-xs text-slate-500">
-                {isAdmin
-                  ? 'Pilih ruangan asal, aset, dan ruangan tujuan untuk memindahkan aset secara instan.'
-                  : 'Pilih ruangan asal, aset, ruangan tujuan, lalu jelaskan alasan perpindahannya.'}
+                Pilih ruangan asal, aset, ruangan tujuan, lalu jelaskan alasan perpindahannya.
               </p>
             </div>
           </div>
@@ -269,36 +520,32 @@ export function AssetTransferPage() {
             )}
 
             {/* Alasan Pemindahan */}
-            {!isAdmin && (
-              <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
-                  <ClipboardList className="w-3.5 h-3.5" /> Alasan Pemindahan
-                </label>
-                <textarea
-                  className="min-h-[120px] w-full rounded-xl border border-white/60 bg-white/70 px-3.5 py-2.5 text-sm shadow-sm outline-none transition placeholder:text-slate-400 focus:border-[#ef629f] focus:ring-2 focus:ring-[#ef629f]/20 font-medium text-slate-800"
-                  value={reason}
-                  onChange={(e) => setReason(e.target.value)}
-                  placeholder="Contoh: Aset dipindahkan karena penataan ulang ruangan tim keuangan agar lebih dekat dengan pintu lobi utama."
-                  maxLength={1000}
-                />
-                <p className="text-[10px] text-slate-500 font-semibold flex items-center gap-1 mt-1.5">
-                  <HelpCircle className="w-3.5 h-3.5 text-slate-400" />
-                  Minimal 10 karakter. Berikan penjelasan yang rinci untuk mempermudah persetujuan admin.
-                </p>
-              </div>
-            )}
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
+                <ClipboardList className="w-3.5 h-3.5" /> Alasan Pemindahan
+              </label>
+              <textarea
+                className="min-h-[120px] w-full rounded-xl border border-white/60 bg-white/70 px-3.5 py-2.5 text-sm shadow-sm outline-none transition placeholder:text-slate-400 focus:border-[#ef629f] focus:ring-2 focus:ring-[#ef629f]/20 font-medium text-slate-800"
+                value={reason}
+                onChange={(e) => setReason(e.target.value)}
+                placeholder="Contoh: Aset dipindahkan karena penataan ulang ruangan tim keuangan agar lebih dekat dengan pintu lobi utama."
+                maxLength={1000}
+              />
+              <p className="text-[10px] text-slate-500 font-semibold flex items-center gap-1 mt-1.5">
+                <HelpCircle className="w-3.5 h-3.5 text-slate-400" />
+                Minimal 10 karakter. Berikan penjelasan yang rinci untuk mempermudah persetujuan admin.
+              </p>
+            </div>
           </div>
 
           <div className="flex flex-wrap items-center gap-3 pt-2">
             <Button
               onClick={() => setShowConfirm(true)}
-              disabled={!canSubmit || (isAdmin ? directMoveMutation.isPending : createMutation.isPending)}
+              disabled={!canSubmit || createMutation.isPending}
               className="gap-2"
             >
               <Send className="h-4 w-4" />
-              {isAdmin
-                ? (directMoveMutation.isPending ? 'Memindahkan...' : 'Pindahkan Langsung')
-                : (createMutation.isPending ? 'Mengirim...' : 'Kirim Pengajuan')}
+              {createMutation.isPending ? 'Mengirim...' : 'Kirim Pengajuan'}
             </Button>
             <Button
               variant="secondary"
@@ -313,103 +560,94 @@ export function AssetTransferPage() {
         </GlassCard>
 
         {/* Right Column: Riwayat Pengajuan Saya */}
-        {!isAdmin && (
-          <GlassCard className="space-y-4 border border-white/40 flex flex-col h-full">
-            <div className="flex items-start gap-3">
-              <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-success/10 text-success shadow-inner">
-                <Sparkles className="h-5 w-5" />
-              </div>
-              <div>
-                <h2 className="text-base font-bold text-slate-800">Riwayat Pengajuan Saya</h2>
-                <p className="text-xs text-slate-500">
-                  Pantau status pengajuan pemindahan aset Anda.
-                </p>
-              </div>
+        <GlassCard className="space-y-4 border border-white/40 flex flex-col h-full">
+          <div className="flex items-start gap-3">
+            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-success/10 text-success shadow-inner">
+              <Sparkles className="h-5 w-5" />
             </div>
+            <div>
+              <h2 className="text-base font-bold text-slate-800">Riwayat Pengajuan Saya</h2>
+              <p className="text-xs text-slate-500">
+                Pantau status pengajuan pemindahan aset Anda.
+              </p>
+            </div>
+          </div>
 
-            {/* Filter Status Tabs */}
-            <div className="space-y-3 pt-1">
-              <div className="flex gap-1 bg-slate-200/50 p-1 rounded-xl border border-slate-200/40 text-[11px] overflow-x-auto">
-                {(['ALL', 'PENDING', 'APPROVED', 'REJECTED'] as const).map((status) => (
-                  <button
-                    key={status}
-                    onClick={() => setHistoryStatusFilter(status)}
-                    className={`flex-1 px-3 py-2 rounded-lg font-bold transition-all whitespace-nowrap capitalize text-center ${
-                      historyStatusFilter === status
-                        ? 'bg-white text-slate-800 shadow-sm'
-                        : 'text-slate-500 hover:text-slate-800'
-                    }`}
-                  >
-                    {status === 'ALL' ? 'Semua' : status === 'PENDING' ? 'Menunggu' : status === 'APPROVED' ? 'Disetujui' : 'Ditolak'}
-                  </button>
+          {/* Filter Status Tabs */}
+          <div className="space-y-3 pt-1">
+            <div className="flex gap-1 bg-slate-200/50 p-1 rounded-xl border border-slate-200/40 text-[11px] overflow-x-auto">
+              {(['ALL', 'PENDING', 'APPROVED', 'REJECTED'] as const).map((status) => (
+                <button
+                  key={status}
+                  onClick={() => setHistoryStatusFilter(status)}
+                  className={`flex-1 px-3 py-2 rounded-lg font-bold transition-all whitespace-nowrap capitalize text-center ${
+                    historyStatusFilter === status
+                      ? 'bg-white text-slate-800 shadow-sm'
+                      : 'text-slate-500 hover:text-slate-800'
+                  }`}
+                >
+                  {status === 'ALL' ? 'Semua' : status === 'PENDING' ? 'Menunggu' : status === 'APPROVED' ? 'Disetujui' : 'Ditolak'}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* List of Transfers */}
+          <div className="flex-1 overflow-y-auto max-h-[500px] pr-1 space-y-3">
+            {myTransfers.isLoading ? (
+              <ListSkeleton count={3} />
+            ) : filteredTransfers.length === 0 ? (
+              <EmptyState
+                title="Tidak ada pengajuan"
+                description={historyStatusFilter !== 'ALL' ? 'Tidak ada data pengajuan yang cocok dengan filter.' : 'Silakan ajukan perpindahan aset dari form di sebelah kiri.'}
+              />
+            ) : (
+              <div className="space-y-3">
+                {filteredTransfers.map((transfer) => (
+                  <div key={transfer.id} className="rounded-xl border border-white/50 bg-white/70 p-4 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="min-w-0">
+                        <p className="font-bold text-slate-800 text-sm truncate">
+                          {transfer.assetName ? `${transfer.assetName}` : `${transfer.assetId}`}
+                        </p>
+                        <span className="bg-slate-100 px-1.5 py-0.5 rounded text-[10px] font-bold text-slate-600 border border-slate-200/50 block w-fit mt-1">
+                          {transfer.assetKode ?? 'KODE-ASET'}
+                        </span>
+                        
+                        {/* Route display */}
+                        <div className="flex items-center gap-1.5 text-xs text-slate-700 font-bold bg-white/70 border border-white/60 rounded-lg px-2 py-1 w-fit mt-2 shadow-inner">
+                          <span>{transfer.fromRoomCode}</span>
+                          <ArrowRight className="w-3.5 h-3.5 text-slate-400" />
+                          <span>{transfer.toRoomCode}</span>
+                        </div>
+                      </div>
+                      <StatusBadge status={transfer.status} />
+                    </div>
+
+                    <p className="mt-3 text-xs font-semibold text-slate-600 bg-slate-50 border border-slate-100 p-2.5 rounded-lg leading-relaxed">
+                      {transfer.reason}
+                    </p>
+
+                    {transfer.reviewerNotes && (
+                      <div className="mt-2.5 rounded-lg bg-amber-500/5 border border-amber-500/10 px-3 py-2 text-xs text-amber-700 font-medium">
+                        <span className="font-bold block text-[10px] uppercase text-amber-600">Catatan Admin:</span>
+                        {transfer.reviewerNotes}
+                      </div>
+                    )}
+
+                    <div className="mt-3 flex items-center justify-between text-[10px] text-slate-400 font-medium border-t border-slate-100 pt-2">
+                      <span>Dibuat: {new Date(transfer.createdAt).toLocaleDateString('id-ID')}</span>
+                      {transfer.reviewedAt && (
+                        <span>Ditinjau: {new Date(transfer.reviewedAt).toLocaleDateString('id-ID')}</span>
+                      )}
+                    </div>
+                  </div>
                 ))}
               </div>
-            </div>
-
-            {/* List of Transfers */}
-            <div className="flex-1 overflow-y-auto max-h-[500px] pr-1 space-y-3">
-              {myTransfers.isLoading ? (
-                <ListSkeleton count={3} />
-              ) : filteredTransfers.length === 0 ? (
-                <EmptyState
-                  title="Tidak ada pengajuan"
-                  description={historyStatusFilter !== 'ALL' ? 'Tidak ada data pengajuan yang cocok dengan filter.' : 'Silakan ajukan perpindahan aset dari form di sebelah kiri.'}
-                />
-              ) : (
-                <div className="space-y-3">
-                  {filteredTransfers.map((transfer) => (
-                    <div key={transfer.id} className="rounded-xl border border-white/50 bg-white/70 p-4 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden">
-                      <div className="flex items-start justify-between gap-3">
-                        <div className="min-w-0">
-                          <p className="font-bold text-slate-800 text-sm truncate">
-                            {transfer.assetName ? `${transfer.assetName}` : `${transfer.assetId}`}
-                          </p>
-                          <span className="bg-slate-100 px-1.5 py-0.5 rounded text-[10px] font-bold text-slate-600 border border-slate-200/50 block w-fit mt-1">
-                            {transfer.assetKode ?? 'KODE-ASET'}
-                          </span>
-                          
-                          {/* Route display */}
-                          <div className="flex items-center gap-1.5 text-xs text-slate-700 font-bold bg-white/70 border border-white/60 rounded-lg px-2 py-1 w-fit mt-2 shadow-inner">
-                            <span>{transfer.fromRoomCode}</span>
-                            <ArrowRight className="w-3.5 h-3.5 text-slate-400" />
-                            <span>{transfer.toRoomCode}</span>
-                          </div>
-                        </div>
-                        <StatusBadge status={transfer.status} />
-                      </div>
-
-                      <p className="mt-3 text-xs font-semibold text-slate-600 bg-slate-50 border border-slate-100 p-2.5 rounded-lg leading-relaxed">
-                        {transfer.reason}
-                      </p>
-
-                      {transfer.reviewerNotes && (
-                        <div className="mt-2.5 rounded-lg bg-amber-500/5 border border-amber-500/10 px-3 py-2 text-xs text-amber-700 font-medium">
-                          <span className="font-bold block text-[10px] uppercase text-amber-600">Catatan Admin:</span>
-                          {transfer.reviewerNotes}
-                        </div>
-                      )}
-
-                      <div className="mt-3 flex items-center justify-between text-[10px] text-slate-400 font-medium border-t border-slate-100 pt-2">
-                        <span>Dibuat: {new Date(transfer.createdAt).toLocaleDateString('id-ID')}</span>
-                        {transfer.reviewedAt && (
-                          <span>Ditinjau: {new Date(transfer.reviewedAt).toLocaleDateString('id-ID')}</span>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          </GlassCard>
-        )}
+            )}
+          </div>
+        </GlassCard>
       </div>
-
-      {user?.role === 'ADMIN' && (
-        <p className="text-xs text-slate-500 font-medium">
-          💡 Akun admin juga dapat membuka menu{' '}
-          <span className="text-[#ef629f] font-bold">Approval Transfer</span> untuk meninjau semua pengajuan.
-        </p>
-      )}
 
       {/* Confirmation Modal */}
       <AnimatePresence>
@@ -434,12 +672,8 @@ export function AssetTransferPage() {
                     <ArrowRightLeft className="w-6 h-6" />
                   </div>
                   <div>
-                    <h3 className="text-base font-bold text-slate-800">
-                      {isAdmin ? 'Konfirmasi Pemindahan Langsung' : 'Konfirmasi Pengajuan'}
-                    </h3>
-                    <p className="text-xs text-slate-500 font-medium">
-                      {isAdmin ? 'Aset akan dipindahkan ke ruangan tujuan secara instan.' : 'Harap periksa kembali detail perpindahan aset Anda.'}
-                    </p>
+                    <h3 className="text-base font-bold text-slate-800">Konfirmasi Pengajuan</h3>
+                    <p className="text-xs text-slate-500 font-medium">Harap periksa kembali detail perpindahan aset Anda.</p>
                   </div>
                 </div>
 
@@ -458,39 +692,27 @@ export function AssetTransferPage() {
                     <span className="text-slate-400 font-semibold">Ke</span>
                     <span className="font-bold text-slate-800">{selectedTargetRoom?.code} - {selectedTargetRoom?.name}</span>
                   </div>
-                  {!isAdmin && (
-                    <div className="p-3">
-                      <span className="text-slate-400 font-semibold block mb-1">Alasan Pemindahan</span>
-                      <span className="font-medium text-slate-700 italic leading-relaxed block bg-white border border-slate-100 p-2 rounded-lg">
-                        "{reason}"
-                      </span>
-                    </div>
-                  )}
+                  <div className="p-3">
+                    <span className="text-slate-400 font-semibold block mb-1">Alasan Pemindahan</span>
+                    <span className="font-medium text-slate-700 italic leading-relaxed block bg-white border border-slate-100 p-2 rounded-lg">
+                      "{reason}"
+                    </span>
+                  </div>
                 </div>
 
                 <div className="flex justify-end gap-3 pt-2">
-                  <Button
-                    variant="secondary"
-                    onClick={() => setShowConfirm(false)}
-                    disabled={isAdmin ? directMoveMutation.isPending : createMutation.isPending}
-                  >
+                  <Button variant="secondary" onClick={() => setShowConfirm(false)} disabled={createMutation.isPending}>
                     Tidak, Batal
                   </Button>
                   <Button 
                     onClick={() => {
-                      if (isAdmin) {
-                        directMoveMutation.mutate()
-                      } else {
-                        createMutation.mutate()
-                      }
+                      createMutation.mutate()
                       setShowConfirm(false)
                     }}
-                    disabled={isAdmin ? directMoveMutation.isPending : createMutation.isPending}
+                    disabled={createMutation.isPending}
                     className="gap-2"
                   >
-                    {isAdmin
-                      ? (directMoveMutation.isPending ? 'Memindahkan...' : 'Ya, Pindahkan')
-                      : (createMutation.isPending ? 'Mengirim...' : 'Ya, Kirim')}
+                    {createMutation.isPending ? 'Mengirim...' : 'Ya, Kirim'}
                   </Button>
                 </div>
               </GlassCard>
