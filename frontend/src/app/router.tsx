@@ -14,7 +14,7 @@ const ReportsPage = React.lazy(() => import('@/features/reports/pages/reports-pa
 const ReportDetailPage = React.lazy(() => import('@/features/reports/pages/report-detail-page').then(m => ({ default: m.ReportDetailPage })))
 const RoomsPage = React.lazy(() => import('@/features/rooms/pages/rooms-page').then(m => ({ default: m.RoomsPage })))
 const UsersPage = React.lazy(() => import('@/features/users/pages/users-page').then(m => ({ default: m.UsersPage })))
-const AnalyticsPage = React.lazy(() => import('@/features/analytics/pages/analytics-page').then(m => ({ default: m.AnalyticsPage })))
+
 const AssetTransferPage = React.lazy(() => import('@/features/asset-transfers/pages/asset-transfer-page').then(m => ({ default: m.AssetTransferPage })))
 const TransferRequestsPage = React.lazy(() => import('@/features/asset-transfers/pages/transfer-requests-page').then(m => ({ default: m.TransferRequestsPage })))
 const ProfilePage = React.lazy(() => import('@/features/profile/pages/profile-page').then(m => ({ default: m.ProfilePage })))
@@ -55,10 +55,7 @@ export function AppRouter() {
               path="/dashboard/users"
               element={<AdminOnly><LazyPage><UsersPage /></LazyPage></AdminOnly>}
             />
-            <Route
-              path="/dashboard/analytics"
-              element={<AdminOnly><LazyPage><AnalyticsPage /></LazyPage></AdminOnly>}
-            />
+
           </Route>
         </Route>
 

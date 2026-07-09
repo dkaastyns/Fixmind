@@ -382,3 +382,98 @@ export const exportPdf = async (token: string, startDate?: string, endDate?: str
   const blob = await res.blob()
   await downloadBlob(blob, 'e-lapor-laporan.pdf')
 }
+
+// ─── Asset Transfer Exports (client-side generation) ───────────────────────
+
+export const exportTransfersExcel = async (
+  token: string,
+  startDate?: string,
+  endDate?: string,
+) => {
+  const res = await apiFetch<AssetTransfer[]>('/assets/transfers?limit=10000', auth(token))
+  let transfers = res.data ?? []
+
+  if (startDate || endDate) {
+    transfers = transfers.filter((t) => {
+      const d = new Date(t.createdAt)
+      if (startDate && d < new Date(startDate)) return false
+      if (endDate && d > new Date(endDate)) return false
+      return true
+    })
+  }
+
+  const { utils, writeFile } = await import('xlsx')
+  const rows = transfers.map((t, i) => ({
+    No: i + 1,
+    'Nama Aset': t.assetName ?? '-',
+    'Kode Aset': t.assetKode ?? '-',
+    'Dari Ruangan': t.fromRoomName ?? '-',
+    'Ke Ruangan': t.toRoomName ?? '-',
+    Status: t.status === 'PENDING' ? 'Menunggu' : t.status === 'APPROVED' ? 'Disetujui' : 'Ditolak',
+    Pemohon: t.requesterName ?? '-',
+    'Tanggal Pengajuan': new Date(t.createdAt).toLocaleDateString('id-ID'),
+    'Tanggal Review': t.reviewedAt ? new Date(t.reviewedAt).toLocaleDateString('id-ID') : '-',
+    'Catatan Admin': t.reviewerNotes ?? '-',
+  }))
+
+  const ws = utils.json_to_sheet(rows)
+  const wb = utils.book_new()
+  utils.book_append_sheet(wb, ws, 'Transfer Aset')
+  writeFile(wb, 'fixmind-transfer-aset.xlsx')
+}
+
+export const exportTransfersPdf = async (
+  token: string,
+  startDate?: string,
+  endDate?: string,
+) => {
+  const res = await apiFetch<AssetTransfer[]>('/assets/transfers?limit=10000', auth(token))
+  let transfers = res.data ?? []
+
+  if (startDate || endDate) {
+    transfers = transfers.filter((t) => {
+      const d = new Date(t.createdAt)
+      if (startDate && d < new Date(startDate)) return false
+      if (endDate && d > new Date(endDate)) return false
+      return true
+    })
+  }
+
+  const { default: jsPDF } = await import('jspdf')
+  const { default: autoTable } = await import('jspdf-autotable')
+
+  const doc = new jsPDF({ orientation: 'landscape' })
+
+  doc.setFontSize(16)
+  doc.setTextColor(239, 98, 159)
+  doc.text('Laporan Transfer Aset — FixMind', 14, 16)
+
+  doc.setFontSize(9)
+  doc.setTextColor(100)
+  const rangeLabel =
+    startDate || endDate
+      ? `Periode: ${startDate ? new Date(startDate).toLocaleDateString('id-ID') : '—'} s/d ${endDate ? new Date(endDate).toLocaleDateString('id-ID') : '—'}`
+      : 'Periode: Semua Waktu'
+  doc.text(rangeLabel, 14, 23)
+
+  autoTable(doc, {
+    startY: 28,
+    head: [['No', 'Nama Aset', 'Kode', 'Dari Ruangan', 'Ke Ruangan', 'Status', 'Pemohon', 'Tgl Pengajuan', 'Catatan Admin']],
+    body: transfers.map((t, i) => [
+      i + 1,
+      t.assetName ?? '-',
+      t.assetKode ?? '-',
+      t.fromRoomName ?? '-',
+      t.toRoomName ?? '-',
+      t.status === 'PENDING' ? 'Menunggu' : t.status === 'APPROVED' ? 'Disetujui' : 'Ditolak',
+      t.requesterName ?? '-',
+      new Date(t.createdAt).toLocaleDateString('id-ID'),
+      t.reviewerNotes ?? '-',
+    ]),
+    styles: { fontSize: 8, cellPadding: 3 },
+    headStyles: { fillColor: [239, 98, 159], textColor: 255, fontStyle: 'bold' },
+    alternateRowStyles: { fillColor: [255, 240, 248] },
+  })
+
+  doc.save('fixmind-transfer-aset.pdf')
+}
