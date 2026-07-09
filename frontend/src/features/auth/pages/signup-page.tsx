@@ -17,8 +17,15 @@ import { useAuthStore } from '@/stores/auth-store'
 const schema = z.object({
   fullName: z.string().min(2, 'Nama wajib diisi'),
   email: z.email('Email tidak valid'),
+  phone: z.string().min(8, 'Nomor telepon minimal 8 karakter'),
   password: z.string().min(8, 'Minimal 8 karakter'),
-  phone: z.string().optional(),
+  confirmPassword: z.string().min(8, 'Minimal 8 karakter'),
+  agreeToTerms: z.boolean().refine((val) => val === true, {
+    message: 'Anda harus menyetujui Ketentuan Layanan',
+  }),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: 'Kata sandi tidak cocok',
+  path: ['confirmPassword'],
 })
 
 type Form = z.infer<typeof schema>
@@ -29,11 +36,24 @@ export function SignupPage() {
 
   const form = useForm<Form>({
     resolver: zodResolver(schema),
-    defaultValues: { fullName: '', email: '', password: '', phone: '' },
+    defaultValues: {
+      fullName: '',
+      email: '',
+      phone: '',
+      password: '',
+      confirmPassword: '',
+      agreeToTerms: false,
+    } as any,
   })
 
   const mutation = useMutation({
-    mutationFn: (v: Form) => registerRequest(v),
+    mutationFn: (v: Form) =>
+      registerRequest({
+        fullName: v.fullName,
+        email: v.email,
+        password: v.password,
+        phone: v.phone,
+      }),
     onSuccess: (res) => {
       setSession(res.data.user, res.data.accessToken)
       toast.success('Akun berhasil dibuat!')
@@ -116,14 +136,45 @@ export function SignupPage() {
               )}
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium text-slate-700" htmlFor="phone">Telepon (Opsional)</label>
+              <label className="text-sm font-medium text-slate-700" htmlFor="phone">Nomor Telepon</label>
               <Input id="phone" placeholder="08123456789" {...form.register('phone')} disabled={mutation.isPending} className="bg-white/90 focus:bg-white transition-colors border-white/60 text-slate-900 placeholder:text-slate-400 disabled:opacity-60" />
+              {form.formState.errors.phone && (
+                <p className="text-xs text-danger">{form.formState.errors.phone.message}</p>
+              )}
             </div>
             <div className="space-y-2">
               <label className="text-sm font-medium text-slate-700" htmlFor="password">Kata Sandi</label>
               <PasswordInput id="password" placeholder="••••••••" {...form.register('password')} disabled={mutation.isPending} className="bg-white/90 focus:bg-white transition-colors border-white/60 text-slate-900 placeholder:text-slate-400 disabled:opacity-60" />
               {form.formState.errors.password && (
                 <p className="text-xs text-danger">{form.formState.errors.password.message}</p>
+              )}
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-slate-700" htmlFor="confirmPassword">Konfirmasi Kata Sandi</label>
+              <PasswordInput id="confirmPassword" placeholder="••••••••" {...form.register('confirmPassword')} disabled={mutation.isPending} className="bg-white/90 focus:bg-white transition-colors border-white/60 text-slate-900 placeholder:text-slate-400 disabled:opacity-60" />
+              {form.formState.errors.confirmPassword && (
+                <p className="text-xs text-danger">{form.formState.errors.confirmPassword.message}</p>
+              )}
+            </div>
+            <div className="flex flex-col gap-1.5 pt-1">
+              <label className="flex items-start gap-2.5 cursor-pointer text-sm text-slate-700">
+                <input
+                  type="checkbox"
+                  id="agreeToTerms"
+                  {...form.register('agreeToTerms')}
+                  disabled={mutation.isPending}
+                  className="mt-1 h-4 w-4 shrink-0 rounded border-white/60 bg-white/70 text-[#ef629f] focus:ring-[#ef629f]/30 cursor-pointer"
+                />
+                <span className="leading-tight select-none">
+                  Saya menyetujui{' '}
+                  <Link to="/terms" className="font-semibold text-[#ef629f] hover:text-pink-500 hover:underline">
+                    Ketentuan Layanan
+                  </Link>{' '}
+                  dan kebijakan penggunaan FixMind.
+                </span>
+              </label>
+              {form.formState.errors.agreeToTerms && (
+                <p className="text-xs text-danger pl-[26px]">{form.formState.errors.agreeToTerms.message}</p>
               )}
             </div>
             {mutation.isError && <Alert>{(mutation.error as Error).message}</Alert>}
