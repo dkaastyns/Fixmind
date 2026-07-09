@@ -13,6 +13,7 @@ import {
   fetchAssetTransfers,
   fetchAssets,
   fetchRooms,
+  updateAsset,
 } from '@/lib/api-client'
 import { useAuthStore } from '@/stores/auth-store'
 
@@ -79,7 +80,23 @@ export function AssetTransferPage() {
     onError: (error: Error) => toast.error(error.message),
   })
 
-  const canSubmit = Boolean(roomId && assetId && toRoomId && reason.trim().length >= 10)
+  const directMoveMutation = useMutation({
+    mutationFn: () => updateAsset(token, assetId, { roomId: toRoomId }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['asset-transfer-assets'] })
+      qc.invalidateQueries({ queryKey: ['assets'] })
+      toast.success('Aset berhasil dipindahkan secara langsung')
+      setAssetId('')
+      setToRoomId('')
+      setReason('')
+    },
+    onError: (error: Error) => toast.error(error.message),
+  })
+
+  const isAdmin = user?.role === 'ADMIN'
+  const canSubmit = isAdmin
+    ? Boolean(roomId && assetId && toRoomId)
+    : Boolean(roomId && assetId && toRoomId && reason.trim().length >= 10)
 
   useEffect(() => {
     const paramRoom = searchParams.get('roomId') ?? ''
@@ -100,8 +117,12 @@ export function AssetTransferPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Pengajuan Pemindahan Aset"
-        description="Ajukan perpindahan aset antar ruangan, lalu admin akan meninjau dan mengubah lokasi aset jika disetujui."
+        title={isAdmin ? 'Pemindahan Aset' : 'Pengajuan Pemindahan Aset'}
+        description={
+          isAdmin
+            ? 'Pindahkan aset antar ruangan secara instan dan kelola riwayat pemindahan Anda.'
+            : 'Ajukan perpindahan aset antar ruangan, lalu admin akan meninjau dan mengubah lokasi aset jika disetujui.'
+        }
       />
 
       <div className="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
@@ -112,9 +133,13 @@ export function AssetTransferPage() {
               <ArrowRightLeft className="h-5 w-5" />
             </div>
             <div>
-              <h2 className="text-base font-bold text-slate-800">Form Pengajuan</h2>
+              <h2 className="text-base font-bold text-slate-800">
+                {isAdmin ? 'Form Pemindahan Aset' : 'Form Pengajuan'}
+              </h2>
               <p className="text-xs text-slate-500">
-                Pilih ruangan asal, aset, ruangan tujuan, lalu jelaskan alasan perpindahannya.
+                {isAdmin
+                  ? 'Pilih ruangan asal, aset, dan ruangan tujuan untuk memindahkan aset secara instan.'
+                  : 'Pilih ruangan asal, aset, ruangan tujuan, lalu jelaskan alasan perpindahannya.'}
               </p>
             </div>
           </div>
@@ -244,32 +269,36 @@ export function AssetTransferPage() {
             )}
 
             {/* Alasan Pemindahan */}
-            <div className="space-y-1.5">
-              <label className="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
-                <ClipboardList className="w-3.5 h-3.5" /> Alasan Pemindahan
-              </label>
-              <textarea
-                className="min-h-[120px] w-full rounded-xl border border-white/60 bg-white/70 px-3.5 py-2.5 text-sm shadow-sm outline-none transition placeholder:text-slate-400 focus:border-[#ef629f] focus:ring-2 focus:ring-[#ef629f]/20 font-medium text-slate-800"
-                value={reason}
-                onChange={(e) => setReason(e.target.value)}
-                placeholder="Contoh: Aset dipindahkan karena penataan ulang ruangan tim keuangan agar lebih dekat dengan pintu lobi utama."
-                maxLength={1000}
-              />
-              <p className="text-[10px] text-slate-500 font-semibold flex items-center gap-1 mt-1.5">
-                <HelpCircle className="w-3.5 h-3.5 text-slate-400" />
-                Minimal 10 karakter. Berikan penjelasan yang rinci untuk mempermudah persetujuan admin.
-              </p>
-            </div>
+            {!isAdmin && (
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
+                  <ClipboardList className="w-3.5 h-3.5" /> Alasan Pemindahan
+                </label>
+                <textarea
+                  className="min-h-[120px] w-full rounded-xl border border-white/60 bg-white/70 px-3.5 py-2.5 text-sm shadow-sm outline-none transition placeholder:text-slate-400 focus:border-[#ef629f] focus:ring-2 focus:ring-[#ef629f]/20 font-medium text-slate-800"
+                  value={reason}
+                  onChange={(e) => setReason(e.target.value)}
+                  placeholder="Contoh: Aset dipindahkan karena penataan ulang ruangan tim keuangan agar lebih dekat dengan pintu lobi utama."
+                  maxLength={1000}
+                />
+                <p className="text-[10px] text-slate-500 font-semibold flex items-center gap-1 mt-1.5">
+                  <HelpCircle className="w-3.5 h-3.5 text-slate-400" />
+                  Minimal 10 karakter. Berikan penjelasan yang rinci untuk mempermudah persetujuan admin.
+                </p>
+              </div>
+            )}
           </div>
 
           <div className="flex flex-wrap items-center gap-3 pt-2">
             <Button
               onClick={() => setShowConfirm(true)}
-              disabled={!canSubmit || createMutation.isPending}
+              disabled={!canSubmit || (isAdmin ? directMoveMutation.isPending : createMutation.isPending)}
               className="gap-2"
             >
               <Send className="h-4 w-4" />
-              {createMutation.isPending ? 'Mengirim...' : 'Kirim Pengajuan'}
+              {isAdmin
+                ? (directMoveMutation.isPending ? 'Memindahkan...' : 'Pindahkan Langsung')
+                : (createMutation.isPending ? 'Mengirim...' : 'Kirim Pengajuan')}
             </Button>
             <Button
               variant="secondary"
@@ -403,8 +432,12 @@ export function AssetTransferPage() {
                     <ArrowRightLeft className="w-6 h-6" />
                   </div>
                   <div>
-                    <h3 className="text-base font-bold text-slate-800">Konfirmasi Pengajuan</h3>
-                    <p className="text-xs text-slate-500 font-medium">Harap periksa kembali detail perpindahan aset Anda.</p>
+                    <h3 className="text-base font-bold text-slate-800">
+                      {isAdmin ? 'Konfirmasi Pemindahan Langsung' : 'Konfirmasi Pengajuan'}
+                    </h3>
+                    <p className="text-xs text-slate-500 font-medium">
+                      {isAdmin ? 'Aset akan dipindahkan ke ruangan tujuan secara instan.' : 'Harap periksa kembali detail perpindahan aset Anda.'}
+                    </p>
                   </div>
                 </div>
 
@@ -423,27 +456,39 @@ export function AssetTransferPage() {
                     <span className="text-slate-400 font-semibold">Ke</span>
                     <span className="font-bold text-slate-800">{selectedTargetRoom?.code} - {selectedTargetRoom?.name}</span>
                   </div>
-                  <div className="p-3">
-                    <span className="text-slate-400 font-semibold block mb-1">Alasan Pemindahan</span>
-                    <span className="font-medium text-slate-700 italic leading-relaxed block bg-white border border-slate-100 p-2 rounded-lg">
-                      "{reason}"
-                    </span>
-                  </div>
+                  {!isAdmin && (
+                    <div className="p-3">
+                      <span className="text-slate-400 font-semibold block mb-1">Alasan Pemindahan</span>
+                      <span className="font-medium text-slate-700 italic leading-relaxed block bg-white border border-slate-100 p-2 rounded-lg">
+                        "{reason}"
+                      </span>
+                    </div>
+                  )}
                 </div>
 
                 <div className="flex justify-end gap-3 pt-2">
-                  <Button variant="secondary" onClick={() => setShowConfirm(false)} disabled={createMutation.isPending}>
+                  <Button
+                    variant="secondary"
+                    onClick={() => setShowConfirm(false)}
+                    disabled={isAdmin ? directMoveMutation.isPending : createMutation.isPending}
+                  >
                     Tidak, Batal
                   </Button>
                   <Button 
                     onClick={() => {
-                      createMutation.mutate()
+                      if (isAdmin) {
+                        directMoveMutation.mutate()
+                      } else {
+                        createMutation.mutate()
+                      }
                       setShowConfirm(false)
                     }}
-                    disabled={createMutation.isPending}
+                    disabled={isAdmin ? directMoveMutation.isPending : createMutation.isPending}
                     className="gap-2"
                   >
-                    {createMutation.isPending ? 'Mengirim...' : 'Ya, Kirim'}
+                    {isAdmin
+                      ? (directMoveMutation.isPending ? 'Memindahkan...' : 'Ya, Pindahkan')
+                      : (createMutation.isPending ? 'Mengirim...' : 'Ya, Kirim')}
                   </Button>
                 </div>
               </GlassCard>
