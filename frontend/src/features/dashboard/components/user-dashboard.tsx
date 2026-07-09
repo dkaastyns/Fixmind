@@ -68,7 +68,7 @@ export function UserDashboard() {
             Selamat Datang, <span className="text-gradient font-extrabold">{user?.fullName ?? 'Pengguna'}</span>
           </h1>
           <p className="text-sm text-slate-500 mt-1 font-medium flex items-center gap-1.5">
-            <span>📅</span> {todayStr}
+            {todayStr}
           </p>
           <p className="text-sm text-slate-600 mt-2 max-w-xl">
             Pantau status laporan kerusakan fasilitas dan pengajuan perpindahan aset Anda secara real-time dari panel kontrol ini.
