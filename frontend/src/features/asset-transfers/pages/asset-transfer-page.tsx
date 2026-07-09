@@ -123,7 +123,7 @@ export function AssetTransferPage() {
         />
 
         <GlassCard className="max-w-7xl mx-auto w-full border border-white/40 p-6 md:p-8 bg-white/80 backdrop-blur-xl">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
             {/* Left Column: Form Pemindahan */}
             <div className="space-y-5 flex flex-col justify-between">
               <div className="space-y-5">
@@ -227,7 +227,7 @@ export function AssetTransferPage() {
             </div>
 
             {/* Right Column: Preview & Details */}
-            <div className="flex flex-col justify-center bg-slate-500/5 rounded-2xl p-5 border border-slate-200/10 min-h-[300px]">
+            <div className="flex flex-col justify-center bg-slate-500/5 rounded-2xl p-6 border border-slate-200/10 h-full">
               {selectedAsset ? (
                 <div className="space-y-5 h-full flex flex-col justify-between">
                   <div className="space-y-4">
@@ -302,6 +302,40 @@ export function AssetTransferPage() {
             </div>
           </div>
         </GlassCard>
+
+        {/* Rooms Grid Reference */}
+        <div className="space-y-4 pt-4 max-w-7xl mx-auto w-full">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-base font-bold text-slate-800">Daftar Ruangan & Lokasi</h3>
+              <p className="text-xs text-slate-500">Gunakan daftar ini sebagai referensi kode ruangan asal dan tujuan.</p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {(rooms.data?.data ?? []).map((room) => (
+              <div 
+                key={room.id}
+                className="bg-white/60 backdrop-blur-md border border-white/40 rounded-2xl p-4 shadow-sm hover:shadow-md transition-all flex items-start gap-3"
+              >
+                <div className="p-2.5 bg-blue-500/10 text-blue-600 rounded-xl shadow-inner mt-0.5">
+                  <Building className="w-5 h-5" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <span className="bg-slate-100 border border-slate-200 text-slate-600 font-bold px-1.5 py-0.5 rounded text-[10px] uppercase">
+                    {room.code}
+                  </span>
+                  <h4 className="font-bold text-slate-800 text-sm mt-1.5 truncate" title={room.name}>
+                    {room.name}
+                  </h4>
+                  <p className="text-xs text-slate-500 font-medium truncate mt-0.5">
+                    Gedung: {room.building ?? '—'}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
 
         {/* Confirmation Modal */}
         <AnimatePresence>
