@@ -121,13 +121,13 @@ export function UserDashboard() {
             whileHover={{ scale: 1.01, y: -2 }}
             whileTap={{ scale: 0.99 }}
             onClick={() => navigate('/dashboard/asset-transfers')}
-            className="cursor-pointer rounded-2xl bg-slate-800 text-white p-6 flex flex-col justify-between shadow-md hover:shadow-xl transition-all relative overflow-hidden group min-h-[140px]"
+            className="cursor-pointer rounded-2xl bg-gradient-to-br from-red-500 via-red-600 to-red-800 text-white p-6 flex flex-col justify-between shadow-md hover:shadow-xl hover:shadow-red-600/15 transition-all relative overflow-hidden group min-h-[140px]"
           >
             <div className="absolute right-0 bottom-0 translate-x-4 translate-y-4 opacity-10 group-hover:scale-110 transition-transform duration-300">
               <ArrowRightLeft className="w-36 h-36" />
             </div>
             <div className="flex justify-between items-start">
-              <div className="p-2.5 rounded-xl bg-white/10 backdrop-blur-md">
+              <div className="p-2.5 rounded-xl bg-white/20 backdrop-blur-md">
                 <ArrowRightLeft className="w-6 h-6 text-white" />
               </div>
               <ChevronRight className="w-5 h-5 opacity-70 group-hover:translate-x-1 transition-transform" />
