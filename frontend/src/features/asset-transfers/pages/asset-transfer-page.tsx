@@ -122,7 +122,7 @@ export function AssetTransferPage() {
           description="Pindahkan aset antar ruangan secara instan dan kelola riwayat pemindahan Anda."
         />
 
-        <GlassCard className="max-w-5xl mx-auto border border-white/40 p-6 md:p-8 bg-white/80 backdrop-blur-xl">
+        <GlassCard className="max-w-7xl mx-auto w-full border border-white/40 p-6 md:p-8 bg-white/80 backdrop-blur-xl">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {/* Left Column: Form Pemindahan */}
             <div className="space-y-5 flex flex-col justify-between">
