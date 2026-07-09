@@ -125,7 +125,7 @@ export function AssetTransferPage() {
         }
       />
 
-      <div className="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
+      <div className={isAdmin ? 'max-w-2xl mx-auto w-full' : 'grid gap-6 xl:grid-cols-[1.1fr_0.9fr]'}>
         {/* Left Column: Form Pengajuan */}
         <GlassCard className="space-y-6 border border-white/40">
           <div className="flex items-start gap-3">
@@ -313,93 +313,95 @@ export function AssetTransferPage() {
         </GlassCard>
 
         {/* Right Column: Riwayat Pengajuan Saya */}
-        <GlassCard className="space-y-4 border border-white/40 flex flex-col h-full">
-          <div className="flex items-start gap-3">
-            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-success/10 text-success shadow-inner">
-              <Sparkles className="h-5 w-5" />
+        {!isAdmin && (
+          <GlassCard className="space-y-4 border border-white/40 flex flex-col h-full">
+            <div className="flex items-start gap-3">
+              <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-success/10 text-success shadow-inner">
+                <Sparkles className="h-5 w-5" />
+              </div>
+              <div>
+                <h2 className="text-base font-bold text-slate-800">Riwayat Pengajuan Saya</h2>
+                <p className="text-xs text-slate-500">
+                  Pantau status pengajuan pemindahan aset Anda.
+                </p>
+              </div>
             </div>
-            <div>
-              <h2 className="text-base font-bold text-slate-800">Riwayat Pengajuan Saya</h2>
-              <p className="text-xs text-slate-500">
-                Pantau status pengajuan pemindahan aset Anda.
-              </p>
-            </div>
-          </div>
 
-          {/* Filter Status Tabs */}
-          <div className="space-y-3 pt-1">
-            <div className="flex gap-1 bg-slate-200/50 p-1 rounded-xl border border-slate-200/40 text-[11px] overflow-x-auto">
-              {(['ALL', 'PENDING', 'APPROVED', 'REJECTED'] as const).map((status) => (
-                <button
-                  key={status}
-                  onClick={() => setHistoryStatusFilter(status)}
-                  className={`flex-1 px-3 py-2 rounded-lg font-bold transition-all whitespace-nowrap capitalize text-center ${
-                    historyStatusFilter === status
-                      ? 'bg-white text-slate-800 shadow-sm'
-                      : 'text-slate-500 hover:text-slate-800'
-                  }`}
-                >
-                  {status === 'ALL' ? 'Semua' : status === 'PENDING' ? 'Menunggu' : status === 'APPROVED' ? 'Disetujui' : 'Ditolak'}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* List of Transfers */}
-          <div className="flex-1 overflow-y-auto max-h-[500px] pr-1 space-y-3">
-            {myTransfers.isLoading ? (
-              <ListSkeleton count={3} />
-            ) : filteredTransfers.length === 0 ? (
-              <EmptyState
-                title="Tidak ada pengajuan"
-                description={historyStatusFilter !== 'ALL' ? 'Tidak ada data pengajuan yang cocok dengan filter.' : 'Silakan ajukan perpindahan aset dari form di sebelah kiri.'}
-              />
-            ) : (
-              <div className="space-y-3">
-                {filteredTransfers.map((transfer) => (
-                  <div key={transfer.id} className="rounded-xl border border-white/50 bg-white/70 p-4 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden">
-                    <div className="flex items-start justify-between gap-3">
-                      <div className="min-w-0">
-                        <p className="font-bold text-slate-800 text-sm truncate">
-                          {transfer.assetName ? `${transfer.assetName}` : `${transfer.assetId}`}
-                        </p>
-                        <span className="bg-slate-100 px-1.5 py-0.5 rounded text-[10px] font-bold text-slate-600 border border-slate-200/50 block w-fit mt-1">
-                          {transfer.assetKode ?? 'KODE-ASET'}
-                        </span>
-                        
-                        {/* Route display */}
-                        <div className="flex items-center gap-1.5 text-xs text-slate-700 font-bold bg-white/70 border border-white/60 rounded-lg px-2 py-1 w-fit mt-2 shadow-inner">
-                          <span>{transfer.fromRoomCode}</span>
-                          <ArrowRight className="w-3.5 h-3.5 text-slate-400" />
-                          <span>{transfer.toRoomCode}</span>
-                        </div>
-                      </div>
-                      <StatusBadge status={transfer.status} />
-                    </div>
-
-                    <p className="mt-3 text-xs font-semibold text-slate-600 bg-slate-50 border border-slate-100 p-2.5 rounded-lg leading-relaxed">
-                      {transfer.reason}
-                    </p>
-
-                    {transfer.reviewerNotes && (
-                      <div className="mt-2.5 rounded-lg bg-amber-500/5 border border-amber-500/10 px-3 py-2 text-xs text-amber-700 font-medium">
-                        <span className="font-bold block text-[10px] uppercase text-amber-600">Catatan Admin:</span>
-                        {transfer.reviewerNotes}
-                      </div>
-                    )}
-
-                    <div className="mt-3 flex items-center justify-between text-[10px] text-slate-400 font-medium border-t border-slate-100 pt-2">
-                      <span>Dibuat: {new Date(transfer.createdAt).toLocaleDateString('id-ID')}</span>
-                      {transfer.reviewedAt && (
-                        <span>Ditinjau: {new Date(transfer.reviewedAt).toLocaleDateString('id-ID')}</span>
-                      )}
-                    </div>
-                  </div>
+            {/* Filter Status Tabs */}
+            <div className="space-y-3 pt-1">
+              <div className="flex gap-1 bg-slate-200/50 p-1 rounded-xl border border-slate-200/40 text-[11px] overflow-x-auto">
+                {(['ALL', 'PENDING', 'APPROVED', 'REJECTED'] as const).map((status) => (
+                  <button
+                    key={status}
+                    onClick={() => setHistoryStatusFilter(status)}
+                    className={`flex-1 px-3 py-2 rounded-lg font-bold transition-all whitespace-nowrap capitalize text-center ${
+                      historyStatusFilter === status
+                        ? 'bg-white text-slate-800 shadow-sm'
+                        : 'text-slate-500 hover:text-slate-800'
+                    }`}
+                  >
+                    {status === 'ALL' ? 'Semua' : status === 'PENDING' ? 'Menunggu' : status === 'APPROVED' ? 'Disetujui' : 'Ditolak'}
+                  </button>
                 ))}
               </div>
-            )}
-          </div>
-        </GlassCard>
+            </div>
+
+            {/* List of Transfers */}
+            <div className="flex-1 overflow-y-auto max-h-[500px] pr-1 space-y-3">
+              {myTransfers.isLoading ? (
+                <ListSkeleton count={3} />
+              ) : filteredTransfers.length === 0 ? (
+                <EmptyState
+                  title="Tidak ada pengajuan"
+                  description={historyStatusFilter !== 'ALL' ? 'Tidak ada data pengajuan yang cocok dengan filter.' : 'Silakan ajukan perpindahan aset dari form di sebelah kiri.'}
+                />
+              ) : (
+                <div className="space-y-3">
+                  {filteredTransfers.map((transfer) => (
+                    <div key={transfer.id} className="rounded-xl border border-white/50 bg-white/70 p-4 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden">
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="min-w-0">
+                          <p className="font-bold text-slate-800 text-sm truncate">
+                            {transfer.assetName ? `${transfer.assetName}` : `${transfer.assetId}`}
+                          </p>
+                          <span className="bg-slate-100 px-1.5 py-0.5 rounded text-[10px] font-bold text-slate-600 border border-slate-200/50 block w-fit mt-1">
+                            {transfer.assetKode ?? 'KODE-ASET'}
+                          </span>
+                          
+                          {/* Route display */}
+                          <div className="flex items-center gap-1.5 text-xs text-slate-700 font-bold bg-white/70 border border-white/60 rounded-lg px-2 py-1 w-fit mt-2 shadow-inner">
+                            <span>{transfer.fromRoomCode}</span>
+                            <ArrowRight className="w-3.5 h-3.5 text-slate-400" />
+                            <span>{transfer.toRoomCode}</span>
+                          </div>
+                        </div>
+                        <StatusBadge status={transfer.status} />
+                      </div>
+
+                      <p className="mt-3 text-xs font-semibold text-slate-600 bg-slate-50 border border-slate-100 p-2.5 rounded-lg leading-relaxed">
+                        {transfer.reason}
+                      </p>
+
+                      {transfer.reviewerNotes && (
+                        <div className="mt-2.5 rounded-lg bg-amber-500/5 border border-amber-500/10 px-3 py-2 text-xs text-amber-700 font-medium">
+                          <span className="font-bold block text-[10px] uppercase text-amber-600">Catatan Admin:</span>
+                          {transfer.reviewerNotes}
+                        </div>
+                      )}
+
+                      <div className="mt-3 flex items-center justify-between text-[10px] text-slate-400 font-medium border-t border-slate-100 pt-2">
+                        <span>Dibuat: {new Date(transfer.createdAt).toLocaleDateString('id-ID')}</span>
+                        {transfer.reviewedAt && (
+                          <span>Ditinjau: {new Date(transfer.reviewedAt).toLocaleDateString('id-ID')}</span>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </GlassCard>
+        )}
       </div>
 
       {user?.role === 'ADMIN' && (
