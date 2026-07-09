@@ -65,7 +65,7 @@ export function UserDashboard() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white/40 border border-white/50 rounded-2xl p-6 shadow-sm backdrop-blur-md">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-slate-800">
-            Selamat Datang, <span className="text-gradient font-extrabold">{user?.fullName ?? 'Pengguna'}</span> 👋
+            Selamat Datang, <span className="text-gradient font-extrabold">{user?.fullName ?? 'Pengguna'}</span>
           </h1>
           <p className="text-sm text-slate-500 mt-1 font-medium flex items-center gap-1.5">
             <span>📅</span> {todayStr}
