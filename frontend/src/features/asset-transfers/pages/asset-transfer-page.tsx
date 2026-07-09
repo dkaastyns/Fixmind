@@ -122,7 +122,7 @@ export function AssetTransferPage() {
           description="Pindahkan aset antar ruangan secara instan dan kelola riwayat pemindahan Anda."
         />
 
-        <GlassCard className="max-w-4xl mx-auto border border-white/40 p-6 md:p-8 bg-white/80 backdrop-blur-xl">
+        <GlassCard className="max-w-5xl mx-auto border border-white/40 p-6 md:p-8 bg-white/80 backdrop-blur-xl">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {/* Left Column: Form Pemindahan */}
             <div className="space-y-5 flex flex-col justify-between">
@@ -283,7 +283,6 @@ export function AssetTransferPage() {
 
                   {/* Info Banner */}
                   <div className="bg-blue-500/10 border border-blue-500/20 text-blue-700 text-xs p-3.5 rounded-xl flex gap-2 items-start">
-                    <span className="text-base leading-none">💡</span>
                     <span>
                       <strong>Otoritas Penuh:</strong> Pemindahan ini bersifat langsung dan instan. Lokasi aset di database akan langsung diperbarui setelah Anda mengonfirmasi.
                     </span>
