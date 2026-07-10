@@ -1,4 +1,4 @@
-﻿import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { SQL_TOKEN, type Sql } from '../../../database/sql';
 import type { AssetTransferRow, AssetTransferStatus } from '../../../common/types/database-rows';
 
@@ -13,14 +13,24 @@ export class TransferRepository {
       fromRoomId: string;
       toRoomId: string;
       reason: string;
+      status?: AssetTransferStatus;
+      reviewedBy?: string;
+      reviewedAt?: Date;
+      reviewerNotes?: string;
     },
     sql: Sql = this.sql,
   ): Promise<AssetTransferRow> {
     const [row] = await sql<AssetTransferRow[]>`
       INSERT INTO asset_transfers
-        (asset_id, requester_id, from_room_id, to_room_id, reason)
+        (
+          asset_id, requester_id, from_room_id, to_room_id, reason,
+          status, reviewed_by, reviewed_at, reviewer_notes
+        )
       VALUES
-        (${data.assetId}, ${data.requesterId}, ${data.fromRoomId}, ${data.toRoomId}, ${data.reason})
+        (
+          ${data.assetId}, ${data.requesterId}, ${data.fromRoomId}, ${data.toRoomId}, ${data.reason},
+          ${data.status ?? 'PENDING'}, ${data.reviewedBy ?? null}, ${data.reviewedAt ?? null}, ${data.reviewerNotes ?? null}
+        )
       RETURNING *
     `;
     return row;

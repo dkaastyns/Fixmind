@@ -85,6 +85,7 @@ export function AssetTransferPage() {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['asset-transfer-assets'] })
       qc.invalidateQueries({ queryKey: ['assets'] })
+      qc.invalidateQueries({ queryKey: ['asset-transfers'] })
       toast.success('Aset berhasil dipindahkan secara langsung')
       setAssetId('')
       setToRoomId('')

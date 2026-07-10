@@ -1,4 +1,4 @@
-﻿import {
+import {
   Body,
   Controller,
   Delete,
@@ -118,8 +118,12 @@ export class AssetsController {
 
   @Roles('ADMIN')
   @Patch(':id')
-  async update(@Param('id') id: string, @Body() dto: UpdateAssetDto) {
-    const data = await this.assetsService.update(id, dto);
+  async update(
+    @CurrentUser() user: AuthUser,
+    @Param('id') id: string,
+    @Body() dto: UpdateAssetDto,
+  ) {
+    const data = await this.assetsService.update(user, id, dto);
     return { message: 'Asset updated', data };
   }
 

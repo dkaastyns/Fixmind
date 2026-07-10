@@ -1,4 +1,4 @@
-﻿import {
+import {
   BadRequestException,
   ForbiddenException,
   Inject,
@@ -106,7 +106,12 @@ export class AssetsService {
     return this.toPublic(asset);
   }
 
-  async update(id: string, dto: UpdateAssetDto) {
+  async update(user: AuthUser, id: string, dto: UpdateAssetDto) {
+    const oldAsset = await this.assetsRepository.findById(id);
+    if (!oldAsset) throw new NotFoundException('Asset not found');
+
+    const roomChanged = dto.roomId && dto.roomId !== oldAsset.room_id;
+
     if (dto.roomId) {
       const room = await this.roomsRepository.findById(dto.roomId);
       if (!room) throw new NotFoundException('Room not found');
@@ -122,6 +127,25 @@ export class AssetsService {
       status: dto.status,
     });
     if (!asset) throw new NotFoundException('Asset not found');
+
+    if (roomChanged) {
+      try {
+        await this.transferRepository.create({
+          assetId: id,
+          requesterId: user.id,
+          fromRoomId: oldAsset.room_id,
+          toRoomId: dto.roomId!,
+          reason: 'Dipindahkan langsung oleh Admin',
+          status: 'APPROVED',
+          reviewedBy: user.id,
+          reviewedAt: new Date(),
+          reviewerNotes: 'Otomatis disetujui melalui pemindahan instan Admin',
+        });
+      } catch (e) {
+        // Ignored
+      }
+    }
+
     return this.toPublic(asset);
   }
 
