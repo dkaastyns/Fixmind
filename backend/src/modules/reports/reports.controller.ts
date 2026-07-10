@@ -134,8 +134,19 @@ export class ReportsController {
     @Query('page') page = '1',
     @Query('limit') limit = '20',
     @Query('status') status?: ReportStatus,
+    @Query('roomId') roomId?: string,
+    @Query('dateFrom') dateFrom?: string,
+    @Query('dateTo') dateTo?: string,
   ) {
-    const result = await this.reportsService.list(user, Number(page), Number(limit), status);
+    const result = await this.reportsService.list(
+      user,
+      Number(page),
+      Number(limit),
+      status,
+      roomId,
+      dateFrom,
+      dateTo,
+    );
     return { message: 'Reports retrieved', ...result };
   }
 

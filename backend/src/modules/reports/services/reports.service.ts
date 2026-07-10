@@ -64,8 +64,23 @@ export class ReportsService {
     };
   }
 
-  async list(user: AuthUser, page = 1, limit = 20, status?: ReportStatus) {
-    const filters: Parameters<ReportsRepository['list']>[0] = { page, limit, status };
+  async list(
+    user: AuthUser,
+    page = 1,
+    limit = 20,
+    status?: ReportStatus,
+    roomId?: string,
+    startDate?: string,
+    endDate?: string,
+  ) {
+    const filters: Parameters<ReportsRepository['list']>[0] = {
+      page,
+      limit,
+      status,
+      roomId,
+      startDate,
+      endDate,
+    };
 
     if (user.role === 'USER') filters.reporterId = user.id;
 

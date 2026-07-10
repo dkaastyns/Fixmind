@@ -46,6 +46,7 @@ export class ReportsRepository {
     limit: number;
     reporterId?: string;
     status?: ReportStatus;
+    roomId?: string;
     startDate?: string;
     endDate?: string;
   }) {
@@ -63,6 +64,7 @@ export class ReportsRepository {
       WHERE r.deleted_at IS NULL
         ${params.reporterId ? this.sql`AND r.reporter_id = ${params.reporterId}` : this.sql``}
         ${params.status ? this.sql`AND r.status = ${params.status}` : this.sql``}
+        ${params.roomId ? this.sql`AND r.room_id = ${params.roomId}` : this.sql``}
         ${params.startDate ? this.sql`AND r.created_at >= ${params.startDate}` : this.sql``}
         ${params.endDate ? this.sql`AND r.created_at <= ${params.endDate}::timestamp + interval '1 day' - interval '1 millisecond'` : this.sql``}
       ORDER BY r.created_at DESC
@@ -74,6 +76,7 @@ export class ReportsRepository {
       WHERE r.deleted_at IS NULL
         ${params.reporterId ? this.sql`AND r.reporter_id = ${params.reporterId}` : this.sql``}
         ${params.status ? this.sql`AND r.status = ${params.status}` : this.sql``}
+        ${params.roomId ? this.sql`AND r.room_id = ${params.roomId}` : this.sql``}
         ${params.startDate ? this.sql`AND r.created_at >= ${params.startDate}` : this.sql``}
         ${params.endDate ? this.sql`AND r.created_at <= ${params.endDate}::timestamp + interval '1 day' - interval '1 millisecond'` : this.sql``}
     `;

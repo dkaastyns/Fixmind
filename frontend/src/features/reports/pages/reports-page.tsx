@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
-import { ChevronDown, ChevronUp, Filter, Plus, X, Loader2, Bot } from 'lucide-react'
+import { ChevronDown, ChevronUp, Filter, Plus, X, Loader2, Bot, Building2, Calendar } from 'lucide-react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { GlassCard } from '@/components/ui/glass-card'
@@ -131,56 +131,84 @@ export function ReportsPage() {
       </div>
 
       {/* Collapsible advanced filter panel */}
-      {showAdvanced && (
-        <GlassCard className="mb-4 p-4">
-          <div className="flex items-center justify-between mb-3">
-            <h3 className="text-sm font-medium">Filter Lanjutan</h3>
-            {hasAdvancedFilter && (
-              <button
-                onClick={clearAdvancedFilter}
-                className="inline-flex items-center gap-1 text-xs text-muted hover:text-danger transition-colors"
-              >
-                <X className="h-3 w-3" /> Hapus Filter
-              </button>
-            )}
-          </div>
-          <div className="grid gap-3 sm:grid-cols-3">
-            <div className="space-y-1.5">
-              <label className="text-xs font-medium text-foreground/70">Ruangan</label>
-              <select
-                className="flex h-9 w-full appearance-none rounded-xl border border-white/20 bg-white/40 px-3 text-sm backdrop-blur-md focus:border-[#ef629f]/50 focus:outline-none focus:ring-4 focus:ring-[#ef629f]/10"
-                value={advFilter.roomId}
-                onChange={(e) => setAdvFilter((f) => ({ ...f, roomId: e.target.value }))}
-              >
-                <option value="">Semua Ruangan</option>
-                {rooms.data?.data.map((r) => (
-                  <option key={r.id} value={r.id}>
-                    {r.code} — {r.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className="space-y-1.5">
-              <label className="text-xs font-medium text-foreground/70">Tanggal Dari</label>
-              <input
-                type="date"
-                className="flex h-9 w-full rounded-xl border border-white/20 bg-white/40 px-3 text-sm backdrop-blur-md focus:border-[#ef629f]/50 focus:outline-none focus:ring-4 focus:ring-[#ef629f]/10"
-                value={advFilter.dateFrom}
-                onChange={(e) => setAdvFilter((f) => ({ ...f, dateFrom: e.target.value }))}
-              />
-            </div>
-            <div className="space-y-1.5">
-              <label className="text-xs font-medium text-foreground/70">Tanggal Sampai</label>
-              <input
-                type="date"
-                className="flex h-9 w-full rounded-xl border border-white/20 bg-white/40 px-3 text-sm backdrop-blur-md focus:border-[#ef629f]/50 focus:outline-none focus:ring-4 focus:ring-[#ef629f]/10"
-                value={advFilter.dateTo}
-                onChange={(e) => setAdvFilter((f) => ({ ...f, dateTo: e.target.value }))}
-              />
-            </div>
-          </div>
-        </GlassCard>
-      )}
+      <AnimatePresence>
+        {showAdvanced && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.25, ease: 'easeInOut' }}
+            className="overflow-hidden mb-4"
+          >
+            <GlassCard className="p-5 border-white/60 bg-white/70 shadow-lg shadow-[#ef629f]/5">
+              <div className="flex items-center justify-between mb-4 border-b border-slate-100/60 pb-2">
+                <div className="flex items-center gap-1.5 text-slate-800 font-semibold text-sm">
+                  <Filter className="h-4 w-4 text-[#ef629f]" />
+                  <span>Filter Lanjutan</span>
+                </div>
+                {hasAdvancedFilter && (
+                  <button
+                    onClick={clearAdvancedFilter}
+                    className="inline-flex items-center gap-1 text-xs text-rose-500 font-semibold hover:text-rose-600 transition-colors"
+                  >
+                    <X className="h-3.5 w-3.5" /> Bersihkan Filter
+                  </button>
+                )}
+              </div>
+              
+              <div className="grid gap-4 sm:grid-cols-3">
+                {/* Ruangan */}
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-slate-600">Ruangan / Lokasi</label>
+                  <div className="relative">
+                    <Building2 className="absolute left-3 top-3 h-4 w-4 text-slate-400 pointer-events-none" />
+                    <select
+                      className="flex h-10 w-full rounded-xl border border-slate-200 bg-white/70 pl-9 pr-8 text-sm shadow-sm transition-all focus:border-[#ef629f]/50 focus:bg-white focus:outline-none focus:ring-4 focus:ring-[#ef629f]/10"
+                      value={advFilter.roomId}
+                      onChange={(e) => setAdvFilter((f) => ({ ...f, roomId: e.target.value }))}
+                    >
+                      <option value="">Semua Ruangan</option>
+                      {rooms.data?.data.map((r) => (
+                        <option key={r.id} value={r.id}>
+                          {r.code} — {r.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                {/* Tanggal Dari */}
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-slate-600">Dari Tanggal</label>
+                  <div className="relative">
+                    <Calendar className="absolute left-3 top-3 h-4 w-4 text-slate-400 pointer-events-none" />
+                    <input
+                      type="date"
+                      className="flex h-10 w-full rounded-xl border border-slate-200 bg-white/70 pl-9 pr-3 text-sm shadow-sm transition-all focus:border-[#ef629f]/50 focus:bg-white focus:outline-none focus:ring-4 focus:ring-[#ef629f]/10"
+                      value={advFilter.dateFrom}
+                      onChange={(e) => setAdvFilter((f) => ({ ...f, dateFrom: e.target.value }))}
+                    />
+                  </div>
+                </div>
+
+                {/* Tanggal Sampai */}
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-slate-600">Sampai Tanggal</label>
+                  <div className="relative">
+                    <Calendar className="absolute left-3 top-3 h-4 w-4 text-slate-400 pointer-events-none" />
+                    <input
+                      type="date"
+                      className="flex h-10 w-full rounded-xl border border-slate-200 bg-white/70 pl-9 pr-3 text-sm shadow-sm transition-all focus:border-[#ef629f]/50 focus:bg-white focus:outline-none focus:ring-4 focus:ring-[#ef629f]/10"
+                      value={advFilter.dateTo}
+                      onChange={(e) => setAdvFilter((f) => ({ ...f, dateTo: e.target.value }))}
+                    />
+                  </div>
+                </div>
+              </div>
+            </GlassCard>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <AnimatePresence>
         {showForm && (
