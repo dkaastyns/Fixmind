@@ -119,24 +119,24 @@ export function ProfilePage() {
     <div className="space-y-8 pb-10">
       
       {/* Hero / Banner Section */}
-      <div className="relative mb-20 md:mb-24">
-        <div className="h-40 md:h-56 w-full rounded-3xl bg-gradient-to-r from-pink-500 via-[#ef629f] to-rose-400 overflow-hidden relative shadow-lg">
+      <div className="relative mb-20 md:mb-32">
+        <div className="h-40 md:h-64 w-full rounded-3xl bg-gradient-to-r from-pink-500 via-[#ef629f] to-rose-400 overflow-hidden relative shadow-lg">
           {/* Decorative shapes */}
           <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3"></div>
           <div className="absolute bottom-0 left-10 w-40 h-40 bg-white/10 rounded-full blur-2xl translate-y-1/2"></div>
           
           {/* Desktop Title inside Banner */}
-          <div className="absolute bottom-6 left-48 md:left-52 hidden md:block z-10 text-white drop-shadow-md">
-            <h1 className="text-3xl font-extrabold">{user?.fullName || 'Pengguna'}</h1>
-            <p className="text-sm font-medium flex items-center gap-1.5 mt-1.5 opacity-90">
-              <Mail className="w-4 h-4" />
+          <div className="absolute bottom-8 left-48 md:left-[280px] hidden md:block z-10 text-white drop-shadow-md">
+            <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight">{user?.fullName || 'Pengguna'}</h1>
+            <p className="text-sm md:text-base font-medium flex items-center gap-2 mt-2 opacity-90">
+              <Mail className="w-5 h-5" />
               {user?.email}
             </p>
           </div>
         </div>
 
         {/* Avatar overlapping the banner */}
-        <div className="absolute -bottom-16 left-8 md:left-12">
+        <div className="absolute -bottom-16 md:-bottom-24 left-8 md:left-12">
           <div className="relative group z-10">
             <input
               type="file"
@@ -147,28 +147,28 @@ export function ProfilePage() {
               disabled={uploadAvatarMut.isPending}
             />
             <div 
-              className="flex h-32 w-32 items-center justify-center rounded-2xl bg-white text-[#ef629f] overflow-hidden cursor-pointer shadow-2xl relative transition-all group-hover:scale-[1.02] border-4 border-slate-50/80"
+              className="flex h-32 w-32 md:h-48 md:w-48 items-center justify-center rounded-[2rem] bg-white text-[#ef629f] overflow-hidden cursor-pointer shadow-2xl relative transition-all group-hover:scale-[1.02] border-[6px] md:border-8 border-slate-50/80"
               onClick={() => !uploadAvatarMut.isPending && fileInputRef.current?.click()}
             >
               {user?.avatarUrl ? (
                 <img src={user.avatarUrl} alt="Avatar" className="h-full w-full object-cover" />
               ) : (
-                <UserIcon className="h-12 w-12 text-slate-300" />
+                <UserIcon className="h-12 w-12 md:h-20 md:w-20 text-slate-300" />
               )}
               
               {uploadAvatarMut.isPending ? (
                 <div className="absolute inset-0 bg-white/60 flex items-center justify-center backdrop-blur-[1px]">
-                  <Loader2 className="h-8 w-8 animate-spin text-[#ef629f]" />
+                  <Loader2 className="h-8 w-8 md:h-12 md:w-12 animate-spin text-[#ef629f]" />
                 </div>
               ) : (
                 <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                  <Camera className="h-8 w-8 text-white" />
+                  <Camera className="h-8 w-8 md:h-12 md:w-12 text-white" />
                 </div>
               )}
             </div>
             
             {/* Online badge */}
-            <div className="absolute -bottom-2 -right-2 h-6 w-6 bg-green-500 rounded-full border-4 border-slate-50 z-10 shadow-sm"></div>
+            <div className="absolute -bottom-1 -right-1 md:-bottom-2 md:-right-2 h-7 w-7 md:h-10 md:w-10 bg-green-500 rounded-full border-4 md:border-[6px] border-slate-50 z-10 shadow-sm"></div>
           </div>
         </div>
       </div>
