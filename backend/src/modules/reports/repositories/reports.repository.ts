@@ -49,8 +49,10 @@ export class ReportsRepository {
     roomId?: string;
     startDate?: string;
     endDate?: string;
+    search?: string;
   }) {
     const offset = (params.page - 1) * params.limit;
+    const q = params.search?.trim() ? `%${params.search.trim()}%` : null;
 
     const rows = await this.sql<ReportListRow[]>`
       SELECT r.*,
@@ -67,6 +69,20 @@ export class ReportsRepository {
         ${params.roomId ? this.sql`AND r.room_id = ${params.roomId}` : this.sql``}
         ${params.startDate ? this.sql`AND r.created_at >= ${params.startDate}` : this.sql``}
         ${params.endDate ? this.sql`AND r.created_at <= ${params.endDate}::timestamp + interval '1 day' - interval '1 millisecond'` : this.sql``}
+        ${q ? this.sql`
+          AND (
+            r.title ILIKE ${q}
+            OR COALESCE(r.description, '') ILIKE ${q}
+            OR COALESCE(rm.name, '') ILIKE ${q}
+            OR COALESCE(rm.code, '') ILIKE ${q}
+            OR COALESCE(a.nama_barang, '') ILIKE ${q}
+            OR COALESCE(a.kode_barang, '') ILIKE ${q}
+            OR COALESCE(u.full_name, '') ILIKE ${q}
+            OR r.status::text ILIKE ${q}
+            OR r.priority::text ILIKE ${q}
+            OR to_char(r.created_at, 'YYYY-MM-DD') ILIKE ${q}
+          )
+        ` : this.sql``}
       ORDER BY r.created_at DESC
       LIMIT ${params.limit} OFFSET ${offset}
     `;
@@ -79,6 +95,20 @@ export class ReportsRepository {
         ${params.roomId ? this.sql`AND r.room_id = ${params.roomId}` : this.sql``}
         ${params.startDate ? this.sql`AND r.created_at >= ${params.startDate}` : this.sql``}
         ${params.endDate ? this.sql`AND r.created_at <= ${params.endDate}::timestamp + interval '1 day' - interval '1 millisecond'` : this.sql``}
+        ${q ? this.sql`
+          AND (
+            r.title ILIKE ${q}
+            OR COALESCE(r.description, '') ILIKE ${q}
+            OR COALESCE(rm.name, '') ILIKE ${q}
+            OR COALESCE(rm.code, '') ILIKE ${q}
+            OR COALESCE(a.nama_barang, '') ILIKE ${q}
+            OR COALESCE(a.kode_barang, '') ILIKE ${q}
+            OR COALESCE(u.full_name, '') ILIKE ${q}
+            OR r.status::text ILIKE ${q}
+            OR r.priority::text ILIKE ${q}
+            OR to_char(r.created_at, 'YYYY-MM-DD') ILIKE ${q}
+          )
+        ` : this.sql``}
     `;
 
     return { rows, total: Number(count) };

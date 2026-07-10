@@ -137,6 +137,7 @@ export class ReportsController {
     @Query('roomId') roomId?: string,
     @Query('dateFrom') dateFrom?: string,
     @Query('dateTo') dateTo?: string,
+    @Query('search') search?: string,
   ) {
     const result = await this.reportsService.list(
       user,
@@ -146,6 +147,7 @@ export class ReportsController {
       roomId,
       dateFrom,
       dateTo,
+      search,
     );
     return { message: 'Reports retrieved', ...result };
   }

@@ -161,6 +161,7 @@ export class AssetsService {
     limit = 20,
     status?: AssetTransferStatus,
     mineOnly = false,
+    search?: string,
   ) {
     const requesterId = user.role === 'ADMIN' && !mineOnly ? undefined : user.id;
     const { rows, total } = await this.transferRepository.list({
@@ -168,6 +169,7 @@ export class AssetsService {
       limit,
       status,
       requesterId,
+      search,
     });
 
     return {

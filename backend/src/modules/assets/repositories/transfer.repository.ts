@@ -65,8 +65,10 @@ export class TransferRepository {
     requesterId?: string;
     page: number;
     limit: number;
+    search?: string;
   }, sql: Sql = this.sql) {
     const offset = (params.page - 1) * params.limit;
+    const q = params.search?.trim() ? `%${params.search.trim()}%` : null;
 
     const rows = await sql<AssetTransferRow[]>`
       SELECT
@@ -88,6 +90,21 @@ export class TransferRepository {
       WHERE 1 = 1
         ${params.status ? sql`AND t.status = ${params.status}::asset_transfer_status` : sql``}
         ${params.requesterId ? sql`AND t.requester_id = ${params.requesterId}` : sql``}
+        ${q ? sql`
+          AND (
+            a.nama_barang ILIKE ${q}
+            OR a.kode_barang ILIKE ${q}
+            OR COALESCE(u.full_name, '') ILIKE ${q}
+            OR COALESCE(fr.name, '') ILIKE ${q}
+            OR COALESCE(fr.code, '') ILIKE ${q}
+            OR COALESCE(tr.name, '') ILIKE ${q}
+            OR COALESCE(tr.code, '') ILIKE ${q}
+            OR COALESCE(t.reason, '') ILIKE ${q}
+            OR COALESCE(t.reviewer_notes, '') ILIKE ${q}
+            OR t.status::text ILIKE ${q}
+            OR to_char(t.created_at, 'YYYY-MM-DD') ILIKE ${q}
+          )
+        ` : sql``}
       ORDER BY t.created_at DESC
       LIMIT ${params.limit}
       OFFSET ${offset}
@@ -96,9 +113,28 @@ export class TransferRepository {
     const [{ count }] = await sql<{ count: string }[]>`
       SELECT COUNT(*)::text AS count
       FROM asset_transfers t
+      JOIN assets a ON a.id = t.asset_id
+      JOIN rooms fr ON fr.id = t.from_room_id
+      JOIN rooms tr ON tr.id = t.to_room_id
+      JOIN users u ON u.id = t.requester_id
       WHERE 1 = 1
         ${params.status ? sql`AND t.status = ${params.status}::asset_transfer_status` : sql``}
         ${params.requesterId ? sql`AND t.requester_id = ${params.requesterId}` : sql``}
+        ${q ? sql`
+          AND (
+            a.nama_barang ILIKE ${q}
+            OR a.kode_barang ILIKE ${q}
+            OR COALESCE(u.full_name, '') ILIKE ${q}
+            OR COALESCE(fr.name, '') ILIKE ${q}
+            OR COALESCE(fr.code, '') ILIKE ${q}
+            OR COALESCE(tr.name, '') ILIKE ${q}
+            OR COALESCE(tr.code, '') ILIKE ${q}
+            OR COALESCE(t.reason, '') ILIKE ${q}
+            OR COALESCE(t.reviewer_notes, '') ILIKE ${q}
+            OR t.status::text ILIKE ${q}
+            OR to_char(t.created_at, 'YYYY-MM-DD') ILIKE ${q}
+          )
+        ` : sql``}
     `;
 
     return { rows, total: Number(count) };

@@ -184,13 +184,14 @@ export const deleteAsset = (token: string, id: string) =>
 
 export const fetchAssetTransfers = (
   token: string,
-  params?: { status?: AssetTransferStatus; mineOnly?: boolean; page?: number; limit?: number },
+  params?: { status?: AssetTransferStatus; mineOnly?: boolean; page?: number; limit?: number; search?: string },
 ) => {
   const q = new URLSearchParams()
   if (params?.status) q.set('status', params.status)
   if (typeof params?.mineOnly === 'boolean') q.set('mineOnly', String(params.mineOnly))
   if (params?.page) q.set('page', String(params.page))
   if (params?.limit) q.set('limit', String(params.limit))
+  if (params?.search) q.set('search', params.search)
   const qs = q.toString() ? `?${q.toString()}` : ''
   return apiFetch<AssetTransfer[]>(`/assets/transfers${qs}`, auth(token))
 }
@@ -255,7 +256,7 @@ export const downloadAssetTemplate = async (token: string) => {
 // Reports
 export const fetchReports = (
   token: string,
-  params?: { status?: string; roomId?: string; dateFrom?: string; dateTo?: string; page?: number; limit?: number },
+  params?: { status?: string; roomId?: string; dateFrom?: string; dateTo?: string; page?: number; limit?: number; search?: string },
 ) => {
   const q = new URLSearchParams()
   if (params?.status) q.set('status', params.status)
@@ -264,6 +265,7 @@ export const fetchReports = (
   if (params?.dateTo) q.set('dateTo', params.dateTo)
   if (params?.page) q.set('page', String(params.page))
   if (params?.limit) q.set('limit', String(params.limit))
+  if (params?.search) q.set('search', params.search)
   const qs = q.toString() ? `?${q.toString()}` : ''
   return apiFetch<Report[]>(`/reports${qs}`, auth(token))
 }
@@ -280,6 +282,77 @@ export const updateReportStatus = (token: string, id: string, data: object) =>
     body: JSON.stringify(data),
     ...auth(token),
   })
+
+// Maintenance Schedules
+export type MaintenanceFrequency = 'WEEKLY' | 'MONTHLY' | 'QUARTERLY' | 'ANNUALLY' | 'ONE_TIME'
+export type MaintenanceScheduleStatus = 'SCHEDULED' | 'IN_PROGRESS' | 'DONE' | 'CANCELLED' | 'OVERDUE'
+export type MaintenanceAssigneeType = 'INTERNAL' | 'EXTERNAL_VENDOR'
+
+export interface MaintenanceSchedule {
+  id: string
+  roomId: string | null
+  roomName?: string | null
+  roomCode?: string | null
+  assetId: string | null
+  assetName?: string | null
+  assetKode?: string | null
+  title: string
+  description: string
+  frequency: MaintenanceFrequency
+  scheduledDate: string
+  status: MaintenanceScheduleStatus
+  assigneeType: MaintenanceAssigneeType
+  assigneeName: string
+  vendorContactName?: string
+  vendorPhone?: string
+  estimatedCost: number
+  notes: string
+  createdBy: string | null
+  createdByName?: string | null
+  completedAt: string | null
+  createdAt: string
+  updatedAt: string
+}
+
+export const fetchMaintenanceSchedules = (
+  token: string,
+  params?: { page?: number; limit?: number; status?: MaintenanceScheduleStatus; search?: string },
+) => {
+  const q = new URLSearchParams()
+  if (params?.page) q.set('page', String(params.page))
+  if (params?.limit) q.set('limit', String(params.limit))
+  if (params?.status) q.set('status', params.status)
+  if (params?.search) q.set('search', params.search)
+  const qs = q.toString() ? `?${q.toString()}` : ''
+  return apiFetch<MaintenanceSchedule[]>(`/maintenance${qs}`, auth(token))
+}
+
+export const fetchMaintenanceSchedule = (token: string, id: string) =>
+  apiFetch<MaintenanceSchedule>(`/maintenance/${id}`, auth(token))
+
+export const createMaintenanceSchedule = (token: string, data: object) =>
+  apiFetch<MaintenanceSchedule>('/maintenance', {
+    method: 'POST',
+    body: JSON.stringify(data),
+    ...auth(token),
+  })
+
+export const updateMaintenanceSchedule = (token: string, id: string, data: object) =>
+  apiFetch<MaintenanceSchedule>(`/maintenance/${id}`, {
+    method: 'PATCH',
+    body: JSON.stringify(data),
+    ...auth(token),
+  })
+
+export const updateMaintenanceStatus = (token: string, id: string, data: { status: MaintenanceScheduleStatus; notes?: string }) =>
+  apiFetch<MaintenanceSchedule>(`/maintenance/${id}/status`, {
+    method: 'PATCH',
+    body: JSON.stringify(data),
+    ...auth(token),
+  })
+
+export const deleteMaintenanceSchedule = (token: string, id: string) =>
+  apiFetch(`/maintenance/${id}`, { method: 'DELETE', ...auth(token) })
 
 export const chatAi = (token: string, prompt: string) =>
   apiFetch<{ answer: string }>(`/ai/chat`, {

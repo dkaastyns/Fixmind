@@ -105,6 +105,12 @@ export interface ReportRow {
 
 export type AssetTransferStatus = 'PENDING' | 'APPROVED' | 'REJECTED';
 
+export type MaintenanceFrequency = 'WEEKLY' | 'MONTHLY' | 'QUARTERLY' | 'ANNUALLY' | 'ONE_TIME';
+
+export type MaintenanceScheduleStatus = 'SCHEDULED' | 'IN_PROGRESS' | 'DONE' | 'CANCELLED' | 'OVERDUE';
+
+export type MaintenanceAssigneeType = 'INTERNAL' | 'EXTERNAL_VENDOR';
+
 export interface AssetTransferRow {
   id: string;
   asset_id: string;
@@ -126,6 +132,32 @@ export interface AssetTransferRow {
   to_room_code?: string | null;
   requester_name?: string | null;
   reviewer_name?: string | null;
+}
+
+export interface MaintenanceScheduleRow {
+  id: string;
+  room_id: string | null;
+  asset_id: string | null;
+  title: string;
+  description: string | null;
+  frequency: MaintenanceFrequency;
+  scheduled_date: Date;
+  status: MaintenanceScheduleStatus;
+  assignee_type: MaintenanceAssigneeType;
+  assignee_name: string;
+  vendor_contact_name: string | null;
+  vendor_phone: string | null;
+  estimated_cost: string | null;
+  notes: string | null;
+  created_by: string | null;
+  completed_at: Date | null;
+  created_at: Date;
+  updated_at: Date;
+  room_name?: string | null;
+  room_code?: string | null;
+  asset_name?: string | null;
+  asset_kode?: string | null;
+  created_by_name?: string | null;
 }
 
 export type AttachmentType = 'DAMAGE' | 'REPAIR' | 'OTHER';

@@ -14,6 +14,7 @@ import { UsersModule } from './modules/users/users.module';
 import { RoomsModule } from './modules/rooms/rooms.module';
 import { AssetsModule } from './modules/assets/assets.module';
 import { ReportsModule } from './modules/reports/reports.module';
+import { MaintenanceModule } from './modules/maintenance/maintenance.module';
 import { AnalyticsModule } from './modules/analytics/analytics.module';
 import { CloudinaryModule } from './modules/cloudinary/cloudinary.module';
 import { NotificationsModule } from './modules/notifications/notifications.module';
@@ -38,6 +39,7 @@ import { ScheduleModule } from '@nestjs/schedule';
     RoomsModule,
     AssetsModule,
     ReportsModule,
+    MaintenanceModule,
     AnalyticsModule,
     HealthModule,
     AiModule,

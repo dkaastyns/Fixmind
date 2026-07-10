@@ -72,6 +72,7 @@ export class ReportsService {
     roomId?: string,
     startDate?: string,
     endDate?: string,
+    search?: string,
   ) {
     const filters: Parameters<ReportsRepository['list']>[0] = {
       page,
@@ -80,6 +81,7 @@ export class ReportsService {
       roomId,
       startDate,
       endDate,
+      search,
     };
 
     if (user.role === 'USER') filters.reporterId = user.id;

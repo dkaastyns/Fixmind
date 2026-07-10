@@ -152,3 +152,33 @@ export interface Comment {
   content: string
   createdAt: string
 }
+
+export type MaintenanceFrequency = 'WEEKLY' | 'MONTHLY' | 'QUARTERLY' | 'ANNUALLY' | 'ONE_TIME'
+export type MaintenanceScheduleStatus = 'SCHEDULED' | 'IN_PROGRESS' | 'DONE' | 'CANCELLED' | 'OVERDUE'
+export type MaintenanceAssigneeType = 'INTERNAL' | 'EXTERNAL_VENDOR'
+
+export interface MaintenanceSchedule {
+  id: string
+  roomId: string | null
+  roomName?: string | null
+  roomCode?: string | null
+  assetId: string | null
+  assetName?: string | null
+  assetKode?: string | null
+  title: string
+  description: string
+  frequency: MaintenanceFrequency
+  scheduledDate: string
+  status: MaintenanceScheduleStatus
+  assigneeType: MaintenanceAssigneeType
+  assigneeName: string
+  vendorContactName?: string
+  vendorPhone?: string
+  estimatedCost: number
+  notes: string
+  createdBy: string | null
+  createdByName?: string | null
+  completedAt: string | null
+  createdAt: string
+  updatedAt: string
+}

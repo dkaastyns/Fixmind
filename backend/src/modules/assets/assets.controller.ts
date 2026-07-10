@@ -41,6 +41,7 @@ export class AssetsController {
     @Query('limit') limit = '20',
     @Query('status') status?: AssetTransferStatus,
     @Query('mineOnly') mineOnly = 'false',
+    @Query('search') search?: string,
   ) {
     const result = await this.assetsService.listTransfers(
       user,
@@ -48,6 +49,7 @@ export class AssetsController {
       Number(limit),
       status,
       mineOnly === 'true',
+      search,
     );
     return { message: 'Asset transfers retrieved', ...result };
   }
