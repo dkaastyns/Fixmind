@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
@@ -181,23 +182,25 @@ export function ReportsPage() {
         </GlassCard>
       )}
 
-      {showForm && (
-        <CreateReportForm
-          token={token}
-          onClose={() => {
-            setShowForm(false)
-            navigate('/dashboard/reports', { replace: true })
-          }}
-          onSuccess={(id) => {
-            qc.invalidateQueries({ queryKey: ['reports'] })
-            setShowForm(false)
-            toast.success('Laporan berhasil dikirim')
-            navigate(`/dashboard/reports/${id}`)
-          }}
-          initialRoomId={searchParams.get('roomId') ?? ''}
-          initialAssetId={searchParams.get('assetId') ?? ''}
-        />
-      )}
+      <AnimatePresence>
+        {showForm && (
+          <CreateReportForm
+            token={token}
+            onClose={() => {
+              setShowForm(false)
+              navigate('/dashboard/reports', { replace: true })
+            }}
+            onSuccess={(id) => {
+              qc.invalidateQueries({ queryKey: ['reports'] })
+              setShowForm(false)
+              toast.success('Laporan berhasil dikirim')
+              navigate(`/dashboard/reports/${id}`)
+            }}
+            initialRoomId={searchParams.get('roomId') ?? ''}
+            initialAssetId={searchParams.get('assetId') ?? ''}
+          />
+        )}
+      </AnimatePresence>
 
       <GlassCard className="overflow-hidden p-0">
         {isLoading ? (
@@ -376,164 +379,215 @@ function CreateReportForm({
     setDescription(t.description)
   }
 
-  return (
-    <GlassCard className="mb-6 p-6 shadow-xl shadow-[#ef629f]/5 border-white/60">
-      <h2 className="text-xl font-semibold text-slate-800">Formulir Laporan Kerusakan</h2>
+  return createPortal(
+    <div className="fixed inset-0 z-[100] flex items-center justify-center overflow-hidden p-0 md:p-4">
+      {/* Backdrop overlay */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="fixed inset-0 bg-black/40 backdrop-blur-sm"
+        onClick={onClose}
+      />
 
-      {/* Quick templates */}
-      <div className="mt-3 space-y-2">
-        <p className="text-xs font-medium text-foreground/60 uppercase tracking-wide">Template Cepat</p>
-        <div className="flex flex-wrap gap-2">
-          {REPORT_TEMPLATES.map((t) => (
-            <button
-              key={t.label}
-              type="button"
-              onClick={() => applyTemplate(t)}
-              className="inline-flex items-center rounded-full border border-[#ef629f]/30 bg-[#ef629f]/10 px-3 py-1 text-xs font-medium text-[#ef629f] transition-all hover:bg-[#ef629f]/20 hover:scale-105 active:scale-95"
-            >
-              {t.label}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      <div className="mt-4 grid gap-4 sm:grid-cols-2">
-        <div className="sm:col-span-2 space-y-2">
-          <label className="text-sm font-medium text-foreground/80">Judul Masalah</label>
-          <input
-            className="flex h-11 w-full rounded-xl border border-white/40 bg-white/60 px-4 text-sm shadow-sm backdrop-blur-md transition-all hover:bg-white/80 focus:border-[#ef629f]/50 focus:bg-white focus:outline-none focus:ring-4 focus:ring-[#ef629f]/10"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            placeholder="Contoh: AC Paripurna tidak dingin"
-          />
-        </div>
-        <div className="space-y-2">
-          <label className="text-sm font-medium text-foreground/80">Ruangan / Fasilitas</label>
-          <select
-            className="flex h-11 w-full rounded-xl border border-white/40 bg-white/60 px-4 text-sm shadow-sm backdrop-blur-md transition-all hover:bg-white/80 focus:border-[#ef629f]/50 focus:bg-white focus:outline-none focus:ring-4 focus:ring-[#ef629f]/10"
-            value={roomId}
-            onChange={(e) => { setRoomId(e.target.value); setAssetId('') }}
-          >
-            <option value="">Pilih ruangan</option>
-            {rooms.data?.data.map((r) => (
-              <option key={r.id} value={r.id}>{r.code} — {r.name}</option>
-            ))}
-          </select>
-        </div>
-        <div className="space-y-2">
-          <label className="text-sm font-medium text-foreground/80">Aset (Opsional)</label>
-          <select
-            className="flex h-11 w-full rounded-xl border border-white/40 bg-white/60 px-4 text-sm shadow-sm backdrop-blur-md transition-all hover:bg-white/80 focus:border-[#ef629f]/50 focus:bg-white focus:outline-none focus:ring-4 focus:ring-[#ef629f]/10 disabled:opacity-50"
-            value={assetId}
-            onChange={(e) => setAssetId(e.target.value)}
-            disabled={!roomId}
-          >
-            <option value="">Tanpa Aset Spesifik</option>
-            {assets.data?.data.map((a) => (
-              <option key={a.id} value={a.id}>{a.kodeBarang} - {a.namaBarang}</option>
-            ))}
-          </select>
-        </div>
-        <div className="sm:col-span-2 space-y-2">
-          <label className="text-sm font-medium text-foreground/80">Deskripsi Lengkap</label>
-          <textarea
-            className="min-h-[120px] w-full resize-y rounded-xl border border-white/40 bg-white/60 px-4 py-3 text-sm shadow-sm backdrop-blur-md transition-all hover:bg-white/80 focus:border-[#ef629f]/50 focus:bg-white focus:outline-none focus:ring-4 focus:ring-[#ef629f]/10"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            placeholder="Jelaskan detail kerusakan yang terjadi secara jelas..."
-          />
-        </div>
-        <div className="sm:col-span-2 space-y-2">
-          <label className="text-sm font-medium text-foreground/80">Foto Bukti Kerusakan (Maks 3 foto, ukuran 1.5MB/foto)</label>
-          <div className="relative rounded-xl border-2 border-dashed border-[#ef629f]/30 bg-white/50 p-6 transition-all hover:bg-white/80 hover:border-[#ef629f]/50 text-center">
-            <input
-              type="file"
-              multiple
-              accept="image/png, image/jpeg, image/jpg"
-              onChange={(e) => {
-                const selected = Array.from(e.target.files || [])
-                if (selected.length > 3) {
-                  toast.error('Maksimal 3 foto diizinkan')
-                  return
-                }
-                const oversized = selected.find((f) => f.size > 1.5 * 1024 * 1024)
-                if (oversized) {
-                  toast.error('Ukuran maksimal setiap foto adalah 1.5MB')
-                  return
-                }
-                setFiles(selected)
-              }}
-              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-            />
-            <div className="flex flex-col items-center justify-center gap-2 pointer-events-none">
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#ef629f]/10 text-[#ef629f]">
-                <Plus className="h-6 w-6" />
-              </div>
-              <p className="text-sm font-medium text-slate-700">Klik atau seret foto ke sini</p>
-              <p className="text-xs text-muted">Format: JPG/PNG. Maks: 3 File.</p>
-            </div>
+      {/* Modal Dialog Card */}
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95, y: 20 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.95, y: 20 }}
+        transition={{ type: 'spring', duration: 0.4 }}
+        className="relative w-full max-w-2xl bg-white/95 border border-slate-100 shadow-2xl flex flex-col h-full md:h-auto md:max-h-[90vh] rounded-none md:rounded-2xl overflow-hidden z-10"
+      >
+        {/* Header */}
+        <div className="flex items-center justify-between border-b border-slate-150 px-6 py-4 bg-slate-50/50">
+          <div>
+            <h2 className="text-lg font-semibold text-slate-800">Formulir Laporan Kerusakan</h2>
+            <p className="text-xs text-muted mt-0.5">Lengkapi detail di bawah untuk mengirim laporan kerusakan</p>
           </div>
-          {files.length > 0 && (
-            <div className="mt-3 flex flex-wrap gap-2">
-              {files.map((file, i) => (
-                <div key={i} className="inline-flex items-center gap-1.5 rounded-lg bg-white/80 border border-slate-200 px-3 py-1.5 text-xs font-medium shadow-sm">
-                  <span className="truncate max-w-[150px]">{file.name}</span>
-                </div>
+          <button
+            onClick={onClose}
+            className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition-colors"
+          >
+            <X className="h-5 w-5" />
+          </button>
+        </div>
+
+        {/* Scrollable Body Content */}
+        <div className="flex-1 overflow-y-auto px-6 py-5 space-y-5">
+          {/* Quick templates */}
+          <div className="space-y-2">
+            <p className="text-xs font-semibold text-foreground/60 uppercase tracking-wide">Template Cepat</p>
+            <div className="flex flex-wrap gap-2">
+              {REPORT_TEMPLATES.map((t) => (
+                <button
+                  key={t.label}
+                  type="button"
+                  onClick={() => applyTemplate(t)}
+                  className="inline-flex items-center rounded-full border border-[#ef629f]/30 bg-[#ef629f]/10 px-3 py-1 text-xs font-medium text-[#ef629f] transition-all hover:bg-[#ef629f]/20 hover:scale-105 active:scale-95"
+                >
+                  {t.label}
+                </button>
               ))}
             </div>
-          )}
-        </div>
-      </div>
-      <div className="mt-6 flex flex-col gap-3">
-        <div className="flex gap-3">
-          <Button onClick={() => mutation.mutate()} disabled={!title || !description || !roomId || mutation.isPending} className="min-w-[160px] shadow-[0_0_20px_rgba(239,98,159,0.3)] hover:shadow-[0_0_30px_rgba(239,98,159,0.5)] hover:-translate-y-1 transition-all duration-300">
-            {mutation.isPending ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Menganalisis...
-              </>
-            ) : (
-              'Kirim Laporan'
-            )}
-          </Button>
-          <Button variant="secondary" onClick={onClose} disabled={mutation.isPending} className="bg-white/60 hover:bg-white border border-slate-300 shadow-sm transition-all duration-300">Batal</Button>
+          </div>
+
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="sm:col-span-2 space-y-1.5">
+              <label className="text-xs font-semibold text-foreground/75">Judul Masalah</label>
+              <input
+                className="flex h-10 w-full rounded-xl border border-slate-200 bg-white/70 px-3.5 text-sm shadow-sm transition-all focus:border-[#ef629f]/50 focus:bg-white focus:outline-none focus:ring-4 focus:ring-[#ef629f]/10"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder="Contoh: AC Paripurna tidak dingin"
+              />
+            </div>
+            
+            <div className="space-y-1.5">
+              <label className="text-xs font-semibold text-foreground/75">Ruangan / Fasilitas</label>
+              <select
+                className="flex h-10 w-full rounded-xl border border-slate-200 bg-white/70 px-3.5 text-sm shadow-sm transition-all focus:border-[#ef629f]/50 focus:bg-white focus:outline-none focus:ring-4 focus:ring-[#ef629f]/10"
+                value={roomId}
+                onChange={(e) => { setRoomId(e.target.value); setAssetId('') }}
+              >
+                <option value="">Pilih ruangan</option>
+                {rooms.data?.data.map((r) => (
+                  <option key={r.id} value={r.id}>{r.code} — {r.name}</option>
+                ))}
+              </select>
+            </div>
+            
+            <div className="space-y-1.5">
+              <label className="text-xs font-semibold text-foreground/75">Aset (Opsional)</label>
+              <select
+                className="flex h-10 w-full rounded-xl border border-slate-200 bg-white/70 px-3.5 text-sm shadow-sm transition-all focus:border-[#ef629f]/50 focus:bg-white focus:outline-none focus:ring-4 focus:ring-[#ef629f]/10 disabled:opacity-50"
+                value={assetId}
+                onChange={(e) => setAssetId(e.target.value)}
+                disabled={!roomId}
+              >
+                <option value="">Tanpa Aset Spesifik</option>
+                {assets.data?.data.map((a) => (
+                  <option key={a.id} value={a.id}>{a.kodeBarang} - {a.namaBarang}</option>
+                ))}
+              </select>
+            </div>
+            
+            <div className="sm:col-span-2 space-y-1.5">
+              <label className="text-xs font-semibold text-foreground/75">Deskripsi Lengkap</label>
+              <textarea
+                className="min-h-[100px] w-full resize-y rounded-xl border border-slate-200 bg-white/70 px-3.5 py-2.5 text-sm shadow-sm transition-all focus:border-[#ef629f]/50 focus:bg-white focus:outline-none focus:ring-4 focus:ring-[#ef629f]/10"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder="Jelaskan detail kerusakan yang terjadi secara jelas..."
+              />
+            </div>
+            
+            <div className="sm:col-span-2 space-y-1.5">
+              <label className="text-xs font-semibold text-foreground/75">Foto Bukti Kerusakan (Maks 3 foto, ukuran 1.5MB/foto)</label>
+              <div className="relative rounded-xl border-2 border-dashed border-slate-200 bg-slate-50/50 p-4 transition-all hover:bg-slate-50 hover:border-[#ef629f]/40 text-center">
+                <input
+                  type="file"
+                  multiple
+                  accept="image/png, image/jpeg, image/jpg"
+                  onChange={(e) => {
+                    const selected = Array.from(e.target.files || [])
+                    if (selected.length > 3) {
+                      toast.error('Maksimal 3 foto diizinkan')
+                      return
+                    }
+                    const oversized = selected.find((f) => f.size > 1.5 * 1024 * 1024)
+                    if (oversized) {
+                      toast.error('Ukuran maksimal setiap foto adalah 1.5MB')
+                      return
+                    }
+                    setFiles(selected)
+                  }}
+                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                />
+                <div className="flex flex-col items-center justify-center gap-1.5 pointer-events-none">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#ef629f]/10 text-[#ef629f]">
+                    <Plus className="h-5 w-5" />
+                  </div>
+                  <p className="text-xs font-medium text-slate-700">Klik atau seret foto ke sini</p>
+                  <p className="text-[10px] text-muted">Format: JPG/PNG. Maks: 3 File.</p>
+                </div>
+              </div>
+              {files.length > 0 && (
+                <div className="mt-2 flex flex-wrap gap-1.5">
+                  {files.map((file, i) => (
+                    <div key={i} className="inline-flex items-center gap-1.5 rounded-lg bg-white border border-slate-200 px-2.5 py-1 text-xs font-medium shadow-sm">
+                      <span className="truncate max-w-[150px]">{file.name}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
         </div>
 
-        <AnimatePresence>
-          {mutation.isPending && (
-            <motion.div
-              initial={{ opacity: 0, y: -8, height: 0 }}
-              animate={{ opacity: 1, y: 0, height: 'auto' }}
-              exit={{ opacity: 0, y: -8, height: 0 }}
-              transition={{ duration: 0.3, ease: 'easeOut' }}
-              className="overflow-hidden"
+        {/* Footer */}
+        <div className="border-t border-slate-150 p-4 bg-slate-50/50 space-y-3">
+          <div className="flex justify-end gap-3">
+            <Button
+              variant="secondary"
+              onClick={onClose}
+              disabled={mutation.isPending}
+              className="bg-white hover:bg-slate-50 border border-slate-200 shadow-sm transition-all duration-200 rounded-xl"
             >
-              <div className="flex items-center gap-3 rounded-xl border border-[#ef629f]/20 bg-gradient-to-r from-[#ef629f]/5 to-purple-500/5 px-4 py-3">
-                <div className="relative flex-shrink-0">
-                  <Bot className="h-5 w-5 text-[#ef629f]" />
-                  <span className="absolute -top-1 -right-1 flex h-2.5 w-2.5">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#ef629f] opacity-75" />
-                    <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#ef629f]" />
-                  </span>
+              Batal
+            </Button>
+            <Button
+              onClick={() => mutation.mutate()}
+              disabled={!title || !description || !roomId || mutation.isPending}
+              className="min-w-[140px] shadow-[0_0_20px_rgba(239,98,159,0.15)] hover:shadow-[0_0_30px_rgba(239,98,159,0.35)] hover:-translate-y-0.5 transition-all duration-200 rounded-xl"
+            >
+              {mutation.isPending ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Menganalisis...
+                </>
+              ) : (
+                'Kirim Laporan'
+              )}
+            </Button>
+          </div>
+
+          <AnimatePresence>
+            {mutation.isPending && (
+              <motion.div
+                initial={{ opacity: 0, y: -8, height: 0 }}
+                animate={{ opacity: 1, y: 0, height: 'auto' }}
+                exit={{ opacity: 0, y: -8, height: 0 }}
+                transition={{ duration: 0.3, ease: 'easeOut' }}
+                className="overflow-hidden"
+              >
+                <div className="flex items-center gap-3 rounded-xl border border-[#ef629f]/20 bg-gradient-to-r from-[#ef629f]/5 to-purple-500/5 px-4 py-2.5">
+                  <div className="relative flex-shrink-0">
+                    <Bot className="h-5 w-5 text-[#ef629f]" />
+                    <span className="absolute -top-1 -right-1 flex h-2.5 w-2.5">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#ef629f] opacity-75" />
+                      <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#ef629f]" />
+                    </span>
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-sm font-semibold text-[#ef629f]">AI sedang menganalisis laporan Anda...</p>
+                    <p className="text-xs text-muted mt-0.5">Menentukan prioritas, estimasi waktu, dan rekomendasi perbaikan</p>
+                  </div>
+                  <Loader2 className="h-4 w-4 animate-spin text-[#ef629f]/60 flex-shrink-0" />
                 </div>
-                <div className="flex-1">
-                  <p className="text-sm font-semibold text-[#ef629f]">AI sedang menganalisis laporan Anda...</p>
-                  <p className="text-xs text-muted mt-0.5">Menentukan prioritas, estimasi waktu, dan rekomendasi perbaikan</p>
+                <div className="mt-2 h-1 w-full overflow-hidden rounded-full bg-[#ef629f]/10">
+                  <motion.div
+                    className="h-full rounded-full bg-gradient-to-r from-[#ef629f] to-purple-500"
+                    animate={{ x: ['-100%', '100%'] }}
+                    transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
+                    style={{ width: '60%' }}
+                  />
                 </div>
-                <Loader2 className="h-4 w-4 animate-spin text-[#ef629f]/60 flex-shrink-0" />
-              </div>
-              <div className="mt-2 h-1 w-full overflow-hidden rounded-full bg-[#ef629f]/10">
-                <motion.div
-                  className="h-full rounded-full bg-gradient-to-r from-[#ef629f] to-purple-500"
-                  animate={{ x: ['-100%', '100%'] }}
-                  transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
-                  style={{ width: '60%' }}
-                />
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
-    </GlassCard>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      </motion.div>
+    </div>,
+    document.body
   )
 }
