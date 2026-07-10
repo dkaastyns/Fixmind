@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useRef, useState, useEffect } from 'react'
 import { useMutation } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { KeyRound, User as UserIcon, Camera, Loader2, ShieldCheck, Mail, Phone, UserCircle, X, Trash2 } from 'lucide-react'
@@ -29,6 +29,23 @@ export function ProfilePage() {
 
   // File Input Ref
   const fileInputRef = useRef<HTMLInputElement>(null)
+
+  // Sync state with user store once user hydrates or changes
+  useEffect(() => {
+    if (user) {
+      setFullName(user.fullName ?? '')
+      setPhone(user.phone ?? '')
+    }
+  }, [user])
+
+  // Safety loading guard to prevent rendering crashes if user session is hydrating
+  if (!user) {
+    return (
+      <div className="flex min-h-[50vh] items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-[#ef629f]" />
+      </div>
+    )
+  }
 
   // Upload Avatar Mutation
   const uploadAvatarMut = useMutation({
@@ -364,11 +381,14 @@ export function ProfilePage() {
       {/* Confirmation Modal */}
       <AnimatePresence>
         {showConfirmModal && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
+          <motion.div
+            key="confirm-password-modal"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] flex items-center justify-center p-4"
+          >
+            <div
               className="absolute inset-0 bg-black/40 backdrop-blur-sm"
               onClick={() => setShowConfirmModal(false)}
             />
@@ -403,18 +423,21 @@ export function ProfilePage() {
                 </Button>
               </div>
             </motion.div>
-          </div>
+          </motion.div>
         )}
       </AnimatePresence>
 
       {/* Image Preview & Change Modal */}
       <AnimatePresence>
         {showPreviewModal && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
+          <motion.div
+            key="preview-avatar-modal"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] flex items-center justify-center p-4"
+          >
+            <div
               className="absolute inset-0 bg-black/60 backdrop-blur-md"
               onClick={() => setShowPreviewModal(false)}
             />
@@ -422,7 +445,7 @@ export function ProfilePage() {
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
-              className="relative w-full max-w-sm md:max-w-md overflow-hidden rounded-[2rem] bg-white p-6 shadow-2xl border border-gray-100 flex flex-col items-center"
+              className="relative w-full max-w-sm md:max-w-md overflow-hidden rounded-[2rem] bg-white p-6 shadow-2xl border border-gray-100 flex flex-col items-center animate-none"
             >
               {/* Close Button */}
               <button
@@ -490,7 +513,7 @@ export function ProfilePage() {
                 </Button>
               </div>
             </motion.div>
-          </div>
+          </motion.div>
         )}
       </AnimatePresence>
     </div>
