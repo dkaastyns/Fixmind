@@ -16,6 +16,7 @@ import {
   ParseFilePipe,
   MaxFileSizeValidator,
   FileTypeValidator,
+  Delete,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import type { Request, Response } from 'express';
@@ -191,6 +192,17 @@ export class AuthController {
 
     return {
       message: 'Avatar updated successfully',
+      data: updated,
+    };
+  }
+
+  @Delete('profile/avatar')
+  async deleteAvatar(@CurrentUser() user: AuthUser) {
+    const updated = await this.usersService.update(user.id, {
+      avatarUrl: null,
+    });
+    return {
+      message: 'Avatar removed successfully',
       data: updated,
     };
   }

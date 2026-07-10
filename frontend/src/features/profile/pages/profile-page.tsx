@@ -1,13 +1,13 @@
 import { useRef, useState } from 'react'
 import { useMutation } from '@tanstack/react-query'
 import { toast } from 'sonner'
-import { KeyRound, User as UserIcon, Camera, Loader2, ShieldCheck, Mail, Phone, UserCircle } from 'lucide-react'
+import { KeyRound, User as UserIcon, Camera, Loader2, ShieldCheck, Mail, Phone, UserCircle, X, Trash2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { PasswordInput } from '@/components/ui/password-input'
 import { GlassCard } from '@/components/ui/glass-card'
 import { useAuthStore } from '@/stores/auth-store'
-import { updateProfileRequest, changePasswordRequest, uploadAvatarRequest } from '@/lib/api-client'
+import { updateProfileRequest, changePasswordRequest, uploadAvatarRequest, deleteAvatarRequest } from '@/lib/api-client'
 import { motion, AnimatePresence } from 'framer-motion'
 
 export function ProfilePage() {
@@ -25,6 +25,7 @@ export function ProfilePage() {
 
   // Confirmation Modal State
   const [showConfirmModal, setShowConfirmModal] = useState(false)
+  const [showPreviewModal, setShowPreviewModal] = useState(false)
 
   // File Input Ref
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -36,10 +37,26 @@ export function ProfilePage() {
       if (res.data) {
         setUser(res.data)
         toast.success('Foto profil berhasil diubah')
+        setShowPreviewModal(false)
       }
     },
     onError: (err: any) => {
       toast.error(err.message ?? 'Gagal mengunggah foto profil')
+    },
+  })
+
+  // Delete Avatar Mutation
+  const deleteAvatarMut = useMutation({
+    mutationFn: () => deleteAvatarRequest(token),
+    onSuccess: (res) => {
+      if (res.data) {
+        setUser(res.data)
+        toast.success('Foto profil berhasil dihapus')
+        setShowPreviewModal(false)
+      }
+    },
+    onError: (err: any) => {
+      toast.error(err.message ?? 'Gagal menghapus foto profil')
     },
   })
 
@@ -148,7 +165,7 @@ export function ProfilePage() {
             />
             <div 
               className="flex h-32 w-32 md:h-48 md:w-48 items-center justify-center rounded-[2rem] bg-white text-[#ef629f] overflow-hidden cursor-pointer shadow-2xl relative transition-all group-hover:scale-[1.02] border-[6px] md:border-8 border-slate-50/80"
-              onClick={() => !uploadAvatarMut.isPending && fileInputRef.current?.click()}
+              onClick={() => setShowPreviewModal(true)}
             >
               {user?.avatarUrl ? (
                 <img src={user.avatarUrl} alt="Avatar" className="h-full w-full object-cover" />
@@ -156,15 +173,9 @@ export function ProfilePage() {
                 <UserIcon className="h-12 w-12 md:h-20 md:w-20 text-slate-300" />
               )}
               
-              {uploadAvatarMut.isPending ? (
-                <div className="absolute inset-0 bg-white/60 flex items-center justify-center backdrop-blur-[1px]">
-                  <Loader2 className="h-8 w-8 md:h-12 md:w-12 animate-spin text-[#ef629f]" />
-                </div>
-              ) : (
-                <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                  <Camera className="h-8 w-8 md:h-12 md:w-12 text-white" />
-                </div>
-              )}
+              <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                <Camera className="h-8 w-8 md:h-12 md:w-12 text-white" />
+              </div>
             </div>
             
             {/* Online badge */}
@@ -389,6 +400,93 @@ export function ProfilePage() {
                   disabled={passwordMut.isPending}
                 >
                   {passwordMut.isPending ? 'Memproses...' : 'Ya, Ubah'}
+                </Button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* Image Preview & Change Modal */}
+      <AnimatePresence>
+        {showPreviewModal && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 bg-black/60 backdrop-blur-md"
+              onClick={() => setShowPreviewModal(false)}
+            />
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              className="relative w-full max-w-sm md:max-w-md overflow-hidden rounded-[2rem] bg-white p-6 shadow-2xl border border-gray-100 flex flex-col items-center"
+            >
+              {/* Close Button */}
+              <button
+                onClick={() => setShowPreviewModal(false)}
+                className="absolute right-5 top-5 rounded-full p-1.5 hover:bg-slate-100 transition-colors text-slate-500 hover:text-slate-800"
+              >
+                <X className="w-5 h-5" />
+              </button>
+
+              <h3 className="text-xl font-bold text-gray-900 mb-5">Foto Profil</h3>
+
+              {/* Large Image View */}
+              <div className="w-64 h-64 md:w-80 md:h-80 rounded-[2rem] overflow-hidden bg-slate-50 shadow-inner border border-slate-200/80 mb-6 relative">
+                {user?.avatarUrl ? (
+                  <img src={user.avatarUrl} alt="Avatar Preview" className="h-full w-full object-cover" />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center text-slate-300 bg-slate-50">
+                    <UserIcon className="w-24 h-24" />
+                  </div>
+                )}
+                
+                {(uploadAvatarMut.isPending || deleteAvatarMut.isPending) && (
+                  <div className="absolute inset-0 bg-white/70 flex items-center justify-center backdrop-blur-[1px]">
+                    <Loader2 className="h-10 w-10 animate-spin text-[#ef629f]" />
+                  </div>
+                )}
+              </div>
+
+              {/* Edit / Change Actions */}
+              <div className="w-full space-y-2.5">
+                <Button
+                  className="w-full rounded-xl bg-gradient-to-r from-pink-500 to-[#ef629f] text-white hover:opacity-90 h-11 font-semibold flex items-center justify-center gap-2 shadow-md shadow-pink-500/20"
+                  onClick={() => {
+                    fileInputRef.current?.click()
+                  }}
+                  disabled={uploadAvatarMut.isPending || deleteAvatarMut.isPending}
+                >
+                  <Camera className="w-4 h-4" />
+                  Pilih Foto Baru
+                </Button>
+
+                {user?.avatarUrl && (
+                  <Button
+                    variant="secondary"
+                    className="w-full rounded-xl text-rose-600 bg-rose-50 hover:bg-rose-100 h-11 font-semibold flex items-center justify-center gap-2 border border-rose-100/60"
+                    onClick={() => {
+                      if (confirm('Apakah Anda yakin ingin menghapus foto profil ini?')) {
+                        deleteAvatarMut.mutate()
+                      }
+                    }}
+                    disabled={uploadAvatarMut.isPending || deleteAvatarMut.isPending}
+                  >
+                    <Trash2 className="w-4 h-4" />
+                    Hapus Foto Profil
+                  </Button>
+                )}
+
+                <Button
+                  variant="secondary"
+                  className="w-full rounded-xl text-gray-700 bg-slate-100 hover:bg-slate-200 h-11 font-semibold"
+                  onClick={() => setShowPreviewModal(false)}
+                  disabled={uploadAvatarMut.isPending || deleteAvatarMut.isPending}
+                >
+                  Tutup
                 </Button>
               </div>
             </motion.div>

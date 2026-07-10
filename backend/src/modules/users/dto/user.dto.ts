@@ -53,7 +53,7 @@ export class UpdateUserDto {
 
   @IsOptional()
   @IsString()
-  avatarUrl?: string;
+  avatarUrl?: string | null;
 }
 
 export class RegisterDto {

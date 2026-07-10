@@ -144,6 +144,21 @@ export const uploadAvatarRequest = async (token: string, file: File) => {
   return body as ApiSuccessResponse<User>
 }
 
+export const deleteAvatarRequest = async (token: string) => {
+  const response = await fetch(`${API_BASE}/auth/profile/avatar`, {
+    method: 'DELETE',
+    headers: { Authorization: `Bearer ${token}` },
+    credentials: 'include',
+  })
+
+  const body = await response.json().catch(() => ({}))
+  if (!response.ok || body.success === false) {
+    throw new ApiError(body.message ?? 'Delete failed', response.status)
+  }
+  return body as ApiSuccessResponse<User>
+}
+
+
 export const changePasswordRequest = (
   token: string,
   data: { oldPassword: string; newPassword: string },
