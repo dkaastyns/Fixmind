@@ -13,6 +13,7 @@ import {
   Search,
   User,
   Users,
+  Wrench,
   X,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -37,6 +38,7 @@ const navItems: Array<{
   { to: '/dashboard/asset-transfers', label: 'Pengajuan Transfer', icon: ArrowRightLeft, end: true },
   { to: '/dashboard/asset-transfers/review', label: 'Approval Transfer', icon: ClipboardCheck, roles: ['ADMIN'] },
   { to: '/dashboard/users', label: 'Pengguna', icon: Users, roles: ['ADMIN'] },
+  { to: '/dashboard/maintenance', label: 'Jadwal Pemeliharaan', icon: Wrench, roles: ['ADMIN'] },
   { to: '/dashboard/profile', label: 'Profil Saya', icon: User, end: true },
 ]
 

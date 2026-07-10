@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { Link } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { motion, AnimatePresence } from 'framer-motion'
 import { createPortal } from 'react-dom'
@@ -20,6 +21,7 @@ import { toast } from 'sonner'
 import {
   ArrowRightLeft,
   Building2,
+  Calendar,
   CheckCircle2,
   ClipboardList,
   FileSpreadsheet,
@@ -258,6 +260,23 @@ export function AdminDashboard() {
 
   const [showExportModal, setShowExportModal] = useState(false)
   const [exportFormat, setExportFormat] = useState<ExportFormat | null>(null)
+  const [maintenanceAgenda, setMaintenanceAgenda] = useState<any[]>([])
+
+  useEffect(() => {
+    const saved = localStorage.getItem('fixmind_maintenance_schedules')
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved)
+        const active = parsed
+          .filter((s: any) => s.status === 'SCHEDULED' || s.status === 'IN_PROGRESS')
+          .sort((a: any, b: any) => new Date(a.scheduledDate).getTime() - new Date(b.scheduledDate).getTime())
+          .slice(0, 3)
+        setMaintenanceAgenda(active)
+      } catch {
+        setMaintenanceAgenda([])
+      }
+    }
+  }, [])
 
   const triggerExport = (fmt: ExportFormat) => {
     setExportFormat(fmt)
@@ -559,6 +578,67 @@ export function AdminDashboard() {
             </motion.div>
           )}
         </div>
+
+        {/* ── Agenda Pemeliharaan Terdekat ── */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.8 }}
+        >
+          <GlassCard className="p-5">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-base font-semibold text-slate-800">Agenda Pemeliharaan Rutin Terdekat</h2>
+              <Link to="/dashboard/maintenance" className="text-xs font-semibold text-[#ef629f] hover:underline">
+                Lihat Semua Jadwal
+              </Link>
+            </div>
+            
+            {maintenanceAgenda.length === 0 ? (
+              <p className="text-xs text-slate-400 italic text-center py-4">
+                Tidak ada jadwal pemeliharaan rutin terdekat yang aktif.
+              </p>
+            ) : (
+              <div className="grid gap-3 sm:grid-cols-3">
+                {maintenanceAgenda.map((item) => (
+                  <div
+                    key={item.id}
+                    className="p-3.5 rounded-xl border border-slate-100 bg-slate-50/50 flex flex-col justify-between text-xs space-y-3"
+                  >
+                    <div className="space-y-1.5">
+                      <div className="flex justify-between items-center">
+                        <span className="text-[10px] font-bold text-slate-400 uppercase">
+                          {item.frequency === 'ONE_TIME' ? 'Sekali' : 'Rutin'}
+                        </span>
+                        <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${
+                          item.status === 'IN_PROGRESS' ? 'bg-blue-100 text-blue-700' : 'bg-amber-100 text-amber-700'
+                        }`}>
+                          {item.status === 'IN_PROGRESS' ? 'Dikerjakan' : 'Terjadwal'}
+                        </span>
+                      </div>
+                      
+                      <h4 className="font-semibold text-slate-800 line-clamp-1">{item.title}</h4>
+                      
+                      <div className="flex items-center gap-1.5 text-slate-500">
+                        <Calendar className="h-3.5 w-3.5 text-[#ef629f]" />
+                        <span>{new Date(item.scheduledDate).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}</span>
+                      </div>
+                      
+                      <div className="flex items-center gap-1.5 text-slate-500">
+                        <Building2 className="h-3.5 w-3.5" />
+                        <span className="truncate">{item.roomCode} — {item.roomName}</span>
+                      </div>
+                    </div>
+                    
+                    <div className="border-t border-slate-200/60 pt-2 flex items-center justify-between text-[11px]">
+                      <span className="text-slate-400">Petugas:</span>
+                      <span className="font-medium text-slate-700 truncate max-w-[70%]">{item.assigneeName}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </GlassCard>
+        </motion.div>
       </motion.div>
     </>
   )

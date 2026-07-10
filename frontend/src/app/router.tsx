@@ -18,6 +18,7 @@ const UsersPage = React.lazy(() => import('@/features/users/pages/users-page').t
 const AssetTransferPage = React.lazy(() => import('@/features/asset-transfers/pages/asset-transfer-page').then(m => ({ default: m.AssetTransferPage })))
 const TransferRequestsPage = React.lazy(() => import('@/features/asset-transfers/pages/transfer-requests-page').then(m => ({ default: m.TransferRequestsPage })))
 const ProfilePage = React.lazy(() => import('@/features/profile/pages/profile-page').then(m => ({ default: m.ProfilePage })))
+const MaintenancePage = React.lazy(() => import('@/features/maintenance/pages/maintenance-page').then(m => ({ default: m.MaintenancePage })))
 
 const LazyPage = ({ children }: { children: React.ReactNode }) => (
   <Suspense fallback={<PageTransitionSkeleton />}>
@@ -54,6 +55,10 @@ export function AppRouter() {
             <Route
               path="/dashboard/users"
               element={<AdminOnly><LazyPage><UsersPage /></LazyPage></AdminOnly>}
+            />
+            <Route
+              path="/dashboard/maintenance"
+              element={<AdminOnly><LazyPage><MaintenancePage /></LazyPage></AdminOnly>}
             />
 
           </Route>
