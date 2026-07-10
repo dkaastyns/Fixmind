@@ -89,6 +89,7 @@ export function MaintenancePage() {
   const [showModal, setShowModal] = useState(false)
   const [editingId, setEditingId] = useState<string | null>(null)
   const [deletingId, setDeletingId] = useState<string | null>(null)
+  const [cancellingId, setCancellingId] = useState<string | null>(null)
 
   // Form fields
   const [form, setForm] = useState(EMPTY_FORM)
@@ -173,6 +174,7 @@ export function MaintenancePage() {
     onSuccess: (_, { status }) => {
       toast.success(`Status berhasil diubah ke ${STATUS_LABEL[status]}`)
       invalidateAll()
+      setCancellingId(null)
     },
     onError: (err: Error) => toast.error(err.message ?? 'Gagal mengubah status'),
   })
@@ -470,7 +472,7 @@ export function MaintenancePage() {
                           size="sm"
                           variant="secondary"
                           className="h-8 rounded-lg text-xs bg-rose-50 text-rose-600 hover:bg-rose-100 border-transparent"
-                          onClick={() => statusMutation.mutate({ id: s.id, status: 'CANCELLED' })}
+                          onClick={() => setCancellingId(s.id)}
                           disabled={statusMutation.isPending}
                         >
                           Batal
@@ -514,6 +516,18 @@ export function MaintenancePage() {
         isLoading={deleteMutation.isPending}
         title="Hapus Jadwal Pemeliharaan"
         description="Apakah Anda yakin ingin menghapus jadwal pemeliharaan ini? Tindakan ini tidak dapat dibatalkan."
+      />
+
+      {/* Cancel Confirmation Modal */}
+      <DeleteConfirmationModal
+        isOpen={!!cancellingId}
+        onClose={() => setCancellingId(null)}
+        onConfirm={() => {
+          if (cancellingId) statusMutation.mutate({ id: cancellingId, status: 'CANCELLED' })
+        }}
+        isLoading={statusMutation.isPending}
+        title="Batalkan Jadwal"
+        description="Apakah Anda yakin ingin membatalkan jadwal pemeliharaan ini? Status akan diubah menjadi Batal."
       />
 
       {/* Create / Edit Modal */}
