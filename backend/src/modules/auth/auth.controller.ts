@@ -11,7 +11,13 @@ import {
   ForbiddenException,
   BadRequestException,
   NotFoundException,
+  UseInterceptors,
+  UploadedFile,
+  ParseFilePipe,
+  MaxFileSizeValidator,
+  FileTypeValidator,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import type { Request, Response } from 'express';
 import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcrypt';
@@ -23,6 +29,7 @@ import { UpdateProfileDto, ChangePasswordDto } from './dto/profile.dto';
 import { AuthService } from './services/auth.service';
 import { UsersRepository } from '../users/repositories/users.repository';
 import { UsersService } from '../users/services/users.service';
+import { CloudinaryService } from '../cloudinary/services/cloudinary.service';
 import { Throttle } from '@nestjs/throttler';
 
 const REFRESH_COOKIE = 'fixmind_refresh';
@@ -33,6 +40,7 @@ export class AuthController {
     private readonly authService: AuthService,
     private readonly usersRepository: UsersRepository,
     private readonly usersService: UsersService,
+    private readonly cloudinaryService: CloudinaryService,
     private readonly config: ConfigService,
   ) {}
 
@@ -155,6 +163,34 @@ export class AuthController {
     });
     return {
       message: 'Profile updated successfully',
+      data: updated,
+    };
+  }
+
+  @Post('profile/avatar')
+  @UseInterceptors(FileInterceptor('file'))
+  async uploadAvatar(
+    @CurrentUser() user: AuthUser,
+    @UploadedFile(
+      new ParseFilePipe({
+        validators: [
+          new MaxFileSizeValidator({ maxSize: 5 * 1024 * 1024 }), // 5MB
+          new FileTypeValidator({ fileType: /(jpg|jpeg|png|webp)$/ }),
+        ],
+      }),
+    )
+    file: Express.Multer.File,
+  ) {
+    // 1. Upload to cloudinary
+    const result = await this.cloudinaryService.uploadImage(file, 'fixmind/avatars');
+
+    // 2. Update user database
+    const updated = await this.usersService.update(user.id, {
+      avatarUrl: result.secure_url,
+    });
+
+    return {
+      message: 'Avatar updated successfully',
       data: updated,
     };
   }

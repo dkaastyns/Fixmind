@@ -91,6 +91,7 @@ export class UsersRepository {
       phone: string | null;
       isActive: boolean;
       passwordHash: string;
+      avatarUrl: string | null;
     }>,
   ): Promise<UserRow | null> {
     const existing = await this.findById(id);
@@ -105,6 +106,7 @@ export class UsersRepository {
             phone = ${data.phone !== undefined ? data.phone : existing.phone},
             is_active = ${data.isActive ?? existing.is_active},
             password_hash = ${data.passwordHash ?? existing.password_hash},
+            avatar_url = ${data.avatarUrl !== undefined ? data.avatarUrl : existing.avatar_url},
             updated_at = now()
           WHERE id = ${id} AND deleted_at IS NULL
           RETURNING *,
@@ -117,6 +119,7 @@ export class UsersRepository {
             phone = ${data.phone !== undefined ? data.phone : existing.phone},
             is_active = ${data.isActive ?? existing.is_active},
             password_hash = ${data.passwordHash ?? existing.password_hash},
+            avatar_url = ${data.avatarUrl !== undefined ? data.avatarUrl : existing.avatar_url},
             updated_at = now()
           WHERE id = ${id} AND deleted_at IS NULL
           RETURNING *,

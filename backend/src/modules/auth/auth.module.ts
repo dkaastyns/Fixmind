@@ -7,10 +7,12 @@ import { AuthService } from './services/auth.service';
 import { SessionsRepository } from './repositories/auth.repository';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { JwtAuthGuard, RolesGuard } from './guards/auth.guards';
+import { CloudinaryModule } from '../cloudinary/cloudinary.module';
 
 @Module({
   imports: [
     UsersModule,
+    CloudinaryModule,
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.register({}),
   ],

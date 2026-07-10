@@ -126,6 +126,24 @@ export const updateProfileRequest = (
     ...auth(token),
   })
 
+export const uploadAvatarRequest = async (token: string, file: File) => {
+  const formData = new FormData()
+  formData.append('file', file)
+
+  const response = await fetch(`${API_BASE}/auth/profile/avatar`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}` },
+    body: formData,
+    credentials: 'include',
+  })
+
+  const body = await response.json().catch(() => ({}))
+  if (!response.ok || body.success === false) {
+    throw new ApiError(body.message ?? 'Upload failed', response.status)
+  }
+  return body as ApiSuccessResponse<User>
+}
+
 export const changePasswordRequest = (
   token: string,
   data: { oldPassword: string; newPassword: string },

@@ -68,6 +68,7 @@ export class UsersService {
     if (dto.isAdmin !== undefined) data.isAdmin = dto.isAdmin;
     if (dto.phone !== undefined) data.phone = dto.phone;
     if (dto.isActive !== undefined) data.isActive = dto.isActive;
+    if (dto.avatarUrl !== undefined) data.avatarUrl = dto.avatarUrl;
     if (dto.password) data.passwordHash = await bcrypt.hash(dto.password, 12);
 
     const user = await this.usersRepository.update(id, data);

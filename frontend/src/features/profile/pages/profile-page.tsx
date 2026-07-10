@@ -1,14 +1,14 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { useMutation } from '@tanstack/react-query'
 import { toast } from 'sonner'
-import { KeyRound, User as UserIcon } from 'lucide-react'
+import { KeyRound, User as UserIcon, Camera, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { PasswordInput } from '@/components/ui/password-input'
 import { GlassCard } from '@/components/ui/glass-card'
 import { PageHeader } from '@/components/ui/feedback'
 import { useAuthStore } from '@/stores/auth-store'
-import { updateProfileRequest, changePasswordRequest } from '@/lib/api-client'
+import { updateProfileRequest, changePasswordRequest, uploadAvatarRequest } from '@/lib/api-client'
 
 export function ProfilePage() {
   const { user, accessToken, setUser } = useAuthStore()
@@ -25,6 +25,33 @@ export function ProfilePage() {
 
   // Confirmation Modal State
   const [showConfirmModal, setShowConfirmModal] = useState(false)
+
+  // File Input Ref
+  const fileInputRef = useRef<HTMLInputElement>(null)
+
+  // Upload Avatar Mutation
+  const uploadAvatarMut = useMutation({
+    mutationFn: (file: File) => uploadAvatarRequest(token, file),
+    onSuccess: (res) => {
+      if (res.data) {
+        setUser(res.data)
+        toast.success('Foto profil berhasil diubah')
+      }
+    },
+    onError: (err: any) => {
+      toast.error(err.message ?? 'Gagal mengunggah foto profil')
+    },
+  })
+
+  const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('Ukuran file maksimal 5MB')
+      return
+    }
+    uploadAvatarMut.mutate(file)
+  }
 
   // Update Profile Mutation
   const profileMut = useMutation({
@@ -99,9 +126,36 @@ export function ProfilePage() {
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         {/* Profile Info Form */}
         <GlassCard className="p-6">
-          <div className="mb-6 flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#ef629f]/10 text-[#ef629f]">
-              <UserIcon className="h-5 w-5" />
+          <div className="mb-6 flex items-center gap-4">
+            <div className="relative group">
+              <input
+                type="file"
+                ref={fileInputRef}
+                className="hidden"
+                accept="image/jpeg, image/png, image/webp"
+                onChange={handleAvatarChange}
+                disabled={uploadAvatarMut.isPending}
+              />
+              <div 
+                className="flex h-14 w-14 items-center justify-center rounded-xl bg-[#ef629f]/10 text-[#ef629f] overflow-hidden cursor-pointer shadow-sm relative transition-all group-hover:ring-2 ring-[#ef629f]/30"
+                onClick={() => !uploadAvatarMut.isPending && fileInputRef.current?.click()}
+              >
+                {user?.avatarUrl ? (
+                  <img src={user.avatarUrl} alt="Avatar" className="h-full w-full object-cover" />
+                ) : (
+                  <UserIcon className="h-6 w-6" />
+                )}
+                
+                {uploadAvatarMut.isPending ? (
+                  <div className="absolute inset-0 bg-white/60 flex items-center justify-center backdrop-blur-[1px]">
+                    <Loader2 className="h-5 w-5 animate-spin text-[#ef629f]" />
+                  </div>
+                ) : (
+                  <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                    <Camera className="h-5 w-5 text-white" />
+                  </div>
+                )}
+              </div>
             </div>
             <div>
               <h3 className="text-base font-semibold text-gray-900">Detail Informasi</h3>
