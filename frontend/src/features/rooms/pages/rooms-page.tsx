@@ -7,7 +7,6 @@ import {
   FileSpreadsheet,
   Plus,
   Trash2,
-  Upload,
   X,
   Building2,
   Search,
@@ -60,7 +59,6 @@ export function RoomsPage() {
   const [showImportModal, setShowImportModal] = useState(false)
   const [importRoomId, setImportRoomId] = useState<string>('')
   const [pendingImportFile, setPendingImportFile] = useState<File | null>(null)
-  const assetImportInputRef = useRef<HTMLInputElement>(null)
   const headerImportInputRef = useRef<HTMLInputElement>(null)
 
   const rooms = useQuery({ queryKey: ['rooms'], queryFn: () => fetchRooms(token) })
@@ -137,7 +135,6 @@ export function RoomsPage() {
     onSuccess: (res) => {
       qc.invalidateQueries({ queryKey: ['assets'] })
       toast.success(`${res.data.imported} aset berhasil diimport`)
-      if (assetImportInputRef.current) assetImportInputRef.current.value = ''
       if (headerImportInputRef.current) headerImportInputRef.current.value = ''
       setShowImportModal(false)
       setPendingImportFile(null)
@@ -174,12 +171,7 @@ export function RoomsPage() {
     }
   }
 
-  const handlePanelImportFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (file && selectedRoom) {
-      importAssetsMut.mutate({ roomId: selectedRoom, file })
-    }
-  }
+
 
   const handleConfirmImport = () => {
     if (!pendingImportFile || !importRoomId) {
@@ -223,6 +215,23 @@ export function RoomsPage() {
             >
               <FileSpreadsheet className="h-4 w-4 text-emerald-600" />
               {importAssetsMut.isPending ? 'Mengimport...' : 'Import Excel'}
+            </Button>
+
+            {/* Tombol Tambah Aset Manual */}
+            <Button
+              variant="secondary"
+              onClick={() => {
+                if (!selectedRoom) {
+                  toast.error('Pilih ruangan terlebih dahulu di daftar sebelah kiri untuk menambah aset.')
+                  return
+                }
+                setShowAssetForm(true)
+              }}
+              title="Tambah aset baru secara manual"
+              className="gap-1.5 h-10 px-3.5 border-slate-200 text-slate-700 bg-white/70 hover:bg-slate-50 transition-all font-semibold rounded-xl text-xs"
+            >
+              <Plus className="h-4 w-4 text-amber-500" />
+              Tambah Aset
             </Button>
 
             <Button 
@@ -366,43 +375,15 @@ export function RoomsPage() {
               </span>
             </div>
             <div className="flex items-center gap-1.5">
-              {isAdmin && selectedRoom && !isDeletingAssets && (
-                <>
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    onClick={() => setShowAssetForm(true)}
-                    className="h-8 gap-1 text-[#ef629f] hover:text-[#ef629f] hover:bg-[#ef629f]/5 text-xs font-bold rounded-lg"
-                  >
-                    <Plus className="h-3.5 w-3.5" /> Aset Manual
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    onClick={() => assetImportInputRef.current?.click()}
-                    disabled={importAssetsMut.isPending}
-                    className="h-8 gap-1 text-slate-600 hover:bg-slate-100 hover:text-slate-700 text-xs font-bold rounded-lg"
-                  >
-                    <Upload className="h-3.5 w-3.5" /> Import Excel
-                  </Button>
-                  {assets.data?.data && assets.data.data.length > 0 && (
-                    <Button 
-                      size="sm" 
-                      variant="ghost" 
-                      onClick={() => setIsDeletingAssets(true)} 
-                      className="h-8 text-rose-500 hover:bg-rose-50 hover:text-rose-600 text-xs font-bold rounded-lg"
-                    >
-                      <Trash2 className="h-3.5 w-3.5" /> Hapus
-                    </Button>
-                  )}
-                  <input
-                    ref={assetImportInputRef}
-                    type="file"
-                    accept=".xlsx,.xls"
-                    className="hidden"
-                    onChange={handlePanelImportFileChange}
-                  />
-                </>
+              {isAdmin && selectedRoom && !isDeletingAssets && assets.data?.data && assets.data.data.length > 0 && (
+                <Button 
+                  size="sm" 
+                  variant="ghost" 
+                  onClick={() => setIsDeletingAssets(true)} 
+                  className="h-8 text-rose-500 hover:bg-rose-50 hover:text-rose-600 text-xs font-bold rounded-lg"
+                >
+                  <Trash2 className="h-3.5 w-3.5 mr-1" /> Hapus
+                </Button>
               )}
               {isAdmin && selectedRoom && isDeletingAssets && (
                 <>
