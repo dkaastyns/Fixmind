@@ -6,7 +6,6 @@ import {
   Calendar,
   User,
   Phone,
-  DollarSign,
   CheckCircle2,
   Clock,
   Plus,
@@ -398,9 +397,8 @@ export function MaintenancePage() {
                           <span className="font-medium text-slate-800">{s.assigneeName}</span>
                         </div>
                         {s.estimatedCost > 0 && (
-                          <div className="flex items-center gap-1 text-xs font-semibold text-[#ef629f]">
-                            <DollarSign className="h-3.5 w-3.5 -mr-1" />
-                            {s.estimatedCost.toLocaleString('id-ID')}
+                          <div className="text-xs font-semibold text-[#ef629f]">
+                            Rp {s.estimatedCost.toLocaleString('id-ID')}
                           </div>
                         )}
                       </div>
