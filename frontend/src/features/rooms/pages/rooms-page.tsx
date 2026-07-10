@@ -1,8 +1,19 @@
-import { useRef, useState } from 'react'
+import { useRef, useState, useMemo } from 'react'
 import { createPortal } from 'react-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { Download, FileSpreadsheet, Plus, Trash2, Upload, X } from 'lucide-react'
+import {
+  Download,
+  FileSpreadsheet,
+  Plus,
+  Trash2,
+  Upload,
+  X,
+  Building2,
+  Search,
+  Package,
+  ArrowRight,
+} from 'lucide-react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -41,6 +52,10 @@ export function RoomsPage() {
   const [showConfirmRoomDelete, setShowConfirmRoomDelete] = useState(false)
   const [showConfirmAssetDelete, setShowConfirmAssetDelete] = useState(false)
 
+  // Search/Filters states
+  const [roomSearch, setRoomSearch] = useState('')
+  const [assetSearch, setAssetSearch] = useState('')
+
   // Import Excel state
   const [showImportModal, setShowImportModal] = useState(false)
   const [importRoomId, setImportRoomId] = useState<string>('')
@@ -49,21 +64,54 @@ export function RoomsPage() {
   const headerImportInputRef = useRef<HTMLInputElement>(null)
 
   const rooms = useQuery({ queryKey: ['rooms'], queryFn: () => fetchRooms(token) })
+  
   const assets = useQuery({
     queryKey: ['assets', selectedRoom],
-    queryFn: () => fetchAssets(token, { roomId: selectedRoom ?? undefined }),
+    queryFn: () => fetchAssets(token, { roomId: selectedRoom ?? undefined, limit: 200 }),
     enabled: !!selectedRoom,
   })
+
+  // Selected Room Object Helper
+  const selectedRoomObj = useMemo(() => {
+    return rooms.data?.data.find((r) => r.id === selectedRoom)
+  }, [rooms.data?.data, selectedRoom])
+
+  // Filtered rooms list based on search
+  const filteredRooms = useMemo(() => {
+    const list = rooms.data?.data ?? []
+    if (!roomSearch.trim()) return list
+    const q = roomSearch.toLowerCase()
+    return list.filter((r) => 
+      r.code.toLowerCase().includes(q) || 
+      r.name.toLowerCase().includes(q) ||
+      (r.building && r.building.toLowerCase().includes(q))
+    )
+  }, [rooms.data?.data, roomSearch])
+
+  // Filtered assets list based on search
+  const filteredAssets = useMemo(() => {
+    const list = assets.data?.data ?? []
+    if (!assetSearch.trim()) return list
+    const q = assetSearch.toLowerCase()
+    return list.filter((a) => 
+      a.namaBarang.toLowerCase().includes(q) || 
+      a.kodeBarang.toLowerCase().includes(q) ||
+      a.nomorRegister.toLowerCase().includes(q) ||
+      (a.merkType && a.merkType.toLowerCase().includes(q)) ||
+      a.idpemda.toLowerCase().includes(q)
+    )
+  }, [assets.data?.data, assetSearch])
 
   const deleteRoomMut = useMutation({
     mutationFn: async (ids: string[]) => {
       await Promise.all(ids.map(id => deleteRoom(token, id)))
     },
-    onSuccess: () => { 
+    onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['rooms'] })
       setSelectedRoomsToDelete([])
       setIsDeletingRooms(false)
       setShowConfirmRoomDelete(false)
+      setSelectedRoom(null)
       toast.success('Ruangan terpilih berhasil dihapus') 
     },
     onError: (e: Error) => toast.error(e.message),
@@ -114,22 +162,18 @@ export function RoomsPage() {
     setSelectedAssetsToDelete(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id])
   }
 
-  /** Dipanggil saat user memilih file dari tombol Import di header */
   const handleHeaderImportFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
     if (selectedRoom) {
-      // Ruangan sudah dipilih → langsung import
       importAssetsMut.mutate({ roomId: selectedRoom, file })
     } else {
-      // Belum pilih ruangan → tampilkan modal pilih ruangan
       setPendingImportFile(file)
       setImportRoomId(rooms.data?.data?.[0]?.id ?? '')
       setShowImportModal(true)
     }
   }
 
-  /** Dipanggil saat user memilih file dari tombol Import di panel aset */
   const handlePanelImportFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file && selectedRoom) {
@@ -137,7 +181,6 @@ export function RoomsPage() {
     }
   }
 
-  /** Konfirmasi import dari modal */
   const handleConfirmImport = () => {
     if (!pendingImportFile || !importRoomId) {
       toast.error('Pilih ruangan terlebih dahulu')
@@ -147,25 +190,23 @@ export function RoomsPage() {
   }
 
   return (
-    <div>
+    <div className="space-y-6">
       <PageHeader
         title="Fasilitas & Ruangan DPRD"
-        description="Daftar ruangan dan fasilitas yang tersedia untuk pelaporan"
+        description="Daftar ruangan dan fasilitas yang tersedia untuk pelaporan dan inventarisasi."
         action={isAdmin ? (
-          <div className="flex items-center gap-2">
-            {/* Tombol Download Template */}
+          <div className="flex flex-wrap items-center gap-2">
             <Button
-              variant="ghost"
+              variant="secondary"
               onClick={() => downloadTemplateMut.mutate()}
               disabled={downloadTemplateMut.isPending}
               title="Download template Excel untuk import aset"
-              className="gap-1"
+              className="gap-1.5 h-10 px-3.5 border-slate-200 text-slate-700 bg-white/70 hover:bg-slate-50 transition-all font-semibold rounded-xl text-xs"
             >
-              <Download className="h-4 w-4" />
-              Template
+              <Download className="h-4 w-4 text-[#ef629f]" />
+              Download Template
             </Button>
 
-            {/* Hidden input untuk import dari header */}
             <input
               ref={headerImportInputRef}
               type="file"
@@ -173,91 +214,140 @@ export function RoomsPage() {
               className="hidden"
               onChange={handleHeaderImportFileChange}
             />
-            {/* Tombol Import Excel di header */}
             <Button
               variant="secondary"
               onClick={() => headerImportInputRef.current?.click()}
               disabled={importAssetsMut.isPending}
               title="Import aset dari file Excel"
-              className="gap-1"
+              className="gap-1.5 h-10 px-3.5 border-slate-200 text-slate-700 bg-white/70 hover:bg-slate-50 transition-all font-semibold rounded-xl text-xs"
             >
-              <FileSpreadsheet className="h-4 w-4" />
-              {importAssetsMut.isPending ? 'Import...' : 'Import Excel'}
+              <FileSpreadsheet className="h-4 w-4 text-emerald-600" />
+              {importAssetsMut.isPending ? 'Mengimport...' : 'Import Excel'}
             </Button>
 
-            {/* Tombol Tambah Ruangan */}
-            <Button onClick={() => setShowRoomForm(true)} className="gap-1">
+            <Button 
+              onClick={() => setShowRoomForm(true)} 
+              className="gap-1.5 h-10 px-4 bg-[#ef629f] hover:bg-[#d8528b] text-white shadow-md hover:shadow-lg transition-all font-semibold rounded-xl text-xs"
+            >
               <Plus className="h-4 w-4" /> Tambah Ruangan
             </Button>
           </div>
         ) : undefined}
       />
 
-      {showRoomForm && isAdmin && (
-        <RoomForm
-          token={token}
-          onClose={() => setShowRoomForm(false)}
-          onSuccess={() => { qc.invalidateQueries({ queryKey: ['rooms'] }); setShowRoomForm(false); toast.success('Ruangan berhasil ditambahkan') }}
-        />
-      )}
-
-      <div className="grid gap-4 lg:grid-cols-2">
-        <GlassCard className="p-0 overflow-hidden">
-          <div className="flex items-center justify-between border-b border-white/40 px-4 py-3">
-            <span className="font-medium">Ruangan</span>
+      <div className="grid gap-6 lg:grid-cols-[1fr_1.2fr] items-start">
+        {/* Left Column: Ruangan */}
+        <GlassCard className="p-0 overflow-hidden border border-white/40 bg-white/80 shadow-md backdrop-blur-xl">
+          {/* Header Panel Ruangan */}
+          <div className="flex items-center justify-between border-b border-slate-100 px-4 py-3.5 bg-slate-50/50">
             <div className="flex items-center gap-2">
+              <Building2 className="h-4 w-4 text-[#ef629f]" />
+              <span className="font-bold text-slate-700 text-sm">Daftar Ruangan ({filteredRooms.length})</span>
+            </div>
+            <div className="flex items-center gap-1.5">
               {isAdmin && !isDeletingRooms && rooms.data?.data && rooms.data.data.length > 0 && (
-                <Button size="sm" variant="ghost" onClick={() => setIsDeletingRooms(true)} className="h-8">
-                  <Trash2 className="h-4 w-4 mr-1" /> Hapus
+                <Button 
+                  size="sm" 
+                  variant="ghost" 
+                  onClick={() => setIsDeletingRooms(true)} 
+                  className="h-8 text-slate-500 hover:text-rose-600 hover:bg-rose-50/50 text-xs font-bold rounded-lg"
+                >
+                  <Trash2 className="h-3.5 w-3.5 mr-1" /> Hapus
                 </Button>
               )}
               {isAdmin && isDeletingRooms && (
                 <>
-                  <Button size="sm" variant="ghost" onClick={() => { setIsDeletingRooms(false); setSelectedRoomsToDelete([]); }} className="h-8">
+                  <Button 
+                    size="sm" 
+                    variant="ghost" 
+                    onClick={() => { setIsDeletingRooms(false); setSelectedRoomsToDelete([]); }} 
+                    className="h-8 text-xs font-bold rounded-lg"
+                  >
                     Batal
                   </Button>
-                  <Button size="sm" variant="danger" onClick={() => setShowConfirmRoomDelete(true)} disabled={selectedRoomsToDelete.length === 0} className="h-8">
+                  <Button 
+                    size="sm" 
+                    variant="danger" 
+                    onClick={() => setShowConfirmRoomDelete(true)} 
+                    disabled={selectedRoomsToDelete.length === 0} 
+                    className="h-8 text-xs font-bold rounded-lg px-2.5"
+                  >
                     Hapus Terpilih ({selectedRoomsToDelete.length})
                   </Button>
                 </>
               )}
             </div>
           </div>
+
+          {/* Search Ruangan */}
+          <div className="p-3 border-b border-slate-100 bg-white/50">
+            <div className="relative">
+              <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
+              <Input
+                placeholder="Cari kode, nama ruangan, atau gedung..."
+                className="pl-9 h-9 text-xs rounded-lg border-slate-200 focus:border-[#ef629f]/50 bg-white"
+                value={roomSearch}
+                onChange={(e) => setRoomSearch(e.target.value)}
+              />
+            </div>
+          </div>
+
+          {/* List Ruangan */}
           {rooms.isLoading ? (
-            <ListSkeleton count={5} />
-          ) : !rooms.data?.data.length ? (
-            <EmptyState title="Tidak ada ruangan" />
+            <div className="p-4"><ListSkeleton count={5} /></div>
+          ) : !filteredRooms.length ? (
+            <div className="py-12"><EmptyState title="Tidak ada ruangan" description={roomSearch ? "Kriteria pencarian Anda tidak cocok" : undefined} /></div>
           ) : (
-            <ul>
-              {rooms.data.data.map((r) => (
+            <ul className="divide-y divide-slate-100 max-h-[500px] overflow-y-auto">
+              {filteredRooms.map((r) => (
                 <li
                   key={r.id}
                   className={cn(
-                    'group flex cursor-pointer items-center justify-between border-b border-white/20 px-4 py-3 transition-all duration-200 hover:bg-white/50',
-                    selectedRoom === r.id && !isDeletingRooms ? 'bg-white/60 border-l-4 border-l-[#ef629f] pl-3' : 'border-l-4 border-l-transparent'
+                    'group flex cursor-pointer items-center justify-between px-4 py-3.5 transition-all duration-200',
+                    selectedRoom === r.id && !isDeletingRooms
+                      ? 'bg-gradient-to-r from-[#ef629f]/10 to-[#ef629f]/5 border-l-4 border-l-[#ef629f] pl-3'
+                      : 'hover:bg-slate-50 border-l-4 border-l-transparent'
                   )}
                   onClick={() => {
                     if (isDeletingRooms) {
                       toggleRoomDelete(r.id)
                     } else {
                       setSelectedRoom(r.id)
+                      setAssetSearch('')
                     }
                   }}
                 >
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-3 min-w-0">
                     {isAdmin && isDeletingRooms && (
                       <input 
                         type="checkbox" 
                         checked={selectedRoomsToDelete.includes(r.id)} 
                         onChange={() => toggleRoomDelete(r.id)}
                         onClick={(e) => e.stopPropagation()}
-                        className="h-4 w-4 rounded border-gray-300 text-[#ef629f] focus:ring-[#ef629f] cursor-pointer"
+                        className="h-4 w-4 rounded border-slate-300 text-[#ef629f] focus:ring-[#ef629f] cursor-pointer"
                       />
                     )}
-                    <div>
-                      <p className={cn('font-medium', selectedRoom === r.id && !isDeletingRooms ? 'text-[#ef629f]' : 'text-foreground')}>{r.code}</p>
-                      <p className="text-sm text-muted">{r.name} · {r.building ?? '—'}</p>
+                    <div className="p-2 bg-slate-100 text-slate-500 rounded-lg group-hover:bg-white group-hover:shadow-sm transition-all shrink-0">
+                      <Building2 className="w-4 h-4 text-[#ef629f]/75" />
                     </div>
+                    <div className="min-w-0">
+                      <p className={cn('font-bold text-sm truncate', selectedRoom === r.id && !isDeletingRooms ? 'text-[#ef629f]' : 'text-slate-800')}>
+                        {r.code}
+                      </p>
+                      <p className="text-xs text-slate-500 truncate font-semibold">{r.name}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-1.5 shrink-0 ml-2">
+                    {r.building && (
+                      <span className="bg-slate-100 border border-slate-200/60 text-slate-600 px-1.5 py-0.5 rounded text-[10px] font-bold max-w-[85px] truncate">
+                        {r.building}
+                      </span>
+                    )}
+                    {r.floor && (
+                      <span className="bg-pink-50 border border-pink-100 text-[#ef629f] px-1.5 py-0.5 rounded text-[10px] font-bold">
+                        Lt {r.floor}
+                      </span>
+                    )}
                   </div>
                 </li>
               ))}
@@ -265,18 +355,46 @@ export function RoomsPage() {
           )}
         </GlassCard>
 
-        <GlassCard className="p-0 overflow-hidden">
-          <div className="flex items-center justify-between border-b border-white/40 px-4 py-3">
-            <span className="font-medium">Aset</span>
+        {/* Right Column: Aset */}
+        <GlassCard className="p-0 overflow-hidden border border-white/40 bg-white/80 shadow-md backdrop-blur-xl">
+          {/* Header Panel Aset */}
+          <div className="flex items-center justify-between border-b border-slate-100 px-4 py-3.5 bg-slate-50/50">
             <div className="flex items-center gap-2">
+              <Package className="h-4 w-4 text-[#ef629f]" />
+              <span className="font-bold text-slate-700 text-sm">
+                Aset Ruangan {selectedRoomObj ? `(${selectedRoomObj.code})` : ''}
+              </span>
+            </div>
+            <div className="flex items-center gap-1.5">
               {isAdmin && selectedRoom && !isDeletingAssets && (
                 <>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => setShowAssetForm(true)}
+                    className="h-8 gap-1 text-[#ef629f] hover:text-[#ef629f] hover:bg-[#ef629f]/5 text-xs font-bold rounded-lg"
+                  >
+                    <Plus className="h-3.5 w-3.5" /> Aset Manual
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => assetImportInputRef.current?.click()}
+                    disabled={importAssetsMut.isPending}
+                    className="h-8 gap-1 text-slate-600 hover:bg-slate-100 hover:text-slate-700 text-xs font-bold rounded-lg"
+                  >
+                    <Upload className="h-3.5 w-3.5" /> Import Excel
+                  </Button>
                   {assets.data?.data && assets.data.data.length > 0 && (
-                    <Button size="sm" variant="ghost" onClick={() => setIsDeletingAssets(true)} className="h-8">
-                      <Trash2 className="h-4 w-4 mr-1" /> Hapus
+                    <Button 
+                      size="sm" 
+                      variant="ghost" 
+                      onClick={() => setIsDeletingAssets(true)} 
+                      className="h-8 text-rose-500 hover:bg-rose-50 hover:text-rose-600 text-xs font-bold rounded-lg"
+                    >
+                      <Trash2 className="h-3.5 w-3.5" /> Hapus
                     </Button>
                   )}
-                  {/* Input file tersembunyi untuk panel aset */}
                   <input
                     ref={assetImportInputRef}
                     type="file"
@@ -288,71 +406,142 @@ export function RoomsPage() {
               )}
               {isAdmin && selectedRoom && isDeletingAssets && (
                 <>
-                  <Button size="sm" variant="ghost" onClick={() => { setIsDeletingAssets(false); setSelectedAssetsToDelete([]); }} className="h-8">
+                  <Button 
+                    size="sm" 
+                    variant="ghost" 
+                    onClick={() => { setIsDeletingAssets(false); setSelectedAssetsToDelete([]); }} 
+                    className="h-8 text-xs font-bold rounded-lg"
+                  >
                     Batal
                   </Button>
-                  <Button size="sm" variant="danger" onClick={() => setShowConfirmAssetDelete(true)} disabled={selectedAssetsToDelete.length === 0} className="h-8">
+                  <Button 
+                    size="sm" 
+                    variant="danger" 
+                    onClick={() => setShowConfirmAssetDelete(true)} 
+                    disabled={selectedAssetsToDelete.length === 0} 
+                    className="h-8 text-xs font-bold rounded-lg px-2.5"
+                  >
                     Hapus Terpilih ({selectedAssetsToDelete.length})
                   </Button>
                 </>
               )}
             </div>
           </div>
+
+          {/* Search/View Aset */}
           {!selectedRoom ? (
-            <p className="p-6 text-sm text-muted">Pilih ruangan untuk melihat aset</p>
-          ) : assets.isLoading ? (
-            <ListSkeleton count={4} />
-          ) : !assets.data?.data.length ? (
-            <div className="p-6">
-              <EmptyState title="Tidak ada aset di ruangan ini" />
+            <div className="py-24 text-center">
+              <div className="mx-auto w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 mb-3.5">
+                <ArrowRight className="w-5 h-5 -rotate-45" />
+              </div>
+              <h4 className="text-sm font-bold text-slate-700">Pilih Ruangan Terlebih Dahulu</h4>
+              <p className="text-xs text-slate-400 max-w-[280px] mx-auto mt-1 leading-relaxed">
+                Silakan pilih salah satu ruangan di daftar sebelah kiri untuk melihat, mengimport, atau menambahkan inventaris aset.
+              </p>
             </div>
           ) : (
-            <ul>
-              {assets.data.data.map((a) => (
-                <li 
-                  key={a.id} 
-                  className={cn(
-                    "flex items-center justify-between border-b border-white/20 px-4 py-3 transition-colors hover:bg-white/30",
-                    isDeletingAssets ? "cursor-pointer" : ""
-                  )}
-                  onClick={() => {
-                    if (isDeletingAssets) {
-                      toggleAssetDelete(a.id)
-                    }
-                  }}
-                >
-                  <div className="flex items-center gap-3">
-                    {isAdmin && isDeletingAssets && (
-                      <input 
-                        type="checkbox" 
-                        checked={selectedAssetsToDelete.includes(a.id)} 
-                        onChange={() => toggleAssetDelete(a.id)}
-                        onClick={(e) => e.stopPropagation()}
-                        className="h-4 w-4 rounded border-gray-300 text-[#ef629f] focus:ring-[#ef629f] cursor-pointer"
-                      />
-                    )}
-                    <div>
-                      <p className="font-medium">{a.kodeBarang} - {a.namaBarang}</p>
-                      <p className="text-sm text-muted">{a.nomorRegister} · {a.merkType}</p>
-                      <p className="text-xs text-muted/70">ID Pemda: {a.idpemda}</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <StatusBadge status={a.status} />
-                  </div>
-                </li>
-              ))}
-            </ul>
+            <>
+              {/* Search Aset */}
+              <div className="p-3 border-b border-slate-100 bg-white/50">
+                <div className="relative">
+                  <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
+                  <Input
+                    placeholder="Cari nama barang, kode, merk, atau nomor register..."
+                    className="pl-9 h-9 text-xs rounded-lg border-slate-200 focus:border-[#ef629f]/50 bg-white"
+                    value={assetSearch}
+                    onChange={(e) => setAssetSearch(e.target.value)}
+                  />
+                </div>
+              </div>
+
+              {/* List Aset */}
+              {assets.isLoading ? (
+                <div className="p-4"><ListSkeleton count={4} /></div>
+              ) : !filteredAssets.length ? (
+                <div className="py-12">
+                  <EmptyState 
+                    title="Tidak ada aset" 
+                    description={assetSearch ? "Kriteria pencarian Anda tidak cocok" : "Belum ada inventaris terdaftar di ruangan ini"} 
+                  />
+                </div>
+              ) : (
+                <ul className="divide-y divide-slate-100 max-h-[500px] overflow-y-auto">
+                  {filteredAssets.map((a) => (
+                    <li 
+                      key={a.id} 
+                      className={cn(
+                        "flex flex-col sm:flex-row sm:items-center justify-between px-4 py-3.5 transition-colors gap-3",
+                        isDeletingAssets ? "cursor-pointer hover:bg-rose-50/20" : "hover:bg-slate-50/50"
+                      )}
+                      onClick={() => {
+                        if (isDeletingAssets) {
+                          toggleAssetDelete(a.id)
+                        }
+                      }}
+                    >
+                      <div className="flex items-start gap-3 min-w-0">
+                        {isAdmin && isDeletingAssets && (
+                          <input 
+                            type="checkbox" 
+                            checked={selectedAssetsToDelete.includes(a.id)} 
+                            onChange={() => toggleAssetDelete(a.id)}
+                            onClick={(e) => e.stopPropagation()}
+                            className="h-4 w-4 rounded border-slate-300 text-[#ef629f] focus:ring-[#ef629f] cursor-pointer mt-1"
+                          />
+                        )}
+                        <div className="p-2 bg-amber-500/10 text-amber-600 rounded-xl mt-0.5 shrink-0">
+                          <Package className="w-4 h-4" />
+                        </div>
+                        <div className="min-w-0 space-y-1">
+                          <p className="font-bold text-slate-800 text-sm truncate">{a.namaBarang}</p>
+                          <div className="flex flex-wrap gap-1 text-[10px] text-slate-500 font-bold">
+                            <span className="bg-slate-100 px-1.5 py-0.5 rounded border border-slate-200/40">Kode: {a.kodeBarang}</span>
+                            <span className="bg-slate-100 px-1.5 py-0.5 rounded border border-slate-200/40">Reg: {a.nomorRegister}</span>
+                            {a.merkType && (
+                              <span className="bg-slate-100 px-1.5 py-0.5 rounded border border-slate-200/40 truncate max-w-[150px]" title={a.merkType}>
+                                {a.merkType}
+                              </span>
+                            )}
+                          </div>
+                          <p className="text-[10px] text-slate-400 font-semibold">ID Pemda: {a.idpemda}</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2 self-end sm:self-center shrink-0">
+                        <StatusBadge status={a.status} />
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </>
           )}
         </GlassCard>
       </div>
 
-      {showAssetForm && selectedRoom && isAdmin && (
-        <AssetForm
+      {/* Room Creation Modal Form */}
+      <RoomFormModal
+        isOpen={showRoomForm}
+        token={token}
+        onClose={() => setShowRoomForm(false)}
+        onSuccess={() => { 
+          qc.invalidateQueries({ queryKey: ['rooms'] })
+          setShowRoomForm(false)
+          toast.success('Ruangan berhasil ditambahkan') 
+        }}
+      />
+
+      {/* Asset Creation Modal Form */}
+      {selectedRoom && (
+        <AssetFormModal
+          isOpen={showAssetForm}
           token={token}
           roomId={selectedRoom}
           onClose={() => setShowAssetForm(false)}
-          onSuccess={() => { qc.invalidateQueries({ queryKey: ['assets'] }); setShowAssetForm(false); toast.success('Aset berhasil ditambahkan') }}
+          onSuccess={() => { 
+            qc.invalidateQueries({ queryKey: ['assets'] })
+            setShowAssetForm(false)
+            toast.success('Aset berhasil ditambahkan') 
+          }}
         />
       )}
 
@@ -425,24 +614,24 @@ function ImportRoomPickerModal({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="absolute inset-0 bg-black/25 backdrop-blur-[2px]"
+            className="absolute inset-0 bg-slate-950/40 backdrop-blur-md"
             onClick={onClose}
           />
           <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: 10 }}
+            initial={{ opacity: 0, scale: 0.95, y: 15 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 10 }}
-            className="relative w-full max-w-md overflow-hidden rounded-2xl bg-white p-6 shadow-2xl border border-gray-100"
+            exit={{ opacity: 0, scale: 0.95, y: 15 }}
+            className="relative w-full max-w-md overflow-hidden rounded-2xl bg-white p-6 shadow-2xl border border-slate-100"
           >
             {/* Header */}
-            <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center justify-between mb-4 pb-2 border-b border-slate-100">
               <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#ef629f]/10">
-                  <FileSpreadsheet className="h-5 w-5 text-[#ef629f]" />
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-pink-50 text-[#ef629f]">
+                  <FileSpreadsheet className="h-5 w-5" />
                 </div>
-                <div>
-                  <h3 className="text-base font-semibold text-gray-900">Import Aset Excel</h3>
-                  <p className="text-xs text-gray-500 truncate max-w-[220px]" title={fileName}>{fileName}</p>
+                <div className="min-w-0">
+                  <h3 className="text-sm font-bold text-slate-800">Import Aset Excel</h3>
+                  <p className="text-xs text-slate-400 truncate max-w-[200px]" title={fileName}>{fileName}</p>
                 </div>
               </div>
               <button
@@ -454,65 +643,54 @@ function ImportRoomPickerModal({
             </div>
 
             {/* Pilih ruangan */}
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Pilih Ruangan Tujuan <span className="text-red-500">*</span>
-            </label>
-            {rooms.length === 0 ? (
-              <p className="text-sm text-gray-500 bg-gray-50 rounded-lg p-3">
-                Belum ada ruangan. Buat ruangan dulu sebelum import.
-              </p>
-            ) : (
-              <select
-                className="w-full rounded-xl border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm text-gray-800 focus:border-[#ef629f] focus:ring-2 focus:ring-[#ef629f]/20 focus:outline-none transition-all"
-                value={selectedRoomId}
-                onChange={(e) => onSelectRoom(e.target.value)}
-                disabled={isLoading}
-              >
-                <option value="">— Pilih ruangan —</option>
-                {rooms.map((r) => (
-                  <option key={r.id} value={r.id}>
-                    {r.code} — {r.name} {r.building ? `(${r.building})` : ''}
-                  </option>
-                ))}
-              </select>
-            )}
+            <div className="space-y-1.5 mb-4">
+              <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider block">
+                Pilih Ruangan Tujuan *
+              </label>
+              {rooms.length === 0 ? (
+                <p className="text-xs text-slate-500 bg-slate-50 rounded-xl p-3 border border-slate-100">
+                  Belum ada ruangan. Buat ruangan dulu sebelum import.
+                </p>
+              ) : (
+                <select
+                  className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-800 focus:border-[#ef629f] focus:ring-4 focus:ring-[#ef629f]/10 focus:outline-none transition-all font-semibold"
+                  value={selectedRoomId}
+                  onChange={(e) => onSelectRoom(e.target.value)}
+                  disabled={isLoading}
+                >
+                  <option value="">— Pilih ruangan —</option>
+                  {rooms.map((r) => (
+                    <option key={r.id} value={r.id}>
+                      {r.code} — {r.name} {r.building ? `(${r.building})` : ''}
+                    </option>
+                  ))}
+                </select>
+              )}
+            </div>
 
-            <p className="mt-3 text-xs text-gray-400">
-              Kolom wajib: <code className="bg-gray-100 px-1 rounded">idpemda</code>,{' '}
-              <code className="bg-gray-100 px-1 rounded">kode_barang</code>,{' '}
-              <code className="bg-gray-100 px-1 rounded">nomor_register</code>,{' '}
-              <code className="bg-gray-100 px-1 rounded">nama_barang</code>,{' '}
-              <code className="bg-gray-100 px-1 rounded">merk_type</code>
+            <p className="text-[10px] leading-relaxed text-slate-400 font-medium bg-slate-50 border border-slate-100 rounded-lg p-2.5">
+              💡 <strong>Catatan:</strong> Pastikan header kolom wajib di file Excel Anda adalah: <code className="bg-slate-200 px-1 rounded font-bold text-slate-700">idpemda</code>,{' '}
+              <code className="bg-slate-200 px-1 rounded font-bold text-slate-700">kode_barang</code>,{' '}
+              <code className="bg-slate-200 px-1 rounded font-bold text-slate-700">nomor_register</code>,{' '}
+              <code className="bg-slate-200 px-1 rounded font-bold text-slate-700">nama_barang</code>, dan{' '}
+              <code className="bg-slate-200 px-1 rounded font-bold text-slate-700">merk_type</code>.
             </p>
 
             {/* Actions */}
-            <div className="mt-5 flex gap-3">
+            <div className="mt-5 flex gap-3 border-t border-slate-100 pt-3.5 justify-end">
               <Button
                 variant="secondary"
-                className="flex-1 rounded-xl text-gray-700 bg-gray-100 hover:bg-gray-200"
                 onClick={onClose}
                 disabled={isLoading}
               >
                 Batal
               </Button>
               <Button
-                className="flex-1 rounded-xl"
                 onClick={onConfirm}
                 disabled={isLoading || !selectedRoomId || rooms.length === 0}
+                className="bg-[#ef629f] hover:bg-[#d8528b] text-white"
               >
-                {isLoading ? (
-                  <span className="flex items-center gap-2">
-                    <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
-                    </svg>
-                    Mengimport...
-                  </span>
-                ) : (
-                  <span className="flex items-center gap-2">
-                    <Upload className="h-4 w-4" /> Import
-                  </span>
-                )}
+                {isLoading ? 'Mengimport...' : 'Import Sekarang'}
               </Button>
             </div>
           </motion.div>
@@ -535,25 +713,25 @@ function DeleteConfirmationModal({ isOpen, onClose, onConfirm, title, descriptio
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="absolute inset-0 bg-black/20 backdrop-blur-[2px]"
+            className="absolute inset-0 bg-slate-950/40 backdrop-blur-md"
             onClick={onClose}
           />
           <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: 10 }}
+            initial={{ opacity: 0, scale: 0.95, y: 15 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 10 }}
-            className="relative w-full max-w-sm overflow-hidden rounded-2xl bg-white p-6 text-center shadow-2xl border border-gray-100"
+            exit={{ opacity: 0, scale: 0.95, y: 15 }}
+            className="relative w-full max-w-sm overflow-hidden rounded-2xl bg-white p-6 text-center shadow-2xl border border-slate-100"
           >
-            <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-danger/10">
-              <Trash2 className="h-6 w-6 text-danger" />
+            <div className="mx-auto mb-3.5 flex h-12 w-12 items-center justify-center rounded-full bg-rose-50 text-rose-500">
+              <Trash2 className="h-6 w-6" />
             </div>
-            <h3 className="mb-2 text-lg font-semibold text-gray-900">{title}</h3>
-            <p className="mb-6 text-sm text-gray-500">{description}</p>
-            <div className="flex gap-3">
-              <Button variant="secondary" className="flex-1 rounded-xl text-gray-700 bg-gray-100 hover:bg-gray-200" onClick={onClose} disabled={isLoading}>
+            <h3 className="mb-1 text-base font-bold text-slate-800">{title}</h3>
+            <p className="mb-5 text-xs text-slate-500 font-medium leading-relaxed">{description}</p>
+            <div className="flex gap-3 justify-end">
+              <Button variant="secondary" onClick={onClose} disabled={isLoading} className="flex-1">
                 Batal
               </Button>
-              <Button variant="danger" className="flex-1 rounded-xl" onClick={onConfirm} disabled={isLoading}>
+              <Button variant="danger" onClick={onConfirm} disabled={isLoading} className="flex-1 bg-rose-600 hover:bg-rose-700">
                 {isLoading ? 'Menghapus...' : 'Ya, Hapus'}
               </Button>
             </div>
@@ -565,9 +743,19 @@ function DeleteConfirmationModal({ isOpen, onClose, onConfirm, title, descriptio
   )
 }
 
-// ─── Form tambah ruangan ──────────────────────────────────────────────────────
+// ─── Modal Form Tambah Ruangan ──────────────────────────────────────────────────────
 
-function RoomForm({ token, onClose, onSuccess }: { token: string; onClose: () => void; onSuccess: () => void }) {
+function RoomFormModal({
+  isOpen,
+  token,
+  onClose,
+  onSuccess,
+}: {
+  isOpen: boolean
+  token: string
+  onClose: () => void
+  onSuccess: () => void
+}) {
   const [name, setName] = useState('')
   const [code, setCode] = useState('')
   const [building, setBuilding] = useState('')
@@ -575,30 +763,129 @@ function RoomForm({ token, onClose, onSuccess }: { token: string; onClose: () =>
 
   const mutation = useMutation({
     mutationFn: () => createRoom(token, { name, code, building, floor }),
-    onSuccess,
+    onSuccess: () => {
+      setName('')
+      setCode('')
+      setBuilding('')
+      setFloor('')
+      onSuccess()
+    },
     onError: (e: Error) => toast.error(e.message),
   })
 
-  return (
-    <GlassCard className="mb-6">
-      <h2 className="font-medium">Tambah Ruangan Baru</h2>
-      <div className="mt-4 grid gap-3 sm:grid-cols-2">
-        <Input placeholder="Nama Ruangan" value={name} onChange={(e) => setName(e.target.value)} />
-        <Input placeholder="Kode (mis. RSG-1)" value={code} onChange={(e) => setCode(e.target.value)} />
-        <Input placeholder="Gedung" value={building} onChange={(e) => setBuilding(e.target.value)} />
-        <Input placeholder="Lantai" value={floor} onChange={(e) => setFloor(e.target.value)} />
-      </div>
-      <div className="mt-4 flex gap-3">
-        <Button onClick={() => mutation.mutate()} disabled={!name || !code}>Simpan</Button>
-        <Button variant="ghost" onClick={onClose}>Batal</Button>
-      </div>
-    </GlassCard>
+  if (typeof document === 'undefined') return null
+
+  return createPortal(
+    <AnimatePresence>
+      {isOpen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="absolute inset-0 bg-slate-950/40 backdrop-blur-md"
+            onClick={onClose}
+          />
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95, y: 15 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: 15 }}
+            className="w-full max-w-lg relative z-10"
+          >
+            <GlassCard className="p-6 bg-white shadow-2xl border-white/80 space-y-4">
+              <div className="flex items-center justify-between pb-2 border-b border-slate-100">
+                <div className="flex items-center gap-3">
+                  <div className="p-2.5 bg-pink-50 text-[#ef629f] rounded-xl shadow-inner">
+                    <Building2 className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h3 className="text-base font-bold text-slate-800">Tambah Ruangan Baru</h3>
+                    <p className="text-xs text-slate-500">Lengkapi kolom untuk membuat ruangan baru.</p>
+                  </div>
+                </div>
+                <button
+                  onClick={onClose}
+                  className="rounded-lg p-1.5 text-gray-400 hover:bg-slate-50 hover:text-slate-600 transition-colors"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-slate-600">Nama Ruangan *</label>
+                  <Input 
+                    placeholder="Contoh: Ruang Rapat Paripurna" 
+                    value={name} 
+                    onChange={(e) => setName(e.target.value)} 
+                    className="rounded-xl border-slate-200 focus:border-[#ef629f]/50"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-slate-600">Kode Ruangan *</label>
+                  <Input 
+                    placeholder="Contoh: R-PRP-3" 
+                    value={code} 
+                    onChange={(e) => setCode(e.target.value)} 
+                    className="rounded-xl border-slate-200 focus:border-[#ef629f]/50"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-slate-600">Gedung</label>
+                  <Input 
+                    placeholder="Contoh: Gedung Paripurna" 
+                    value={building} 
+                    onChange={(e) => setBuilding(e.target.value)} 
+                    className="rounded-xl border-slate-200 focus:border-[#ef629f]/50"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-slate-600">Lantai</label>
+                  <Input 
+                    placeholder="Contoh: 3" 
+                    value={floor} 
+                    onChange={(e) => setFloor(e.target.value)} 
+                    className="rounded-xl border-slate-200 focus:border-[#ef629f]/50"
+                  />
+                </div>
+              </div>
+
+              <div className="flex justify-end gap-3 pt-3.5 border-t border-slate-100">
+                <Button variant="secondary" onClick={onClose} disabled={mutation.isPending}>
+                  Batal
+                </Button>
+                <Button 
+                  onClick={() => mutation.mutate()} 
+                  disabled={!name || !code || mutation.isPending} 
+                  className="bg-[#ef629f] hover:bg-[#d8528b] text-white font-semibold rounded-xl"
+                >
+                  {mutation.isPending ? 'Menyimpan...' : 'Simpan Ruangan'}
+                </Button>
+              </div>
+            </GlassCard>
+          </motion.div>
+        </div>
+      )}
+    </AnimatePresence>,
+    document.body
   )
 }
 
-// ─── Form tambah aset manual ──────────────────────────────────────────────────
+// ─── Modal Form Tambah Aset ──────────────────────────────────────────────────
 
-function AssetForm({ token, roomId, onClose, onSuccess }: { token: string; roomId: string; onClose: () => void; onSuccess: () => void }) {
+function AssetFormModal({
+  isOpen,
+  token,
+  roomId,
+  onClose,
+  onSuccess,
+}: {
+  isOpen: boolean
+  token: string
+  roomId: string
+  onClose: () => void
+  onSuccess: () => void
+}) {
   const [idpemda, setIdpemda] = useState('')
   const [kodeBarang, setKodeBarang] = useState('')
   const [nomorRegister, setNomorRegister] = useState('')
@@ -607,24 +894,120 @@ function AssetForm({ token, roomId, onClose, onSuccess }: { token: string; roomI
 
   const mutation = useMutation({
     mutationFn: () => createAsset(token, { roomId, idpemda, kodeBarang, nomorRegister, namaBarang, merkType }),
-    onSuccess,
+    onSuccess: () => {
+      setIdpemda('')
+      setKodeBarang('')
+      setNomorRegister('')
+      setNamaBarang('')
+      setMerkType('')
+      onSuccess()
+    },
     onError: (e: Error) => toast.error(e.message),
   })
 
-  return (
-    <GlassCard className="mt-4">
-      <h2 className="font-medium">Tambah Aset Baru</h2>
-      <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
-        <Input placeholder="ID Pemda" value={idpemda} onChange={(e) => setIdpemda(e.target.value)} />
-        <Input placeholder="Kode Barang" value={kodeBarang} onChange={(e) => setKodeBarang(e.target.value)} />
-        <Input placeholder="Nomor Register" value={nomorRegister} onChange={(e) => setNomorRegister(e.target.value)} />
-        <Input placeholder="Nama Barang" value={namaBarang} onChange={(e) => setNamaBarang(e.target.value)} />
-        <Input placeholder="Merk dan Type" value={merkType} onChange={(e) => setMerkType(e.target.value)} />
-      </div>
-      <div className="mt-4 flex gap-3">
-        <Button onClick={() => mutation.mutate()} disabled={!idpemda || !kodeBarang || !nomorRegister || !namaBarang || !merkType}>Simpan</Button>
-        <Button variant="ghost" onClick={onClose}>Batal</Button>
-      </div>
-    </GlassCard>
+  if (typeof document === 'undefined') return null
+
+  return createPortal(
+    <AnimatePresence>
+      {isOpen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="absolute inset-0 bg-slate-950/40 backdrop-blur-md"
+            onClick={onClose}
+          />
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95, y: 15 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: 15 }}
+            className="w-full max-w-xl relative z-10"
+          >
+            <GlassCard className="p-6 bg-white shadow-2xl border-white/80 space-y-4">
+              <div className="flex items-center justify-between pb-2 border-b border-slate-100">
+                <div className="flex items-center gap-3">
+                  <div className="p-2.5 bg-amber-50 text-amber-500 rounded-xl shadow-inner">
+                    <Package className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h3 className="text-base font-bold text-slate-800">Tambah Aset Baru</h3>
+                    <p className="text-xs text-slate-500">Daftarkan inventaris barang baru secara manual.</p>
+                  </div>
+                </div>
+                <button
+                  onClick={onClose}
+                  className="rounded-lg p-1.5 text-gray-400 hover:bg-slate-50 hover:text-slate-600 transition-colors"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-slate-600">Nama Barang *</label>
+                  <Input 
+                    placeholder="Contoh: AC Split 2 PK" 
+                    value={namaBarang} 
+                    onChange={(e) => setNamaBarang(e.target.value)} 
+                    className="rounded-xl border-slate-200 focus:border-[#ef629f]/50"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-slate-600">ID Pemda *</label>
+                  <Input 
+                    placeholder="Contoh: 12.01.03.04" 
+                    value={idpemda} 
+                    onChange={(e) => setIdpemda(e.target.value)} 
+                    className="rounded-xl border-slate-200 focus:border-[#ef629f]/50"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-slate-600">Kode Barang *</label>
+                  <Input 
+                    placeholder="Contoh: 3.05.01.02.002" 
+                    value={kodeBarang} 
+                    onChange={(e) => setKodeBarang(e.target.value)} 
+                    className="rounded-xl border-slate-200 focus:border-[#ef629f]/50"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-slate-600">Nomor Register *</label>
+                  <Input 
+                    placeholder="Contoh: 0041" 
+                    value={nomorRegister} 
+                    onChange={(e) => setNomorRegister(e.target.value)} 
+                    className="rounded-xl border-slate-200 focus:border-[#ef629f]/50"
+                  />
+                </div>
+                <div className="space-y-1.5 sm:col-span-2">
+                  <label className="text-xs font-semibold text-slate-600">Merk & Tipe *</label>
+                  <Input 
+                    placeholder="Contoh: Daikin Inverter Smile" 
+                    value={merkType} 
+                    onChange={(e) => setMerkType(e.target.value)} 
+                    className="rounded-xl border-slate-200 focus:border-[#ef629f]/50"
+                  />
+                </div>
+              </div>
+
+              <div className="flex justify-end gap-3 pt-3.5 border-t border-slate-100">
+                <Button variant="secondary" onClick={onClose} disabled={mutation.isPending}>
+                  Batal
+                </Button>
+                <Button 
+                  onClick={() => mutation.mutate()} 
+                  disabled={!idpemda || !kodeBarang || !nomorRegister || !namaBarang || !merkType || mutation.isPending} 
+                  className="bg-[#ef629f] hover:bg-[#d8528b] text-white font-semibold rounded-xl"
+                >
+                  {mutation.isPending ? 'Menyimpan...' : 'Simpan Aset'}
+                </Button>
+              </div>
+            </GlassCard>
+          </motion.div>
+        </div>
+      )}
+    </AnimatePresence>,
+    document.body
   )
 }
