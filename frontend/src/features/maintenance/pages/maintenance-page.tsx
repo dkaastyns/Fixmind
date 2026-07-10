@@ -83,7 +83,6 @@ export function MaintenancePage() {
   const [assetId, setAssetId] = useState('')
   const [frequency, setFrequency] = useState<MaintenanceSchedule['frequency']>('ONE_TIME')
   const [scheduledDate, setScheduledDate] = useState('')
-  const [assigneeType, setAssigneeType] = useState<MaintenanceSchedule['assigneeType']>('INTERNAL')
   const [assigneeName, setAssigneeName] = useState('')
   const [vendorContactName, setVendorContactName] = useState('')
   const [vendorPhone, setVendorPhone] = useState('')
@@ -138,7 +137,6 @@ export function MaintenancePage() {
     setAssetId('')
     setFrequency('ONE_TIME')
     setScheduledDate('')
-    setAssigneeType('INTERNAL')
     setAssigneeName('')
     setVendorContactName('')
     setVendorPhone('')
@@ -157,7 +155,6 @@ export function MaintenancePage() {
     setAssetId(s.assetId ?? '')
     setFrequency(s.frequency)
     setScheduledDate(s.scheduledDate)
-    setAssigneeType(s.assigneeType)
     setAssigneeName(s.assigneeName)
     setVendorContactName(s.vendorContactName ?? '')
     setVendorPhone(s.vendorPhone ?? '')
@@ -194,10 +191,10 @@ export function MaintenancePage() {
       frequency,
       scheduledDate,
       status,
-      assigneeType,
+      assigneeType: 'EXTERNAL_VENDOR',
       assigneeName,
-      vendorContactName: assigneeType === 'EXTERNAL_VENDOR' ? vendorContactName : undefined,
-      vendorPhone: assigneeType === 'EXTERNAL_VENDOR' ? vendorPhone : undefined,
+      vendorContactName: vendorContactName || undefined,
+      vendorPhone: vendorPhone || undefined,
       estimatedCost: Number(estimatedCost) || 0,
       notes,
       createdAt: editingId
@@ -382,13 +379,10 @@ export function MaintenancePage() {
                       </div>
                     </div>
 
-                    {/* Assignee / Vendor Details */}
+                    {/* Vendor Details */}
                     <div className="border-t border-slate-100 pt-3 space-y-2">
                       <div className="flex justify-between items-center text-xs">
-                        <span className="text-slate-500">Penugasan:</span>
-                        <span className="font-semibold text-slate-700 bg-slate-100 px-2 py-0.5 rounded text-[10px]">
-                          {s.assigneeType === 'INTERNAL' ? 'Teknisi Internal' : 'Vendor Luar'}
-                        </span>
+                        <span className="text-slate-500">Vendor Pelaksana:</span>
                       </div>
 
                       <div className="flex items-center justify-between">
@@ -403,7 +397,7 @@ export function MaintenancePage() {
                         )}
                       </div>
 
-                      {s.assigneeType === 'EXTERNAL_VENDOR' && (
+                      {(s.vendorContactName || s.vendorPhone) && (
                         <div className="bg-[#ef629f]/5 p-2 rounded-lg border border-[#ef629f]/10 text-[11px] space-y-1">
                           {s.vendorContactName && (
                             <div>
@@ -610,43 +604,17 @@ export function MaintenancePage() {
                       </select>
                     </div>
 
-                    {/* Assignee Type */}
-                    <div className="sm:col-span-2 border-t border-slate-100 pt-3">
-                      <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
-                        Pemberi Tugas & Pelaksana
-                      </p>
-                      <div className="grid grid-cols-2 gap-3 mb-3">
-                        {(['INTERNAL', 'EXTERNAL_VENDOR'] as const).map((t) => (
-                          <button
-                            key={t}
-                            type="button"
-                            onClick={() => {
-                              setAssigneeType(t)
-                              setAssigneeName('')
-                            }}
-                            className={`py-2 px-4 rounded-xl border-2 text-xs font-bold transition-all ${
-                              assigneeType === t
-                                ? 'border-[#ef629f] bg-[#ef629f]/5 text-[#ef629f]'
-                                : 'border-slate-100 hover:border-slate-200 bg-slate-50/50 text-slate-500'
-                            }`}
-                          >
-                            {t === 'INTERNAL' ? 'Teknisi Internal' : 'Vendor Luar'}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-
                     {/* Name input */}
                     <div className="space-y-1.5">
                       <label className="text-xs font-semibold text-foreground/75">
-                        {assigneeType === 'INTERNAL' ? 'Nama Teknisi *' : 'Nama Vendor / Perusahaan *'}
+                        Nama Vendor / Perusahaan *
                       </label>
                       <input
                         required
                         className="flex h-10 w-full rounded-xl border border-slate-200 bg-white px-3.5 text-sm shadow-sm transition-all focus:border-[#ef629f]/50 focus:bg-white focus:outline-none focus:ring-4 focus:ring-[#ef629f]/10"
                         value={assigneeName}
                         onChange={(e) => setAssigneeName(e.target.value)}
-                        placeholder={assigneeType === 'INTERNAL' ? 'Contoh: Ahmad IT' : 'Contoh: CV Maju Jaya Teknik'}
+                        placeholder="Contoh: CV Maju Jaya Teknik"
                       />
                     </div>
 
@@ -665,38 +633,32 @@ export function MaintenancePage() {
                       </div>
                     </div>
 
-                    {/* Vendor Contact details (only if External Vendor) */}
-                    {assigneeType === 'EXTERNAL_VENDOR' && (
-                      <motion.div
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: 'auto' }}
-                        className="sm:col-span-2 grid gap-3 grid-cols-2 bg-pink-50/20 border border-pink-100/50 p-4 rounded-xl"
-                      >
-                        <div className="space-y-1.5 col-span-2">
-                          <p className="text-[10px] font-bold text-[#ef629f] uppercase tracking-wider">
-                            Informasi Kontak Vendor Luar
-                          </p>
-                        </div>
-                        <div className="space-y-1.5">
-                          <label className="text-xs font-semibold text-foreground/75">Nama Kontak Person</label>
-                          <input
-                            className="flex h-10 w-full rounded-xl border border-slate-200 bg-white px-3.5 text-sm shadow-sm focus:border-[#ef629f]/50 focus:outline-none"
-                            value={vendorContactName}
-                            onChange={(e) => setVendorContactName(e.target.value)}
-                            placeholder="Contoh: Pak Budi"
-                          />
-                        </div>
-                        <div className="space-y-1.5">
-                          <label className="text-xs font-semibold text-foreground/75">Nomor Telepon Vendor</label>
-                          <input
-                            className="flex h-10 w-full rounded-xl border border-slate-200 bg-white px-3.5 text-sm shadow-sm focus:border-[#ef629f]/50 focus:outline-none"
-                            value={vendorPhone}
-                            onChange={(e) => setVendorPhone(e.target.value)}
-                            placeholder="Contoh: 081234567890"
-                          />
-                        </div>
-                      </motion.div>
-                    )}
+                    {/* Vendor Contact details */}
+                    <div className="sm:col-span-2 grid gap-3 grid-cols-2 bg-pink-50/20 border border-pink-100/50 p-4 rounded-xl">
+                      <div className="space-y-1.5 col-span-2">
+                        <p className="text-[10px] font-bold text-[#ef629f] uppercase tracking-wider">
+                          Informasi Kontak Vendor Luar
+                        </p>
+                      </div>
+                      <div className="space-y-1.5">
+                        <label className="text-xs font-semibold text-foreground/75">Nama Kontak Person</label>
+                        <input
+                          className="flex h-10 w-full rounded-xl border border-slate-200 bg-white px-3.5 text-sm shadow-sm focus:border-[#ef629f]/50 focus:outline-none"
+                          value={vendorContactName}
+                          onChange={(e) => setVendorContactName(e.target.value)}
+                          placeholder="Contoh: Pak Budi"
+                        />
+                      </div>
+                      <div className="flex flex-col space-y-1.5">
+                        <label className="text-xs font-semibold text-foreground/75">Nomor Telepon Vendor</label>
+                        <input
+                          className="flex h-10 w-full rounded-xl border border-slate-200 bg-white px-3.5 text-sm shadow-sm focus:border-[#ef629f]/50 focus:outline-none"
+                          value={vendorPhone}
+                          onChange={(e) => setVendorPhone(e.target.value)}
+                          placeholder="Contoh: 081234567890"
+                        />
+                      </div>
+                    </div>
 
                     {/* Description / Notes */}
                     <div className="sm:col-span-2 space-y-1.5">
