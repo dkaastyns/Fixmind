@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import { SQL_TOKEN, type Sql } from '../../../database/sql';
 import type {
   ReportHistoryRow,
@@ -14,8 +14,17 @@ export interface ReportListRow extends ReportRow {
   reporter_name: string;
 }
 
+type CommentRow = {
+  id: string;
+  report_id: string;
+  author_id: string;
+  content: string;
+  created_at: Date;
+};
+
 @Injectable()
 export class ReportsRepository {
+  private readonly logger = new Logger(ReportsRepository.name);
   private hasIsAdminColumnPromise: Promise<boolean> | null = null;
 
   constructor(@Inject(SQL_TOKEN) private readonly sql: Sql) {}
@@ -89,7 +98,7 @@ export class ReportsRepository {
         ${params.status ? this.sql`AND r.status = ${params.status}` : this.sql``}
         ${params.roomId ? this.sql`AND r.room_id = ${params.roomId}` : this.sql``}
         ${params.startDate ? this.sql`AND r.created_at >= ${params.startDate}` : this.sql``}
-        ${params.endDate ? this.sql`AND r.created_at <= ${params.endDate}::timestamp + interval '1 day' - interval '1 millisecond'` : this.sql``}
+        ${params.endDate ? this.sql`AND r.created_at < (${params.endDate}::date + interval '1 day') AT TIME ZONE 'UTC'` : this.sql``}
         ${
           q
             ? this.sql`
@@ -113,7 +122,8 @@ export class ReportsRepository {
     `;
 
     const total = result.length > 0 ? Number(result[0].total_count) : 0;
-    return { rows: result as ReportListRow[], total };
+    const rows: ReportListRow[] = result.map(({ total_count: _tc, ...rest }) => rest as ReportListRow);
+    return { rows, total };
   }
 
   async create(data: {
@@ -147,6 +157,7 @@ export class ReportsRepository {
       priority?: ReportPriority;
     },
   ): Promise<ReportListRow | null> {
+    if (!current) throw new Error('Report must be fetched before calling updateStatus');
     const [row] = await this.sql<ReportListRow[]>`
       WITH updated AS (
         UPDATE reports SET
@@ -209,6 +220,13 @@ export class ReportsRepository {
     note?: string;
     metadata?: Record<string, unknown>;
   }): Promise<void> {
+    let metadataJson: string;
+    try {
+      metadataJson = JSON.stringify(data.metadata ?? {});
+    } catch {
+      this.logger.warn('Failed to serialize history metadata, falling back to empty object');
+      metadataJson = '{}';
+    }
     await this.sql`
       INSERT INTO report_histories (report_id, actor_id, action, old_status, new_status, note, metadata)
       VALUES (
@@ -218,7 +236,7 @@ export class ReportsRepository {
         ${data.oldStatus ?? null},
         ${data.newStatus ?? null},
         ${data.note ?? null},
-        ${JSON.stringify(data.metadata ?? {})}
+        ${metadataJson}
       )
     `;
   }
@@ -240,12 +258,12 @@ export class ReportsRepository {
   }
 
   async countCompletedLast30Days(): Promise<number> {
-    const [row] = await this.sql<{ count: string }[]>`
+    const rows = await this.sql<{ count: string }[]>`
       SELECT COUNT(*)::text AS count FROM reports
       WHERE deleted_at IS NULL AND status = 'COMPLETED'
         AND completed_at >= now() - interval '30 days'
     `;
-    return Number(row.count);
+    return rows.length > 0 ? Number(rows[0].count) : 0;
   }
 
   async addAttachment(data: {
@@ -278,8 +296,8 @@ export class ReportsRepository {
     reportId: string,
     authorId: string,
     content: string,
-  ): Promise<any> {
-    const [row] = await this.sql`
+  ): Promise<CommentRow> {
+    const [row] = await this.sql<CommentRow[]>`
       INSERT INTO report_comments (report_id, author_id, content)
       VALUES (${reportId}, ${authorId}, ${content})
       RETURNING *

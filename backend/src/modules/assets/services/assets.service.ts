@@ -276,8 +276,7 @@ export class AssetsService {
       return reviewed;
     });
 
-    const detail = await this.transferRepository.findById(id);
-    return this.toTransferPublic(detail ?? updated);
+    return this.toTransferPublic(updated);
   }
 
   async importExcel(roomId: string, file?: Express.Multer.File) {

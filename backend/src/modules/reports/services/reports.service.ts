@@ -2,6 +2,7 @@ import {
   BadRequestException,
   ForbiddenException,
   Injectable,
+  Logger,
   NotFoundException,
 } from '@nestjs/common';
 import type { AuthUser } from '../../../common/decorators/current-user.decorator';
@@ -20,6 +21,8 @@ import { ReportsRepository } from '../repositories/reports.repository';
 
 @Injectable()
 export class ReportsService {
+  private readonly logger = new Logger(ReportsService.name);
+
   constructor(
     private readonly reportsRepository: ReportsRepository,
     private readonly roomsRepository: RoomsRepository,
@@ -148,7 +151,8 @@ export class ReportsService {
       newStatus: 'PENDING',
     });
 
-    void this.runAiAnalysis(report.id, room.name, dto.assetId, dto.description);
+    this.runAiAnalysis(report.id, room.name, dto.assetId, dto.description)
+      .catch((err) => this.logger.error('Background AI analysis failed', err));
 
     const detail = await this.reportsRepository.findDetail(report.id);
     const result = this.toPublic(detail ?? report);
@@ -219,10 +223,19 @@ export class ReportsService {
       throw new BadRequestException('Maximum 3 photos allowed per report');
     }
 
-    const uploadResult = (await this.cloudinaryService.uploadImage(
-      file,
-      'fixmind/reports',
-    )) as { public_id: string; secure_url: string };
+    let uploadResult: { public_id: string; secure_url: string };
+    try {
+      uploadResult = (await this.cloudinaryService.uploadImage(
+        file,
+        'fixmind/reports',
+      )) as { public_id: string; secure_url: string };
+    } catch (error) {
+      this.logger.error('Cloudinary upload failed', error);
+      throw new BadRequestException('Failed to upload file to cloud storage');
+    }
+    if (!uploadResult?.secure_url || !uploadResult?.public_id) {
+      throw new BadRequestException('Upload did not return a valid URL');
+    }
 
     await this.reportsRepository.addAttachment({
       reportId: report.id,
@@ -304,17 +317,11 @@ export class ReportsService {
       throw new ForbiddenException('Access denied');
     }
 
-    const comment = (await this.reportsRepository.addComment(
+    const comment = await this.reportsRepository.addComment(
       reportId,
       user.id,
       content,
-    )) as {
-      id: string;
-      report_id: string;
-      author_id: string;
-      content: string;
-      created_at: Date;
-    };
+    );
     return {
       id: comment.id,
       reportId: comment.report_id,

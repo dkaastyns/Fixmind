@@ -59,8 +59,8 @@ export class RagService {
 
   async seedKnowledge() {
     // Quick seeder for demonstration purposes
-    const countRow = await this.sql<{ count: string }[]>`SELECT count(*) FROM knowledge_chunks`;
-    if (Number(countRow[0].count) > 0) return; // Already seeded
+    const countRows = await this.sql<{ count: string }[]>`SELECT count(*) FROM knowledge_chunks`;
+    if (!countRows.length || Number(countRows[0].count) > 0) return; // Already seeded
 
     this.logger.log('Seeding knowledge chunks...');
     

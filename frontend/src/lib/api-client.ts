@@ -42,7 +42,10 @@ export async function apiFetch<T>(
 
   const body = await response.json().catch(() => ({}))
 
-  if (response.status === 401 && path !== '/auth/refresh' && path !== '/auth/login') {
+  let retried = false
+
+  if (response.status === 401 && path !== '/auth/refresh' && path !== '/auth/login' && !retried) {
+    retried = true
     try {
       const refreshResponse = await fetch(`${API_BASE}/auth/refresh`, {
         method: 'POST',
@@ -251,6 +254,18 @@ export const reviewAssetTransfer = (
   })
 
 export const importAssets = async (token: string, roomId: string, file: File) => {
+  const ALLOWED_TYPES = [
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    'application/vnd.ms-excel',
+  ]
+  const MAX_SIZE_MB = 10
+  if (!ALLOWED_TYPES.includes(file.type)) {
+    throw new ApiError('File harus berformat Excel (.xlsx atau .xls)', 400)
+  }
+  if (file.size > MAX_SIZE_MB * 1024 * 1024) {
+    throw new ApiError(`Ukuran file tidak boleh melebihi ${MAX_SIZE_MB}MB`, 400)
+  }
+
   const formData = new FormData()
   formData.append('file', file)
 

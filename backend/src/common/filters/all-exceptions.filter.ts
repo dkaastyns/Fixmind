@@ -41,6 +41,12 @@ export class AllExceptionsFilter implements ExceptionFilter {
       }
     } else if (exception instanceof Error) {
       this.logger.error(exception.message, exception.stack);
+      status = HttpStatus.INTERNAL_SERVER_ERROR;
+      message = 'Internal server error';
+    } else {
+      this.logger.error('Unknown non-Error exception thrown', String(exception));
+      status = HttpStatus.INTERNAL_SERVER_ERROR;
+      message = 'Internal server error';
     }
 
     response.status(status).json(errorResponse(message, errors));

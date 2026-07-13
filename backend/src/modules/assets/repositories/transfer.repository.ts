@@ -148,14 +148,32 @@ export class TransferRepository {
     sql: Sql = this.sql,
   ): Promise<AssetTransferRow | null> {
     const [row] = await sql<AssetTransferRow[]>`
-      UPDATE asset_transfers SET
-        status = ${status}::asset_transfer_status,
-        reviewed_by = ${reviewerId},
-        reviewed_at = now(),
-        reviewer_notes = ${notes ?? null},
-        updated_at = now()
-      WHERE id = ${id} AND status = 'PENDING'
-      RETURNING *
+      WITH updated AS (
+        UPDATE asset_transfers SET
+          status = ${status}::asset_transfer_status,
+          reviewed_by = ${reviewerId},
+          reviewed_at = now(),
+          reviewer_notes = ${notes ?? null},
+          updated_at = now()
+        WHERE id = ${id} AND status = 'PENDING'
+        RETURNING *
+      )
+      SELECT
+        u.*,
+        a.nama_barang AS asset_name,
+        a.kode_barang AS asset_kode,
+        fr.name AS from_room_name,
+        fr.code AS from_room_code,
+        tr.name AS to_room_name,
+        tr.code AS to_room_code,
+        req.full_name AS requester_name,
+        rv.full_name AS reviewer_name
+      FROM updated u
+      JOIN assets a ON a.id = u.asset_id
+      JOIN rooms fr ON fr.id = u.from_room_id
+      JOIN rooms tr ON tr.id = u.to_room_id
+      JOIN users req ON req.id = u.requester_id
+      LEFT JOIN users rv ON rv.id = u.reviewed_by
     `;
     return row ?? null;
   }
