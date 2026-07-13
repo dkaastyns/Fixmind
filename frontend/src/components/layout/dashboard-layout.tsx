@@ -18,6 +18,7 @@ import {
   WifiOff,
   ChevronLeft,
   ChevronRight,
+  AlertTriangle,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { logoutRequest } from '@/lib/api-client'
@@ -28,6 +29,7 @@ import { ChatWidget } from '@/components/ui/chat-widget'
 import { GlobalSearchModal } from '@/components/ui/global-search-modal'
 import type { UserRole } from '@/types/api'
 import { useOfflineSync } from '@/components/providers/offline-sync-provider'
+import { SyncResolutionModal } from '@/components/ui/sync-resolution-modal'
 
 const navItems: Array<{
   to: string
@@ -226,8 +228,10 @@ function SidebarContent({
 export function DashboardLayout() {
   const [mobileOpen, setMobileOpen] = useState(false)
   const [searchOpen, setSearchOpen] = useState(false)
+  const [syncModalOpen, setSyncModalOpen] = useState(false)
   const location = useLocation()
   const { isOnline, queueLength } = useOfflineSync()
+  const token = useAuthStore((s) => s.accessToken)!
 
   const [isCollapsed, setIsCollapsed] = useState(() => {
     const saved = localStorage.getItem('sidebar-collapsed')
@@ -311,14 +315,34 @@ export function DashboardLayout() {
             <div className="flex items-center gap-2">
               <WifiOff className="h-4 w-4 shrink-0 animate-bounce" />
               <span className="text-xs font-semibold">
-                Mode Offline: Anda sedang offline. Tindakan perubahan akan disimpan lokal dan disinkronkan saat kembali online.
+                Mode Offline: Anda sedang offline. Perubahan disimpan lokal dan disinkronkan saat online kembali.
               </span>
             </div>
             {queueLength > 0 && (
-              <span className="bg-amber-600/60 px-2 py-0.5 rounded-md text-[10px] font-extrabold uppercase shrink-0">
-                {queueLength} Tertunda
-              </span>
+              <button
+                onClick={() => setSyncModalOpen(true)}
+                className="bg-amber-600/50 hover:bg-amber-600/75 px-3 py-1 rounded-xl text-[10px] font-bold transition-all shrink-0"
+              >
+                Kelola Antrean ({queueLength})
+              </button>
             )}
+          </div>
+        )}
+
+        {isOnline && queueLength > 0 && (
+          <div className="mx-4 mt-4 flex items-center justify-between gap-3 bg-rose-500 text-white px-4 py-3 rounded-2xl shadow-md border border-rose-400/25">
+            <div className="flex items-center gap-2">
+              <AlertTriangle className="h-4 w-4 shrink-0 animate-pulse" />
+              <span className="text-xs font-semibold">
+                Sinkronisasi Tertunda: Ada {queueLength} tindakan yang mengalami konflik atau gagal disinkronkan.
+              </span>
+            </div>
+            <button
+              onClick={() => setSyncModalOpen(true)}
+              className="bg-white/20 hover:bg-white/30 px-3 py-1 rounded-xl text-[10px] font-extrabold uppercase shrink-0 transition-all"
+            >
+              Resolusi Konflik
+            </button>
           </div>
         )}
 
@@ -344,6 +368,12 @@ export function DashboardLayout() {
           <GlobalSearchModal isOpen={searchOpen} onClose={() => setSearchOpen(false)} />
         )}
       </AnimatePresence>
+
+      <SyncResolutionModal
+        isOpen={syncModalOpen}
+        onClose={() => setSyncModalOpen(false)}
+        token={token}
+      />
     </div>
   )
 }

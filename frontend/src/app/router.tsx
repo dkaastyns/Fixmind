@@ -4,6 +4,7 @@ import { AdminOnly } from '@/app/admin-only'
 import React, { Suspense } from 'react'
 import { PageTransition, PageTransitionSkeleton } from '@/components/ui/page-transition'
 import { GuestRoute, ProtectedRoute } from './router-guards'
+import { ErrorBoundary } from '@/components/ui/error-boundary'
 
 const LoginPage = React.lazy(() => import('@/features/auth/pages/login-page').then(m => ({ default: m.LoginPage })))
 const SignupPage = React.lazy(() => import('@/features/auth/pages/signup-page').then(m => ({ default: m.SignupPage })))
@@ -21,11 +22,13 @@ const ProfilePage = React.lazy(() => import('@/features/profile/pages/profile-pa
 const MaintenancePage = React.lazy(() => import('@/features/maintenance/pages/maintenance-page').then(m => ({ default: m.MaintenancePage })))
 
 const LazyPage = ({ children }: { children: React.ReactNode }) => (
-  <Suspense fallback={<PageTransitionSkeleton />}>
-    <PageTransition>
-      {children}
-    </PageTransition>
-  </Suspense>
+  <ErrorBoundary>
+    <Suspense fallback={<PageTransitionSkeleton />}>
+      <PageTransition>
+        {children}
+      </PageTransition>
+    </Suspense>
+  </ErrorBoundary>
 )
 
 export function AppRouter() {

@@ -1,4 +1,4 @@
-﻿import { cn } from '@/lib/utils'
+import { cn } from '@/lib/utils'
 
 const variants = {
   default: 'bg-danger/10 text-danger',
@@ -74,6 +74,9 @@ export function StatusBadge({ status }: { status: string }) {
     MEDIUM: 'bg-warning/15 text-warning',
     HIGH: 'bg-danger/15 text-danger',
     CRITICAL: 'bg-danger/20 text-danger',
+    SCHEDULED: 'bg-amber-500/15 text-amber-600',
+    DONE: 'bg-success/15 text-success',
+    OVERDUE: 'bg-danger/15 text-danger',
   }
 
   const labels: Record<string, string> = {
@@ -90,6 +93,9 @@ export function StatusBadge({ status }: { status: string }) {
     MEDIUM: 'Sedang',
     HIGH: 'Tinggi',
     CRITICAL: 'Kritis',
+    SCHEDULED: 'Terjadwal',
+    DONE: 'Selesai',
+    OVERDUE: 'Terlambat',
   }
 
   return (
