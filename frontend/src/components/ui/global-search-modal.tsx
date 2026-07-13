@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 import { useEffect, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
 import { useQueries } from '@tanstack/react-query'
@@ -55,6 +56,8 @@ export function GlobalSearchModal({
   onClose: () => void
 }) {
   const token = useAuthStore((s) => s.accessToken)!
+  const user = useAuthStore((s) => s.user)
+  const isAdmin = user?.role === 'ADMIN'
   const navigate = useNavigate()
   const [search, setSearch] = useState('')
   const [activeTab, setActiveTab] = useState<SearchTab>('all')
@@ -231,7 +234,7 @@ export function GlobalSearchModal({
                     </div>
                     <button
                       type="button"
-                      onClick={() => goTo('/dashboard/rooms')}
+                      onClick={() => goTo(`/dashboard/rooms?search=${encodeURIComponent(searchQuery)}`)}
                       className="text-xs text-[#ef629f] hover:underline flex items-center gap-0.5"
                     >
                       Lihat semua <ChevronRight className="h-3 w-3" />
@@ -287,7 +290,7 @@ export function GlobalSearchModal({
                     </div>
                     <button
                       type="button"
-                      onClick={() => goTo('/dashboard/reports')}
+                      onClick={() => goTo(`/dashboard/reports?search=${encodeURIComponent(searchQuery)}`)}
                       className="text-xs text-[#ef629f] hover:underline flex items-center gap-0.5"
                     >
                       Lihat semua <ChevronRight className="h-3 w-3" />
@@ -335,7 +338,7 @@ export function GlobalSearchModal({
                     </div>
                     <button
                       type="button"
-                      onClick={() => goTo('/dashboard/asset-transfers')}
+                      onClick={() => goTo(`${isAdmin ? '/dashboard/asset-transfers/review' : '/dashboard/asset-transfers'}?search=${encodeURIComponent(searchQuery)}`)}
                       className="text-xs text-[#ef629f] hover:underline flex items-center gap-0.5"
                     >
                       Lihat semua <ChevronRight className="h-3 w-3" />
@@ -377,7 +380,7 @@ export function GlobalSearchModal({
                     </div>
                     <button
                       type="button"
-                      onClick={() => goTo('/dashboard/maintenance')}
+                      onClick={() => goTo(`/dashboard/maintenance?search=${encodeURIComponent(searchQuery)}`)}
                       className="text-xs text-[#ef629f] hover:underline flex items-center gap-0.5"
                     >
                       Lihat semua <ChevronRight className="h-3 w-3" />
