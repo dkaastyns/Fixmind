@@ -21,7 +21,7 @@ export default function App() {
             <AppRouter />
           </OfflineSyncProvider>
         </SocketProvider>
-        <Toaster position="top-right" richColors closeButton />
+        <Toaster position="top-right" richColors closeButton visibleToasts={5} expand={true} />
       </AuthBootstrap>
     </QueryClientProvider>
   )

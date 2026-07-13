@@ -1,14 +1,16 @@
 import { useRef, useState } from 'react'
 import type { ReactNode } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { Link, useParams } from 'react-router-dom'
-import { ArrowLeft, MessageCircle, Reply, Send, ZoomIn, Loader2, Bot, CheckCircle2, ChevronDown, Save } from 'lucide-react'
+import { useParams } from 'react-router-dom'
+import { MessageCircle, Reply, Send, ZoomIn, Loader2, Bot, CheckCircle2, ChevronDown, Save } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { GlassCard } from '@/components/ui/glass-card'
 import { PageHeader, StatusBadge } from '@/components/ui/feedback'
 import { ImageLightbox } from '@/components/ui/image-lightbox'
+import { Breadcrumb } from '@/components/ui/breadcrumb'
+import { HelpTooltip } from '@/components/ui/help-tooltip'
 import {
   addComment,
   fetchComments,
@@ -65,9 +67,10 @@ export function ReportDetailPage() {
           onClose={() => setLightboxIndex(null)}
         />
       )}
-      <Link to="/dashboard/reports" className="inline-flex items-center gap-2 text-sm text-muted hover:text-foreground">
-        <ArrowLeft className="h-4 w-4" /> Kembali ke daftar laporan
-      </Link>
+      <Breadcrumb items={[
+        { label: 'Laporan Masalah', to: '/dashboard/reports' },
+        { label: `Detail: ${report.title.slice(0, 20)}${report.title.length > 20 ? '...' : ''}` }
+      ]} />
 
       <PageHeader title={report.title} description={`${report.roomCode} — ${report.roomName}`} />
 
@@ -131,7 +134,10 @@ export function ReportDetailPage() {
             >
               <div className="flex items-center gap-2 mb-3">
                 <CheckCircle2 className="h-4 w-4 text-[#ef629f]" />
-                <h3 className="font-semibold text-gradient">Analisis AI</h3>
+                <h3 className="font-semibold text-gradient flex items-center">
+                  Analisis AI
+                  <HelpTooltip text="Prioritas dan saran perbaikan dihasilkan otomatis oleh kecerdasan buatan (AI) berdasarkan riwayat dan kategori laporan." />
+                </h3>
               </div>
               <p className="mt-2 text-sm">{report.aiPriorityReason}</p>
               <p className="mt-2 text-sm"><strong>Rekomendasi:</strong> {report.aiRecommendation}</p>

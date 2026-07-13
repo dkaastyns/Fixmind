@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { MessageSquare, X, Send, Bot, User } from 'lucide-react'
 import { chatAi } from '@/lib/api-client'
@@ -11,6 +11,12 @@ interface Message {
 
 export function ChatWidget() {
   const [isOpen, setIsOpen] = useState(false)
+
+  useEffect(() => {
+    const handleToggle = () => setIsOpen(prev => !prev)
+    window.addEventListener('toggle-ai-chat-widget', handleToggle)
+    return () => window.removeEventListener('toggle-ai-chat-widget', handleToggle)
+  }, [])
   const [messages, setMessages] = useState<Message[]>([
     { role: 'assistant', text: 'Hai! Saya adalah asisten AI pemeliharaan Anda. Ada yang bisa saya bantu hari ini?' }
   ])

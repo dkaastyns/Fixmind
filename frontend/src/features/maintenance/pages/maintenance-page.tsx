@@ -23,6 +23,8 @@ import { GlassCard } from '@/components/ui/glass-card'
 import { AnimatedGlassCard } from '@/components/ui/animated-glass-card'
 import { PageHeader } from '@/components/ui/feedback'
 import { fetchRooms, fetchAssets } from '@/lib/api-client'
+import { Breadcrumb } from '@/components/ui/breadcrumb'
+import { HelpTooltip } from '@/components/ui/help-tooltip'
 import { CardSkeleton } from '@/components/ui/skeleton'
 import {
   fetchMaintenanceSchedules,
@@ -264,6 +266,7 @@ export function MaintenancePage() {
 
   return (
     <div className="space-y-6">
+      <Breadcrumb items={[{ label: 'Jadwal Pemeliharaan' }]} />
       {/* Header */}
       <PageHeader
         title="Jadwal Pemeliharaan Rutin"
@@ -653,7 +656,10 @@ export function MaintenancePage() {
 
                     {/* Frequency */}
                     <div className="space-y-1.5">
-                      <label htmlFor="maint-freq" className="text-xs font-semibold text-foreground/75">Frekuensi Pemeliharaan *</label>
+                      <label htmlFor="maint-freq" className="text-xs font-semibold text-foreground/75">
+                        Frekuensi Pemeliharaan *
+                        <HelpTooltip text="Periode pengulangan aktivitas pemeliharaan ini" />
+                      </label>
                       <select
                         id="maint-freq"
                         required
@@ -684,7 +690,10 @@ export function MaintenancePage() {
 
                     {/* Estimated cost */}
                     <div className="space-y-1.5">
-                      <label htmlFor="maint-cost" className="text-xs font-semibold text-foreground/75">Estimasi Biaya (Rupiah)</label>
+                      <label htmlFor="maint-cost" className="text-xs font-semibold text-foreground/75">
+                        Estimasi Biaya (Rupiah)
+                        <HelpTooltip text="Perkiraan biaya yang dikeluarkan untuk tindakan pemeliharaan ini" />
+                      </label>
                       <div className="relative">
                         <span className="absolute left-3 top-2.5 text-xs text-slate-500 font-semibold">Rp</span>
                         <input

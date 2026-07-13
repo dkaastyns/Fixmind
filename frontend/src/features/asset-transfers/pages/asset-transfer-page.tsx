@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button'
 import { GlassCard } from '@/components/ui/glass-card'
 import { EmptyState, PageHeader, StatusBadge } from '@/components/ui/feedback'
 import { ListSkeleton } from '@/components/ui/skeleton'
+import { Breadcrumb } from '@/components/ui/breadcrumb'
 import {
   createAssetTransfer,
   fetchAssetTransfers,
@@ -118,6 +119,7 @@ export function AssetTransferPage() {
   if (isAdmin) {
     return (
       <div className="space-y-6">
+        <Breadcrumb items={[{ label: 'Transfer Aset' }]} />
         <PageHeader
           title="Pemindahan Aset"
           description="Pindahkan aset antar ruangan secara instan dan kelola riwayat pemindahan Anda."
@@ -409,6 +411,7 @@ export function AssetTransferPage() {
 
   return (
     <div className="space-y-6">
+      <Breadcrumb items={[{ label: 'Transfer Aset' }]} />
       <PageHeader
         title="Pengajuan Pemindahan Aset"
         description="Ajukan perpindahan aset antar ruangan, lalu admin akan meninjau dan mengubah lokasi aset jika disetujui."

@@ -30,6 +30,7 @@ import { GlobalSearchModal } from '@/components/ui/global-search-modal'
 import type { UserRole } from '@/types/api'
 import { useOfflineSync } from '@/components/providers/offline-sync-provider'
 import { SyncResolutionModal } from '@/components/ui/sync-resolution-modal'
+import { FloatingActionButton } from '@/components/ui/floating-action-button'
 
 const navItems: Array<{
   to: string
@@ -361,6 +362,7 @@ export function DashboardLayout() {
         </main>
 
         <ChatWidget />
+        <FloatingActionButton />
       </div>
 
       <AnimatePresence>

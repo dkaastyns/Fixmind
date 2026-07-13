@@ -32,9 +32,11 @@ import {
   importAssets,
 } from '@/lib/api-client'
 import { useAuthStore } from '@/stores/auth-store'
-import { cn } from '@/lib/utils'
-import type { Room } from '@/types/api'
+import { cn, handleApiError } from '@/lib/utils'
+import type { Room, Asset } from '@/types/api'
 import { DeleteConfirmationModal } from '@/components/ui/delete-confirmation-modal'
+import { Breadcrumb } from '@/components/ui/breadcrumb'
+import { HelpTooltip } from '@/components/ui/help-tooltip'
 
 export function RoomsPage() {
   const token = useAuthStore((s) => s.accessToken)!
@@ -131,14 +133,47 @@ export function RoomsPage() {
     mutationFn: async (ids: string[]) => {
       await Promise.all(ids.map(id => deleteAsset(token, id)))
     },
-    onSuccess: () => { 
+    onSuccess: (_, ids) => { 
+      const deletedItems = ids
+        .map(id => assets.data?.data.find(a => a.id === id))
+        .filter((a): a is Asset => !!a)
+
       qc.invalidateQueries({ queryKey: ['assets'] })
       setSelectedAssetsToDelete([])
       setIsDeletingAssets(false)
       setShowConfirmAssetDelete(false)
-      toast.success('Aset terpilih berhasil dihapus') 
+      
+      toast.success('Aset terpilih berhasil dihapus', {
+        action: {
+          label: 'Urungkan',
+          onClick: () => {
+            toast.promise(
+              Promise.all(
+                deletedItems.map(item =>
+                  createAsset(token, {
+                    roomId: item.roomId,
+                    idpemda: item.idpemda,
+                    kodeBarang: item.kodeBarang,
+                    nomorRegister: item.nomorRegister,
+                    namaBarang: item.namaBarang,
+                    merkType: item.merkType,
+                  })
+                )
+              ),
+              {
+                loading: 'Mengembalikan aset...',
+                success: () => {
+                  qc.invalidateQueries({ queryKey: ['assets'] })
+                  return 'Aset berhasil dikembalikan!'
+                },
+                error: 'Gagal mengembalikan aset.',
+              }
+            )
+          }
+        }
+      })
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: (e: Error) => handleApiError(e),
   })
 
   const importAssetsMut = useMutation({
@@ -195,6 +230,7 @@ export function RoomsPage() {
 
   return (
     <div className="space-y-6">
+      <Breadcrumb items={[{ label: 'Fasilitas & Ruangan' }]} />
       <PageHeader
         title="Fasilitas & Ruangan DPRD"
         description="Daftar ruangan dan fasilitas yang tersedia untuk pelaporan dan inventarisasi."
@@ -926,7 +962,10 @@ function AssetFormModal({
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <label htmlFor="asset-idpemda" className="text-xs font-semibold text-slate-600">ID Pemda *</label>
+                  <label htmlFor="asset-idpemda" className="text-xs font-semibold text-slate-600">
+                    ID Pemda *
+                    <HelpTooltip text="Nomor identifikasi aset milik Pemerintah Daerah" />
+                  </label>
                   <Input 
                     id="asset-idpemda"
                     placeholder="Contoh: 12.01.03.04" 
@@ -936,7 +975,10 @@ function AssetFormModal({
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <label htmlFor="asset-code" className="text-xs font-semibold text-slate-600">Kode Barang *</label>
+                  <label htmlFor="asset-code" className="text-xs font-semibold text-slate-600">
+                    Kode Barang *
+                    <HelpTooltip text="Kode klasifikasi kategori barang inventaris" />
+                  </label>
                   <Input 
                     id="asset-code"
                     placeholder="Contoh: 3.05.01.02.002" 

@@ -10,6 +10,8 @@ import { Button } from '@/components/ui/button'
 import { GlassCard } from '@/components/ui/glass-card'
 import { EmptyState, PageHeader, StatusBadge } from '@/components/ui/feedback'
 import { TableSkeleton } from '@/components/ui/skeleton'
+import { Breadcrumb } from '@/components/ui/breadcrumb'
+import { HelpTooltip } from '@/components/ui/help-tooltip'
 import {
   createReport,
   fetchReports,
@@ -45,6 +47,12 @@ export function ReportsPage() {
       setShowForm(true)
     }
   }, [searchParams])
+
+  useEffect(() => {
+    const handleOpenModal = () => setShowForm(true)
+    window.addEventListener('open-report-create-modal', handleOpenModal)
+    return () => window.removeEventListener('open-report-create-modal', handleOpenModal)
+  }, [])
 
   useEffect(() => {
     const q = searchParams.get('search') ?? ''
@@ -95,6 +103,7 @@ export function ReportsPage() {
 
   return (
     <div>
+      <Breadcrumb items={[{ label: 'Laporan Masalah' }]} />
       <PageHeader
         title="Laporan Masalah"
         description="Lacak dan kelola laporan kerusakan fasilitas DPRD Kota Semarang"
@@ -502,7 +511,10 @@ function CreateReportForm({
             </div>
             
             <div className="space-y-1.5">
-              <label htmlFor="report-room" className="text-xs font-semibold text-foreground/75">Ruangan / Fasilitas</label>
+              <label htmlFor="report-room" className="text-xs font-semibold text-foreground/75">
+                Ruangan / Fasilitas
+                <HelpTooltip text="Lokasi ruangan tempat fasilitas yang bermasalah berada" />
+              </label>
               <select
                 id="report-room"
                 className="flex h-10 w-full rounded-xl border border-slate-200 bg-white/70 px-3.5 text-sm shadow-sm transition-all focus:border-[#ef629f]/50 focus:bg-white focus:outline-none focus:ring-4 focus:ring-[#ef629f]/10"
@@ -517,7 +529,10 @@ function CreateReportForm({
             </div>
             
             <div className="space-y-1.5">
-              <label htmlFor="report-asset" className="text-xs font-semibold text-foreground/75">Aset (Opsional)</label>
+              <label htmlFor="report-asset" className="text-xs font-semibold text-foreground/75">
+                Aset (Opsional)
+                <HelpTooltip text="Aset spesifik di dalam ruangan yang mengalami kerusakan" />
+              </label>
               <select
                 id="report-asset"
                 className="flex h-10 w-full rounded-xl border border-slate-200 bg-white/70 px-3.5 text-sm shadow-sm transition-all focus:border-[#ef629f]/50 focus:bg-white focus:outline-none focus:ring-4 focus:ring-[#ef629f]/10 disabled:opacity-50"
