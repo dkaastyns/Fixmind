@@ -14,7 +14,12 @@ import type {
   AssetTransferStatus,
 } from '../../../common/types/database-rows';
 import { RoomsRepository } from '../../rooms/repositories/rooms.repository';
-import { CreateAssetDto, CreateAssetTransferDto, ReviewAssetTransferDto, UpdateAssetDto } from '../dto/asset.dto';
+import {
+  CreateAssetDto,
+  CreateAssetTransferDto,
+  ReviewAssetTransferDto,
+  UpdateAssetDto,
+} from '../dto/asset.dto';
 import { AssetsRepository } from '../repositories/assets.repository';
 import { TransferRepository } from '../repositories/transfer.repository';
 
@@ -70,14 +75,22 @@ export class AssetsService {
 
   async list(page = 1, limit = 50, roomId?: string, search?: string) {
     if (search?.trim()) {
-      const rows = await this.assetsRepository.search({ query: search, limit });
+      const { rows, total } = await this.assetsRepository.search({
+        query: search,
+        limit,
+        page,
+      });
       return {
         data: rows.map((r) => this.toPublic(r)),
-        meta: { page, limit, total: rows.length },
+        meta: { page, limit, total },
       };
     }
 
-    const { rows, total } = await this.assetsRepository.list({ page, limit, roomId });
+    const { rows, total } = await this.assetsRepository.list({
+      page,
+      limit,
+      roomId,
+    });
 
     return {
       data: rows.map((r) => this.toPublic(r)),
@@ -117,33 +130,30 @@ export class AssetsService {
       if (!room) throw new NotFoundException('Room not found');
     }
 
+    // Merge current values with dto so the repository does not need a findById
     const asset = await this.assetsRepository.update(id, {
-      room_id: dto.roomId,
-      idpemda: dto.idpemda,
-      kode_barang: dto.kodeBarang,
-      nomor_register: dto.nomorRegister,
-      nama_barang: dto.namaBarang,
-      merk_type: dto.merkType,
-      status: dto.status,
+      room_id: dto.roomId ?? oldAsset.room_id,
+      idpemda: dto.idpemda ?? oldAsset.idpemda,
+      kode_barang: dto.kodeBarang ?? oldAsset.kode_barang,
+      nomor_register: dto.nomorRegister ?? oldAsset.nomor_register,
+      nama_barang: dto.namaBarang ?? oldAsset.nama_barang,
+      merk_type: dto.merkType ?? oldAsset.merk_type,
+      status: dto.status ?? oldAsset.status,
     });
     if (!asset) throw new NotFoundException('Asset not found');
 
     if (roomChanged) {
-      try {
-        await this.transferRepository.create({
-          assetId: id,
-          requesterId: user.id,
-          fromRoomId: oldAsset.room_id,
-          toRoomId: dto.roomId!,
-          reason: 'Dipindahkan langsung oleh Admin',
-          status: 'APPROVED',
-          reviewedBy: user.id,
-          reviewedAt: new Date(),
-          reviewerNotes: 'Otomatis disetujui melalui pemindahan instan Admin',
-        });
-      } catch (e) {
-        // Ignored
-      }
+      await this.transferRepository.create({
+        assetId: id,
+        requesterId: user.id,
+        fromRoomId: oldAsset.room_id,
+        toRoomId: dto.roomId!,
+        reason: 'Dipindahkan langsung oleh Admin',
+        status: 'APPROVED',
+        reviewedBy: user.id,
+        reviewedAt: new Date(),
+        reviewerNotes: 'Otomatis disetujui melalui pemindahan instan Admin',
+      });
     }
 
     return this.toPublic(asset);
@@ -163,7 +173,8 @@ export class AssetsService {
     mineOnly = false,
     search?: string,
   ) {
-    const requesterId = user.role === 'ADMIN' && !mineOnly ? undefined : user.id;
+    const requesterId =
+      user.role === 'ADMIN' && !mineOnly ? undefined : user.id;
     const { rows, total } = await this.transferRepository.list({
       page,
       limit,
@@ -196,12 +207,16 @@ export class AssetsService {
     if (!toRoom) throw new NotFoundException('Target room not found');
 
     if (asset.room_id === dto.toRoomId) {
-      throw new BadRequestException('Target room must be different from current room');
+      throw new BadRequestException(
+        'Target room must be different from current room',
+      );
     }
 
     const pending = await this.transferRepository.hasPending(dto.assetId);
     if (pending) {
-      throw new BadRequestException('Asset already has a pending transfer request');
+      throw new BadRequestException(
+        'Asset already has a pending transfer request',
+      );
     }
 
     try {
@@ -216,13 +231,19 @@ export class AssetsService {
       return this.toTransferPublic(detail ?? transfer);
     } catch (error) {
       if (this.isUniqueViolation(error)) {
-        throw new BadRequestException('Asset already has a pending transfer request');
+        throw new BadRequestException(
+          'Asset already has a pending transfer request',
+        );
       }
       throw error;
     }
   }
 
-  async reviewTransfer(user: AuthUser, id: string, dto: ReviewAssetTransferDto) {
+  async reviewTransfer(
+    user: AuthUser,
+    id: string,
+    dto: ReviewAssetTransferDto,
+  ) {
     const transfer = await this.transferRepository.findById(id);
     if (!transfer) throw new NotFoundException('Transfer not found');
     if (transfer.status !== 'PENDING') {
@@ -230,13 +251,23 @@ export class AssetsService {
     }
 
     const updated = await this.sql.begin(async (tx) => {
-      const reviewed = await this.transferRepository.review(id, user.id, dto.decision, dto.notes, tx as unknown as Sql);
+      const reviewed = await this.transferRepository.review(
+        id,
+        user.id,
+        dto.decision,
+        dto.notes,
+        tx as unknown as Sql,
+      );
       if (!reviewed) {
         throw new BadRequestException('Transfer has already been reviewed');
       }
 
       if (dto.decision === 'APPROVED') {
-        const moved = await this.assetsRepository.moveToRoom(reviewed.asset_id, reviewed.to_room_id, tx as unknown as Sql);
+        const moved = await this.assetsRepository.moveToRoom(
+          reviewed.asset_id,
+          reviewed.to_room_id,
+          tx as unknown as Sql,
+        );
         if (!moved) {
           throw new NotFoundException('Asset not found');
         }
@@ -252,12 +283,16 @@ export class AssetsService {
   async importExcel(roomId: string, file?: Express.Multer.File) {
     const room = await this.roomsRepository.findById(roomId);
     if (!room) throw new NotFoundException('Room not found');
-    if (!file?.buffer?.length) throw new BadRequestException('Excel file is required');
+    if (!file?.buffer?.length)
+      throw new BadRequestException('Excel file is required');
 
     const workbook = new ExcelJS.Workbook();
-    await workbook.xlsx.load(file.buffer as unknown as Parameters<typeof workbook.xlsx.load>[0]);
+    await workbook.xlsx.load(
+      file.buffer as unknown as Parameters<typeof workbook.xlsx.load>[0],
+    );
     const worksheet = workbook.worksheets[0];
-    if (!worksheet) throw new BadRequestException('Excel file does not contain a worksheet');
+    if (!worksheet)
+      throw new BadRequestException('Excel file does not contain a worksheet');
 
     const headerRow = worksheet.getRow(1);
     const headers = new Map<string, number>();
@@ -265,7 +300,13 @@ export class AssetsService {
       headers.set(this.normalizeHeader(cell.text), colNumber);
     });
 
-    const required = ['idpemda', 'kode_barang', 'nomor_register', 'nama_barang', 'merk_type'];
+    const required = [
+      'idpemda',
+      'kode_barang',
+      'nomor_register',
+      'nama_barang',
+      'merk_type',
+    ];
     const missing = required.filter((name) => !headers.has(name));
     if (missing.length) {
       throw new BadRequestException(`Missing columns: ${missing.join(', ')}`);
@@ -305,13 +346,16 @@ export class AssetsService {
         .filter(([key, value]) => key !== 'roomId' && !value.trim())
         .map(([key]) => key);
       if (missingFields.length) {
-        throw new BadRequestException(`Row ${rowNumber} missing: ${missingFields.join(', ')}`);
+        throw new BadRequestException(
+          `Row ${rowNumber} missing: ${missingFields.join(', ')}`,
+        );
       }
 
       rows.push(item);
     });
 
-    if (!rows.length) throw new BadRequestException('No asset rows found in Excel file');
+    if (!rows.length)
+      throw new BadRequestException('No asset rows found in Excel file');
 
     const imported = await this.assetsRepository.upsertMany(rows);
     return {
@@ -389,14 +433,18 @@ export class AssetsService {
       ['PANDUAN IMPORT ASET - E-LAPOR DPRD KOTA SEMARANG'],
       [''],
       ['Kolom yang wajib diisi:'],
-      ['1. idpemda       - ID Pemda / Kode aset dari Pemkot (contoh: 1.3.2.01.10.001)'],
+      [
+        '1. idpemda       - ID Pemda / Kode aset dari Pemkot (contoh: 1.3.2.01.10.001)',
+      ],
       ['2. kode_barang   - Kode Barang singkat unik (contoh: KMP-001)'],
       ['3. nomor_register - Nomor Register barang (contoh: REG-2024-001)'],
       ['4. nama_barang   - Nama lengkap barang (contoh: Kursi Pimpinan)'],
       ['5. merk_type     - Merk dan Type barang (contoh: Chitose / Type-A)'],
       [''],
       ['Catatan:'],
-      ['- Baris pertama (header) harus menggunakan nama kolom persis seperti di atas.'],
+      [
+        '- Baris pertama (header) harus menggunakan nama kolom persis seperti di atas.',
+      ],
       ['- Tidak boleh ada baris kosong di tengah data.'],
       ['- Jika kode_barang sudah ada, data akan diperbarui (upsert).'],
       ['- Hapus baris contoh (baris ke-2) sebelum mengisi data sebenarnya.'],
@@ -405,7 +453,11 @@ export class AssetsService {
       const r = guide.getRow(i + 1);
       r.getCell(1).value = row[0];
       if (i === 0) {
-        r.getCell(1).font = { bold: true, size: 13, color: { argb: 'FFEF629F' } };
+        r.getCell(1).font = {
+          bold: true,
+          size: 13,
+          color: { argb: 'FFEF629F' },
+        };
       } else if (i === 2) {
         r.getCell(1).font = { bold: true };
       }
@@ -446,9 +498,27 @@ export class AssetsService {
     if (!colNumber) return '';
     const value = row.getCell(colNumber).value;
     if (value == null) return '';
-    if (typeof value === 'object' && 'text' in value) return String(value.text).trim();
-    if (typeof value === 'object' && 'result' in value) return String(value.result ?? '').trim();
-    return String(value).trim();
+    if (typeof value === 'object' && 'text' in value)
+      return String((value as { text: unknown }).text).trim();
+    if (typeof value === 'object' && 'result' in value) {
+      const formula = value as { result?: unknown };
+      const r = formula.result;
+      if (r == null) return '';
+      if (
+        typeof r === 'string' ||
+        typeof r === 'number' ||
+        typeof r === 'boolean'
+      )
+        return String(r).trim();
+      return '';
+    }
+    if (
+      typeof value === 'string' ||
+      typeof value === 'number' ||
+      typeof value === 'boolean'
+    )
+      return String(value).trim();
+    return '';
   }
 
   private assertCanViewTransfer(user: AuthUser, transfer: AssetTransferRow) {
@@ -458,7 +528,11 @@ export class AssetsService {
   }
 
   private isUniqueViolation(error: unknown) {
-    return typeof error === 'object' && error !== null && 'code' in error && (error as { code?: string }).code === '23505';
+    return (
+      typeof error === 'object' &&
+      error !== null &&
+      'code' in error &&
+      (error as { code?: string }).code === '23505'
+    );
   }
 }
-

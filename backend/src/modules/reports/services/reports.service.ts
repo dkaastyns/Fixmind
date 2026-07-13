@@ -6,14 +6,14 @@ import {
 } from '@nestjs/common';
 import type { AuthUser } from '../../../common/decorators/current-user.decorator';
 import type { ReportListRow } from '../repositories/reports.repository';
-import type { ReportRow, ReportStatus } from '../../../common/types/database-rows';
+import type {
+  ReportRow,
+  ReportStatus,
+} from '../../../common/types/database-rows';
 import { PriorityEngineService } from '../../ai/services/priority-engine.service';
 import { AssetsRepository } from '../../assets/repositories/assets.repository';
 import { RoomsRepository } from '../../rooms/repositories/rooms.repository';
-import {
-  CreateReportDto,
-  UpdateReportStatusDto,
-} from '../dto/report.dto';
+import { CreateReportDto, UpdateReportStatusDto } from '../dto/report.dto';
 import { CloudinaryService } from '../../cloudinary/services/cloudinary.service';
 import { NotificationsGateway } from '../../notifications/notifications.gateway';
 import { ReportsRepository } from '../repositories/reports.repository';
@@ -29,7 +29,10 @@ export class ReportsService {
     private readonly notificationsGateway: NotificationsGateway,
   ) {}
 
-  toPublic(row: ReportListRow | ReportRow, extras?: { histories?: unknown[]; attachments?: unknown[] }) {
+  toPublic(
+    row: ReportListRow | ReportRow,
+    extras?: { histories?: unknown[]; attachments?: unknown[] },
+  ) {
     const isDetail = 'room_name' in row;
     return {
       id: row.id,
@@ -37,7 +40,9 @@ export class ReportsService {
       description: row.description,
       status: row.status,
       priority: row.priority,
-      aiPriorityScore: row.ai_priority_score ? Number(row.ai_priority_score) : null,
+      aiPriorityScore: row.ai_priority_score
+        ? Number(row.ai_priority_score)
+        : null,
       aiPriorityReason: row.ai_priority_reason,
       aiRecommendation: row.ai_recommendation,
       aiEstimatedRepairHours: row.ai_estimated_repair_hours
@@ -98,7 +103,12 @@ export class ReportsService {
     if (!report) throw new NotFoundException('Report not found');
     this.assertCanView(user, report);
 
-    const histories = await this.reportsRepository.getHistories(id);
+    // Fetch histories and attachments in parallel
+    const [histories, attachments] = await Promise.all([
+      this.reportsRepository.getHistories(id),
+      this.reportsRepository.getAttachments(id),
+    ]);
+
     return this.toPublic(report, {
       histories: histories.map((h) => ({
         id: h.id,
@@ -108,7 +118,7 @@ export class ReportsService {
         note: h.note,
         createdAt: h.created_at,
       })),
-      attachments: await this.reportsRepository.getAttachments(id),
+      attachments,
     });
   }
 
@@ -149,15 +159,22 @@ export class ReportsService {
   }
 
   async updateStatus(user: AuthUser, id: string, dto: UpdateReportStatusDto) {
+    // Single findById to get current state for validation and history tracking
     const report = await this.reportsRepository.findById(id);
     if (!report) throw new NotFoundException('Report not found');
 
     const completedAt =
       dto.status === 'COMPLETED' ? new Date() : report.completed_at;
 
-    const updated = await this.reportsRepository.updateStatus(id, dto.status, {
-      completedAt,
-    });
+    // Pass current report to avoid a second findById inside the repository
+    const updated = await this.reportsRepository.updateStatus(
+      id,
+      dto.status,
+      report,
+      {
+        completedAt,
+      },
+    );
     if (!updated) throw new NotFoundException('Report not found');
 
     await this.reportsRepository.addHistory({
@@ -169,31 +186,43 @@ export class ReportsService {
       note: dto.note,
     });
 
-    const detail = await this.reportsRepository.findDetail(id);
-    const result = this.toPublic(detail ?? updated);
+    // updateStatus now returns ReportListRow (with JOIN data) — no extra findDetail needed
+    const result = this.toPublic(updated);
 
     this.notificationsGateway.notifyAdmins('report.updated', result);
-    this.notificationsGateway.notifyUser(result.reporterId, 'report.updated', result);
+    this.notificationsGateway.notifyUser(
+      result.reporterId,
+      'report.updated',
+      result,
+    );
 
     return result;
   }
 
-  async uploadAttachment(user: AuthUser, reportId: string, file: Express.Multer.File, type: string) {
+  async uploadAttachment(
+    user: AuthUser,
+    reportId: string,
+    file: Express.Multer.File,
+    type: string,
+  ) {
     const report = await this.reportsRepository.findById(reportId);
     if (!report) throw new NotFoundException('Report not found');
-    
+
     // Authorization check
     if (user.role === 'USER' && report.reporter_id !== user.id) {
       throw new ForbiddenException('Not your report');
     }
 
-
-    const currentAttachments = await this.reportsRepository.getAttachments(reportId);
+    const currentAttachments =
+      await this.reportsRepository.getAttachments(reportId);
     if (currentAttachments.length >= 3) {
       throw new BadRequestException('Maximum 3 photos allowed per report');
     }
 
-    const uploadResult = await this.cloudinaryService.uploadImage(file, 'fixmind/reports');
+    const uploadResult = (await this.cloudinaryService.uploadImage(
+      file,
+      'fixmind/reports',
+    )) as { public_id: string; secure_url: string };
 
     await this.reportsRepository.addAttachment({
       reportId: report.id,
@@ -234,7 +263,9 @@ export class ReportsService {
       });
 
       if (!result) {
-        await this.reportsRepository.updateAiFields(reportId, { aiAnalysisStatus: 'FAILED' });
+        await this.reportsRepository.updateAiFields(reportId, {
+          aiAnalysisStatus: 'FAILED',
+        });
         return;
       }
 
@@ -244,7 +275,9 @@ export class ReportsService {
         aiPriorityReason: result.reason,
         aiRecommendation: result.recommendation,
         aiEstimatedRepairHours: result.estimatedRepairHours,
-        aiSuggestedTargetDate: result.suggestedTargetDate ? new Date(result.suggestedTargetDate) : undefined,
+        aiSuggestedTargetDate: result.suggestedTargetDate
+          ? new Date(result.suggestedTargetDate)
+          : undefined,
         aiSuggestedAction: result.suggestedAction,
         aiAnalysisStatus: 'COMPLETED',
       });
@@ -256,7 +289,9 @@ export class ReportsService {
         metadata: { score: result.score },
       });
     } catch {
-      await this.reportsRepository.updateAiFields(reportId, { aiAnalysisStatus: 'FAILED' });
+      await this.reportsRepository.updateAiFields(reportId, {
+        aiAnalysisStatus: 'FAILED',
+      });
     }
   }
 
@@ -269,7 +304,17 @@ export class ReportsService {
       throw new ForbiddenException('Access denied');
     }
 
-    const comment = await this.reportsRepository.addComment(reportId, user.id, content);
+    const comment = (await this.reportsRepository.addComment(
+      reportId,
+      user.id,
+      content,
+    )) as {
+      id: string;
+      report_id: string;
+      author_id: string;
+      content: string;
+      created_at: Date;
+    };
     return {
       id: comment.id,
       reportId: comment.report_id,
@@ -287,7 +332,18 @@ export class ReportsService {
       throw new ForbiddenException('Access denied');
     }
 
-    const comments = await this.reportsRepository.getComments(reportId);
+    type CommentRow = {
+      id: string;
+      report_id: string;
+      author_id: string;
+      author_name: string;
+      author_role: string;
+      content: string;
+      created_at: Date;
+    };
+    const comments = (await this.reportsRepository.getComments(
+      reportId,
+    )) as CommentRow[];
     return comments.map((c) => ({
       id: c.id,
       reportId: c.report_id,
@@ -299,8 +355,39 @@ export class ReportsService {
     }));
   }
 
-  async exportAllForExcel(startDate?: string, endDate?: string) {
-    return this.reportsRepository.list({ page: 1, limit: 100000, startDate, endDate });
+  /**
+   * Stream all reports for Excel/PDF export in batches of 1000 rows.
+   * Yields each batch to avoid loading the entire dataset into memory at once.
+   */
+  async *streamForExport(
+    startDate?: string,
+    endDate?: string,
+  ): AsyncGenerator<
+    ReturnType<ReportsRepository['list']> extends Promise<infer T>
+      ? T extends { rows: infer R }
+        ? R extends Array<infer I>
+          ? I
+          : never
+        : never
+      : never
+  > {
+    const BATCH_SIZE = 1000;
+    let page = 1;
+
+    while (true) {
+      const { rows } = await this.reportsRepository.list({
+        page,
+        limit: BATCH_SIZE,
+        startDate,
+        endDate,
+      });
+
+      for (const row of rows) {
+        yield row;
+      }
+
+      if (rows.length < BATCH_SIZE) break;
+      page++;
+    }
   }
 }
-
