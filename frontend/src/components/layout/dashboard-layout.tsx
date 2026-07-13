@@ -16,8 +16,8 @@ import {
   Wrench,
   X,
   WifiOff,
-  ChevronLeft,
-  ChevronRight,
+  PanelLeftClose,
+  PanelLeftOpen,
   AlertTriangle,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -155,9 +155,9 @@ function SidebarContent({
             onClick={onToggleCollapse}
           >
             {isCollapsed ? (
-              <ChevronRight className="h-4 w-4 shrink-0" />
+              <PanelLeftOpen className="h-4 w-4 shrink-0 text-slate-500 hover:text-slate-700 transition-transform duration-200 hover:scale-110" />
             ) : (
-              <ChevronLeft className="h-4 w-4 shrink-0" />
+              <PanelLeftClose className="h-4 w-4 shrink-0 text-slate-500 hover:text-slate-700 transition-transform duration-200 hover:scale-110" />
             )}
             {!isCollapsed && "Sembunyikan Menu"}
             {isCollapsed && (
