@@ -71,11 +71,15 @@ export class ReportsRepository {
     const offset = (params.page - 1) * params.limit;
     const q = params.search?.trim() ? `%${params.search.trim()}%` : null;
 
-    const rows = await this.sql<ReportListRow[]>`
+    // Single query using COUNT(*) OVER() window function to avoid duplicate WHERE clause.
+    // The CTE pattern is not supported cleanly with the postgres.js tagged template
+    // so we use a subquery with window function instead.
+    const result = await this.sql<(ReportListRow & { total_count: string })[]>`
       SELECT r.*,
         rm.name AS room_name, rm.code AS room_code,
         a.nama_barang AS asset_name,
-        u.full_name AS reporter_name
+        u.full_name AS reporter_name,
+        COUNT(*) OVER() AS total_count
       FROM reports r
       JOIN rooms rm ON rm.id = r.room_id
       JOIN users u ON u.id = r.reporter_id
@@ -108,39 +112,8 @@ export class ReportsRepository {
       LIMIT ${params.limit} OFFSET ${offset}
     `;
 
-    const [{ count }] = await this.sql<{ count: string }[]>`
-      SELECT COUNT(*)::text AS count
-      FROM reports r
-      JOIN rooms rm ON rm.id = r.room_id
-      JOIN users u ON u.id = r.reporter_id
-      LEFT JOIN assets a ON a.id = r.asset_id
-      WHERE r.deleted_at IS NULL
-        ${params.reporterId ? this.sql`AND r.reporter_id = ${params.reporterId}` : this.sql``}
-        ${params.status ? this.sql`AND r.status = ${params.status}` : this.sql``}
-        ${params.roomId ? this.sql`AND r.room_id = ${params.roomId}` : this.sql``}
-        ${params.startDate ? this.sql`AND r.created_at >= ${params.startDate}` : this.sql``}
-        ${params.endDate ? this.sql`AND r.created_at <= ${params.endDate}::timestamp + interval '1 day' - interval '1 millisecond'` : this.sql``}
-        ${
-          q
-            ? this.sql`
-          AND (
-            r.title ILIKE ${q}
-            OR COALESCE(r.description, '') ILIKE ${q}
-            OR COALESCE(rm.name, '') ILIKE ${q}
-            OR COALESCE(rm.code, '') ILIKE ${q}
-            OR COALESCE(a.nama_barang, '') ILIKE ${q}
-            OR COALESCE(a.kode_barang, '') ILIKE ${q}
-            OR COALESCE(u.full_name, '') ILIKE ${q}
-            OR r.status::text ILIKE ${q}
-            OR r.priority::text ILIKE ${q}
-            OR to_char(r.created_at, 'YYYY-MM-DD') ILIKE ${q}
-          )
-        `
-            : this.sql``
-        }
-    `;
-
-    return { rows, total: Number(count) };
+    const total = result.length > 0 ? Number(result[0].total_count) : 0;
+    return { rows: result as ReportListRow[], total };
   }
 
   async create(data: {
@@ -158,29 +131,42 @@ export class ReportsRepository {
     return row;
   }
 
+  /**
+   * Update report status. Accepts explicit values for all optional fields so
+   * callers do not need a prior findById round-trip — they should pass the
+   * current values from an already-fetched report.
+   */
   async updateStatus(
     id: string,
     status: ReportStatus,
+    current: ReportRow,
     extra?: {
       completedAt?: Date | null;
       targetCompletionDate?: Date | null;
       adminNotes?: string;
       priority?: ReportPriority;
     },
-  ): Promise<ReportRow | null> {
-    const existing = await this.findById(id);
-    if (!existing) return null;
-
-    const [row] = await this.sql<ReportRow[]>`
-      UPDATE reports SET
-        status = ${status},
-        completed_at = ${extra?.completedAt !== undefined ? extra.completedAt : existing.completed_at},
-        target_completion_date = ${extra?.targetCompletionDate !== undefined ? extra.targetCompletionDate : existing.target_completion_date},
-        admin_notes = ${extra?.adminNotes !== undefined ? extra.adminNotes : existing.admin_notes},
-        priority = ${extra?.priority !== undefined ? extra.priority : existing.priority},
-        updated_at = now()
-      WHERE id = ${id} AND deleted_at IS NULL
-      RETURNING *
+  ): Promise<ReportListRow | null> {
+    const [row] = await this.sql<ReportListRow[]>`
+      WITH updated AS (
+        UPDATE reports SET
+          status = ${status},
+          completed_at = ${extra?.completedAt !== undefined ? extra.completedAt : current.completed_at},
+          target_completion_date = ${extra?.targetCompletionDate !== undefined ? extra.targetCompletionDate : current.target_completion_date},
+          admin_notes = ${extra?.adminNotes !== undefined ? extra.adminNotes : current.admin_notes},
+          priority = ${extra?.priority !== undefined ? extra.priority : current.priority},
+          updated_at = now()
+        WHERE id = ${id} AND deleted_at IS NULL
+        RETURNING *
+      )
+      SELECT u.*,
+        rm.name AS room_name, rm.code AS room_code,
+        a.nama_barang AS asset_name,
+        usr.full_name AS reporter_name
+      FROM updated u
+      JOIN rooms rm ON rm.id = u.room_id
+      JOIN users usr ON usr.id = u.reporter_id
+      LEFT JOIN assets a ON a.id = u.asset_id
     `;
     return row ?? null;
   }

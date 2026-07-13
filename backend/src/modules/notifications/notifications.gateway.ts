@@ -3,14 +3,14 @@ import {
   WebSocketServer,
   OnGatewayConnection,
   OnGatewayDisconnect,
-  SubscribeMessage,
-  MessageBody,
-  ConnectedSocket,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { Injectable, Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
+
+/** Socket.IO room name for all connected admin clients. */
+const ADMIN_ROOM = 'admins';
 
 @Injectable()
 @WebSocketGateway({
@@ -18,53 +18,73 @@ import { ConfigService } from '@nestjs/config';
     origin: '*',
   },
 })
-export class NotificationsGateway implements OnGatewayConnection, OnGatewayDisconnect {
+export class NotificationsGateway
+  implements OnGatewayConnection, OnGatewayDisconnect
+{
   @WebSocketServer()
   server: Server;
 
   private readonly logger = new Logger(NotificationsGateway.name);
-  private userSockets = new Map<string, string[]>(); // userId -> socketIds[]
-  private adminSockets = new Set<string>();
+
+  /** userId → socketIds[] map — kept for per-user targeting and cleanup */
+  private userSockets = new Map<string, string[]>();
+
+  private readonly jwtSecret: string;
 
   constructor(
     private readonly jwtService: JwtService,
-    private readonly config: ConfigService
-  ) {}
+    config: ConfigService,
+  ) {
+    // Cache JWT secret at startup instead of fetching on every connection
+    this.jwtSecret = config.get<string>('JWT_ACCESS_SECRET') ?? '';
+  }
 
   async handleConnection(client: Socket) {
     try {
-      const token = client.handshake.auth.token || client.handshake.headers.authorization?.split(' ')[1];
+      const token =
+        (client.handshake.auth as Record<string, string>).token ||
+        client.handshake.headers.authorization?.split(' ')[1];
+
       if (!token) {
         client.disconnect();
         return;
       }
 
-      const secret = this.config.get<string>('JWT_ACCESS_SECRET');
-      const decoded = this.jwtService.verify(token, { secret });
-      const userId = decoded.sub;
-      const role = decoded.role;
+      /* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access */
+      const decoded = this.jwtService.verify(token, {
+        secret: this.jwtSecret,
+      });
+      const userId: string = decoded.sub as string;
+      const role: string = decoded.role as string;
+      /* eslint-enable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access */
 
-      // Map user ID to socket
-      const userConns = this.userSockets.get(userId) || [];
+      // Track per-user socket IDs for targeted notifications
+      const userConns = this.userSockets.get(userId) ?? [];
       userConns.push(client.id);
       this.userSockets.set(userId, userConns);
 
+      // Join the shared admin room so broadcasts are O(1) instead of O(n)
       if (role === 'ADMIN') {
-        this.adminSockets.add(client.id);
+        await client.join(ADMIN_ROOM);
       }
 
-      client.data.user = { id: userId, role };
-      this.logger.log(`Client connected: ${client.id} (User: ${userId}, Role: ${role})`);
+      (client.data as Record<string, unknown>).user = { id: userId, role };
+      this.logger.log(
+        `Client connected: ${client.id} (User: ${userId}, Role: ${role})`,
+      );
     } catch (error) {
-      this.logger.error(`Connection failed: ${error.message}`);
+      const msg = error instanceof Error ? error.message : String(error);
+      this.logger.error(`Connection failed: ${msg}`);
       client.disconnect();
     }
   }
 
   handleDisconnect(client: Socket) {
-    const user = client.data.user;
+    const user = (
+      client.data as Record<string, { id: string; role: string } | undefined>
+    ).user;
     if (user) {
-      const userConns = this.userSockets.get(user.id) || [];
+      const userConns = this.userSockets.get(user.id) ?? [];
       const index = userConns.indexOf(client.id);
       if (index !== -1) {
         userConns.splice(index, 1);
@@ -74,25 +94,23 @@ export class NotificationsGateway implements OnGatewayConnection, OnGatewayDisco
           this.userSockets.set(user.id, userConns);
         }
       }
-
-      if (user.role === 'ADMIN') {
-        this.adminSockets.delete(client.id);
-      }
     }
     this.logger.log(`Client disconnected: ${client.id}`);
   }
 
-  // Helper methods to emit events
-  notifyAdmins(event: string, payload: any) {
-    this.adminSockets.forEach(socketId => {
-      this.server.to(socketId).emit(event, payload);
-    });
+  /**
+   * Emit an event to all connected admin clients using a Socket.IO room.
+   * This is O(1) regardless of the number of admins.
+   */
+  notifyAdmins(event: string, payload: unknown) {
+    this.server.to(ADMIN_ROOM).emit(event, payload);
   }
 
-  notifyUser(userId: string, event: string, payload: any) {
+  /** Emit an event to all sockets belonging to a specific user. */
+  notifyUser(userId: string, event: string, payload: unknown) {
     const sockets = this.userSockets.get(userId);
-    if (sockets) {
-      sockets.forEach(socketId => {
+    if (sockets?.length) {
+      sockets.forEach((socketId) => {
         this.server.to(socketId).emit(event, payload);
       });
     }

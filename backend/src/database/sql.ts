@@ -6,9 +6,10 @@ export type Sql = postgres.Sql;
 
 export function createSqlConnection(databaseUrl: string): Sql {
   return postgres(databaseUrl, {
-    max: 10,
-    idle_timeout: 20,
-    connect_timeout: 10,
+    max: 25,
+    idle_timeout: 30,
+    connect_timeout: 15,
+    max_lifetime: 1800,
     prepare: true,
   });
 }

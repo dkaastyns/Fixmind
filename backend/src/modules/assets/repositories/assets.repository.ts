@@ -1,6 +1,9 @@
-﻿import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { SQL_TOKEN, type Sql } from '../../../database/sql';
-import type { AssetRow, AssetStatus } from '../../../common/types/database-rows';
+import type {
+  AssetRow,
+  AssetStatus,
+} from '../../../common/types/database-rows';
 
 @Injectable()
 export class AssetsRepository {
@@ -13,39 +16,46 @@ export class AssetsRepository {
     return row ?? null;
   }
 
-  async list(params: { page: number; limit: number; roomId?: string; status?: AssetStatus }) {
+  async list(params: {
+    page: number;
+    limit: number;
+    roomId?: string;
+    status?: AssetStatus;
+  }) {
     const offset = (params.page - 1) * params.limit;
 
-    const rows = params.roomId
-      ? await this.sql<AssetRow[]>`
-          SELECT * FROM assets WHERE deleted_at IS NULL AND room_id = ${params.roomId}
+    // Use COUNT(*) OVER() window function to get total in a single query
+    const result = params.roomId
+      ? await this.sql<(AssetRow & { total_count: string })[]>`
+          SELECT *, COUNT(*) OVER() AS total_count
+          FROM assets WHERE deleted_at IS NULL AND room_id = ${params.roomId}
           ${params.status ? this.sql`AND status = ${params.status}` : this.sql``}
           ORDER BY nama_barang ASC LIMIT ${params.limit} OFFSET ${offset}
         `
-      : await this.sql<AssetRow[]>`
-          SELECT * FROM assets WHERE deleted_at IS NULL
+      : await this.sql<(AssetRow & { total_count: string })[]>`
+          SELECT *, COUNT(*) OVER() AS total_count
+          FROM assets WHERE deleted_at IS NULL
           ${params.status ? this.sql`AND status = ${params.status}` : this.sql``}
           ORDER BY created_at DESC LIMIT ${params.limit} OFFSET ${offset}
         `;
 
-    const [{ count }] = params.roomId
-      ? await this.sql<{ count: string }[]>`
-          SELECT COUNT(*)::text AS count FROM assets
-          WHERE deleted_at IS NULL AND room_id = ${params.roomId}
-          ${params.status ? this.sql`AND status = ${params.status}` : this.sql``}
-        `
-      : await this.sql<{ count: string }[]>`
-          SELECT COUNT(*)::text AS count FROM assets WHERE deleted_at IS NULL
-          ${params.status ? this.sql`AND status = ${params.status}` : this.sql``}
-        `;
-
-    return { rows, total: Number(count) };
+    const total = result.length > 0 ? Number(result[0].total_count) : 0;
+    return { rows: result as AssetRow[], total };
   }
 
-  async search(params: { query: string; limit: number }) {
+  async search(params: { query: string; limit: number; page?: number }) {
+    const offset = ((params.page ?? 1) - 1) * params.limit;
     const q = `%${params.query.trim()}%`;
-    return this.sql<AssetRow[]>`
-      SELECT a.*, r.name AS room_name, r.code AS room_code
+
+    // Single query with window function for accurate pagination total
+    const result = await this.sql<
+      (AssetRow & {
+        room_name?: string;
+        room_code?: string;
+        total_count: string;
+      })[]
+    >`
+      SELECT a.*, r.name AS room_name, r.code AS room_code, COUNT(*) OVER() AS total_count
       FROM assets a
       LEFT JOIN rooms r ON r.id = a.room_id
       WHERE a.deleted_at IS NULL
@@ -59,8 +69,11 @@ export class AssetsRepository {
           OR r.code ILIKE ${q}
         )
       ORDER BY a.nama_barang ASC
-      LIMIT ${params.limit}
+      LIMIT ${params.limit} OFFSET ${offset}
     `;
+
+    const total = result.length > 0 ? Number(result[0].total_count) : 0;
+    return { rows: result, total };
   }
 
   async create(data: {
@@ -86,14 +99,16 @@ export class AssetsRepository {
     return row;
   }
 
-  async upsertMany(rows: Array<{
-    roomId: string;
-    idpemda: string;
-    kodeBarang: string;
-    nomorRegister: string;
-    namaBarang: string;
-    merkType: string;
-  }>): Promise<AssetRow[]> {
+  async upsertMany(
+    rows: Array<{
+      roomId: string;
+      idpemda: string;
+      kodeBarang: string;
+      nomorRegister: string;
+      namaBarang: string;
+      merkType: string;
+    }>,
+  ): Promise<AssetRow[]> {
     const imported: AssetRow[] = [];
 
     for (const data of rows) {
@@ -123,19 +138,20 @@ export class AssetsRepository {
     return imported;
   }
 
+  /**
+   * Update an asset by ID. Accepts explicit partial data with current values
+   * already merged by the caller — no extra findById round-trip needed.
+   */
   async update(id: string, data: Partial<AssetRow>): Promise<AssetRow | null> {
-    const existing = await this.findById(id);
-    if (!existing) return null;
-
     const [row] = await this.sql<AssetRow[]>`
       UPDATE assets SET
-        room_id = ${data.room_id ?? existing.room_id},
-        idpemda = ${data.idpemda ?? existing.idpemda},
-        kode_barang = ${data.kode_barang ?? existing.kode_barang},
-        nomor_register = ${data.nomor_register ?? existing.nomor_register},
-        nama_barang = ${data.nama_barang ?? existing.nama_barang},
-        merk_type = ${data.merk_type ?? existing.merk_type},
-        status = ${data.status ?? existing.status},
+        room_id = ${data.room_id ?? null},
+        idpemda = ${data.idpemda ?? null},
+        kode_barang = ${data.kode_barang ?? null},
+        nomor_register = ${data.nomor_register ?? null},
+        nama_barang = ${data.nama_barang ?? null},
+        merk_type = ${data.merk_type ?? null},
+        status = ${data.status ?? null},
         updated_at = now()
       WHERE id = ${id} AND deleted_at IS NULL
       RETURNING *
@@ -143,7 +159,11 @@ export class AssetsRepository {
     return row ?? null;
   }
 
-  async moveToRoom(id: string, roomId: string, sql: Sql = this.sql): Promise<AssetRow | null> {
+  async moveToRoom(
+    id: string,
+    roomId: string,
+    sql: Sql = this.sql,
+  ): Promise<AssetRow | null> {
     const [row] = await sql<AssetRow[]>`
       UPDATE assets SET
         room_id = ${roomId},

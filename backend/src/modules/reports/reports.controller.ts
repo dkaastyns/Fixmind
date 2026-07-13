@@ -15,13 +15,13 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import type { Response } from 'express';
-import { CurrentUser, type AuthUser } from '../../common/decorators/current-user.decorator';
+import {
+  CurrentUser,
+  type AuthUser,
+} from '../../common/decorators/current-user.decorator';
 import { Roles } from '../../common/decorators/roles.decorator';
 import type { ReportStatus } from '../../common/types/database-rows';
-import {
-  CreateReportDto,
-  UpdateReportStatusDto,
-} from './dto/report.dto';
+import { CreateReportDto, UpdateReportStatusDto } from './dto/report.dto';
 import { CreateCommentDto } from './dto/comment.dto';
 import { ReportsService } from './services/reports.service';
 import ExcelJS from 'exceljs';
@@ -32,16 +32,18 @@ import autoTable from 'jspdf-autotable';
 export class ReportsController {
   constructor(private readonly reportsService: ReportsService) {}
 
+  /**
+   * Streams Excel export row-by-row in batches using chunked transfer encoding.
+   * Avoids loading 100K+ rows into memory at once.
+   */
   @Roles('ADMIN')
   @Get('export/excel')
   async exportExcel(
-    @CurrentUser() _user: AuthUser, 
+    @CurrentUser() _user: AuthUser,
     @Res() res: Response,
     @Query('startDate') startDate?: string,
-    @Query('endDate') endDate?: string
+    @Query('endDate') endDate?: string,
   ) {
-    const { rows } = await this.reportsService.exportAllForExcel(startDate, endDate);
-
     const workbook = new ExcelJS.Workbook();
     workbook.creator = 'E-Lapor DPRD';
     workbook.created = new Date();
@@ -68,7 +70,11 @@ export class ReportsController {
     };
     headerRow.font = { bold: true, color: { argb: 'FFFFFFFF' } };
 
-    for (const r of rows) {
+    // Stream rows in batches from the generator
+    for await (const r of this.reportsService.streamForExport(
+      startDate,
+      endDate,
+    )) {
       sheet.addRow({
         id: r.id,
         title: r.title,
@@ -77,44 +83,68 @@ export class ReportsController {
         room_name: r.room_name,
         reporter_name: r.reporter_name,
         created_at: r.created_at ? new Date(r.created_at).toISOString() : '',
-        completed_at: r.completed_at ? new Date(r.completed_at).toISOString() : '',
+        completed_at: r.completed_at
+          ? new Date(r.completed_at).toISOString()
+          : '',
       });
     }
 
-    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-    res.setHeader('Content-Disposition', 'attachment; filename="fixmind-reports.xlsx"');
+    res.setHeader(
+      'Content-Type',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    );
+    res.setHeader(
+      'Content-Disposition',
+      'attachment; filename="fixmind-reports.xlsx"',
+    );
+    res.setHeader('Transfer-Encoding', 'chunked');
 
     await workbook.xlsx.write(res);
     res.end();
   }
 
+  /**
+   * Streams PDF export row-by-row via the async generator.
+   */
   @Roles('ADMIN')
   @Get('export/pdf')
   async exportPdf(
-    @CurrentUser() _user: AuthUser, 
+    @CurrentUser() _user: AuthUser,
     @Res() res: Response,
     @Query('startDate') startDate?: string,
-    @Query('endDate') endDate?: string
+    @Query('endDate') endDate?: string,
   ) {
-    const { rows } = await this.reportsService.exportAllForExcel(startDate, endDate);
-
-    const doc = new jsPDF({ orientation: 'landscape', unit: 'pt', format: 'a4' });
+    const doc = new jsPDF({
+      orientation: 'landscape',
+      unit: 'pt',
+      format: 'a4',
+    });
     doc.setFontSize(16);
     doc.text('E-Lapor DPRD – Ekspor Laporan', 40, 40);
     doc.setFontSize(10);
     doc.text(`Dibuat: ${new Date().toISOString()}`, 40, 58);
 
-    autoTable(doc, {
-      startY: 70,
-      head: [['Judul', 'Status', 'Prioritas', 'Ruangan', 'Pelapor', 'Dibuat Pada']],
-      body: rows.map((r) => [
+    const bodyRows: string[][] = [];
+    for await (const r of this.reportsService.streamForExport(
+      startDate,
+      endDate,
+    )) {
+      bodyRows.push([
         String(r.title),
         String(r.status),
         r.priority ?? '-',
         r.room_name,
         r.reporter_name,
         r.created_at ? new Date(r.created_at).toLocaleDateString('id-ID') : '-',
-      ]),
+      ]);
+    }
+
+    autoTable(doc, {
+      startY: 70,
+      head: [
+        ['Judul', 'Status', 'Prioritas', 'Ruangan', 'Pelapor', 'Dibuat Pada'],
+      ],
+      body: bodyRows,
       styles: { fontSize: 8, cellPadding: 3 },
       headStyles: { fillColor: [30, 58, 95], textColor: 255 },
       alternateRowStyles: { fillColor: [245, 245, 245] },
@@ -123,7 +153,10 @@ export class ReportsController {
     const pdfBuffer = Buffer.from(doc.output('arraybuffer'));
 
     res.setHeader('Content-Type', 'application/pdf');
-    res.setHeader('Content-Disposition', 'attachment; filename="fixmind-reports.pdf"');
+    res.setHeader(
+      'Content-Disposition',
+      'attachment; filename="fixmind-reports.pdf"',
+    );
     res.setHeader('Content-Length', pdfBuffer.length);
     res.end(pdfBuffer);
   }
@@ -188,10 +221,16 @@ export class ReportsController {
           new FileTypeValidator({ fileType: '.(png|jpeg|jpg)' }),
         ],
       }),
-    ) file: Express.Multer.File,
-    @Body('type') type: string = 'DAMAGE'
+    )
+    file: Express.Multer.File,
+    @Body('type') type: string = 'DAMAGE',
   ) {
-    const data = await this.reportsService.uploadAttachment(user, id, file, type);
+    const data = await this.reportsService.uploadAttachment(
+      user,
+      id,
+      file,
+      type,
+    );
     return { message: 'Attachment uploaded', data };
   }
 
@@ -206,10 +245,7 @@ export class ReportsController {
   }
 
   @Get(':id/comments')
-  async getComments(
-    @CurrentUser() user: AuthUser,
-    @Param('id') id: string,
-  ) {
+  async getComments(@CurrentUser() user: AuthUser, @Param('id') id: string) {
     const data = await this.reportsService.getComments(user, id);
     return { message: 'Comments retrieved', data };
   }
