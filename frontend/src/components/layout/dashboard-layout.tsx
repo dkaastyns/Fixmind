@@ -16,6 +16,8 @@ import {
   Wrench,
   X,
   WifiOff,
+  ChevronLeft,
+  ChevronRight,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { logoutRequest } from '@/lib/api-client'
@@ -44,7 +46,15 @@ const navItems: Array<{
   { to: '/dashboard/profile', label: 'Profil Saya', icon: User, end: true },
 ]
 
-function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
+function SidebarContent({
+  onNavigate,
+  isCollapsed = false,
+  onToggleCollapse,
+}: {
+  onNavigate?: () => void
+  isCollapsed?: boolean
+  onToggleCollapse?: () => void
+}) {
   const navigate = useNavigate()
   const { user, accessToken, clearSession } = useAuthStore()
 
@@ -64,17 +74,19 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
 
   return (
     <>
-      <div className="mb-8 flex items-center justify-between px-2">
-        <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl overflow-hidden bg-white shadow-sm p-1">
+      <div className={cn("mb-8 flex flex-col gap-4 items-center px-2", !isCollapsed && "flex-row justify-between")}>
+        <div className="flex items-center gap-3 min-w-0">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl overflow-hidden bg-white shadow-sm p-1 shrink-0">
             <img src="/logo.png" alt="Logo Semarang" className="h-full w-full object-contain" />
           </div>
-          <div>
-            <p className="font-semibold text-[15px] leading-tight">E-Lapor DPRD</p>
-            <p className="text-xs text-muted">Kota Semarang</p>
-          </div>
+          {!isCollapsed && (
+            <div className="min-w-0">
+              <p className="font-semibold text-[15px] leading-tight truncate">E-Lapor DPRD</p>
+              <p className="text-xs text-muted truncate">Kota Semarang</p>
+            </div>
+          )}
         </div>
-        <div className="flex items-center gap-1.5">
+        <div className={cn("flex items-center gap-1.5 shrink-0", isCollapsed && "flex-col")}>
           <button
             onClick={() => window.dispatchEvent(new CustomEvent('open-global-search'))}
             className="flex h-8 w-8 items-center justify-center rounded-xl bg-white hover:bg-white/80 text-muted hover:text-foreground shadow-sm border border-white/50 transition-colors"
@@ -82,7 +94,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
           >
             <Search className="h-4 w-4" />
           </button>
-          <NotificationBell align="left" />
+          <NotificationBell align={isCollapsed ? "right" : "left"} />
         </div>
       </div>
 
@@ -95,10 +107,11 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
             onClick={onNavigate}
             className={({ isActive }) =>
               cn(
-                'relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors',
+                'relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors group',
                 isActive
-                  ? 'text-white'
-                  : 'text-muted hover:bg-white/50 hover:text-foreground',
+                  ? 'text-white font-semibold'
+                  : 'text-slate-500 hover:bg-white/50 hover:text-slate-800',
+                isCollapsed && 'justify-center px-0 w-10 h-10 mx-auto'
               )
             }
           >
@@ -112,9 +125,15 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
                     style={{ zIndex: 0 }}
                   />
                 )}
-                <div className="relative z-10 flex items-center gap-3">
-                  <item.icon className="h-4 w-4" />
-                  {item.label}
+                <div className={cn("relative z-10 flex items-center gap-3", isCollapsed && "justify-center")}>
+                  <item.icon className="h-4 w-4 shrink-0" />
+                  {!isCollapsed && <span>{item.label}</span>}
+                  
+                  {isCollapsed && (
+                    <div className="absolute left-full ml-3 px-2 py-1 bg-slate-900 text-white text-xs rounded-md whitespace-nowrap opacity-0 pointer-events-none group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-200 z-50 shadow-md font-normal">
+                      {item.label}
+                    </div>
+                  )}
                 </div>
               </>
             )}
@@ -122,10 +141,47 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
         ))}
       </nav>
 
-      <Button variant="ghost" className="justify-start mt-2" onClick={() => setShowLogoutModal(true)}>
-        <LogOut className="h-4 w-4" />
-        Keluar
-      </Button>
+      <div className="mt-auto pt-2 border-t border-slate-100/50 flex flex-col gap-1.5">
+        {onToggleCollapse && (
+          <Button
+            variant="ghost"
+            className={cn(
+              "justify-start group relative text-slate-400 hover:text-slate-600 hover:bg-white/50",
+              isCollapsed ? "justify-center px-0 w-10 h-10 mx-auto" : "px-3"
+            )}
+            onClick={onToggleCollapse}
+          >
+            {isCollapsed ? (
+              <ChevronRight className="h-4 w-4 shrink-0" />
+            ) : (
+              <ChevronLeft className="h-4 w-4 shrink-0" />
+            )}
+            {!isCollapsed && "Sembunyikan Menu"}
+            {isCollapsed && (
+              <div className="absolute left-full ml-3 px-2 py-1 bg-slate-900 text-white text-xs rounded-md whitespace-nowrap opacity-0 pointer-events-none group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-200 z-50 shadow-md font-normal">
+                Buka Menu
+              </div>
+            )}
+          </Button>
+        )}
+
+        <Button
+          variant="ghost"
+          className={cn(
+            "justify-start group relative text-rose-500 hover:text-rose-600 hover:bg-rose-50/50",
+            isCollapsed ? "justify-center px-0 w-10 h-10 mx-auto" : "px-3"
+          )}
+          onClick={() => setShowLogoutModal(true)}
+        >
+          <LogOut className="h-4 w-4 shrink-0" />
+          {!isCollapsed && "Keluar"}
+          {isCollapsed && (
+            <div className="absolute left-full ml-3 px-2 py-1 bg-slate-900 text-white text-xs rounded-md whitespace-nowrap opacity-0 pointer-events-none group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-200 z-50 shadow-md font-normal">
+              Keluar
+            </div>
+          )}
+        </Button>
+      </div>
 
       {typeof document !== 'undefined' && createPortal(
         <AnimatePresence>
@@ -173,6 +229,18 @@ export function DashboardLayout() {
   const location = useLocation()
   const { isOnline, queueLength } = useOfflineSync()
 
+  const [isCollapsed, setIsCollapsed] = useState(() => {
+    const saved = localStorage.getItem('sidebar-collapsed')
+    if (saved !== null) {
+      return saved === 'true'
+    }
+    return window.innerWidth < 1280
+  })
+
+  useEffect(() => {
+    localStorage.setItem('sidebar-collapsed', String(isCollapsed))
+  }, [isCollapsed])
+
   useEffect(() => {
     const handleOpenSearch = () => setSearchOpen(true)
     window.addEventListener('open-global-search', handleOpenSearch)
@@ -181,15 +249,21 @@ export function DashboardLayout() {
 
   return (
     <div className="flex min-h-screen">
-      <aside className="glass relative z-40 m-4 hidden w-64 shrink-0 flex-col p-4 lg:flex">
-        <SidebarContent />
+      <aside className={cn(
+        "glass relative z-40 m-4 hidden shrink-0 flex-col p-4 md:flex transition-all duration-300",
+        isCollapsed ? "w-20" : "w-64"
+      )}>
+        <SidebarContent
+          isCollapsed={isCollapsed}
+          onToggleCollapse={() => setIsCollapsed(!isCollapsed)}
+        />
       </aside>
 
-      <div className="flex flex-1 flex-col">
-        <header className="glass relative z-40 mx-4 mt-4 flex items-center justify-between px-4 py-3 lg:hidden">
+      <div className="flex flex-1 flex-col min-w-0">
+        <header className="glass relative z-40 mx-4 mt-4 flex items-center justify-between px-4 py-3 md:hidden">
           <div className="flex items-center gap-2">
             <img src="/logo.png" alt="Logo" className="h-7 w-7 object-contain" />
-            <span className="font-semibold">E-Lapor DPRD</span>
+            <span className="font-semibold text-sm">E-Lapor DPRD</span>
           </div>
           <div className="flex items-center gap-3">
             <button
@@ -213,7 +287,7 @@ export function DashboardLayout() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="fixed inset-0 z-40 bg-black/20 backdrop-blur-sm lg:hidden"
+                className="fixed inset-0 z-40 bg-black/20 backdrop-blur-sm md:hidden"
                 onClick={() => setMobileOpen(false)}
               />
               <motion.aside
@@ -221,7 +295,7 @@ export function DashboardLayout() {
                 animate={{ x: 0 }}
                 exit={{ x: '-100%' }}
                 transition={{ duration: 0.2 }}
-                className="glass fixed inset-y-0 left-0 z-50 flex w-72 flex-col p-4 lg:hidden"
+                className="glass fixed inset-y-0 left-0 z-50 flex w-72 flex-col p-4 md:hidden"
               >
                 <button className="mb-4 self-end" onClick={() => setMobileOpen(false)} aria-label="Close menu">
                   <X className="h-6 w-6" />
@@ -248,7 +322,7 @@ export function DashboardLayout() {
           </div>
         )}
 
-        <main className="flex-1 p-4 lg:p-6 overflow-x-hidden">
+        <main className="flex-1 p-4 md:p-6 overflow-x-hidden">
           <AnimatePresence mode="wait">
             <motion.div
               key={location.pathname}
@@ -262,11 +336,9 @@ export function DashboardLayout() {
           </AnimatePresence>
         </main>
 
-        {/* Global Chatbot AI */}
         <ChatWidget />
       </div>
 
-      {/* Global Search Modal */}
       <AnimatePresence>
         {searchOpen && (
           <GlobalSearchModal isOpen={searchOpen} onClose={() => setSearchOpen(false)} />
