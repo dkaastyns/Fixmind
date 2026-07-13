@@ -11,6 +11,7 @@ import { EmptyState, PageHeader, StatusBadge } from '@/components/ui/feedback'
 import { fetchAssetTransfers, reviewAssetTransfer } from '@/lib/api-client'
 import { useAuthStore } from '@/stores/auth-store'
 import type { AssetTransferStatus } from '@/types/api'
+import { ListSkeleton } from '@/components/ui/skeleton'
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -218,12 +219,7 @@ export function TransferRequestsPage() {
 
         {/* List items */}
         {transfers.isLoading ? (
-          <div className="py-12 flex justify-center items-center">
-            <div className="flex flex-col items-center gap-2">
-              <div className="w-8 h-8 rounded-full border-4 border-slate-200 border-t-[#ef629f] animate-spin"></div>
-              <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mt-2 animate-pulse">Memuat Pengajuan...</p>
-            </div>
-          </div>
+          <ListSkeleton count={4} />
         ) : filteredItems.length === 0 ? (
           <EmptyState
             title="Tidak ada pengajuan"

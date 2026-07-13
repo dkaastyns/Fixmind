@@ -323,8 +323,11 @@ export function RoomsPage() {
               {filteredRooms.map((r) => (
                 <li
                   key={r.id}
+                  role="button"
+                  tabIndex={0}
+                  aria-selected={selectedRoom === r.id}
                   className={cn(
-                    'group flex cursor-pointer items-center justify-between px-4 py-3.5 transition-all duration-200',
+                    'group flex cursor-pointer items-center justify-between px-4 py-3.5 transition-all duration-200 focus:outline-none focus:bg-slate-50',
                     selectedRoom === r.id && !isDeletingRooms
                       ? 'bg-gradient-to-r from-[#ef629f]/10 to-[#ef629f]/5 border-l-4 border-l-[#ef629f] pl-3'
                       : 'hover:bg-slate-50 border-l-4 border-l-transparent'
@@ -335,6 +338,17 @@ export function RoomsPage() {
                     } else {
                       setSelectedRoom(r.id)
                       setAssetSearch('')
+                    }
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault()
+                      if (isDeletingRooms) {
+                        toggleRoomDelete(r.id)
+                      } else {
+                        setSelectedRoom(r.id)
+                        setAssetSearch('')
+                      }
                     }
                   }}
                 >
@@ -766,8 +780,9 @@ function RoomFormModal({
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-slate-600">Nama Ruangan *</label>
+                  <label htmlFor="room-name" className="text-xs font-semibold text-slate-600">Nama Ruangan *</label>
                   <Input 
+                    id="room-name"
                     placeholder="Contoh: Ruang Rapat Paripurna" 
                     value={name} 
                     onChange={(e) => setName(e.target.value)} 
@@ -775,8 +790,9 @@ function RoomFormModal({
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-slate-600">Kode Ruangan *</label>
+                  <label htmlFor="room-code" className="text-xs font-semibold text-slate-600">Kode Ruangan *</label>
                   <Input 
+                    id="room-code"
                     placeholder="Contoh: R-PRP-3" 
                     value={code} 
                     onChange={(e) => setCode(e.target.value)} 
@@ -784,8 +800,9 @@ function RoomFormModal({
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-slate-600">Gedung</label>
+                  <label htmlFor="room-building" className="text-xs font-semibold text-slate-600">Gedung</label>
                   <Input 
+                    id="room-building"
                     placeholder="Contoh: Gedung Paripurna" 
                     value={building} 
                     onChange={(e) => setBuilding(e.target.value)} 
@@ -793,8 +810,9 @@ function RoomFormModal({
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-slate-600">Lantai</label>
+                  <label htmlFor="room-floor" className="text-xs font-semibold text-slate-600">Lantai</label>
                   <Input 
+                    id="room-floor"
                     placeholder="Contoh: 3" 
                     value={floor} 
                     onChange={(e) => setFloor(e.target.value)} 
@@ -898,8 +916,9 @@ function AssetFormModal({
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-slate-600">Nama Barang *</label>
+                  <label htmlFor="asset-name" className="text-xs font-semibold text-slate-600">Nama Barang *</label>
                   <Input 
+                    id="asset-name"
                     placeholder="Contoh: AC Split 2 PK" 
                     value={namaBarang} 
                     onChange={(e) => setNamaBarang(e.target.value)} 
@@ -907,8 +926,9 @@ function AssetFormModal({
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-slate-600">ID Pemda *</label>
+                  <label htmlFor="asset-idpemda" className="text-xs font-semibold text-slate-600">ID Pemda *</label>
                   <Input 
+                    id="asset-idpemda"
                     placeholder="Contoh: 12.01.03.04" 
                     value={idpemda} 
                     onChange={(e) => setIdpemda(e.target.value)} 
@@ -916,8 +936,9 @@ function AssetFormModal({
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-slate-600">Kode Barang *</label>
+                  <label htmlFor="asset-code" className="text-xs font-semibold text-slate-600">Kode Barang *</label>
                   <Input 
+                    id="asset-code"
                     placeholder="Contoh: 3.05.01.02.002" 
                     value={kodeBarang} 
                     onChange={(e) => setKodeBarang(e.target.value)} 
@@ -925,8 +946,9 @@ function AssetFormModal({
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-slate-600">Nomor Register *</label>
+                  <label htmlFor="asset-register" className="text-xs font-semibold text-slate-600">Nomor Register *</label>
                   <Input 
+                    id="asset-register"
                     placeholder="Contoh: 0041" 
                     value={nomorRegister} 
                     onChange={(e) => setNomorRegister(e.target.value)} 
@@ -934,8 +956,9 @@ function AssetFormModal({
                   />
                 </div>
                 <div className="space-y-1.5 sm:col-span-2">
-                  <label className="text-xs font-semibold text-slate-600">Merk & Tipe *</label>
+                  <label htmlFor="asset-merk" className="text-xs font-semibold text-slate-600">Merk & Tipe *</label>
                   <Input 
+                    id="asset-merk"
                     placeholder="Contoh: Daikin Inverter Smile" 
                     value={merkType} 
                     onChange={(e) => setMerkType(e.target.value)} 

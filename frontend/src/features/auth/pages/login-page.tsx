@@ -13,6 +13,7 @@ import { GlassCard } from '@/components/ui/glass-card'
 import { Alert } from '@/components/ui/feedback'
 import { loginRequest } from '@/lib/api-client'
 import { useAuthStore } from '@/stores/auth-store'
+import { handleApiError } from '@/lib/utils'
 
 const schema = z.object({
   email: z.email('Email tidak valid'),
@@ -37,7 +38,7 @@ export function LoginPage() {
       toast.success('Selamat datang kembali!')
       navigate('/dashboard', { replace: true })
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: (e: Error) => handleApiError(e),
   })
 
   return (

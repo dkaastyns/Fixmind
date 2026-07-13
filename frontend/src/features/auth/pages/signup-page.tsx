@@ -13,10 +13,11 @@ import { GlassCard } from '@/components/ui/glass-card'
 import { Alert } from '@/components/ui/feedback'
 import { registerRequest } from '@/lib/api-client'
 import { useAuthStore } from '@/stores/auth-store'
+import { handleApiError } from '@/lib/utils'
 
 const schema = z.object({
   fullName: z.string().min(2, 'Nama wajib diisi'),
-  email: z.email('Email tidak valid'),
+  email: z.string().email('Email tidak valid'),
   phone: z.string().min(8, 'Nomor telepon minimal 8 karakter'),
   password: z.string().min(8, 'Minimal 8 karakter'),
   confirmPassword: z.string().min(8, 'Minimal 8 karakter'),
@@ -43,7 +44,7 @@ export function SignupPage() {
       password: '',
       confirmPassword: '',
       agreeToTerms: false,
-    } as any,
+    },
   })
 
   const mutation = useMutation({
@@ -59,7 +60,7 @@ export function SignupPage() {
       toast.success('Akun berhasil dibuat!')
       navigate('/dashboard', { replace: true })
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: (e: Error) => handleApiError(e),
   })
 
   return (

@@ -141,12 +141,12 @@ export function AssetTransferPage() {
                 </div>
 
                 <div className="space-y-4">
-                  {/* Ruangan Asal */}
                   <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
+                    <label htmlFor="direct-source-room" className="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
                       <Building className="w-3.5 h-3.5" /> Ruangan Asal
                     </label>
                     <select
+                      id="direct-source-room"
                       className="w-full rounded-xl border border-white/60 bg-white/70 px-3.5 py-2.5 text-sm shadow-sm outline-none transition focus:border-[#ef629f] focus:ring-2 focus:ring-[#ef629f]/20 font-medium text-slate-800"
                       value={roomId}
                       onChange={(e) => {
@@ -164,12 +164,12 @@ export function AssetTransferPage() {
                     </select>
                   </div>
 
-                  {/* Aset */}
                   <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
+                    <label htmlFor="direct-asset" className="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
                       <Package className="w-3.5 h-3.5" /> Aset / Inventaris
                     </label>
                     <select
+                      id="direct-asset"
                       className="w-full rounded-xl border border-white/60 bg-white/70 px-3.5 py-2.5 text-sm shadow-sm outline-none transition focus:border-[#ef629f] focus:ring-2 focus:ring-[#ef629f]/20 disabled:opacity-60 font-medium text-slate-800"
                       value={assetId}
                       onChange={(e) => setAssetId(e.target.value)}
@@ -184,12 +184,12 @@ export function AssetTransferPage() {
                     </select>
                   </div>
 
-                  {/* Ruangan Tujuan */}
                   <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
+                    <label htmlFor="direct-target-room" className="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
                       <Building className="w-3.5 h-3.5" /> Ruangan Tujuan
                     </label>
                     <select
+                      id="direct-target-room"
                       className="w-full rounded-xl border border-white/60 bg-white/70 px-3.5 py-2.5 text-sm shadow-sm outline-none transition focus:border-[#ef629f] focus:ring-2 focus:ring-[#ef629f]/20 disabled:opacity-60 font-medium text-slate-800"
                       value={toRoomId}
                       onChange={(e) => setToRoomId(e.target.value)}
@@ -431,12 +431,12 @@ export function AssetTransferPage() {
 
           <div className="space-y-4">
             <div className="grid gap-4 md:grid-cols-2">
-              {/* Ruangan Asal */}
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
+                <label htmlFor="req-source-room" className="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
                   <Building className="w-3.5 h-3.5" /> Ruangan Asal
                 </label>
                 <select
+                  id="req-source-room"
                   className="w-full rounded-xl border border-white/60 bg-white/70 px-3.5 py-2.5 text-sm shadow-sm outline-none transition focus:border-[#ef629f] focus:ring-2 focus:ring-[#ef629f]/20 font-medium text-slate-800"
                   value={roomId}
                   onChange={(e) => {
@@ -454,12 +454,12 @@ export function AssetTransferPage() {
                 </select>
               </div>
 
-              {/* Aset */}
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
+                <label htmlFor="req-asset" className="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
                   <Package className="w-3.5 h-3.5" /> Aset / Inventaris
                 </label>
                 <select
+                  id="req-asset"
                   className="w-full rounded-xl border border-white/60 bg-white/70 px-3.5 py-2.5 text-sm shadow-sm outline-none transition focus:border-[#ef629f] focus:ring-2 focus:ring-[#ef629f]/20 disabled:opacity-60 font-medium text-slate-800"
                   value={assetId}
                   onChange={(e) => setAssetId(e.target.value)}
@@ -503,12 +503,12 @@ export function AssetTransferPage() {
               )}
             </AnimatePresence>
 
-            {/* Ruangan Tujuan */}
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
+              <label htmlFor="req-target-room" className="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
                 <Building className="w-3.5 h-3.5" /> Ruangan Tujuan
               </label>
               <select
+                id="req-target-room"
                 className="w-full rounded-xl border border-white/60 bg-white/70 px-3.5 py-2.5 text-sm shadow-sm outline-none transition focus:border-[#ef629f] focus:ring-2 focus:ring-[#ef629f]/20 disabled:opacity-60 font-medium text-slate-800"
                 value={toRoomId}
                 onChange={(e) => setToRoomId(e.target.value)}
@@ -553,12 +553,12 @@ export function AssetTransferPage() {
               </div>
             )}
 
-            {/* Alasan Pemindahan */}
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
+              <label htmlFor="req-reason" className="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
                 <ClipboardList className="w-3.5 h-3.5" /> Alasan Pemindahan
               </label>
               <textarea
+                id="req-reason"
                 className="min-h-[120px] w-full rounded-xl border border-white/60 bg-white/70 px-3.5 py-2.5 text-sm shadow-sm outline-none transition placeholder:text-slate-400 focus:border-[#ef629f] focus:ring-2 focus:ring-[#ef629f]/20 font-medium text-slate-800"
                 value={reason}
                 onChange={(e) => setReason(e.target.value)}

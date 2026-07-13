@@ -4,6 +4,7 @@ import { AuthBootstrap } from './app/auth-bootstrap'
 import { AppRouter } from './app/router'
 
 import { SocketProvider } from './components/providers/socket-provider'
+import { OfflineSyncProvider } from './components/providers/offline-sync-provider'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -16,7 +17,9 @@ export default function App() {
     <QueryClientProvider client={queryClient}>
       <AuthBootstrap>
         <SocketProvider>
-          <AppRouter />
+          <OfflineSyncProvider>
+            <AppRouter />
+          </OfflineSyncProvider>
         </SocketProvider>
         <Toaster position="top-right" richColors closeButton />
       </AuthBootstrap>

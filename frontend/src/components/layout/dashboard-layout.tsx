@@ -15,6 +15,7 @@ import {
   Users,
   Wrench,
   X,
+  WifiOff,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { logoutRequest } from '@/lib/api-client'
@@ -24,6 +25,7 @@ import { NotificationBell } from '@/components/ui/notification-bell'
 import { ChatWidget } from '@/components/ui/chat-widget'
 import { GlobalSearchModal } from '@/components/ui/global-search-modal'
 import type { UserRole } from '@/types/api'
+import { useOfflineSync } from '@/components/providers/offline-sync-provider'
 
 const navItems: Array<{
   to: string
@@ -169,6 +171,7 @@ export function DashboardLayout() {
   const [mobileOpen, setMobileOpen] = useState(false)
   const [searchOpen, setSearchOpen] = useState(false)
   const location = useLocation()
+  const { isOnline, queueLength } = useOfflineSync()
 
   useEffect(() => {
     const handleOpenSearch = () => setSearchOpen(true)
@@ -228,6 +231,22 @@ export function DashboardLayout() {
             </>
           )}
         </AnimatePresence>
+
+        {!isOnline && (
+          <div className="mx-4 mt-4 flex items-center justify-between gap-3 bg-amber-500 text-white px-4 py-3 rounded-2xl shadow-md border border-amber-400/25">
+            <div className="flex items-center gap-2">
+              <WifiOff className="h-4 w-4 shrink-0 animate-bounce" />
+              <span className="text-xs font-semibold">
+                Mode Offline: Anda sedang offline. Tindakan perubahan akan disimpan lokal dan disinkronkan saat kembali online.
+              </span>
+            </div>
+            {queueLength > 0 && (
+              <span className="bg-amber-600/60 px-2 py-0.5 rounded-md text-[10px] font-extrabold uppercase shrink-0">
+                {queueLength} Tertunda
+              </span>
+            )}
+          </div>
+        )}
 
         <main className="flex-1 p-4 lg:p-6 overflow-x-hidden">
           <AnimatePresence mode="wait">

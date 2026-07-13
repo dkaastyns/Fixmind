@@ -491,8 +491,9 @@ function CreateReportForm({
 
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="sm:col-span-2 space-y-1.5">
-              <label className="text-xs font-semibold text-foreground/75">Judul Masalah</label>
+              <label htmlFor="report-title" className="text-xs font-semibold text-foreground/75">Judul Masalah</label>
               <input
+                id="report-title"
                 className="flex h-10 w-full rounded-xl border border-slate-200 bg-white/70 px-3.5 text-sm shadow-sm transition-all focus:border-[#ef629f]/50 focus:bg-white focus:outline-none focus:ring-4 focus:ring-[#ef629f]/10"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
@@ -501,8 +502,9 @@ function CreateReportForm({
             </div>
             
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-foreground/75">Ruangan / Fasilitas</label>
+              <label htmlFor="report-room" className="text-xs font-semibold text-foreground/75">Ruangan / Fasilitas</label>
               <select
+                id="report-room"
                 className="flex h-10 w-full rounded-xl border border-slate-200 bg-white/70 px-3.5 text-sm shadow-sm transition-all focus:border-[#ef629f]/50 focus:bg-white focus:outline-none focus:ring-4 focus:ring-[#ef629f]/10"
                 value={roomId}
                 onChange={(e) => { setRoomId(e.target.value); setAssetId('') }}
@@ -515,8 +517,9 @@ function CreateReportForm({
             </div>
             
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-foreground/75">Aset (Opsional)</label>
+              <label htmlFor="report-asset" className="text-xs font-semibold text-foreground/75">Aset (Opsional)</label>
               <select
+                id="report-asset"
                 className="flex h-10 w-full rounded-xl border border-slate-200 bg-white/70 px-3.5 text-sm shadow-sm transition-all focus:border-[#ef629f]/50 focus:bg-white focus:outline-none focus:ring-4 focus:ring-[#ef629f]/10 disabled:opacity-50"
                 value={assetId}
                 onChange={(e) => setAssetId(e.target.value)}
@@ -530,8 +533,9 @@ function CreateReportForm({
             </div>
             
             <div className="sm:col-span-2 space-y-1.5">
-              <label className="text-xs font-semibold text-foreground/75">Deskripsi Lengkap</label>
+              <label htmlFor="report-desc" className="text-xs font-semibold text-foreground/75">Deskripsi Lengkap</label>
               <textarea
+                id="report-desc"
                 className="min-h-[100px] w-full resize-y rounded-xl border border-slate-200 bg-white/70 px-3.5 py-2.5 text-sm shadow-sm transition-all focus:border-[#ef629f]/50 focus:bg-white focus:outline-none focus:ring-4 focus:ring-[#ef629f]/10"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
@@ -540,9 +544,10 @@ function CreateReportForm({
             </div>
             
             <div className="sm:col-span-2 space-y-1.5">
-              <label className="text-xs font-semibold text-foreground/75">Foto Bukti Kerusakan (Maks 3 foto, ukuran 1.5MB/foto)</label>
+              <label htmlFor="report-file" className="text-xs font-semibold text-foreground/75">Foto Bukti Kerusakan (Maks 3 foto, ukuran 1.5MB/foto)</label>
               <div className="relative rounded-xl border-2 border-dashed border-slate-200 bg-slate-50/50 p-4 transition-all hover:bg-slate-50 hover:border-[#ef629f]/40 text-center">
                 <input
+                  id="report-file"
                   type="file"
                   multiple
                   accept="image/png, image/jpeg, image/jpg"

@@ -23,6 +23,7 @@ import { GlassCard } from '@/components/ui/glass-card'
 import { AnimatedGlassCard } from '@/components/ui/animated-glass-card'
 import { PageHeader } from '@/components/ui/feedback'
 import { fetchRooms, fetchAssets } from '@/lib/api-client'
+import { CardSkeleton } from '@/components/ui/skeleton'
 import {
   fetchMaintenanceSchedules,
   createMaintenanceSchedule,
@@ -330,10 +331,12 @@ export function MaintenancePage() {
 
       {/* Loading */}
       {schedulesQuery.isLoading && (
-        <GlassCard className="p-12 text-center text-slate-400">
-          <Clock className="h-12 w-12 mx-auto text-slate-200 mb-3 animate-spin" />
-          <p className="text-sm">Memuat jadwal pemeliharaan...</p>
-        </GlassCard>
+        <div className="grid gap-4 md:grid-cols-2">
+          <CardSkeleton />
+          <CardSkeleton />
+          <CardSkeleton />
+          <CardSkeleton />
+        </div>
       )}
 
       {/* Schedule List */}
@@ -584,8 +587,9 @@ export function MaintenancePage() {
                   <div className="grid gap-4 sm:grid-cols-2">
                     {/* Title */}
                     <div className="sm:col-span-2 space-y-1.5">
-                      <label className="text-xs font-semibold text-foreground/75">Judul Kegiatan *</label>
+                      <label htmlFor="maint-title" className="text-xs font-semibold text-foreground/75">Judul Kegiatan *</label>
                       <input
+                        id="maint-title"
                         required
                         className="flex h-10 w-full rounded-xl border border-slate-200 bg-white px-3.5 text-sm shadow-sm transition-all focus:border-[#ef629f]/50 focus:bg-white focus:outline-none focus:ring-4 focus:ring-[#ef629f]/10"
                         value={form.title}
@@ -596,8 +600,9 @@ export function MaintenancePage() {
 
                     {/* Room select */}
                     <div className="space-y-1.5">
-                      <label className="text-xs font-semibold text-foreground/75">Ruangan / Fasilitas</label>
+                      <label htmlFor="maint-room" className="text-xs font-semibold text-foreground/75">Ruangan / Fasilitas</label>
                       <select
+                        id="maint-room"
                         className="flex h-10 w-full rounded-xl border border-slate-200 bg-white px-3.5 text-sm shadow-sm transition-all focus:border-[#ef629f]/50 focus:bg-white focus:outline-none focus:ring-4 focus:ring-[#ef629f]/10"
                         value={form.roomId}
                         onChange={(e) => {
@@ -616,8 +621,9 @@ export function MaintenancePage() {
 
                     {/* Asset select */}
                     <div className="space-y-1.5">
-                      <label className="text-xs font-semibold text-foreground/75">Aset Terkait (Opsional)</label>
+                      <label htmlFor="maint-asset" className="text-xs font-semibold text-foreground/75">Aset Terkait (Opsional)</label>
                       <select
+                        id="maint-asset"
                         className="flex h-10 w-full rounded-xl border border-slate-200 bg-white px-3.5 text-sm shadow-sm transition-all focus:border-[#ef629f]/50 focus:bg-white focus:outline-none focus:ring-4 focus:ring-[#ef629f]/10 disabled:opacity-50"
                         value={form.assetId}
                         onChange={(e) => set('assetId')(e.target.value)}
@@ -634,8 +640,9 @@ export function MaintenancePage() {
 
                     {/* Date picker */}
                     <div className="space-y-1.5">
-                      <label className="text-xs font-semibold text-foreground/75">Tanggal Pelaksanaan *</label>
+                      <label htmlFor="maint-date" className="text-xs font-semibold text-foreground/75">Tanggal Pelaksanaan *</label>
                       <input
+                        id="maint-date"
                         type="date"
                         required
                         className="flex h-10 w-full rounded-xl border border-slate-200 bg-white px-3.5 text-sm shadow-sm transition-all focus:border-[#ef629f]/50 focus:bg-white focus:outline-none focus:ring-4 focus:ring-[#ef629f]/10"
@@ -646,8 +653,9 @@ export function MaintenancePage() {
 
                     {/* Frequency */}
                     <div className="space-y-1.5">
-                      <label className="text-xs font-semibold text-foreground/75">Frekuensi Pemeliharaan *</label>
+                      <label htmlFor="maint-freq" className="text-xs font-semibold text-foreground/75">Frekuensi Pemeliharaan *</label>
                       <select
+                        id="maint-freq"
                         required
                         className="flex h-10 w-full rounded-xl border border-slate-200 bg-white px-3.5 text-sm shadow-sm transition-all focus:border-[#ef629f]/50 focus:bg-white focus:outline-none focus:ring-4 focus:ring-[#ef629f]/10"
                         value={form.frequency}
@@ -663,8 +671,9 @@ export function MaintenancePage() {
 
                     {/* Name input */}
                     <div className="space-y-1.5">
-                      <label className="text-xs font-semibold text-foreground/75">Nama Vendor / Perusahaan *</label>
+                      <label htmlFor="maint-vendor" className="text-xs font-semibold text-foreground/75">Nama Vendor / Perusahaan *</label>
                       <input
+                        id="maint-vendor"
                         required
                         className="flex h-10 w-full rounded-xl border border-slate-200 bg-white px-3.5 text-sm shadow-sm transition-all focus:border-[#ef629f]/50 focus:bg-white focus:outline-none focus:ring-4 focus:ring-[#ef629f]/10"
                         value={form.assigneeName}
@@ -675,10 +684,11 @@ export function MaintenancePage() {
 
                     {/* Estimated cost */}
                     <div className="space-y-1.5">
-                      <label className="text-xs font-semibold text-foreground/75">Estimasi Biaya (Rupiah)</label>
+                      <label htmlFor="maint-cost" className="text-xs font-semibold text-foreground/75">Estimasi Biaya (Rupiah)</label>
                       <div className="relative">
                         <span className="absolute left-3 top-2.5 text-xs text-slate-500 font-semibold">Rp</span>
                         <input
+                          id="maint-cost"
                           type="number"
                           min="0"
                           className="flex h-10 w-full rounded-xl border border-slate-200 bg-white pl-9 pr-3.5 text-sm shadow-sm transition-all focus:border-[#ef629f]/50 focus:bg-white focus:outline-none focus:ring-4 focus:ring-[#ef629f]/10"
@@ -697,8 +707,9 @@ export function MaintenancePage() {
                         </p>
                       </div>
                       <div className="space-y-1.5">
-                        <label className="text-xs font-semibold text-foreground/75">Nama Kontak Person</label>
+                        <label htmlFor="maint-contact" className="text-xs font-semibold text-foreground/75">Nama Kontak Person</label>
                         <input
+                          id="maint-contact"
                           className="flex h-10 w-full rounded-xl border border-slate-200 bg-white px-3.5 text-sm shadow-sm focus:border-[#ef629f]/50 focus:outline-none"
                           value={form.vendorContactName}
                           onChange={(e) => set('vendorContactName')(e.target.value)}
@@ -706,8 +717,9 @@ export function MaintenancePage() {
                         />
                       </div>
                       <div className="flex flex-col space-y-1.5">
-                        <label className="text-xs font-semibold text-foreground/75">Nomor Telepon Vendor</label>
+                        <label htmlFor="maint-phone" className="text-xs font-semibold text-foreground/75">Nomor Telepon Vendor</label>
                         <input
+                          id="maint-phone"
                           className="flex h-10 w-full rounded-xl border border-slate-200 bg-white px-3.5 text-sm shadow-sm focus:border-[#ef629f]/50 focus:outline-none"
                           value={form.vendorPhone}
                           onChange={(e) => set('vendorPhone')(e.target.value)}
@@ -718,8 +730,9 @@ export function MaintenancePage() {
 
                     {/* Description / Notes */}
                     <div className="sm:col-span-2 space-y-1.5">
-                      <label className="text-xs font-semibold text-foreground/75">Deskripsi Pekerjaan / Catatan</label>
+                      <label htmlFor="maint-desc" className="text-xs font-semibold text-foreground/75">Deskripsi Pekerjaan / Catatan</label>
                       <textarea
+                        id="maint-desc"
                         className="min-h-[80px] w-full resize-y rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm shadow-sm transition-all focus:border-[#ef629f]/50 focus:bg-white focus:outline-none focus:ring-4 focus:ring-[#ef629f]/10"
                         value={form.description}
                         onChange={(e) => set('description')(e.target.value)}

@@ -12,6 +12,7 @@ import type {
 } from '@/types/api'
 
 import { useAuthStore } from '@/stores/auth-store'
+import { toast } from 'sonner'
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL ?? '/api/v1'
 
@@ -21,6 +22,29 @@ export class ApiError extends Error {
   constructor(message: string, status: number) {
     super(message)
     this.status = status
+    this.name = 'ApiError'
+  }
+}
+
+export class NetworkError extends Error {
+  constructor(message = 'Koneksi jaringan terputus. Silakan periksa koneksi internet Anda.') {
+    super(message)
+    this.name = 'NetworkError'
+  }
+}
+
+export interface ApiFieldError {
+  field: string
+  message: string
+}
+
+export class ApiValidationError extends ApiError {
+  errors: ApiFieldError[]
+
+  constructor(message: string, status: number, errors: ApiFieldError[]) {
+    super(message, status)
+    this.name = 'ApiValidationError'
+    this.errors = errors
   }
 }
 
@@ -30,15 +54,74 @@ export async function apiFetch<T>(
 ): Promise<ApiSuccessResponse<T>> {
   const { token, headers, ...rest } = options
 
-  const response = await fetch(`${API_BASE}${path}`, {
-    credentials: 'include',
-    headers: {
-      'Content-Type': 'application/json',
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      ...headers,
-    },
-    ...rest,
-  })
+  const method = options.method || 'GET'
+  if (method !== 'GET' && !navigator.onLine) {
+    const queue = JSON.parse(localStorage.getItem('offline-sync-queue') || '[]')
+    
+    let description = 'Tindakan offline'
+    if (path.includes('/reports') && method === 'POST') {
+      description = 'Membuat laporan masalah baru'
+    } else if (path.includes('/status') && method === 'PATCH') {
+      description = 'Mengubah status laporan'
+    } else if (path.includes('/comments') && method === 'POST') {
+      description = 'Menambahkan komentar pada laporan'
+    } else if (path.includes('/transfers') && method === 'POST') {
+      description = 'Mengajukan transfer aset'
+    } else if (path.includes('/transfers') && method === 'PATCH') {
+      description = 'Meninjau pengajuan transfer aset'
+    } else if (path.includes('/rooms') && method === 'POST') {
+      description = 'Menambahkan ruangan baru'
+    } else if (path.includes('/assets') && method === 'POST') {
+      description = 'Menambahkan aset baru'
+    } else if (path.includes('/profile') && method === 'PATCH') {
+      description = 'Memperbarui profil pengguna'
+    }
+
+    const queueItem = {
+      id: Math.random().toString(36).substring(2, 9),
+      path,
+      method,
+      body: options.body,
+      headers: Object.fromEntries(
+        Object.entries(options.headers || {}).filter(([key]) => key.toLowerCase() !== 'authorization')
+      ),
+      description,
+      timestamp: Date.now(),
+    }
+
+    queue.push(queueItem)
+    localStorage.setItem('offline-sync-queue', JSON.stringify(queue))
+
+    window.dispatchEvent(new CustomEvent('offline-queue-changed'))
+
+    toast.warning(`Koneksi terputus. Tindakan "${description}" telah disimpan secara lokal dan akan disinkronkan saat online kembali.`, {
+      duration: 5000,
+    })
+
+    return {
+      success: true,
+      message: 'Disimpan secara offline',
+      data: {} as any,
+    }
+  }
+
+  let response: Response
+  try {
+    response = await fetch(`${API_BASE}${path}`, {
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        ...headers,
+      },
+      ...rest,
+    })
+  } catch (err) {
+    if (err instanceof ApiError || err instanceof NetworkError) {
+      throw err
+    }
+    throw new NetworkError(err instanceof Error ? err.message : undefined)
+  }
 
   const body = await response.json().catch(() => ({}))
 
@@ -57,28 +140,41 @@ export async function apiFetch<T>(
         const newAccessToken = refreshBody.data?.accessToken
         if (newAccessToken) {
           useAuthStore.getState().setAccessToken(newAccessToken)
-          const retryResponse = await fetch(`${API_BASE}${path}`, {
-            credentials: 'include',
-            headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Bearer ${newAccessToken}`,
-              ...headers,
-            },
-            ...rest,
-          })
+          let retryResponse: Response
+          try {
+            retryResponse = await fetch(`${API_BASE}${path}`, {
+              credentials: 'include',
+              headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${newAccessToken}`,
+                ...headers,
+              },
+              ...rest,
+            })
+          } catch (err) {
+            throw new NetworkError(err instanceof Error ? err.message : undefined)
+          }
           const retryBody = await retryResponse.json().catch(() => ({}))
           if (!retryResponse.ok || retryBody.success === false) {
+            if (retryResponse.status === 400 && Array.isArray(retryBody.errors)) {
+              throw new ApiValidationError(retryBody.message ?? 'Request failed', retryResponse.status, retryBody.errors)
+            }
             throw new ApiError(retryBody.message ?? 'Request failed', retryResponse.status)
           }
           return retryBody as ApiSuccessResponse<T>
         }
       }
     } catch (refreshErr) {
-      // ignore and fall through to throw original 401 error
+      if (refreshErr instanceof NetworkError || refreshErr instanceof ApiError) {
+        throw refreshErr
+      }
     }
   }
 
   if (!response.ok || body.success === false) {
+    if (response.status === 400 && Array.isArray(body.errors)) {
+      throw new ApiValidationError(body.message ?? 'Request failed', response.status, body.errors)
+    }
     throw new ApiError(body.message ?? 'Request failed', response.status)
   }
 
@@ -597,4 +693,55 @@ export const exportTransfersPdf = async (
   })
 
   doc.save('fixmind-transfer-aset.pdf')
+}
+
+export async function syncOfflineQueue(token: string) {
+  const queue = JSON.parse(localStorage.getItem('offline-sync-queue') || '[]')
+  if (queue.length === 0) return
+
+  toast.info(`Menyinkronkan ${queue.length} tindakan offline...`, {
+    id: 'offline-sync',
+    duration: 10000,
+  })
+
+  let successCount = 0
+  const remainingQueue = []
+
+  for (const item of queue) {
+    try {
+      const response = await fetch(`${API_BASE}${item.path}`, {
+        method: item.method,
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+          ...item.headers,
+        },
+        body: item.body,
+        credentials: 'include',
+      })
+
+      if (response.ok) {
+        successCount++
+      } else {
+        remainingQueue.push(item)
+      }
+    } catch (err) {
+      remainingQueue.push(item)
+    }
+  }
+
+  localStorage.setItem('offline-sync-queue', JSON.stringify(remainingQueue))
+  window.dispatchEvent(new CustomEvent('offline-queue-changed'))
+
+  if (successCount > 0) {
+    toast.success(`Sinkronisasi Berhasil: ${successCount} tindakan offline telah disinkronkan ke server.`, {
+      id: 'offline-sync',
+      duration: 5000,
+    })
+  } else {
+    toast.error('Gagal menyinkronkan tindakan offline. Akan dicoba kembali nanti.', {
+      id: 'offline-sync',
+      duration: 5000,
+    })
+  }
 }
