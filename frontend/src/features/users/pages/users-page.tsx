@@ -11,6 +11,7 @@ import { EmptyState, PageHeader } from '@/components/ui/feedback'
 import { TableSkeleton } from '@/components/ui/skeleton'
 import { createUser, deleteUser, fetchUsers, updateUser } from '@/lib/api-client'
 import { useAuthStore } from '@/stores/auth-store'
+import { DeleteConfirmationModal } from '@/components/ui/delete-confirmation-modal'
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -38,6 +39,11 @@ export function UsersPage() {
   const [newPassword, setNewPassword] = useState('')
   const [showResetModal, setShowResetModal] = useState(false)
 
+  // User deletion states
+  const [deleteUserId, setDeleteUserId] = useState<string | null>(null)
+  const [deleteUserName, setDeleteUserName] = useState('')
+  const [showDeleteModal, setShowDeleteModal] = useState(false)
+
   const { data, isLoading } = useQuery({
     queryKey: ['users', isAdminFilter],
     queryFn: () => fetchUsers(token, typeof isAdminFilter === 'boolean' ? { isAdmin: isAdminFilter } : undefined),
@@ -48,9 +54,19 @@ export function UsersPage() {
     onSuccess: () => { 
       qc.invalidateQueries({ queryKey: ['users'] })
       toast.success('Pengguna berhasil dihapus') 
+      setShowDeleteModal(false)
     },
-    onError: (e: Error) => toast.error(e.message),
+    onError: (e: Error) => {
+      toast.error(e.message)
+      setShowDeleteModal(false)
+    },
   })
+
+  const triggerDeleteUser = (id: string, name: string) => {
+    setDeleteUserId(id)
+    setDeleteUserName(name)
+    setShowDeleteModal(true)
+  }
 
   const updateMut = useMutation({
     mutationFn: ({ id, isActive }: { id: string, isActive: boolean }) => updateUser(token, id, { isActive }),
@@ -262,11 +278,7 @@ export function UsersPage() {
                       variant="ghost" 
                       size="sm" 
                       className="flex-1 h-9 text-xs rounded-xl text-red-500 hover:text-red-700 hover:bg-red-500/5 border border-transparent hover:border-red-200/40 gap-1 flex items-center justify-center" 
-                      onClick={() => {
-                        if (confirm(`Apakah Anda yakin ingin menghapus pengguna ${u.fullName}?`)) {
-                          deleteMut.mutate(u.id)
-                        }
-                      }}
+                      onClick={() => triggerDeleteUser(u.id, u.fullName)}
                     >
                       <Trash2 className="w-3.5 h-3.5" /> Hapus
                     </Button>
@@ -359,11 +371,7 @@ export function UsersPage() {
                             variant="ghost" 
                             size="sm" 
                             className="h-8 text-xs rounded-xl text-red-500 hover:text-red-700 hover:bg-red-500/5 border border-transparent hover:border-red-200/40 gap-1" 
-                            onClick={() => {
-                              if (confirm(`Apakah Anda yakin ingin menghapus pengguna ${u.fullName}?`)) {
-                                deleteMut.mutate(u.id)
-                              }
-                            }}
+                            onClick={() => triggerDeleteUser(u.id, u.fullName)}
                           >
                             <Trash2 className="w-3.5 h-3.5" /> Hapus
                           </Button>
@@ -441,6 +449,20 @@ export function UsersPage() {
           </div>
         )}
       </AnimatePresence>
+
+      {/* Delete Confirmation Modal */}
+      <DeleteConfirmationModal
+        isOpen={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        onConfirm={() => {
+          if (deleteUserId) {
+            deleteMut.mutate(deleteUserId)
+          }
+        }}
+        title="Hapus Pengguna"
+        description={`Apakah Anda yakin ingin menghapus pengguna ${deleteUserName}? Tindakan ini tidak dapat dibatalkan.`}
+        isLoading={deleteMut.isPending}
+      />
     </div>
   )
 }
