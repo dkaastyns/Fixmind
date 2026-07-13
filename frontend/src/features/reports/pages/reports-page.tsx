@@ -1,9 +1,10 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 import { useState, useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
-import { ChevronDown, ChevronUp, Filter, Plus, X, Loader2, Bot, Building2, Calendar } from 'lucide-react'
+import { ChevronDown, ChevronUp, Filter, Plus, X, Loader2, Bot, Building2, Calendar, Search } from 'lucide-react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { GlassCard } from '@/components/ui/glass-card'
@@ -35,12 +36,27 @@ export function ReportsPage() {
   const [showAdvanced, setShowAdvanced] = useState(false)
   const [advFilter, setAdvFilter] = useState<FilterState>({ roomId: '', dateFrom: '', dateTo: '' })
   const [searchParams] = useSearchParams()
+  const initialSearch = searchParams.get('search') ?? ''
+  const [searchQuery, setSearchQuery] = useState(initialSearch)
+  const [debouncedSearch, setDebouncedSearch] = useState(initialSearch)
 
   useEffect(() => {
     if (searchParams.get('openForm') === 'true') {
       setShowForm(true)
     }
   }, [searchParams])
+
+  useEffect(() => {
+    const q = searchParams.get('search') ?? ''
+    setSearchQuery(q)
+  }, [searchParams])
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearch(searchQuery)
+    }, 400)
+    return () => clearTimeout(handler)
+  }, [searchQuery])
 
   const rooms = useQuery({ queryKey: ['rooms'], queryFn: () => fetchRooms(token, true) })
 
@@ -51,10 +67,10 @@ export function ReportsPage() {
 
   useEffect(() => {
     setPage(1)
-  }, [statusFilter, advFilter])
+  }, [statusFilter, advFilter, debouncedSearch])
 
   const { data, isLoading } = useQuery({
-    queryKey: ['reports', statusFilter, advFilter, page],
+    queryKey: ['reports', statusFilter, advFilter, page, debouncedSearch],
     queryFn: () =>
       fetchReports(token, {
         status: statusFilter || undefined,
@@ -63,6 +79,7 @@ export function ReportsPage() {
         dateTo: advFilter.dateTo || undefined,
         page,
         limit: LIMIT,
+        search: debouncedSearch.trim() || undefined,
       }),
   })
 
@@ -90,6 +107,35 @@ export function ReportsPage() {
         }
       />
 
+      {/* Filter and Search Section */}
+      <div className="mb-4 flex flex-col md:flex-row gap-3 items-stretch md:items-center">
+        {/* Search Input */}
+        <div className="relative flex-1 max-w-md">
+          <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
+          <input
+            type="text"
+            placeholder="Cari judul, pelapor, deskripsi..."
+            className="flex h-10 w-full rounded-xl border border-slate-200 bg-white/70 pl-9 pr-3 text-sm shadow-sm transition-all focus:border-[#ef629f]/50 focus:bg-white focus:outline-none focus:ring-4 focus:ring-[#ef629f]/10 text-slate-800"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+        </div>
+
+        <button
+          onClick={() => setShowAdvanced((v) => !v)}
+          className="ml-auto inline-flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-sm transition-colors glass text-muted hover:text-foreground"
+        >
+          <Filter className="h-3.5 w-3.5" />
+          Filter Lanjutan
+          {showAdvanced ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
+          {hasAdvancedFilter && (
+            <span className="ml-1 inline-flex h-4 w-4 items-center justify-center rounded-full bg-white/30 text-[10px] font-bold">
+              {[advFilter.roomId, advFilter.dateFrom, advFilter.dateTo].filter(Boolean).length}
+            </span>
+          )}
+        </button>
+      </div>
+
       {/* Status filter tabs */}
       <div className="mb-3 flex flex-wrap gap-2">
         {(['', 'PENDING', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED'] as const).map((s) => {
@@ -112,22 +158,6 @@ export function ReportsPage() {
             </button>
           )
         })}
-
-        <button
-          onClick={() => setShowAdvanced((v) => !v)}
-          className={`ml-auto inline-flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-sm transition-colors ${
-            hasAdvancedFilter ? 'gradient-primary text-white' : 'glass text-muted hover:text-foreground'
-          }`}
-        >
-          <Filter className="h-3.5 w-3.5" />
-          Filter Lanjutan
-          {showAdvanced ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
-          {hasAdvancedFilter && (
-            <span className="ml-1 inline-flex h-4 w-4 items-center justify-center rounded-full bg-white/30 text-[10px] font-bold">
-              {[advFilter.roomId, advFilter.dateFrom, advFilter.dateTo].filter(Boolean).length}
-            </span>
-          )}
-        </button>
       </div>
 
       {/* Collapsible advanced filter panel */}

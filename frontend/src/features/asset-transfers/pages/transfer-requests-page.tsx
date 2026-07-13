@@ -1,4 +1,6 @@
-import { useState, useMemo } from 'react'
+/* eslint-disable react-hooks/set-state-in-effect */
+import { useState, useMemo, useEffect } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { CheckCircle2, ShieldAlert, XCircle, Search, ArrowRight, Clock, User } from 'lucide-react'
 import { toast } from 'sonner'
@@ -28,8 +30,16 @@ export function TransferRequestsPage() {
   const user = useAuthStore((s) => s.user)
   const qc = useQueryClient()
   
+  const [searchParams] = useSearchParams()
+  const initialSearch = searchParams.get('search') ?? ''
+
   const [statusFilter, setStatusFilter] = useState<AssetTransferStatus | 'ALL'>('PENDING')
-  const [searchQuery, setSearchQuery] = useState('')
+  const [searchQuery, setSearchQuery] = useState(initialSearch)
+
+  useEffect(() => {
+    const q = searchParams.get('search') ?? ''
+    setSearchQuery(q)
+  }, [searchParams])
   const [notesById, setNotesById] = useState<Record<string, string>>({})
   const [pendingReviewId, setPendingReviewId] = useState<string | null>(null)
 

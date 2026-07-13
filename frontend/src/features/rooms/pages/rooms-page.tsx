@@ -1,4 +1,6 @@
-import { useRef, useState, useMemo } from 'react'
+/* eslint-disable react-hooks/set-state-in-effect */
+import { useRef, useState, useMemo, useEffect } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { createPortal } from 'react-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
@@ -51,9 +53,18 @@ export function RoomsPage() {
   const [showConfirmRoomDelete, setShowConfirmRoomDelete] = useState(false)
   const [showConfirmAssetDelete, setShowConfirmAssetDelete] = useState(false)
 
+  const [searchParams] = useSearchParams()
+  const initialSearch = searchParams.get('search') ?? ''
+
   // Search/Filters states
-  const [roomSearch, setRoomSearch] = useState('')
-  const [assetSearch, setAssetSearch] = useState('')
+  const [roomSearch, setRoomSearch] = useState(initialSearch)
+  const [assetSearch, setAssetSearch] = useState(initialSearch)
+
+  useEffect(() => {
+    const q = searchParams.get('search') ?? ''
+    setRoomSearch(q)
+    setAssetSearch(q)
+  }, [searchParams])
 
   // Import Excel state
   const [showImportModal, setShowImportModal] = useState(false)
