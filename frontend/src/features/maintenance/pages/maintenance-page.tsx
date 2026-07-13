@@ -1,4 +1,6 @@
-import { useState } from 'react'
+/* eslint-disable react-hooks/set-state-in-effect */
+import { useState, useEffect } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { createPortal } from 'react-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
@@ -95,9 +97,17 @@ export function MaintenancePage() {
   const [form, setForm] = useState(EMPTY_FORM)
   const set = (k: keyof typeof EMPTY_FORM) => (v: string) => setForm((f) => ({ ...f, [k]: v }))
 
+  const [searchParams] = useSearchParams()
+  const initialSearch = searchParams.get('search') ?? ''
+
   // Filters
-  const [searchQuery, setSearchQuery] = useState('')
+  const [searchQuery, setSearchQuery] = useState(initialSearch)
   const [statusFilter, setStatusFilter] = useState<string>('ALL')
+
+  useEffect(() => {
+    const q = searchParams.get('search') ?? ''
+    setSearchQuery(q)
+  }, [searchParams])
 
   // ─── Queries ─────────────────────────────────────────────────────────────
 
