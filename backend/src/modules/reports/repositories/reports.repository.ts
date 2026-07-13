@@ -16,7 +16,24 @@ export interface ReportListRow extends ReportRow {
 
 @Injectable()
 export class ReportsRepository {
+  private hasIsAdminColumnPromise: Promise<boolean> | null = null;
+
   constructor(@Inject(SQL_TOKEN) private readonly sql: Sql) {}
+
+  private async hasIsAdminColumn(): Promise<boolean> {
+    if (!this.hasIsAdminColumnPromise) {
+      this.hasIsAdminColumnPromise = this.sql<{ exists: boolean }[]>`
+        SELECT EXISTS (
+          SELECT 1
+          FROM information_schema.columns
+          WHERE table_schema = 'public'
+            AND table_name = 'users'
+            AND column_name = 'is_admin'
+        ) AS exists
+      `.then(([row]) => Boolean(row?.exists));
+    }
+    return this.hasIsAdminColumnPromise;
+  }
 
   async findById(id: string): Promise<ReportRow | null> {
     const [row] = await this.sql<ReportRow[]>`
@@ -285,12 +302,21 @@ export class ReportsRepository {
   }
 
   async getComments(reportId: string): Promise<any[]> {
-    return this.sql`
-      SELECT rc.*, u.full_name AS author_name, u.role AS author_role
-      FROM report_comments rc
-      JOIN users u ON u.id = rc.author_id
-      WHERE rc.report_id = ${reportId}
-      ORDER BY rc.created_at ASC
-    `;
+    const hasIsAdmin = await this.hasIsAdminColumn();
+    return hasIsAdmin
+      ? this.sql`
+          SELECT rc.*, u.full_name AS author_name, CASE WHEN u.is_admin THEN 'ADMIN' ELSE 'USER' END AS author_role
+          FROM report_comments rc
+          JOIN users u ON u.id = rc.author_id
+          WHERE rc.report_id = ${reportId}
+          ORDER BY rc.created_at ASC
+        `
+      : this.sql`
+          SELECT rc.*, u.full_name AS author_name, u.role AS author_role
+          FROM report_comments rc
+          JOIN users u ON u.id = rc.author_id
+          WHERE rc.report_id = ${reportId}
+          ORDER BY rc.created_at ASC
+        `;
   }
 }
