@@ -69,7 +69,9 @@ export class ReportsRepository {
         ${params.roomId ? this.sql`AND r.room_id = ${params.roomId}` : this.sql``}
         ${params.startDate ? this.sql`AND r.created_at >= ${params.startDate}` : this.sql``}
         ${params.endDate ? this.sql`AND r.created_at <= ${params.endDate}::timestamp + interval '1 day' - interval '1 millisecond'` : this.sql``}
-        ${q ? this.sql`
+        ${
+          q
+            ? this.sql`
           AND (
             r.title ILIKE ${q}
             OR COALESCE(r.description, '') ILIKE ${q}
@@ -82,20 +84,28 @@ export class ReportsRepository {
             OR r.priority::text ILIKE ${q}
             OR to_char(r.created_at, 'YYYY-MM-DD') ILIKE ${q}
           )
-        ` : this.sql``}
+        `
+            : this.sql``
+        }
       ORDER BY r.created_at DESC
       LIMIT ${params.limit} OFFSET ${offset}
     `;
 
     const [{ count }] = await this.sql<{ count: string }[]>`
-      SELECT COUNT(*)::text AS count FROM reports r
+      SELECT COUNT(*)::text AS count
+      FROM reports r
+      JOIN rooms rm ON rm.id = r.room_id
+      JOIN users u ON u.id = r.reporter_id
+      LEFT JOIN assets a ON a.id = r.asset_id
       WHERE r.deleted_at IS NULL
         ${params.reporterId ? this.sql`AND r.reporter_id = ${params.reporterId}` : this.sql``}
         ${params.status ? this.sql`AND r.status = ${params.status}` : this.sql``}
         ${params.roomId ? this.sql`AND r.room_id = ${params.roomId}` : this.sql``}
         ${params.startDate ? this.sql`AND r.created_at >= ${params.startDate}` : this.sql``}
         ${params.endDate ? this.sql`AND r.created_at <= ${params.endDate}::timestamp + interval '1 day' - interval '1 millisecond'` : this.sql``}
-        ${q ? this.sql`
+        ${
+          q
+            ? this.sql`
           AND (
             r.title ILIKE ${q}
             OR COALESCE(r.description, '') ILIKE ${q}
@@ -108,7 +118,9 @@ export class ReportsRepository {
             OR r.priority::text ILIKE ${q}
             OR to_char(r.created_at, 'YYYY-MM-DD') ILIKE ${q}
           )
-        ` : this.sql``}
+        `
+            : this.sql``
+        }
     `;
 
     return { rows, total: Number(count) };
@@ -129,12 +141,16 @@ export class ReportsRepository {
     return row;
   }
 
-  async updateStatus(id: string, status: ReportStatus, extra?: {
-    completedAt?: Date | null;
-    targetCompletionDate?: Date | null;
-    adminNotes?: string;
-    priority?: ReportPriority;
-  }): Promise<ReportRow | null> {
+  async updateStatus(
+    id: string,
+    status: ReportStatus,
+    extra?: {
+      completedAt?: Date | null;
+      targetCompletionDate?: Date | null;
+      adminNotes?: string;
+      priority?: ReportPriority;
+    },
+  ): Promise<ReportRow | null> {
     const existing = await this.findById(id);
     if (!existing) return null;
 
@@ -152,16 +168,19 @@ export class ReportsRepository {
     return row ?? null;
   }
 
-  async updateAiFields(id: string, data: {
-    priority?: ReportPriority;
-    aiPriorityScore?: number;
-    aiPriorityReason?: string;
-    aiRecommendation?: string;
-    aiEstimatedRepairHours?: number;
-    aiSuggestedTargetDate?: Date;
-    aiSuggestedAction?: string;
-    aiAnalysisStatus: 'COMPLETED' | 'FAILED';
-  }): Promise<void> {
+  async updateAiFields(
+    id: string,
+    data: {
+      priority?: ReportPriority;
+      aiPriorityScore?: number;
+      aiPriorityReason?: string;
+      aiRecommendation?: string;
+      aiEstimatedRepairHours?: number;
+      aiSuggestedTargetDate?: Date;
+      aiSuggestedAction?: string;
+      aiAnalysisStatus: 'COMPLETED' | 'FAILED';
+    },
+  ): Promise<void> {
     await this.sql`
       UPDATE reports SET
         status = CASE WHEN status = 'PENDING' THEN 'AI_ANALYSIS'::report_status ELSE status END,
@@ -252,7 +271,11 @@ export class ReportsRepository {
     `;
   }
 
-  async addComment(reportId: string, authorId: string, content: string): Promise<any> {
+  async addComment(
+    reportId: string,
+    authorId: string,
+    content: string,
+  ): Promise<any> {
     const [row] = await this.sql`
       INSERT INTO report_comments (report_id, author_id, content)
       VALUES (${reportId}, ${authorId}, ${content})
