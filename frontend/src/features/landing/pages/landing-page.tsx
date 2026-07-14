@@ -13,25 +13,21 @@ const features = [
     icon: ClipboardList,
     title: 'Pelaporan Cerdas',
     description: 'Pegawai dapat melaporkan masalah fasilitas dengan foto dan memantau status secara langsung.',
-    highlight: false,
   },
   {
     icon: Bot,
     title: 'Prioritas Berbasis AI',
     description: 'Sistem menganalisis laporan dan merekomendasikan prioritas perbaikan.',
-    highlight: true,
   },
   {
     icon: Wrench,
     title: 'Alur Kerja Ringkas',
     description: 'Admin dan pengguna bisa memantau progres laporan tanpa alur teknisi yang rumit.',
-    highlight: false,
   },
   {
     icon: BarChart3,
     title: 'Dasbor Analitik',
     description: 'Pantau kinerja pemeliharaan, aktivitas ruangan, dan ekspor laporan untuk kepatuhan.',
-    highlight: false,
   },
 ]
 
@@ -111,7 +107,7 @@ export function LandingPage() {
       </div>
 
       {/* "Mengapa FixMind???" Section */}
-      <section className="relative z-10 bg-[#f8fafc] px-4 py-16 sm:py-24 max-w-3xl mx-auto w-full">
+      <section className="relative z-10 bg-[#f8fafc] px-4 sm:px-6 lg:px-8 py-16 sm:py-24 max-w-7xl mx-auto w-full">
         <div className="text-center mb-12">
           <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight">
             <span className="text-gradient-orange-red mr-2">Mengapa</span>
@@ -119,8 +115,8 @@ export function LandingPage() {
           </h2>
         </div>
 
-        {/* Feature Cards Stacked Vertically */}
-        <div className="flex flex-col gap-6 w-full">
+        {/* Feature Cards Grid (Stacked on mobile, side-by-side on desktop) */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 w-full">
           {features.map((feature, index) => {
             const Icon = feature.icon
             return (
@@ -129,23 +125,13 @@ export function LandingPage() {
                 initial={{ opacity: 0, y: 15 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, delay: index * 0.1 }}
-                className="w-full"
+                className="w-full h-full"
               >
                 <div
-                  className={`p-6 rounded-3xl bg-white flex flex-col items-start gap-4 transition-all duration-300 ${
-                    feature.highlight
-                      ? 'border-2 border-[#3b82f6] shadow-[0_8px_30px_rgba(59,130,246,0.18)] ring-4 ring-[#3b82f6]/5'
-                      : 'border border-slate-100 shadow-[0_8px_30px_rgba(15,23,42,0.04)] hover:shadow-[0_12px_40px_rgba(15,23,42,0.08)]'
-                  }`}
+                  className="p-6 rounded-3xl bg-white flex flex-col items-start gap-4 border border-slate-100/80 shadow-[0_8px_30px_rgba(15,23,42,0.04)] hover:border-[#3b82f6] hover:shadow-[0_8px_30px_rgba(59,130,246,0.15)] hover:ring-4 hover:ring-[#3b82f6]/5 hover:-translate-y-1 transition-all duration-300 cursor-pointer h-full"
                 >
                   {/* Icon Container with custom accent background */}
-                  <div
-                    className={`flex h-11 w-11 items-center justify-center rounded-xl shadow-sm text-white ${
-                      feature.highlight
-                        ? 'bg-gradient-to-br from-orange-400 to-red-500'
-                        : 'bg-gradient-to-br from-orange-500 to-red-600'
-                    }`}
-                  >
+                  <div className="flex h-11 w-11 items-center justify-center rounded-xl shadow-sm text-white bg-gradient-to-br from-orange-500 to-red-600">
                     <Icon className="h-5 w-5" />
                   </div>
 
