@@ -68,9 +68,52 @@ Minimum 32 characters for JWT secrets in production.
 
 ## Security Checklist Before Production
 
-- [ ] Rotate all default secrets
-- [ ] Enable HTTPS + HSTS in nginx
-- [ ] Set `NODE_ENV=production`
-- [ ] Restrict Postgres network access
-- [ ] Enable Cloudinary signed uploads
-- [ ] Review RBAC on every new endpoint
+Pembagian tanggung jawab untuk memastikan keamanan sistem sebelum dideploy ke lingkungan produksi:
+
+### Developer (Dev)
+- [ ] **Review RBAC:** Verifikasi setiap endpoint baru memiliki decorator `@Roles()` yang sesuai dan validasi DTO lengkap.
+- [ ] **Secure File Uploads:** Aktifkan Cloudinary signed uploads untuk memastikan hanya gambar yang sah yang diunggah ke storage.
+- [ ] **Sanitize Input:** Pastikan tidak ada interpolasi string manual pada query SQL (gunakan tagged template literals `sql``).
+
+### DevOps / Sysadmin (Ops)
+- [ ] **Rotate Secrets:** Ganti semua kredensial default (`JWT_ACCESS_SECRET`, `JWT_REFRESH_SECRET`, `DATABASE_URL`, password admin default, API key, dll).
+- [ ] **Set NODE_ENV:** Pastikan variabel lingkungan `NODE_ENV` bernilai `production`.
+- [ ] **Enable HTTPS & HSTS:** Konfigurasi TLS/SSL dan header Strict-Transport-Security (HSTS) di Nginx/Reverse Proxy.
+- [ ] **Restrict Database Access:** Batasi akses port Postgres (5432) hanya dari host internal/backend (jangan dibuka ke publik).
+
+---
+
+## Automated Security Checks (Audit Otomatis)
+
+Untuk mencegah celah keamanan pada dependensi pihak ketiga, lakukan audit otomatis secara berkala:
+
+### 1. Audit Dependensi Proyek
+Jalankan audit keamanan paket dari direktori proyek (`backend/` dan `frontend/`):
+```bash
+bun pm audit
+```
+*Gunakan perintah di atas sebagai bagian dari langkah build di pipeline CI/CD.*
+
+### 2. Static Application Security Testing (SAST)
+Rekomendasi integrasi di masa depan:
+- Integrasikan **SonarQube** atau **Snyk** pada repositori GitHub untuk mendeteksi kerentanan kode secara otomatis setiap kali ada Pull Request.
+
+---
+
+## Local Secret Scanning (Pre-commit Hook)
+
+Untuk mencegah *secrets* (seperti API Key, password, private key) tidak sengaja terkirim ke repositori Git, proyek ini menyediakan skrip pre-commit hook lokal.
+
+### Cara Aktivasi Hook
+Jalankan perintah berikut di root folder proyek Anda setelah pertama kali melakukan clone:
+```powershell
+git config core.hooksPath .githooks
+```
+
+### Cara Kerja Hook
+Setiap kali Anda menjalankan perintah `git commit`, skrip [.githooks/pre-commit](file:///d:/FixMind/.githooks/pre-commit) akan otomatis:
+1. Memindai semua baris kode baru (*staged changes*).
+2. Memeriksa keberadaan file kunci rahasia (*private key*).
+3. Mendeteksi jika ada variabel sensitif seperti `GEMINI_API_KEY`, `DATABASE_URL`, atau token rahasia lainnya yang berisi nilai riil (bukan *placeholder* seperti `your-key`).
+4. Jika ditemukan rahasia yang terhardcode, commit akan dibatalkan otomatis sehingga Anda dapat memindahkannya ke file `.env` sebelum mencoba commit kembali.
+

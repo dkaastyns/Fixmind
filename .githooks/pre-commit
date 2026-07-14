@@ -1,0 +1,50 @@
+#!/bin/sh
+
+# Pre-commit hook untuk mencegah komit berisi rahasia (secrets) ke Git.
+#
+# Untuk mengaktifkan hook ini di komputer lokal Anda, jalankan perintah:
+# git config core.hooksPath .githooks
+
+# Daftar kata kunci rahasia yang dicurigai
+KEYWORDS="GEMINI_API_KEY|DATABASE_URL|JWT_ACCESS_SECRET|JWT_REFRESH_SECRET|CLOUDINARY_API_SECRET|CLOUDINARY_URL"
+
+# Dapatkan daftar file yang sedang di-stage (kecuali file yang dihapus)
+STAGED_FILES=$(git diff --cached --name-only --diff-filter=d)
+
+if [ -z "$STAGED_FILES" ]; then
+    exit 0
+fi
+
+SUSPICIOUS_FOUND=0
+
+for file in $STAGED_FILES; do
+    # Lewati file biner, lockfiles, data seed, dan file contoh (.env.example)
+    if echo "$file" | grep -qE "\.(png|jpg|jpeg|gif|ico|pdf|zip|lock|json)$"; then
+        continue
+    fi
+    if echo "$file" | grep -qE "\.env\.example$"; then
+        continue
+    fi
+
+    # 1. Periksa keberadaan Private Key
+    if grep -q "BEGIN PRIVATE KEY" "$file" 2>/dev/null; then
+        echo "\033[31mERROR: Menemukan 'Private Key' dalam file: $file\033[0m"
+        SUSPICIOUS_FOUND=1
+    fi
+
+    # 2. Periksa baris kode baru yang berisi definisi variabel rahasia dengan nilai riil (bukan placeholder)
+    MATCHES=$(git diff --cached "$file" | grep -E "^\+[[:space:]]*($KEYWORDS)" | grep -vE "(your-key|your-database|your-secret|your-cloudinary|YOUR_|placeholder|local_db|localhost)")
+    if [ ! -z "$MATCHES" ]; then
+        echo "\033[33mPERINGATAN: Menemukan indikasi rahasia terhardcode di: $file\033[0m"
+        echo "$MATCHES"
+        echo "Pastikan rahasia disimpan di file .env dan tidak di-commit ke Git."
+        SUSPICIOUS_FOUND=1
+    fi
+done
+
+if [ $SUSPICIOUS_FOUND -ne 0 ]; then
+    echo "\033[31mCommit dibatalkan. Silakan periksa kembali file di atas sebelum melakukan commit.\033[0m"
+    exit 1
+fi
+
+exit 0
