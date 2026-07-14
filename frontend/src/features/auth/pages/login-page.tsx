@@ -138,7 +138,7 @@ export function LoginPage() {
             {/* Submit Button */}
             <button
               type="submit"
-              className="w-full mt-6 h-11 rounded-2xl text-white font-bold gradient-gold shadow-[0_4px_15px_rgba(228,181,43,0.3)] hover:opacity-95 active:scale-[0.98] transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer"
+              className="w-full mt-6 h-11 rounded-2xl text-white font-bold gradient-gold shadow-[0_4px_15px_rgba(255,214,65,0.2)] hover:opacity-95 active:scale-[0.98] transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer"
               disabled={mutation.isPending}
             >
               {mutation.isPending ? (

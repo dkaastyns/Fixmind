@@ -92,12 +92,12 @@ export function LandingPage() {
             {/* Buttons stacked on mobile, inline on desktop */}
             <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center items-center w-full max-w-xs sm:max-w-md mx-auto">
               <Link to="/signup" className="w-full sm:w-auto">
-                <button className="w-full sm:w-auto px-8 py-3.5 rounded-2xl text-white font-bold gradient-gold shadow-[0_4px_20px_rgba(228,181,43,0.35)] hover:shadow-[0_6px_25px_rgba(228,181,43,0.5)] active:scale-[0.98] transition-all duration-200 cursor-pointer">
+                <button className="w-full sm:w-auto px-8 py-3.5 rounded-2xl text-white font-bold gradient-gold shadow-[0_4px_20px_rgba(255,214,65,0.25)] hover:shadow-[0_6px_25px_rgba(255,214,65,0.4)] active:scale-[0.98] transition-all duration-200 cursor-pointer">
                   Daftar sekarang!
                 </button>
               </Link>
               <Link to="/login" className="w-full sm:w-auto">
-                <button className="w-full sm:w-auto px-8 py-3.5 rounded-2xl text-white font-bold bg-black hover:bg-slate-900 border border-white/10 active:scale-[0.98] transition-all duration-200 cursor-pointer">
+                <button className="w-full sm:w-auto px-8 py-3.5 rounded-2xl text-white font-bold gradient-gold shadow-[0_4px_20px_rgba(255,214,65,0.25)] hover:shadow-[0_6px_25px_rgba(255,214,65,0.4)] active:scale-[0.98] transition-all duration-200 cursor-pointer">
                   Masuk
                 </button>
               </Link>
