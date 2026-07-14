@@ -115,21 +115,69 @@ describe('AppController (e2e)', () => {
 
 ---
 
-## Frontend Testing Strategy
+## Frontend Testing
 
-Saat ini, modul Frontend belum diisi dengan rangkaian pengujian aktif. Namun, kami merekomendasikan strategi berikut untuk pengembangan masa depan:
+Modul Frontend menggunakan **Vitest** sebagai kerangka kerja pengujian (testing framework) utama, dikombinasikan dengan **React Testing Library** dan **jsdom** untuk menguji komponen UI React.
 
-### 1. Unit & Integration Testing dengan Vitest
-Karena frontend menggunakan Vite + React 19 + TypeScript, [Vitest](https://vitest.dev/) adalah kerangka kerja terbaik karena memiliki performa sangat cepat dan kompatibilitas out-of-the-box dengan konfigurasi Vite yang ada.
+### 1. Menjalankan Pengujian
 
-* **Fokus Uji:**
-  - Fungsi utilitas (formatting, parsing, dll).
-  - Custom React Hooks (terutama Zustand store dan wrapper TanStack Query).
-  - Integrasi komponen individual menggunakan [React Testing Library](https://testing-library.com/docs/react-testing-library/intro/).
+Jalankan perintah berikut dari folder `frontend/`:
 
-### 2. End-to-End (E2E) & PWA Testing dengan Playwright
-Karena Frontend mendukung Progressive Web App (PWA), pengujian E2E berbasis browser sungguhan sangat krusial. [Playwright](https://playwright.dev/) direkomendasikan karena:
-- Mendukung pengujian instalasi PWA dan Service Worker secara native.
-- Mampu mensimulasikan berbagai ukuran layar (Mobile-First responsive check).
-- Pengujian aliran otentikasi (login, session persistence, logout).
-- Skenario pengajuan laporan kerusakan hingga diselesaikan oleh admin.
+* **Unit & Component Tests:**
+  ```powershell
+  bun run test
+  ```
+* **Watch Mode (Sangat berguna saat development):**
+  ```powershell
+  bun run test:watch
+  ```
+* **Coverage Report (Laporan Cakupan Uji):**
+  ```powershell
+  bun run test:coverage
+  ```
+
+### 2. Pola Unit & Component Testing
+
+Unit/component test ditulis berdampingan dengan kode yang diuji menggunakan ekstensi `.spec.tsx`. File konfigurasi utama berada di [vitest.config.ts](file:///d:/FixMind/frontend/vitest.config.ts) dan file inisialisasi lingkungan pengujian berada di [src/test/setup.ts](file:///d:/FixMind/frontend/src/test/setup.ts).
+
+#### Contoh Menguji Komponen UI (`Button`)
+Berikut adalah pola pengujian komponen React 19 menggunakan React Testing Library yang diimplementasikan pada [button.spec.tsx](file:///d:/FixMind/frontend/src/components/ui/button.spec.tsx):
+
+```typescript
+import { render, screen } from '@testing-library/react'
+import { Button } from './button'
+import userEvent from '@testing-library/user-event'
+import { vi } from 'vitest'
+
+describe('Button Component', () => {
+  it('renders correctly with default styles and text', () => {
+    render(<Button>Click Me</Button>)
+    const buttonElement = screen.getByRole('button', { name: /click me/i })
+    expect(buttonElement).toBeInTheDocument()
+    expect(buttonElement).toHaveAttribute('type', 'button')
+  })
+
+  it('triggers onClick handler when clicked', async () => {
+    const handleClick = vi.fn()
+    render(<Button onClick={handleClick}>Click Me</Button>)
+    const buttonElement = screen.getByRole('button', { name: /click me/i })
+    
+    await userEvent.click(buttonElement)
+    
+    expect(handleClick).toHaveBeenCalledTimes(1)
+  })
+
+  it('is disabled when disabled prop is true', () => {
+    render(<Button disabled>Disabled Button</Button>)
+    const buttonElement = screen.getByRole('button', { name: /disabled button/i })
+    expect(buttonElement).toBeDisabled()
+  })
+})
+```
+
+### 3. Rekomendasi End-to-End (E2E) & PWA Testing
+
+Karena Frontend mendukung Progressive Web App (PWA), pengujian E2E berbasis browser sungguhan sangat krusial menggunakan **Playwright**.
+* **Aliran Otentikasi:** Tes skenario login, penyimpanan session, dan logout.
+* **Fungsi PWA:** Tes kompatibilitas service worker dan instalasi PWA di Chrome/Safari.
+* **Responsivitas:** Verifikasi tampilan dashboard admin dan form pelaporan di ukuran layar mobile (Mobile-First).
