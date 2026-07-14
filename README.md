@@ -17,14 +17,14 @@ Sistem ini membantu mempermudah pelaporan, di mana AI (menggunakan Gemini 2.5 Fl
 
 ---
 
-## 🛠 Fitur Baru: Jadwal Pemeliharaan (Maintenance Schedule)
+## Fitur Baru: Jadwal Pemeliharaan (Maintenance Schedule)
 
 Fitur untuk menjadwalkan perbaikan rutin fasilitas dan aset dengan manajemen vendor pihak ketiga.
 - Fitur pencatatan lengkap: Nama vendor, kontak person, nomor HP vendor, serta estimasi biaya perbaikan.
 - Pengaturan siklus: Sekali saja (One-time), Mingguan, Bulanan, Triwulan, hingga Tahunan.
 - Pelacakan status jadwal yang komprehensif: Terjadwal, Dikerjakan, Selesai, Batal, atau Terlambat (Overdue).
 
-## 🔄 Fitur Pengajuan Pemindahan Aset
+## Fitur Pengajuan Pemindahan Aset
 
 Fitur ini memperluas alur aplikasi dari sekadar pengaduan masalah menjadi juga pengelolaan perpindahan aset antar ruangan.
 
@@ -48,15 +48,15 @@ Fitur ini memperluas alur aplikasi dari sekadar pengaduan masalah menjadi juga p
 
 ---
 
-## 📊 Fitur Import Aset (Excel)
+## Fitur Import Aset (Excel)
 
 Fitur ini memungkinkan admin mengimpor data aset inventaris dari **file Excel (.xlsx/.xls)** ke dalam database secara massal.
 
 ### Cara Penggunaan
 1. **Buka halaman** `Fasilitas & Ruangan` di dashboard admin.
-2. Klik tombol **⬇ Template** di pojok kanan atas untuk mengunduh template Excel.
+2. Klik tombol **Template** di pojok kanan atas untuk mengunduh template Excel.
 3. Isi data aset di file template sesuai kolom yang tersedia.
-4. Klik tombol **📊 Import Excel** dan unggah file tersebut.
+4. Klik tombol **Import Excel** dan unggah file tersebut.
 
 ### Format Kolom Excel (Wajib)
 | idpemda | kode_barang | nomor_register | nama_barang | merk_type |
@@ -64,7 +64,7 @@ Fitur ini memungkinkan admin mengimpor data aset inventaris dari **file Excel (.
 
 ---
 
-## 🚀 Tech Stack (Tumpukan Teknologi)
+## Tech Stack (Tumpukan Teknologi)
 
 Proyek ini menggunakan arsitektur _Clean Architecture_ dan dipisahkan menjadi dua bagian utama (Frontend & Backend), tanpa menggunakan ORM berat untuk menjaga performa optimal.
 
@@ -79,14 +79,14 @@ Proyek ini menggunakan arsitektur _Clean Architecture_ dan dipisahkan menjadi du
 
 ---
 
-## 🏃 Panduan Menjalankan Proyek (Quick Start)
+## Panduan Menjalankan Proyek (Quick Start)
 
 ### Persyaratan Sistem
 - [Bun](https://bun.sh/) **1.3+** - digunakan sebagai runtime **dan** package manager (pengganti Node.js/npm).
 - PostgreSQL 16+ dengan ekstensi **pgvector** sudah terpasang.
 - Buat sebuah database kosong di PostgreSQL bernama `fixmind`.
 
-> **⚠️ Penting:** Proyek ini menggunakan **Bun**, bukan `npm` atau `yarn`. Install Bun: `powershell -c "irm bun.sh/install.ps1 | iex"`
+> **Penting:** Proyek ini menggunakan **Bun**, bukan `npm` atau `yarn`. Install Bun: `powershell -c "irm bun.sh/install.ps1 | iex"`
 
 ### 1. Konfigurasi Environment & Instalasi
 **Backend:**
@@ -125,7 +125,7 @@ bun run dev
 
 ---
 
-## 📱 PWA & Dukungan Mobile (Instalasi Aplikasi Tanpa APK)
+## PWA & Dukungan Mobile (Instalasi Aplikasi Tanpa APK)
 
 Aplikasi ini sudah diprogram agar dikenali sebagai _Progressive Web App_ (PWA) yang native-like.
 
@@ -136,7 +136,7 @@ Aplikasi ini sudah diprogram agar dikenali sebagai _Progressive Web App_ (PWA) y
 
 ---
 
-## 📚 Dokumentasi Tambahan
+## Dokumentasi Tambahan
 
 Detail mengenai arsitektur dan kebutuhan sistem lainnya dapat dibaca pada folder `docs/`:
 
