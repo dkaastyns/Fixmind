@@ -97,7 +97,7 @@ export function LandingPage() {
                 </button>
               </Link>
               <Link to="/login" className="w-full sm:w-auto">
-                <button className="w-full sm:w-auto px-8 py-3.5 rounded-2xl text-white font-bold gradient-gold shadow-[0_4px_20px_rgba(255,214,65,0.25)] hover:shadow-[0_6px_25px_rgba(255,214,65,0.4)] active:scale-[0.98] transition-all duration-200 cursor-pointer">
+                <button className="w-full sm:w-auto px-8 py-3.5 rounded-2xl text-white font-bold bg-black hover:bg-slate-900 border border-white/10 active:scale-[0.98] transition-all duration-200 cursor-pointer">
                   Masuk
                 </button>
               </Link>
