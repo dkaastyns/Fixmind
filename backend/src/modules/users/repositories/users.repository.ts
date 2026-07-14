@@ -92,6 +92,8 @@ export class UsersRepository {
       isActive: boolean;
       passwordHash: string;
       avatarUrl: string | null;
+      failedLoginAttempts: number;
+      lockoutUntil: Date | null;
     }>,
   ): Promise<UserRow | null> {
     const existing = await this.findById(id);
@@ -107,6 +109,8 @@ export class UsersRepository {
             is_active = ${data.isActive ?? existing.is_active},
             password_hash = ${data.passwordHash ?? existing.password_hash},
             avatar_url = ${data.avatarUrl !== undefined ? data.avatarUrl : existing.avatar_url},
+            failed_login_attempts = ${data.failedLoginAttempts !== undefined ? data.failedLoginAttempts : existing.failed_login_attempts},
+            lockout_until = ${data.lockoutUntil !== undefined ? data.lockoutUntil : existing.lockout_until},
             updated_at = now()
           WHERE id = ${id} AND deleted_at IS NULL
           RETURNING *,
@@ -120,6 +124,8 @@ export class UsersRepository {
             is_active = ${data.isActive ?? existing.is_active},
             password_hash = ${data.passwordHash ?? existing.password_hash},
             avatar_url = ${data.avatarUrl !== undefined ? data.avatarUrl : existing.avatar_url},
+            failed_login_attempts = ${data.failedLoginAttempts !== undefined ? data.failedLoginAttempts : existing.failed_login_attempts},
+            lockout_until = ${data.lockoutUntil !== undefined ? data.lockoutUntil : existing.lockout_until},
             updated_at = now()
           WHERE id = ${id} AND deleted_at IS NULL
           RETURNING *,

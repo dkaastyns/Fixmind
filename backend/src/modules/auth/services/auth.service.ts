@@ -62,9 +62,42 @@ export class AuthService {
       throw new UnauthorizedException('Invalid credentials');
     }
 
+    if (user.lockout_until && new Date(user.lockout_until) > new Date()) {
+      const remainingTime = Math.ceil(
+        (new Date(user.lockout_until).getTime() - Date.now()) / 60000,
+      );
+      throw new UnauthorizedException(
+        `Account locked. Please try again in ${remainingTime} minutes.`,
+      );
+    }
+
     const valid = await bcrypt.compare(password, user.password_hash);
     if (!valid) {
+      const newAttempts = user.failed_login_attempts + 1;
+      let lockoutUntil: Date | null = null;
+      
+      if (newAttempts >= 5) {
+        lockoutUntil = new Date(Date.now() + 15 * 60 * 1000); // Kunci selama 15 menit
+      }
+
+      await this.usersRepository.update(user.id, {
+        failedLoginAttempts: newAttempts,
+        lockoutUntil,
+      });
+
+      if (newAttempts >= 5) {
+        throw new UnauthorizedException(
+          'Too many failed attempts. Account locked for 15 minutes.',
+        );
+      }
       throw new UnauthorizedException('Invalid credentials');
+    }
+
+    if (user.failed_login_attempts > 0 || user.lockout_until) {
+      await this.usersRepository.update(user.id, {
+        failedLoginAttempts: 0,
+        lockoutUntil: null,
+      });
     }
 
     const tokens = await this.issueTokens(user, meta);

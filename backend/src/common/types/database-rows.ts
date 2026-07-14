@@ -10,6 +10,8 @@ export interface UserRow {
   phone: string | null;
   avatar_url: string | null;
   is_active: boolean;
+  failed_login_attempts: number;
+  lockout_until: Date | null;
   created_at: Date;
   updated_at: Date;
   deleted_at: Date | null;
