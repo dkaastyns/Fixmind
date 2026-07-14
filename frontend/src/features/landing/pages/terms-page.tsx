@@ -51,7 +51,7 @@ export function TermsPage() {
         className="absolute inset-0 z-0"
       >
         <img
-          src="/bg-dprd.jpg"
+          src="/new-bg_dprd.jpg"
           alt="Latar Belakang DPRD"
           className="h-full w-full object-cover"
         />
@@ -80,12 +80,11 @@ export function TermsPage() {
 
       {/* Content */}
       <div className="relative z-10 mx-auto max-w-4xl">
-        <header className="mb-8 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Link to="/" className="flex h-10 w-10 items-center justify-center rounded-xl overflow-hidden bg-white shadow-sm p-1 border border-white/60">
-              <img src="/logo.png" alt="Logo Semarang" className="h-full w-full object-contain" />
+        <header className="mb-8 flex flex-col sm:flex-row gap-4 items-center justify-between">
+          <div className="flex items-center justify-center">
+            <Link to="/" className="max-w-[240px] sm:max-w-[280px]">
+              <img src="/jdih-logo.png" alt="JDIH Kota Semarang" className="w-full h-auto object-contain" />
             </Link>
-            <span className="text-lg font-bold text-slate-800">FixMind</span>
           </div>
           <Link to="/signup">
             <Button variant="ghost" size="sm" className="gap-2 bg-white/60 hover:bg-white text-slate-700 transition-colors">
@@ -101,7 +100,7 @@ export function TermsPage() {
         >
           <GlassCard className="p-8 md:p-12 shadow-2xl border-white/80 bg-white/85 backdrop-blur-xl rounded-3xl">
             <div className="mb-10 text-center">
-              <div className="mx-auto mb-4 inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-r from-[#ef629f] to-[#eecda3] shadow-md">
+              <div className="mx-auto mb-4 inline-flex h-14 w-14 items-center justify-center rounded-2xl gradient-gold shadow-md">
                 <FileText className="h-7 w-7 text-white" />
               </div>
               <h1 className="text-3xl font-extrabold tracking-tight text-slate-900 md:text-4xl">
@@ -110,7 +109,7 @@ export function TermsPage() {
               <p className="mt-2 text-sm text-slate-500 font-medium">
                 Terakhir Diperbarui: Juli 2026
               </p>
-              <div className="mx-auto mt-4 h-1 w-20 rounded-full bg-gradient-to-r from-[#ef629f] to-[#eecda3]" />
+              <div className="mx-auto mt-4 h-1 w-20 rounded-full gradient-gold" />
             </div>
 
             <div className="space-y-8">
@@ -122,7 +121,7 @@ export function TermsPage() {
                   transition={{ delay: idx * 0.1, duration: 0.4 }}
                   className="group flex gap-4 rounded-2xl p-4 transition-colors hover:bg-slate-500/5"
                 >
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#ef629f]/10 text-[#ef629f] group-hover:bg-[#ef629f] group-hover:text-white transition-colors duration-300">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#ffd043]/15 text-[#d6a524] group-hover:bg-[#ffd043] group-hover:text-slate-900 transition-colors duration-300">
                     <section.icon className="h-5 w-5" />
                   </div>
                   <div>
@@ -142,9 +141,9 @@ export function TermsPage() {
                 Dengan mencentang persetujuan saat mendaftar, Anda menyatakan telah membaca, memahami, dan menyetujui seluruh ketentuan di atas.
               </p>
               <Link to="/signup">
-                <Button className="px-8 h-11 text-base shadow-[0_0_20px_rgba(239,98,159,0.3)] hover:shadow-[0_0_30px_rgba(239,98,159,0.5)] hover:-translate-y-0.5 transition-all duration-300">
+                <button className="px-8 h-11 text-base font-bold text-white gradient-gold shadow-[0_4px_15px_rgba(228,181,43,0.3)] hover:opacity-95 transition-all duration-300 rounded-xl hover:-translate-y-0.5 active:scale-[0.98] cursor-pointer">
                   Saya Setuju & Daftar Sekarang
-                </Button>
+                </button>
               </Link>
             </div>
           </GlassCard>

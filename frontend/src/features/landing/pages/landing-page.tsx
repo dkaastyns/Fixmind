@@ -1,16 +1,11 @@
 import { Link, Navigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import {
-  ArrowRight,
   BarChart3,
   Bot,
   ClipboardList,
-  Shield,
   Wrench,
 } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { GlassCard } from '@/components/ui/glass-card'
-
 import { useAuthStore } from '@/stores/auth-store'
 
 const features = [
@@ -18,21 +13,25 @@ const features = [
     icon: ClipboardList,
     title: 'Pelaporan Cerdas',
     description: 'Pegawai dapat melaporkan masalah fasilitas dengan foto dan memantau status secara langsung.',
+    highlight: false,
   },
   {
     icon: Bot,
     title: 'Prioritas Berbasis AI',
     description: 'Sistem menganalisis laporan dan merekomendasikan prioritas perbaikan.',
+    highlight: true,
   },
   {
     icon: Wrench,
     title: 'Alur Kerja Ringkas',
     description: 'Admin dan pengguna bisa memantau progres laporan tanpa alur teknisi yang rumit.',
+    highlight: false,
   },
   {
     icon: BarChart3,
     title: 'Dasbor Analitik',
     description: 'Pantau kinerja pemeliharaan, aktivitas ruangan, dan ekspor laporan untuk kepatuhan.',
+    highlight: false,
   },
 ]
 
@@ -45,125 +44,131 @@ export function LandingPage() {
   }
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-white">
-      {/* Background Image with slow zoom animation */}
-      <motion.div
-        initial={{ scale: 1.1, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        transition={{ duration: 3, ease: 'easeOut' }}
-        className="absolute inset-0 z-0"
-      >
-        <img
-          src="/bg-dprd.jpg"
-          alt="Latar Belakang DPRD"
-          className="h-full w-full object-cover"
-        />
-        {/* Overlay to ensure text readability */}
-        <div className="absolute inset-0 bg-white/70 backdrop-blur-[6px]" />
-        
-        {/* AI Glowing Orbs */}
-        <motion.div 
-          animate={{ x: [0, 40, 0], y: [0, 30, 0] }} 
-          transition={{ repeat: Infinity, duration: 8, ease: "easeInOut" }}
-          className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-[#ef629f]/20 rounded-full mix-blend-multiply filter blur-[120px]" 
-        />
-        <motion.div 
-          animate={{ x: [0, -30, 0], y: [0, -40, 0] }} 
-          transition={{ repeat: Infinity, duration: 10, ease: "easeInOut" }}
-          className="absolute top-1/3 right-1/4 w-[400px] h-[400px] bg-blue-400/20 rounded-full mix-blend-multiply filter blur-[100px]" 
-        />
-        <motion.div 
-          animate={{ x: [0, 30, 0], y: [0, -30, 0] }} 
-          transition={{ repeat: Infinity, duration: 9, ease: "easeInOut" }}
-          className="absolute bottom-1/4 left-1/3 w-[600px] h-[600px] bg-purple-400/15 rounded-full mix-blend-multiply filter blur-[120px]" 
-        />
+    <div className="relative min-h-screen overflow-x-hidden bg-[#f8fafc] flex flex-col justify-between">
+      
+      {/* Hero Background Image Section */}
+      <div className="relative w-full min-h-[90vh] sm:min-h-[85vh] flex flex-col justify-between pb-12">
+        <div className="absolute inset-0 z-0">
+          <img
+            src="/new-bg_dprd.jpg"
+            alt="Latar Belakang DPRD"
+            className="h-full w-full object-cover"
+          />
+          {/* Dark Overlay to ensure readability and contrast */}
+          <div className="absolute inset-0 bg-slate-950/60 backdrop-blur-[2px]" />
+          {/* Fading bottom overlay */}
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-slate-950/20 to-[#f8fafc]" />
+        </div>
 
-        <div className="absolute inset-0 bg-gradient-to-b from-white/30 via-transparent to-white/95" />
-      </motion.div>
-
-      {/* Main Content */}
-      <div className="relative z-10 min-h-screen flex flex-col">
-        <header className="glass mx-4 mt-4 flex items-center justify-between px-6 py-4 lg:mx-8">
-          <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl overflow-hidden bg-white shadow-sm p-1">
-              <img src="/logo.png" alt="Logo Semarang" className="h-full w-full object-contain" />
+        {/* Header/Nav inside Hero */}
+        <header className="relative z-10 w-full px-4 pt-6 sm:px-8 max-w-6xl mx-auto flex justify-center">
+          <div className="w-full flex justify-center">
+            {/* Center Logo banner */}
+            <div className="max-w-[280px] sm:max-w-[420px] transition-transform hover:scale-105 duration-300">
+              <img src="/jdih-logo.png" alt="JDIH Kota Semarang" className="w-full h-auto object-contain" />
             </div>
-            <span className="text-lg font-semibold">FixMind</span>
-          </div>
-          <div className="flex items-center gap-3">
-            <Link to="/login">
-              <Button variant="ghost" size="sm">
-                Masuk
-              </Button>
-            </Link>
-            <Link to="/signup">
-              <Button size="sm">Mulai</Button>
-            </Link>
           </div>
         </header>
 
-        <section className="mx-auto max-w-6xl px-4 py-16 text-center lg:py-24 flex-1">
+        {/* Hero Content */}
+        <div className="relative z-10 max-w-4xl mx-auto px-4 mt-8 sm:mt-12 text-center flex-grow flex flex-col justify-center items-center">
           <motion.div
-            initial={{ opacity: 0, y: 16 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
+            transition={{ duration: 0.6 }}
+            className="w-full"
           >
-            <div className="mx-auto mb-6 inline-flex items-center gap-2 rounded-full border border-[#ef629f]/30 bg-white/80 px-4 py-1.5 text-sm text-muted backdrop-blur-sm shadow-sm">
-              <Shield className="h-4 w-4 text-[#ef629f]" />
-              Pemeliharaan fasilitas tingkat perusahaan
-            </div>
-            <h1 className="text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl text-slate-900 drop-shadow-sm">
-              Kelola fasilitas Anda
-              <br />
-              <span className="text-gradient">dengan lebih cerdas</span>
+            <h2 className="text-xl sm:text-2xl font-extrabold text-white tracking-wider mb-2 drop-shadow-sm font-sans">
+              FixMind
+            </h2>
+            
+            <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-white leading-tight mt-4 max-w-3xl mx-auto">
+              Kelola aset Sekretariat
+              <span className="text-gradient-gold block mt-1 sm:mt-2">
+                dengan lebih cerdas.
+              </span>
             </h1>
-            <p className="mx-auto mt-6 max-w-2xl text-lg text-slate-700 font-medium">
-              FixMind membantu organisasi mengelola laporan kerusakan, memprioritaskan perbaikan,
-              dan menyederhanakan alur kerja melalui dukungan keputusan berbasis AI.
+
+            <p className="mt-6 max-w-2xl mx-auto text-sm sm:text-base text-slate-200 font-medium leading-relaxed">
+              FixMind membantu mengelola laporan kerusakan, meprioritaskan perbaikan dan menyederhanakan alur kerja melalui dukungan keputusan berbasis AI.
             </p>
-            <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
-              <Link to="/signup">
-                <Button size="lg" className="min-w-[160px] shadow-[0_0_25px_rgba(239,98,159,0.35)] hover:shadow-[0_0_35px_rgba(239,98,159,0.55)] hover:-translate-y-1 hover:scale-105 transition-all duration-300">
-                  Daftar Sekarang
-                  <ArrowRight className="h-4 w-4 ml-2" />
-                </Button>
+
+            {/* Buttons stacked on mobile, inline on desktop */}
+            <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center items-center w-full max-w-xs sm:max-w-md mx-auto">
+              <Link to="/signup" className="w-full sm:w-auto">
+                <button className="w-full sm:w-auto px-8 py-3.5 rounded-2xl text-white font-bold gradient-gold shadow-[0_4px_20px_rgba(228,181,43,0.35)] hover:shadow-[0_6px_25px_rgba(228,181,43,0.5)] active:scale-[0.98] transition-all duration-200 cursor-pointer">
+                  Daftar sekarang!
+                </button>
               </Link>
-              <Link to="/login">
-                <Button variant="secondary" size="lg" className="min-w-[160px] bg-white/60 backdrop-blur-md border-slate-300 text-slate-700 shadow-sm hover:bg-white hover:text-[#ef629f] hover:border-[#ef629f]/50 transition-all duration-300 hover:-translate-y-1">
+              <Link to="/login" className="w-full sm:w-auto">
+                <button className="w-full sm:w-auto px-8 py-3.5 rounded-2xl text-white font-bold bg-black hover:bg-slate-900 border border-white/10 active:scale-[0.98] transition-all duration-200 cursor-pointer">
                   Masuk
-                </Button>
+                </button>
               </Link>
             </div>
           </motion.div>
-        </section>
-
-        <section className="mx-auto max-w-6xl px-4 pb-24 relative z-10">
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {features.map((f, i) => (
-              <motion.div
-                key={f.title}
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4, delay: 0.4 + i * 0.1 }}
-                whileHover={{ y: -8, scale: 1.02 }}
-                className="h-full"
-              >
-                <GlassCard className="h-full p-6 bg-white/80 hover:bg-white/95 transition-all duration-300 shadow-xl hover:shadow-2xl hover:shadow-[#ef629f]/15 border-white/80">
-                  <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-2xl gradient-primary shadow-md">
-                    <f.icon className="h-6 w-6 text-white" />
-                  </div>
-                  <h3 className="font-bold text-slate-800 text-lg mb-2">{f.title}</h3>
-                  <p className="text-sm text-slate-600 leading-relaxed">{f.description}</p>
-                </GlassCard>
-              </motion.div>
-            ))}
-          </div>
-        </section>
-
-        <footer className="border-t border-slate-300/40 py-8 text-center text-sm text-slate-500 bg-white/30 backdrop-blur-sm">
-          © {new Date().getFullYear()} FixMind. Pemeliharaan Fasilitas Cerdas.
-        </footer>
+        </div>
       </div>
+
+      {/* "Mengapa FixMind???" Section */}
+      <section className="relative z-10 bg-[#f8fafc] px-4 py-16 sm:py-24 max-w-3xl mx-auto w-full">
+        <div className="text-center mb-12">
+          <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight">
+            <span className="text-gradient-orange-red mr-2">Mengapa</span>
+            <span className="text-slate-900">FixMind???</span>
+          </h2>
+        </div>
+
+        {/* Feature Cards Stacked Vertically */}
+        <div className="flex flex-col gap-6 w-full">
+          {features.map((feature, index) => {
+            const Icon = feature.icon
+            return (
+              <motion.div
+                key={feature.title}
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: index * 0.1 }}
+                className="w-full"
+              >
+                <div
+                  className={`p-6 rounded-3xl bg-white flex flex-col items-start gap-4 transition-all duration-300 ${
+                    feature.highlight
+                      ? 'border-2 border-[#3b82f6] shadow-[0_8px_30px_rgba(59,130,246,0.18)] ring-4 ring-[#3b82f6]/5'
+                      : 'border border-slate-100 shadow-[0_8px_30px_rgba(15,23,42,0.04)] hover:shadow-[0_12px_40px_rgba(15,23,42,0.08)]'
+                  }`}
+                >
+                  {/* Icon Container with custom accent background */}
+                  <div
+                    className={`flex h-11 w-11 items-center justify-center rounded-xl shadow-sm text-white ${
+                      feature.highlight
+                        ? 'bg-gradient-to-br from-orange-400 to-red-500'
+                        : 'bg-gradient-to-br from-orange-500 to-red-600'
+                    }`}
+                  >
+                    <Icon className="h-5 w-5" />
+                  </div>
+
+                  <div>
+                    <h3 className="font-extrabold text-slate-800 text-lg mb-2">
+                      {feature.title}
+                    </h3>
+                    <p className="text-sm text-slate-600 leading-relaxed font-medium">
+                      {feature.description}
+                    </p>
+                  </div>
+                </div>
+              </motion.div>
+            )
+          })}
+        </div>
+      </section>
+
+      {/* Footer Section */}
+      <footer className="w-full border-t border-slate-200/60 py-6 text-center text-xs text-slate-500 bg-white">
+        © 2026 FixMind. Pemeliharaan Fasilitas Cerdas.
+      </footer>
     </div>
   )
 }
+
