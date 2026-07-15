@@ -77,6 +77,11 @@ Dokumen ini berisi panduan penyelesaian untuk masalah-masalah umum yang mungkin 
 
 ---
 
+  - **Syarat Wajib HTTPS:** Untuk keamanan, browser seluler membatasi instalasi PWA hanya melalui koneksi **HTTPS** yang aman (pengecualian diberikan untuk akses via `localhost` di mesin lokal).
+  - Jika Anda mendeploy aplikasi untuk diuji di perangkat seluler lain secara lokal, gunakan reverse proxy seperti **ngrok** atau **Localtunnel** untuk menyediakan sertifikat HTTPS secara gratis saat development.
+
+---
+
 ## 6. Masalah Package Manager Bun
 
 ### Lockfile Rusak / Konflik Dependensi
@@ -91,3 +96,43 @@ Dokumen ini berisi panduan penyelesaian untuk masalah-masalah umum yang mungkin 
      ```powershell
      bun install
      ```
+
+---
+
+## 7. Masalah Docker Compose & Validasi Keamanan Baru
+
+### Error Docker Compose: `DATABASE_URL must be set in .env`
+* **Gejala:** Menjalankan `docker compose up` menghasilkan pesan error fatal yang menghentikan peluncuran kontainer karena variabel lingkungan kosong.
+* **Solusi:**
+  - Sejak hardening keamanan diterapkan, Docker Compose tidak lagi menggunakan fallback rahasia bawaan (`changeme`/`password`). Anda wajib mengisi `.env` di folder root sebelum menjalankan Docker Compose.
+  - Buat file `.env` di direktori yang sama dengan `docker-compose.yml` dan pastikan mendefinisikan variable berikut:
+    - `DATABASE_URL`
+    - `JWT_ACCESS_SECRET` (minimal 32 karakter)
+    - `JWT_REFRESH_SECRET` (minimal 32 karakter)
+    - `POSTGRES_PASSWORD`
+
+### Kontainer Backend Statusnya `unhealthy` atau Terus Restart di Docker
+* **Gejala:** Kontainer backend gagal melewati uji kesehatan (*healthcheck*) dan kontainer frontend tidak dapat diakses (karena bergantung pada status sehat backend).
+* **Solusi:**
+  1. Periksa log backend untuk mendeteksi error inisialisasi:
+     ```bash
+     docker compose logs backend
+     ```
+  2. Masalah yang sering terjadi adalah kegagalan validasi startup di NestJS akibat secret kunci JWT kurang dari 32 karakter (lihat error di bawah).
+  3. Pastikan database PostgreSQL di Docker sudah benar-benar siap menerima koneksi sebelum backend memulai proses startup (default db healthcheck dikonfigurasi 10 detik interval).
+
+### Startup Crash Backend: `JWT_ACCESS_SECRET must be at least 32 characters long`
+* **Gejala:** Log backend menunjukkan pesan kesalahan class-validator saat startup mengenai panjang secret key JWT yang kurang dari batas minimal.
+* **Solusi:**
+  - Demi keamanan tanda tangan kriptografis token JWT, panjang secret wajib minimal 32 karakter.
+  - Hasilkan kunci acak yang kuat menggunakan terminal openSSL lalu salin ke `.env` Anda:
+    ```bash
+    openssl rand -base64 32
+    ```
+
+### Import Berkas Excel Aset Menghasilkan Error `400 Bad Request` / `File type validation failed`
+* **Gejala:** Saat admin mengunggah file template Excel untuk di-import, API mengembalikan error validasi file meskipun file tampak benar di sisi frontend.
+* **Solusi:**
+  - Mulai v1.2, backend secara ketat memvalidasi tipe file MIME di server. Pastikan file yang diunggah memiliki format ekstensi Excel yang sah (`.xlsx` atau `.xls`).
+  - Beberapa kompresi file zip atau modifikasi manual bisa merubah MIME type berkas tersebut. Unduh ulang berkas template resmi dari halaman dashboard, isi kembali datanya, dan unggah ulang tanpa merubah ekstensinya.
+

@@ -177,6 +177,61 @@ RAG content with `embedding vector(768)` and HNSW index.
 
 ---
 
+## Database Tuning & Query Optimization Guide
+
+Karena aplikasi ini menggunakan raw SQL tanpa abstraction ORM, optimasi kueri dan penyetelan database sangat krusial untuk menjaga performa di bawah beban kerja tinggi.
+
+### 1. Optimasi Pencarian Vektor (pgvector Tuning)
+Pencarian kemiripan semantik obrolan AI dilakukan menggunakan operator `<=>` (cosine distance) pada kolom `embedding` di tabel `knowledge_chunks`.
+- **Indeks HNSW (Hierarchical Navigable Small World):** Secara default, kueri kemiripan lambat jika memindai seluruh baris secara penuh (*sequential scan*). Kami menggunakan indeks HNSW untuk pencarian ANN (*Approximate Nearest Neighbor*):
+  ```sql
+  CREATE INDEX idx_knowledge_chunks_embedding 
+  ON knowledge_chunks 
+  USING hnsw (embedding vector_cosine_ops)
+  WITH (m = 16, ef_construction = 64);
+  ```
+- **Penyetelan `ef_search`:** Nilai `ef_search` yang lebih tinggi meningkatkan akurasi *recall* pencarian tetapi sedikit mengurangi kecepatan. Setel nilai ini di tingkat sesi sebelum melakukan kueri pencarian vektor:
+  ```typescript
+  // Setel pada sesi sebelum kueri untuk performa optimal
+  await sql`SET LOCAL hnsw.ef_search = 16`;
+  ```
+
+### 2. B-Tree Index untuk Filter & Pagination
+Setiap kueri pelaporan (`reports`) memfilter data berdasarkan status dan tanggal serta menggunakan pengurutan terbalik (`ORDER BY created_at DESC`).
+- Pastikan indeks komposit terpasang jika sering memfilter beberapa kolom sekaligus:
+  ```sql
+  CREATE INDEX idx_reports_filter_status_date 
+  ON reports (status, created_at DESC) 
+  WHERE deleted_at IS NULL;
+  ```
+- Selalu sertakan klausul `WHERE deleted_at IS NULL` (Partial Index) pada indeks untuk mengabaikan baris yang terhapus secara logis (*soft deleted*), menjaga ukuran indeks tetap kecil dan efisien.
+
+### 3. Analisis Kueri dengan `EXPLAIN ANALYZE`
+Jika menemukan kueri REST API yang lambat (di atas 100ms), gunakan `EXPLAIN ANALYZE` di PostgreSQL untuk menguji performa rencana kueri:
+```sql
+EXPLAIN ANALYZE 
+SELECT * FROM reports 
+WHERE status = 'PENDING' AND deleted_at IS NULL 
+ORDER BY created_at DESC 
+LIMIT 20;
+```
+Perhatikan log keluaran:
+- **Sequential Scan (Seq Scan):** Menandakan database memindai seluruh baris tabel. Solusi: Buat indeks yang cocok dengan klausul `WHERE`.
+- **Index Scan / Index Only Scan:** Menandakan kueri telah menggunakan indeks dengan efisien.
+
+### 4. Connection Pooling (postgres.js)
+Koneksi database dikelola menggunakan pooling bawaan `postgres.js` di `database.module.ts`.
+- **Ukuran Pool Maksimal (`max`):** Secara default disetel ke 10 koneksi. Pada lingkungan produksi dengan lalu lintas tinggi, tingkatkan nilai `max` hingga 20-50 koneksi (sesuaikan dengan alokasi RAM PostgreSQL server Anda):
+  ```typescript
+  // database.module.ts
+  const sql = postgres(DATABASE_URL, {
+    max: 20, // sesuaikan jumlah koneksi pool
+    idle_timeout: 30, // tutup koneksi idle setelah 30 detik
+  });
+  ```
+
+---
+
 ## Migration Files
 
 Located in `backend/migrations/`:
@@ -188,3 +243,4 @@ Located in `backend/migrations/`:
 5. `0005_create_ai_tables.sql`
 
 Run with: `bun run migrate` (after configuring `DATABASE_URL`).
+

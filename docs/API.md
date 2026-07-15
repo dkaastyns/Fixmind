@@ -2,10 +2,104 @@
 
 Base URL: `http://localhost:3000/api/v1`
 
+## API Authentication & cURL Examples
+
 Semua endpoint yang membutuhkan autentikasi wajib menyertakan header:
 ```
 Authorization: Bearer <accessToken>
 ```
+
+Berikut adalah contoh lengkap alur autentikasi menggunakan `cURL` (dapat disalin untuk dicoba langsung di terminal atau di-import ke Postman):
+
+### 1. Login Pertama Kali (Mendapatkan Access Token & Set Cookie)
+Kirim request `POST` ke `/auth/login` dengan email dan password. Server akan memvalidasi kredensial, mengembalikan access token dalam JSON, serta menyetel HttpOnly cookie `fixmind_refresh`.
+
+**Request cURL:**
+```bash
+curl -X POST http://localhost:3000/api/v1/auth/login \
+  -H "Content-Type: application/json" \
+  -c cookies.txt \
+  -d '{
+    "email": "admin@fixmind.local",
+    "password": "AdminPassword123!"
+  }'
+```
+*Catatan: Parameter `-c cookies.txt` akan menyimpan cookie refresh token yang dikirim backend ke file lokal.*
+
+**Response:**
+```json
+{
+  "success": true,
+  "message": "Login successful",
+  "data": {
+    "user": {
+      "id": "8a83dc53-c9cf-41c6-99b8-3e478eb079c6",
+      "email": "admin@fixmind.local",
+      "fullName": "Administrator",
+      "role": "ADMIN"
+    },
+    "accessToken": "eyJhbGciOiJIUzI1NiIsIn...",
+    "expiresIn": "15m"
+  }
+}
+```
+
+### 2. Mengakses Endpoint Terproteksi (Menggunakan Bearer Token)
+Gunakan `accessToken` yang diperoleh dari respon login di atas pada header `Authorization`.
+
+**Request cURL (Mendapatkan Daftar Laporan):**
+```bash
+curl -X GET http://localhost:3000/api/v1/reports \
+  -H "Authorization: Bearer <accessToken>" \
+  -H "Accept: application/json"
+```
+
+**Request cURL (Membuat Laporan Baru):**
+```bash
+curl -X POST http://localhost:3000/api/v1/reports \
+  -H "Authorization: Bearer <accessToken>" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "title": "AC Bocor di Ruang Rapat",
+    "description": "AC nomor 2 mengeluarkan air terus-menerus.",
+    "roomId": "013dc06e-8260-496a-b2b7-a365df3586aa"
+  }'
+```
+
+### 3. Menyinkronkan Ulang Token (Refresh Token Rotation)
+Jika access token kedaluwarsa (HTTP status 401), panggil endpoint `/auth/refresh` dengan menyertakan cookie `fixmind_refresh` yang disimpan sebelumnya.
+
+**Request cURL:**
+```bash
+curl -X POST http://localhost:3000/api/v1/auth/refresh \
+  -b cookies.txt \
+  -c cookies.txt
+```
+*Catatan: `-b cookies.txt` mengirimkan cookie yang disimpan sebelumnya, dan `-c cookies.txt` menulis ulang cookie baru hasil rotasi token refresh.*
+
+**Response:**
+```json
+{
+  "success": true,
+  "message": "Token refreshed",
+  "data": {
+    "accessToken": "eyJhbGciOiJIUzI1NiIsIn...",
+    "expiresIn": "15m"
+  }
+}
+```
+
+### 4. Logout (Mencabut Sesi)
+Kirim request `POST` ke `/auth/logout` untuk menghapus sesi aktif di database dan membersihkan cookie refresh token.
+
+**Request cURL:**
+```bash
+curl -X POST http://localhost:3000/api/v1/auth/logout \
+  -H "Authorization: Bearer <accessToken>" \
+  -b cookies.txt
+```
+
+---
 
 ## Response Format
 
