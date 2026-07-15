@@ -2,44 +2,44 @@ import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import {
   ArrowLeft,
-  BookOpen,
-  FileText,
+  ShieldCheck,
+  EyeOff,
+  Database,
+  Lock,
+  UserCog,
   ShieldAlert,
-  Server,
-  UserCheck,
-  Building,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
 const sections = [
   {
-    icon: BookOpen,
-    title: '1. Pendahuluan',
-    content: 'Selamat datang di FixMind. Dengan mengakses dan menggunakan platform kami, Anda setuju untuk mematuhi dan terikat oleh Ketentuan Layanan ini. Aplikasi ini dibuat khusus untuk mempermudah pelaporan, pemantauan, dan pemeliharaan sarana dan prasarana di lingkungan Dewan Perwakilan Rakyat Daerah (DPRD) Kota Semarang.',
+    icon: EyeOff,
+    title: '1. Pengumpulan Informasi',
+    content: 'Kami mengumpulkan data yang Anda berikan secara langsung saat pendaftaran dan penggunaan layanan, meliputi:\n• Data Identitas: Nama Lengkap, Alamat Email, Kredensial Akun (Kata Sandi yang di-hash).\n• Data Laporan: Foto fasilitas yang dilaporkan, deskripsi detail kerusakan, serta lokasi ruangan/fasilitas di lingkungan DPRD Kota Semarang.',
   },
   {
-    icon: Server,
-    title: '2. Layanan yang Tersedia',
-    content: 'FixMind menyediakan beberapa layanan utama bagi seluruh pegawai dan pengelola fasilitas, termasuk:\n• Sistem Pelaporan Cerdas: Pengguna dapat mengunggah foto, deskripsi, lokasi ruangan, dan kategori kerusakan fasilitas.\n• Integrasi AI: Asisten cerdas kami membantu menganalisis laporan, mengelompokkan kategori, serta merekomendasikan tingkat prioritas perbaikan.\n• Pemantauan Real-time: Dashboard interaktif yang menunjukkan status perbaikan dari pengajuan baru, proses pengerjaan, hingga selesai.\n• Layanan Notifikasi: Pembaruan status laporan langsung yang dikirimkan ke pihak terkait secara instan.',
+    icon: Database,
+    title: '2. Penggunaan Informasi',
+    content: 'Data yang dikumpulkan dianalisis dan digunakan semata-mata untuk:\n• Memproses laporan kerusakan dan memfasilitasi koordinasi perbaikan sarana prasarana.\n• Analisis AI untuk merekomendasikan tingkat prioritas dan mengelompokkan kategori laporan.\n• Mengirimkan pembaruan status laporan secara instan dan real-time kepada pihak pelapor.',
+  },
+  {
+    icon: Lock,
+    title: '3. Penyimpanan & Keamanan Data',
+    content: 'Keamanan informasi Anda adalah prioritas kami:\n• Kami menerapkan langkah-langkah teknis dan organisasional untuk melindungi data pribadi Anda dari akses tidak sah, kehilangan, atau manipulasi.\n• Semua data kata sandi dienkripsi dengan algoritma hash yang aman sebelum disimpan di database.',
   },
   {
     icon: ShieldAlert,
-    title: '3. Kebijakan & Kerahasiaan',
-    content: 'Kami berkomitmen untuk melindungi informasi Anda:\n• Pengumpulan Data: Kami hanya mengumpulkan data yang diperlukan untuk identifikasi laporan seperti Nama, Email, Nomor Telepon, dan Kredensial Akun.\n• Penggunaan Data: Data laporan digunakan sepenuhnya untuk tujuan koordinasi perbaikan fasilitas.\n• Privasi: FixMind menjamin kerahasiaan identitas pelapor dalam pelaporan isu internal tertentu demi menjaga kenyamanan bekerja.',
+    title: '4. Pembagian Data Pihak Ketiga',
+    content: 'FixMind berkomitmen untuk menjaga kerahasiaan data:\n• Kami tidak akan pernah menjual, menyewakan, atau membagikan data pribadi Anda kepada pihak ketiga untuk tujuan komersial.\n• Data laporan hanya diakses oleh administrator internal JDIH dan tim pemeliharaan sarana prasarana DPRD Kota Semarang.',
   },
   {
-    icon: UserCheck,
-    title: '4. Kewajiban Pengguna',
-    content: 'Sebagai pengguna terdaftar, Anda berkewajiban untuk:\n• Memberikan informasi laporan yang akurat, jujur, dan dapat dipertanggungjawabkan.\n• Tidak mengirimkan laporan palsu, spam, atau informasi yang mengandung unsur SARA dan pornografi.\n• Menjaga keamanan kata sandi akun Anda dan segera melaporkan jika mendeteksi penggunaan akun tanpa izin.',
-  },
-  {
-    icon: Building,
-    title: '5. Batasan Tanggung Jawab',
-    content: 'Layanan FixMind disediakan "sebagaimana adanya". Pengelola platform berusaha sebaik mungkin untuk meminimalkan waktu henti (downtime) dan memperbaiki kendala teknis dengan cepat, namun tidak bertanggung jawab atas kerugian tidak langsung yang disebabkan oleh gangguan teknis sistem di luar kendali.',
+    icon: UserCog,
+    title: '5. Hak & Pilihan Pengguna',
+    content: 'Sebagai pengguna platform, Anda memiliki hak penuh untuk:\n• Memperbarui informasi profil Anda secara mandiri melalui halaman profil.\n• Menghubungi administrator jika memerlukan bantuan teknis terkait data akun atau permintaan penghapusan akun jika tidak lagi bertugas.',
   },
 ]
 
-export function TermsPage() {
+export function PrivacyPage() {
   return (
     <div className="relative min-h-screen overflow-hidden bg-slate-950 py-12 px-4">
       {/* Background Image with slow zoom animation */}
@@ -59,19 +59,19 @@ export function TermsPage() {
         
         {/* AI Glowing Orbs */}
         <motion.div 
-          animate={{ x: [0, 40, 0], y: [0, 30, 0] }} 
-          transition={{ repeat: Infinity, duration: 8, ease: "easeInOut" }}
-          className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-[#ef629f]/10 rounded-full filter blur-[120px] pointer-events-none" 
-        />
-        <motion.div 
           animate={{ x: [0, -30, 0], y: [0, -40, 0] }} 
           transition={{ repeat: Infinity, duration: 10, ease: "easeInOut" }}
+          className="absolute top-1/4 left-1/3 w-[500px] h-[500px] bg-[#ef629f]/10 rounded-full filter blur-[120px] pointer-events-none" 
+        />
+        <motion.div 
+          animate={{ x: [0, 40, 0], y: [0, 30, 0] }} 
+          transition={{ repeat: Infinity, duration: 8, ease: "easeInOut" }}
           className="absolute top-1/3 right-1/4 w-[400px] h-[400px] bg-blue-500/10 rounded-full filter blur-[100px] pointer-events-none" 
         />
         <motion.div 
-          animate={{ x: [0, 30, 0], y: [0, -30, 0] }} 
+          animate={{ x: [0, -30, 0], y: [0, 30, 0] }} 
           transition={{ repeat: Infinity, duration: 9, ease: "easeInOut" }}
-          className="absolute bottom-1/4 left-1/3 w-[600px] h-[600px] bg-[#ffd043]/5 rounded-full filter blur-[120px] pointer-events-none" 
+          className="absolute bottom-1/4 left-1/4 w-[600px] h-[600px] bg-[#ffd043]/5 rounded-full filter blur-[120px] pointer-events-none" 
         />
 
         <div className="absolute inset-0 bg-gradient-to-b from-slate-950/30 via-transparent to-slate-950/95" />
@@ -100,10 +100,10 @@ export function TermsPage() {
           <div className="glass-dark p-8 md:p-12 shadow-2xl border-white/10 bg-slate-950/45 backdrop-blur-xl rounded-3xl">
             <div className="mb-10 text-center">
               <div className="mx-auto mb-4 inline-flex h-14 w-14 items-center justify-center rounded-2xl gradient-gold shadow-md">
-                <FileText className="h-7 w-7 text-white" />
+                <ShieldCheck className="h-7 w-7 text-white" />
               </div>
               <h1 className="text-3xl font-extrabold tracking-tight text-white md:text-4xl">
-                Ketentuan Layanan
+                Kebijakan Penggunaan
               </h1>
               <p className="mt-2 text-sm text-slate-400 font-medium">
                 Terakhir Diperbarui: Juli 2026
@@ -137,7 +137,7 @@ export function TermsPage() {
 
             <div className="mt-12 border-t border-white/10 pt-8 text-center">
               <p className="text-sm text-slate-400 mb-6 font-medium">
-                Dengan mencentang persetujuan saat mendaftar, Anda menyatakan telah membaca, memahami, dan menyetujui seluruh ketentuan di atas.
+                Dengan mencentang persetujuan saat mendaftar, Anda menyatakan telah membaca, memahami, dan menyetujui seluruh kebijakan di atas.
               </p>
               <Link to="/signup">
                 <button className="px-8 h-11 text-base font-bold text-white gradient-gold shadow-[0_4px_15px_rgba(228,181,43,0.3)] hover:opacity-95 transition-all duration-300 rounded-xl hover:-translate-y-0.5 active:scale-[0.98] cursor-pointer">

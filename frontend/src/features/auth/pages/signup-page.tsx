@@ -202,9 +202,9 @@ export function SignupPage() {
                     Ketentuan Layanan
                   </Link>{' '}
                   dan{' '}
-                  <span className="font-semibold text-[#ffd043]">
+                  <Link to="/privacy" className="font-semibold text-[#ffd043] hover:underline">
                     kebijakan penggunaan FixMind.
-                  </span>
+                  </Link>
                 </span>
               </label>
               {form.formState.errors.agreeToTerms && (

@@ -10,6 +10,7 @@ const LoginPage = React.lazy(() => import('@/features/auth/pages/login-page').th
 const SignupPage = React.lazy(() => import('@/features/auth/pages/signup-page').then(m => ({ default: m.SignupPage })))
 const LandingPage = React.lazy(() => import('@/features/landing/pages/landing-page').then(m => ({ default: m.LandingPage })))
 const TermsPage = React.lazy(() => import('@/features/landing/pages/terms-page').then(m => ({ default: m.TermsPage })))
+const PrivacyPage = React.lazy(() => import('@/features/landing/pages/privacy-page').then(m => ({ default: m.PrivacyPage })))
 const DashboardHomePage = React.lazy(() => import('@/features/dashboard/pages/dashboard-home-page').then(m => ({ default: m.DashboardHomePage })))
 const ReportsPage = React.lazy(() => import('@/features/reports/pages/reports-page').then(m => ({ default: m.ReportsPage })))
 const ReportDetailPage = React.lazy(() => import('@/features/reports/pages/report-detail-page').then(m => ({ default: m.ReportDetailPage })))
@@ -37,6 +38,7 @@ export function AppRouter() {
       <Routes>
         <Route path="/" element={<LazyPage><LandingPage /></LazyPage>} />
         <Route path="/terms" element={<LazyPage><TermsPage /></LazyPage>} />
+        <Route path="/privacy" element={<LazyPage><PrivacyPage /></LazyPage>} />
 
         <Route element={<GuestRoute />}>
           <Route path="/login" element={<LazyPage><LoginPage /></LazyPage>} />
