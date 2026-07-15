@@ -7,6 +7,7 @@ import {
   IsString,
   IsUrl,
   Min,
+  MinLength,
   validateSync,
 } from 'class-validator';
 
@@ -32,12 +33,16 @@ class EnvironmentVariables {
   @IsUrl({ require_tld: false })
   CORS_ORIGIN = 'http://localhost:5173';
 
+  // SECURITY: JWT secrets wajib minimal 32 karakter untuk keamanan kriptografis.
+  // Generate dengan: openssl rand -base64 48
   @IsString()
   @IsNotEmpty()
+  @MinLength(32, { message: 'JWT_ACCESS_SECRET must be at least 32 characters long' })
   JWT_ACCESS_SECRET!: string;
 
   @IsString()
   @IsNotEmpty()
+  @MinLength(32, { message: 'JWT_REFRESH_SECRET must be at least 32 characters long' })
   JWT_REFRESH_SECRET!: string;
 
   @IsString()

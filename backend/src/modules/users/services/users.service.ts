@@ -8,6 +8,16 @@ import type { UserRow } from '../../../common/types/database-rows';
 import { CreateUserDto, UpdateUserDto } from '../dto/user.dto';
 import { UsersRepository } from '../repositories/users.repository';
 
+/**
+ * SECURITY: Tipe internal untuk update user yang digunakan secara internal
+ * (bukan melalui request body langsung dari klien).
+ * Memisahkan payload yang boleh dikirim user (UpdateUserDto, tanpa avatarUrl)
+ * dari payload yang bisa di-set oleh service internal (termasuk avatarUrl).
+ */
+export type InternalUpdateUserPayload = UpdateUserDto & {
+  avatarUrl?: string | null;
+};
+
 @Injectable()
 export class UsersService {
   constructor(private readonly usersRepository: UsersRepository) {}
@@ -62,7 +72,10 @@ export class UsersService {
     });
   }
 
-  async update(id: string, dto: UpdateUserDto) {
+  // SECURITY: Menggunakan InternalUpdateUserPayload — avatarUrl hanya bisa
+  // di-set secara internal (dari auth.controller avatar endpoint) dan TIDAK
+  // bisa dikirim user secara langsung melalui request body UpdateUserDto.
+  async update(id: string, dto: InternalUpdateUserPayload) {
     const data: Parameters<UsersRepository['update']>[1] = {};
     if (dto.fullName) data.fullName = dto.fullName;
     if (dto.isAdmin !== undefined) data.isAdmin = dto.isAdmin;

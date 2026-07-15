@@ -8,34 +8,64 @@ services:
     ports:
       - "80:80"
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
 
   backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    ports:
-      - "3000:3000"
+    # SECURITY: Port 3000 tidak di-expose ke host di produksi.
+    # Backend hanya bisa diakses melalui Nginx (internal Docker network).
+    # Uncomment baris di bawah HANYA untuk debugging lokal:
+    # ports:
+    #   - "3000:3000"
     environment:
       - NODE_ENV=production
       - PORT=3000
-      - DATABASE_URL=${DATABASE_URL:-postgresql://postgres:password@db:5432/fixmind}
-      - JWT_SECRET=${JWT_SECRET:-changeme}
-      - CLOUDINARY_URL=${CLOUDINARY_URL}
-      - CORS_ORIGIN=http://localhost
+      # SECURITY: Semua variable WAJIB diisi di file .env — tidak ada fallback lemah.
+      # Sintaks :? akan membuat Docker gagal start jika variable tidak di-set.
+      - DATABASE_URL=${DATABASE_URL:?DATABASE_URL must be set in .env}
+      - JWT_ACCESS_SECRET=${JWT_ACCESS_SECRET:?JWT_ACCESS_SECRET must be set in .env (min 32 chars)}
+      - JWT_REFRESH_SECRET=${JWT_REFRESH_SECRET:?JWT_REFRESH_SECRET must be set in .env (min 32 chars)}
+      - CLOUDINARY_CLOUD_NAME=${CLOUDINARY_CLOUD_NAME}
+      - CLOUDINARY_API_KEY=${CLOUDINARY_API_KEY}
+      - CLOUDINARY_API_SECRET=${CLOUDINARY_API_SECRET}
+      - CORS_ORIGIN=${CORS_ORIGIN:-http://localhost}
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - GROQ_API_KEY=${GROQ_API_KEY}
     depends_on:
-      - db
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3000/api/v1/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
 
   db:
     image: postgres:15-alpine
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: fixmind
-    ports:
-      - "5432:5432"
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      # SECURITY: Password database WAJIB diisi di file .env
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD must be set in .env}
+      POSTGRES_DB: ${POSTGRES_DB:-fixmind}
+    # SECURITY: Port PostgreSQL TIDAK di-expose ke host di produksi.
+    # Database hanya bisa diakses oleh backend dalam internal Docker network.
+    # Uncomment HANYA untuk debugging/migrasi lokal:
+    # ports:
+    #   - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-fixmind}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
 volumes:
   pgdata:

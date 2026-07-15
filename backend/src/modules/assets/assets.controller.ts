@@ -10,6 +10,9 @@ import {
   Res,
   UploadedFile,
   UseInterceptors,
+  ParseFilePipe,
+  MaxFileSizeValidator,
+  FileTypeValidator,
 } from '@nestjs/common';
 import type { Response } from 'express';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -106,7 +109,20 @@ export class AssetsController {
   @UseInterceptors(FileInterceptor('file'))
   async importExcel(
     @Query() query: ImportAssetsQueryDto,
-    @UploadedFile() file: Express.Multer.File,
+    // SECURITY: Validasi file di backend — MIME type dan ukuran wajib divalidasi
+    // di server, bukan hanya di frontend, karena request bisa dikirim langsung
+    // ke API dengan tool seperti curl atau Postman.
+    @UploadedFile(
+      new ParseFilePipe({
+        validators: [
+          new MaxFileSizeValidator({ maxSize: 10 * 1024 * 1024 }), // 10MB
+          new FileTypeValidator({
+            fileType: /application\/vnd\.openxmlformats-officedocument\.spreadsheetml\.sheet|application\/vnd\.ms-excel/,
+          }),
+        ],
+      }),
+    )
+    file: Express.Multer.File,
   ) {
     const data = await this.assetsService.importExcel(query.roomId, file);
     return { message: 'Assets imported', data };

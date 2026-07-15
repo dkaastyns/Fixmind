@@ -98,6 +98,9 @@ export class AuthController {
     };
   }
 
+  // SECURITY: Rate limit pada /auth/refresh — tanpa ini endpoint ini bisa
+  // dibrute force untuk mencari refresh token yang valid.
+  @Throttle({ default: { limit: 10, ttl: 60000 } })
   @Public()
   @Post('refresh')
   @HttpCode(HttpStatus.OK)

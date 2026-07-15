@@ -10,7 +10,9 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     super({
       jwtFromRequest: ExtractJwt.fromExtractors([
         ExtractJwt.fromAuthHeaderAsBearerToken(),
-        (req) => req?.query?.token as string | null,
+        // SECURITY: JWT via URL query string dihapus — token di URL tercatat
+        // di Nginx access log, browser history, dan referrer header.
+        // Gunakan Authorization: Bearer header sebagai satu-satunya sumber.
       ]),
       ignoreExpiration: false,
       secretOrKey: config.getOrThrow<string>('JWT_ACCESS_SECRET'),
