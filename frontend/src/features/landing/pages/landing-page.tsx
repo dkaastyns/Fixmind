@@ -61,7 +61,7 @@ export function LandingPage() {
           <div className="w-full flex justify-center">
             {/* Center Logo banner */}
             <div className="max-w-[280px] sm:max-w-[420px] transition-transform hover:scale-105 duration-300">
-              <img src="/jdih-logo.png" alt="JDIH Kota Semarang" className="w-full h-auto object-contain" />
+              <img src="/jdih-logo.png" alt="JDIH Kota Semarang" className="w-full h-auto object-contain [filter:drop-shadow(0_0_8px_rgba(255,255,255,0.8))]" />
             </div>
           </div>
         </header>

@@ -100,7 +100,7 @@ export function SignupPage() {
         <div className="mb-6 text-center">
           <div className="flex justify-center mb-6">
             <div className="max-w-[280px] sm:max-w-[320px] transition-transform hover:scale-105 duration-300">
-              <img src="/jdih-logo.png" alt="JDIH Kota Semarang" className="w-full h-auto object-contain" />
+              <img src="/jdih-logo.png" alt="JDIH Kota Semarang" className="w-full h-auto object-contain [filter:drop-shadow(0_0_8px_rgba(255,255,255,0.8))]" />
             </div>
           </div>
           
