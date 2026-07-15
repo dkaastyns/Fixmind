@@ -30,12 +30,14 @@ docker compose up -d --build
 ```
 
 Services:
-| Service | Port | Role |
-|---------|------|------|
-| nginx | 80, 443 | Reverse proxy |
-| backend | 3000 (internal) | NestJS API |
-| frontend | 80 (internal) | Static SPA |
-| postgres | 5432 | Database `fixmind` |
+| Service | Port | Role | Aksesibilitas |
+|---------|------|------|---------------|
+| nginx | 80, 443 | Reverse proxy | Publik (di-expose ke host) |
+| backend | 3000 | NestJS API | Internal Docker Network (Tertutup dari luar) |
+| frontend | 80 | Static SPA | Internal Docker Network (Tertutup dari luar) |
+| postgres | 5432 | Database `fixmind` | Internal Docker Network (Tertutup dari luar) |
+
+> **Catatan Port Hardening:** Demi keamanan, port PostgreSQL (`5432`) dan NestJS API (`3000`) tidak di-expose ke publik. Nginx bertindak sebagai satu-satunya pintu masuk. Jika Anda memerlukan akses database langsung untuk melakukan debug atau migrasi manual dari mesin host, Anda dapat melakukan uncomment baris `ports` pada service `db` atau `backend` di dalam file [docker-compose.yml](../docker-compose.yml) untuk sementara waktu.
 
 ## Nginx
 

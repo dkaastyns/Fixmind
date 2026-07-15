@@ -28,43 +28,57 @@ Business rules (e.g. "user can only view own reports") belong in **services**, n
 
 ## HTTP Security
 
-- **helmet** — XSS, clickjacking headers
-- **CORS** — explicit origin from env, credentials enabled
-- **Rate limiting** — 100 req/min default (configurable)
+- **helmet** — Mengamankan HTTP Headers dengan Content Security Policy (CSP) ketat secara terperinci. CSP membatasi eksekusi skrip hanya dari asal (`'self'`), melarang iframe, dan membatasi sumber gambar eksternal hanya dari Cloudinary.
+- **CORS** — Validasi asal request melalui variabel lingkungan `CORS_ORIGIN`, dengan opsi `credentials: true`.
+- **Rate limiting** — Rate limit global (100 req/menit default) yang dikonfigurasi melalui modul Throttler. Endpoint sensitif di-override untuk proteksi brute force:
+  - Register: maksimal 5 request/menit.
+  - Login: maksimal 10 request/menit.
+  - Token Refresh (`/auth/refresh`): maksimal 10 request/menit.
 
-## Secrets Management
+## Secrets & Validation Hardening
 
-| Secret | Storage |
-|--------|---------|
-| JWT_ACCESS_SECRET | env |
-| JWT_REFRESH_SECRET | env |
-| GEMINI_API_KEY | env |
-| DATABASE_URL | env |
-| Cloudinary keys | env |
+- **Validasi Startup**: Variabel lingkungan `JWT_ACCESS_SECRET` dan `JWT_REFRESH_SECRET` divalidasi saat aplikasi dimulai. Kedua secret tersebut wajib berukuran **minimal 32 karakter** untuk memastikan keamanan enkripsi tanda tangan JWT.
+- **Validasi Input & DTO**: 
+  - **Kekuatan Kata Sandi**: Pendaftaran (`RegisterDto` dan `CreateUserDto`) memvalidasi kekuatan kata sandi menggunakan regex untuk mewajibkan minimal 1 huruf besar dan 1 angka.
+  - **Prompt AI**: Masukan obrolan AI (`AiChatDto`) dibatasi maksimal 2000 karakter (`@MaxLength(2000)`) untuk mencegah serangan Denial of Service (DoS) pada API LLM.
+  - **Pemisahan Hak Akses Profil**: Pembaruan profil user (`UpdateUserDto`) tidak mengizinkan pengubahan `avatarUrl` secara langsung melalui request body. Pembaruan avatar wajib melalui endpoint upload file resmi.
+  - **Validasi Berkas Excel**: Endpoint import data aset (`/assets/import`) menggunakan `ParseFilePipe` untuk memvalidasi ukuran file (maksimal 10MB) dan memverifikasi MIME type berkas agar hanya menerima file spreadsheet (.xlsx/.xls).
 
-Minimum 32 characters for JWT secrets in production.
+## Session & Token Management
 
-## Session Management
+- **Refresh Token Rotation**: Token refresh baru diterbitkan setiap kali `/auth/refresh` digunakan, sedangkan token lama langsung direvoke.
+- **Token In-Memory**: Access Token disimpan di memori frontend (Zustand store), bukan di `localStorage` atau `sessionStorage`, guna meminimalisir risiko pencurian token melalui serangan Cross-Site Scripting (XSS).
+- **Pengiriman Token Aman**: Access token dikirim melalui HTTP Header `Authorization: Bearer`. Pengiriman JWT token melalui URL query string (`?token=...`) telah **dihapus** sepenuhnya untuk mencegah kebocoran token pada log server atau riwayat peramban web.
+- **HttpOnly Cookies**: Refresh token dikirimkan melalui cookie HttpOnly, dengan atribut `sameSite: 'strict'` dan `secure: true` (pada lingkungan produksi).
 
-- Refresh token rotation on `/auth/refresh`
-- Revoke on logout
-- `revoked_at` timestamp; expired sessions ignored
+## Infrastructure Protection
+
+- **Reverse Proxy trust proxy**: Konfigurasi `trust proxy` diaktifkan pada aplikasi NestJS sehingga IP asli klien dapat diteruskan secara akurat oleh Nginx ke server backend. Ini memastikan log audit dan lockout IP brute force bekerja dengan benar.
+- **Isolasi Database & Backend**: Pada file `docker-compose.yml`, port database Postgres (`5432`) dan port API backend (`3000`) ditutup dan tidak diekspos ke host luar. Akses antar service hanya terjadi di dalam jaringan Docker internal.
+- **Nginx Security Headers**: Server web Nginx menyajikan header keamanan tambahan secara konsisten:
+  - `X-Frame-Options: DENY` (anti-clickjacking)
+  - `X-Content-Type-Options: nosniff` (anti-sniffing)
+  - `Referrer-Policy: strict-origin-when-cross-origin`
+  - `Permissions-Policy` (menonaktifkan sensor/perangkat yang tidak dipakai)
+- **Nginx Upload Limit**: Ditambahkan `client_max_body_size 15M` untuk mencegah kegagalan upload file besar.
 
 ## Data Protection
 
-- Soft delete preserves audit trail
-- `report_histories` immutable log
-- No PII in seed data
+- **Soft Delete**: Penghapusan data menggunakan status logis (`softDelete`) untuk menjaga integritas data audit dan riwayat pelaporan.
+- **report_histories**: Pencatatan riwayat penanganan laporan yang bersifat immutable.
 
-## Threat Model (MVP)
+## Threat Model & Mitigations
 
-| Threat | Mitigation |
-|--------|------------|
-| SQL injection | Parameterized queries |
-| XSS | React escaping + helmet CSP (tighten in prod) |
-| CSRF | SameSite cookies + API-only refresh path |
-| Brute force login | Rate limiting (add account lockout in v1.1) |
-| Token theft | Short-lived access token, httpOnly refresh |
+| Threat | Mitigation | Status |
+|--------|------------|--------|
+| SQL injection | Parameterized queries via postgres.js tagged templates | Terlindungi |
+| XSS | React JSX auto-escaping + Helmet CSP (Content Security Policy) | Terlindungi |
+| CSRF | SameSite strict cookies + API-only refresh path | Terlindungi |
+| Brute force login | Rate limiting per endpoint + Account lockout (5 kali gagal login) | Aktif |
+| Token theft | Short-lived access token + httpOnly refresh | Terlindungi |
+| LLM API Abuse | Validasi batas prompt maksimal 2000 karakter di backend | Aktif |
+| Arbitrary File Upload | Validasi ParseFilePipe (max size & MIME check) di backend | Aktif |
+| Network Sniffing | HTTP Nginx HTTPS template TLSv1.2 & TLSv1.3 | Siap diaktifkan |
 
 ## Security Checklist Before Production
 

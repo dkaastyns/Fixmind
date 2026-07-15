@@ -83,30 +83,35 @@ Proyek ini menggunakan arsitektur _Clean Architecture_ dan dipisahkan menjadi du
 
 ### Persyaratan Sistem
 - [Bun](https://bun.sh/) **1.3+** - digunakan sebagai runtime **dan** package manager (pengganti Node.js/npm).
-- PostgreSQL 16+ dengan ekstensi **pgvector** sudah terpasang.
+- PostgreSQL 16+ dengan ekstensi **pgvector** sudah terpasang (untuk development lokal tanpa Docker).
 - Buat sebuah database kosong di PostgreSQL bernama `fixmind`.
 
 > **Penting:** Proyek ini menggunakan **Bun**, bukan `npm` atau `yarn`. Install Bun: `powershell -c "irm bun.sh/install.ps1 | iex"`
 
 ### 1. Konfigurasi Environment & Instalasi
 **Backend:**
-```powershell
-cd backend
-copy .env.example .env
-# Edit .env dan sesuaikan DATABASE_URL dan GEMINI_API_KEY
-bun install
-bun run migrate
-bun run seed
-```
+1. Masuk ke folder backend: `cd backend`
+2. Salin file contoh environment: `copy .env.example .env`
+3. Edit file `.env` dan lengkapi variabel berikut:
+   - `DATABASE_URL` (koneksi PostgreSQL)
+   - `JWT_ACCESS_SECRET` dan `JWT_REFRESH_SECRET` (Wajib minimal 32 karakter demi keamanan kriptografis)
+   - `GEMINI_API_KEY` (untuk fitur analisis AI)
+4. Jalankan instalasi dan migrasi database:
+   ```powershell
+   bun install
+   bun run migrate
+   bun run seed
+   ```
 
 **Frontend:**
-```powershell
-cd frontend
-copy .env.example .env
-bun install
-```
+1. Masuk ke folder frontend: `cd frontend`
+2. Salin file contoh environment: `copy .env.example .env`
+3. Jalankan instalasi:
+   ```powershell
+   bun install
+   ```
 
-### 2. Menjalankan Server Pengembangan
+### 2. Menjalankan Server Pengembangan Lokal
 
 **Terminal 1 (Backend):**
 ```powershell
@@ -122,6 +127,22 @@ bun run dev
 
 - **Akses Aplikasi (Frontend):** `http://localhost:5173`
 - **Akses API (Backend):** `http://localhost:3000/api/v1`
+
+---
+
+## Menjalankan dengan Docker Compose (Produksi / Staging)
+
+Sistem ini dikonfigurasi dengan standar keamanan tinggi untuk lingkungan produksi:
+1. Salin `.env.example` di folder root / backend ke file `.env` sebelum menjalankan container.
+2. Jalankan perintah:
+   ```bash
+   docker compose up -d --build
+   ```
+
+### Catatan Keamanan Penting (Hardening):
+- **Tanpa Fallback Rahasia:** Docker Compose akan **gagal start** jika `DATABASE_URL`, `JWT_ACCESS_SECRET`, `JWT_REFRESH_SECRET`, dan `POSTGRES_PASSWORD` tidak diset di file `.env`. Ini mencegah sistem berjalan dengan kunci rahasia bawaan pabrik.
+- **Port Tertutup (Internal Network Only):** Port database PostgreSQL (`5432`) dan port NestJS API (`3000`) **tidak di-expose** ke host luar demi keamanan. Seluruh traffic dari luar wajib melalui Nginx di port `80`/`443`.
+- **Akses Database untuk Migrasi/Debug:** Jika Anda perlu mengakses database langsung dari host luar (misal menggunakan DBeaver atau menjalankan migrasi lokal ke DB Docker), buka `docker-compose.yml` lalu uncomment baris `ports` pada service `db` dan `backend` secara sementara. Jangan biarkan baris ini aktif di produksi.
 
 ---
 

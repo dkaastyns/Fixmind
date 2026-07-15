@@ -1,98 +1,100 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# FixMind — Backend Service (NestJS)
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+Layanan backend untuk E-Lapor DPRD (FixMind) menggunakan framework NestJS 11 yang dirancang dengan performa optimal dan arsitektur modular yang aman.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Fitur Utama Backend
+- **Query Raw SQL Berkecepatan Tinggi:** Menggunakan library `postgres.js` untuk interaksi database langsung tanpa ORM berat, menjamin eksekusi query super cepat dan kontrol penuh.
+- **Semantic Search & RAG AI:** Terintegrasi dengan ekstensi `pgvector` di PostgreSQL untuk memproses *embedding* teks laporan dan aset guna menyajikan fitur pencarian pintar berbasis AI.
+- **Rekomendasi AI Terintegrasi:** Integrasi API Gemini 2.5 Flash dan Groq (Llama 3.1) untuk analisis keparahan laporan, kategori masalah, dan estimasi pengerjaan.
+- **Autentikasi Aman & Rotasi Token:** Access token in-memory yang pendek dengan rotasi refresh token otomatis yang disimpan dalam cookie HttpOnly.
+- **Rate Limiting & Account Lockout:** Menggunakan Throttler global untuk mencegah brute force dan DoS, serta mengunci akun secara otomatis setelah 5 kali kegagalan login berturut-turut.
 
-## Description
+---
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
-
-## Project setup
-
-```bash
-$ npm install
+## Struktur Folder Utama
+```
+backend/
+├── src/
+│   ├── app.module.ts       # Module utama (konfigurasi & registrasi APP_GUARD)
+│   ├── main.ts             # Entrypoint aplikasi (CORS, trust proxy, Helmet, Pipes)
+│   ├── common/             # Interceptor, decorator, exception filter global
+│   ├── config/             # Skema validasi variabel lingkungan (.env)
+│   ├── database/           # Setup koneksi database, skema, dan migrasi
+│   └── modules/            # Modul-modul fitur utama aplikasi
+│       ├── ai/             # RAG & LLM Integration (Gemini/Groq)
+│       ├── assets/         # Manajemen aset, pemindahan, & import Excel
+│       ├── auth/           # Login, Register, Logout, & Session Management
+│       ├── maintenance/    # Jadwal pemeliharaan berkala & manajemen vendor
+│       ├── reports/        # Pelaporan kerusakan & timeline progres
+│       └── users/          # Manajemen data pengguna & RBAC
 ```
 
-## Compile and run the project
+---
 
+## Panduan Instalasi & Development Lokal
+
+### Persyaratan Utama
+- [Bun](https://bun.sh/) 1.3+
+- PostgreSQL 16+ dengan ekstensi **pgvector**
+
+### Langkah Awal Setup
+1. **Instal dependensi:**
+   ```bash
+   bun install
+   ```
+2. **Setup File `.env`:**
+   Salin `.env.example` ke `.env` dan lengkapi variabel berikut:
+   ```bash
+   DATABASE_URL=postgresql://postgres:password@localhost:5432/fixmind
+   JWT_ACCESS_SECRET=your-super-long-secret-key-at-least-32-chars
+   JWT_REFRESH_SECRET=your-other-super-long-secret-key-at-least-32-chars
+   GEMINI_API_KEY=your-google-gemini-key
+   ```
+3. **Jalankan Migrasi Database:**
+   ```bash
+   bun run migrate
+   ```
+4. **Jalankan Seeder (Data Awal):**
+   ```bash
+   bun run seed
+   ```
+
+### Perintah Pemrosesan
 ```bash
-# development
-$ npm run start
+# Menjalankan server dalam mode development (watch mode)
+bun run start:dev
 
-# watch mode
-$ npm run start:dev
+# Menjalankan test unit
+bun run test
 
-# production mode
-$ npm run start:prod
+# Melakukan kompilasi/build backend
+bun run build
 ```
 
-## Run tests
+---
 
-```bash
-# unit tests
-$ npm run test
+## Standar Keamanan & Hardening API
 
-# e2e tests
-$ npm run test:e2e
+Jika Anda ingin melanjutkan atau menambahkan endpoint baru, pastikan mematuhi aturan keamanan berikut:
 
-# test coverage
-$ npm run test:cov
-```
+1. **Gunakan Parameterized Query:**
+   Selalu gunakan template literal bawaan `sql` untuk mengeksekusi query database. Jangan pernah menggunakan interpolasi string manual demi mencegah SQL Injection:
+   ```typescript
+   // BENAR (Aman)
+   await sql`SELECT * FROM users WHERE id = ${id}`;
 
-## Deployment
+   // SALAH (Celah SQL Injection)
+   await sql`SELECT * FROM users WHERE id = '${id}'`; 
+   ```
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+2. **Validasi Input dengan DTO:**
+   Setiap request body wajib memiliki class DTO yang divalidasi oleh `class-validator` (misal `@IsString()`, `@IsEmail()`).
+   - Batasi panjang input teks bebas (seperti obrolan AI) dengan `@MaxLength(...)` untuk menghindari eksploitasi memori.
+   - Gunakan regex `@Matches(...)` untuk memverifikasi kekuatan kata sandi pengguna baru.
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+3. **Batasi Akses Endpoint dengan Guard:**
+   - Semua endpoint dilindungi JWT secara default. Endpoint publik wajib didekorasi dengan `@Public()`.
+   - Endpoint admin wajib dilindungi menggunakan dekorator `@Roles('ADMIN')`.
 
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
-```
-
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
-
-## Resources
-
-Check out a few resources that may come in handy when working with NestJS:
-
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+4. **Jangan Kirim Token via URL:**
+   Selalu kirim access token melalui Header `Authorization: Bearer`. Penggunaan query parameter token (`?token=...`) dilarang keras karena akan bocor ke log jaringan dan history peramban.
