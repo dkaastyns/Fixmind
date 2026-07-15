@@ -209,12 +209,16 @@ function SidebarContent({
                 <h3 className="mb-2 text-lg font-semibold text-gray-900">Keluar dari Akun</h3>
                 <p className="mb-6 text-sm text-gray-500">Apakah Anda yakin ingin keluar dari akun ini?</p>
                 <div className="flex gap-3">
-                  <Button variant="secondary" className="flex-1 rounded-xl text-gray-700 bg-gray-100 hover:bg-gray-200" onClick={() => setShowLogoutModal(false)}>
-                    Batal
-                  </Button>
-                  <Button className="flex-1 rounded-xl bg-[#ef629f] text-white hover:bg-[#ef629f]/90" onClick={confirmLogout}>
-                    Ya, Keluar
-                  </Button>
+                  <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.98 }} className="flex-1">
+                    <Button variant="secondary" className="w-full rounded-xl text-gray-700 bg-gray-100 hover:bg-gray-200" onClick={() => setShowLogoutModal(false)}>
+                      Tidak
+                    </Button>
+                  </motion.div>
+                  <motion.div whileHover={{ scale: 1.05, boxShadow: '0 10px 15px -3px rgba(239, 98, 159, 0.4)' }} whileTap={{ scale: 0.98 }} className="flex-1">
+                    <Button className="w-full rounded-xl bg-[#ef629f] text-white hover:bg-[#ef629f]/90" onClick={confirmLogout}>
+                      Ya, Keluar
+                    </Button>
+                  </motion.div>
                 </div>
               </motion.div>
             </div>
