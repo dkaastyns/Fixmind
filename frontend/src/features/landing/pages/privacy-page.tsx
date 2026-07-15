@@ -55,7 +55,7 @@ export function PrivacyPage() {
           className="h-full w-full object-cover"
         />
         {/* Dark overlay */}
-        <div className="absolute inset-0 bg-slate-950/75 backdrop-blur-[8px]" />
+        <div className="absolute inset-0 bg-slate-950/60 backdrop-blur-[2px]" />
         
         {/* AI Glowing Orbs */}
         <motion.div 
@@ -74,7 +74,7 @@ export function PrivacyPage() {
           className="absolute bottom-1/4 left-1/4 w-[600px] h-[600px] bg-[#ffd043]/5 rounded-full filter blur-[120px] pointer-events-none" 
         />
 
-        <div className="absolute inset-0 bg-gradient-to-b from-slate-950/30 via-transparent to-slate-950/95" />
+        <div className="absolute inset-0 bg-gradient-to-b from-slate-950/20 via-transparent to-slate-950/90" />
       </motion.div>
 
       {/* Content */}
@@ -82,7 +82,7 @@ export function PrivacyPage() {
         <header className="mb-8 flex flex-col sm:flex-row gap-4 items-center justify-between">
           <div className="flex items-center justify-center">
             <Link to="/" className="max-w-[240px] sm:max-w-[280px]">
-              <img src="/jdih-logo.png" alt="JDIH Kota Semarang" className="w-full h-auto object-contain" />
+              <img src="/jdih-logo.png" alt="JDIH Kota Semarang" className="w-full h-auto object-contain [filter:drop-shadow(0_0_8px_rgba(255,255,255,0.8))]" />
             </Link>
           </div>
           <Link to="/signup">
