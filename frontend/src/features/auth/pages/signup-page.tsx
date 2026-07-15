@@ -91,9 +91,9 @@ export function SignupPage() {
       </svg>
 
       <motion.div
-        initial={{ opacity: 0, y: 15 }}
+        initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
+        transition={{ type: "spring", stiffness: 100, damping: 15 }}
         className="w-full max-w-md relative z-10 my-8"
       >
         {/* Logo and Titles */}
@@ -215,9 +215,11 @@ export function SignupPage() {
             {mutation.isError && <Alert>{(mutation.error as Error).message}</Alert>}
 
             {/* Submit Button */}
-            <button
+            <motion.button
+              whileHover={{ scale: 1.02, y: -1 }}
+              whileTap={{ scale: 0.98 }}
               type="submit"
-              className="w-full mt-4 h-11 rounded-2xl text-white font-bold gradient-gold shadow-[0_4px_15px_rgba(255,214,65,0.2)] hover:opacity-95 active:scale-[0.98] transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer"
+              className="w-full mt-4 h-11 rounded-2xl text-white font-bold gradient-gold shadow-[0_4px_15px_rgba(255,214,65,0.2)] hover:opacity-95 transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer"
               disabled={mutation.isPending}
             >
               {mutation.isPending ? (
@@ -228,7 +230,7 @@ export function SignupPage() {
               ) : (
                 'Daftar sekarang!'
               )}
-            </button>
+            </motion.button>
           </form>
 
           <AnimatePresence>

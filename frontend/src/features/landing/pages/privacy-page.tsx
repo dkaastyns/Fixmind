@@ -86,9 +86,11 @@ export function PrivacyPage() {
             </Link>
           </div>
           <Link to="/signup">
-            <Button variant="ghost" size="sm" className="gap-2 bg-white/10 hover:bg-white/20 text-white border border-white/10 transition-colors">
-              <ArrowLeft className="h-4 w-4" /> Kembali
-            </Button>
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="inline-block">
+              <Button variant="ghost" size="sm" className="gap-2 bg-white/10 hover:bg-white/20 text-white border border-white/10 transition-colors">
+                <ArrowLeft className="h-4 w-4" /> Kembali
+              </Button>
+            </motion.div>
           </Link>
         </header>
 
@@ -117,10 +119,11 @@ export function PrivacyPage() {
                   key={section.title}
                   initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: idx * 0.1, duration: 0.4 }}
-                  className="group flex gap-4 rounded-2xl p-4 transition-colors hover:bg-white/5"
+                  transition={{ delay: idx * 0.08, duration: 0.4 }}
+                  whileHover={{ x: 6, backgroundColor: "rgba(255, 255, 255, 0.03)" }}
+                  className="group flex gap-4 rounded-2xl p-4 transition-colors cursor-pointer"
                 >
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#ffd043]/10 text-[#ffd043] group-hover:bg-[#ffd043] group-hover:text-slate-950 transition-colors duration-300">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#ffd043]/10 text-[#ffd043] group-hover:bg-[#ffd043] group-hover:text-slate-950 group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
                     <section.icon className="h-5 w-5" />
                   </div>
                   <div>
@@ -140,9 +143,13 @@ export function PrivacyPage() {
                 Dengan mencentang persetujuan saat mendaftar, Anda menyatakan telah membaca, memahami, dan menyetujui seluruh kebijakan di atas.
               </p>
               <Link to="/signup">
-                <button className="px-8 h-11 text-base font-bold text-white gradient-gold shadow-[0_4px_15px_rgba(228,181,43,0.3)] hover:opacity-95 transition-all duration-300 rounded-xl hover:-translate-y-0.5 active:scale-[0.98] cursor-pointer">
+                <motion.button 
+                  whileHover={{ scale: 1.03, y: -2 }}
+                  whileTap={{ scale: 0.97 }}
+                  className="px-8 h-11 text-base font-bold text-white gradient-gold shadow-[0_4px_15px_rgba(228,181,43,0.3)] hover:opacity-95 transition-all duration-300 rounded-xl cursor-pointer"
+                >
                   Saya Setuju & Daftar Sekarang
-                </button>
+                </motion.button>
               </Link>
             </div>
           </div>

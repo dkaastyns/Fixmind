@@ -92,14 +92,22 @@ export function LandingPage() {
             {/* Buttons stacked on mobile, inline on desktop */}
             <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center items-center w-full max-w-xs sm:max-w-md mx-auto">
               <Link to="/signup" className="w-full sm:w-auto">
-                <button className="w-full sm:w-auto px-8 py-3.5 rounded-2xl text-white font-bold gradient-gold shadow-[0_4px_20px_rgba(255,214,65,0.25)] hover:shadow-[0_6px_25px_rgba(255,214,65,0.4)] active:scale-[0.98] transition-all duration-200 cursor-pointer">
+                <motion.button 
+                  whileHover={{ scale: 1.03, y: -2 }}
+                  whileTap={{ scale: 0.97 }}
+                  className="w-full sm:w-auto px-8 py-3.5 rounded-2xl text-white font-bold gradient-gold shadow-[0_4px_20px_rgba(255,214,65,0.25)] hover:shadow-[0_6px_25px_rgba(255,214,65,0.4)] transition-all duration-200 cursor-pointer"
+                >
                   Daftar sekarang!
-                </button>
+                </motion.button>
               </Link>
               <Link to="/login" className="w-full sm:w-auto">
-                <button className="w-full sm:w-auto px-8 py-3.5 rounded-2xl text-white font-bold bg-black hover:bg-slate-900 border border-white/10 active:scale-[0.98] transition-all duration-200 cursor-pointer">
+                <motion.button 
+                  whileHover={{ scale: 1.03, y: -2 }}
+                  whileTap={{ scale: 0.97 }}
+                  className="w-full sm:w-auto px-8 py-3.5 rounded-2xl text-white font-bold bg-black hover:bg-slate-900 border border-white/10 transition-all duration-200 cursor-pointer"
+                >
                   Masuk
-                </button>
+                </motion.button>
               </Link>
             </div>
           </motion.div>
@@ -124,25 +132,23 @@ export function LandingPage() {
                 key={feature.title}
                 initial={{ opacity: 0, y: 15 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4, delay: index * 0.1 }}
-                className="w-full h-full"
+                transition={{ duration: 0.5, delay: index * 0.1, type: "spring", stiffness: 80 }}
+                whileHover={{ y: -8, scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className="p-6 rounded-3xl bg-white flex flex-col items-start gap-4 border border-slate-100/80 shadow-[0_8px_30px_rgba(15,23,42,0.04)] hover:border-[#3b82f6] hover:shadow-[0_20px_40px_rgba(59,130,246,0.12)] hover:ring-4 hover:ring-[#3b82f6]/5 transition-all duration-300 cursor-pointer h-full group"
               >
-                <div
-                  className="p-6 rounded-3xl bg-white flex flex-col items-start gap-4 border border-slate-100/80 shadow-[0_8px_30px_rgba(15,23,42,0.04)] hover:border-[#3b82f6] hover:shadow-[0_8px_30px_rgba(59,130,246,0.15)] hover:ring-4 hover:ring-[#3b82f6]/5 hover:-translate-y-1 transition-all duration-300 cursor-pointer h-full"
-                >
-                  {/* Icon Container with custom accent background */}
-                  <div className="flex h-11 w-11 items-center justify-center rounded-xl shadow-sm text-white bg-gradient-to-br from-orange-500 to-red-600">
-                    <Icon className="h-5 w-5" />
-                  </div>
+                {/* Icon Container with custom accent background */}
+                <div className="flex h-11 w-11 items-center justify-center rounded-xl shadow-sm text-white bg-gradient-to-br from-orange-500 to-red-600 group-hover:scale-110 group-hover:rotate-6 transition-transform duration-300">
+                  <Icon className="h-5 w-5" />
+                </div>
 
-                  <div>
-                    <h3 className="font-extrabold text-slate-800 text-lg mb-2">
-                      {feature.title}
-                    </h3>
-                    <p className="text-sm text-slate-600 leading-relaxed font-medium">
-                      {feature.description}
-                    </p>
-                  </div>
+                <div>
+                  <h3 className="font-extrabold text-slate-800 text-lg mb-2">
+                    {feature.title}
+                  </h3>
+                  <p className="text-sm text-slate-600 leading-relaxed font-medium">
+                    {feature.description}
+                  </p>
                 </div>
               </motion.div>
             )
