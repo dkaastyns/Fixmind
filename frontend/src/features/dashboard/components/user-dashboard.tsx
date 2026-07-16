@@ -104,7 +104,7 @@ export function UserDashboard() {
           <div className="mt-6 w-full max-w-lg mx-auto">
             <div 
               onClick={() => window.dispatchEvent(new CustomEvent('open-global-search'))}
-              className="cursor-pointer flex items-center gap-4 bg-white/20 hover:bg-white/25 border border-white/20 rounded-2xl px-5 py-3.5 shadow-md backdrop-blur-md transition-all group duration-200 text-left"
+              className="cursor-pointer flex items-center gap-4 bg-[#f4f4f4]/15 hover:bg-[#f4f4f4]/20 border border-[#f4f4f4]/15 rounded-2xl px-5 py-3.5 shadow-md transition-all group duration-200 text-left"
             >
               <Search className="w-5.5 h-5.5 text-[#ffd043] shrink-0" />
               <div className="flex-grow min-w-0">
