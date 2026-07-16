@@ -137,8 +137,8 @@ export function LandingPage() {
                 whileTap={{ scale: 0.98 }}
                 className="p-6 rounded-[22px] bg-white flex flex-col items-start gap-4 border border-slate-200/80 shadow-[0_15px_30px_rgba(0,0,0,0.14)] hover:shadow-[0_22px_45px_rgba(0,0,0,0.18)] transition-all duration-300 cursor-pointer h-full group"
               >
-                {/* Icon Container with glowing orange-red gradient background and shadow */}
-                <div className="flex h-[46px] w-[46px] items-center justify-center rounded-[14px] text-white bg-gradient-to-br from-[#f97316] via-[#ea580c] to-[#e11d48] shadow-[0_10px_20px_rgba(234,88,12,0.5)] group-hover:scale-105 transition-transform duration-300">
+                {/* Icon Container with glowing figma gradient background and drop shadow */}
+                <div className="flex h-[46px] w-[46px] items-center justify-center rounded-[14px] text-white bg-gradient-to-br from-[#F9D141] via-[#D42115] to-[#737373] shadow-[0_6px_15px_rgba(0,0,0,0.45)] group-hover:scale-105 transition-transform duration-300">
                   <Icon className="h-5 w-5 text-white" />
                 </div>
 
