@@ -216,7 +216,7 @@ export function UserDashboard() {
           
           {/* Recent Reports */}
           <div className="flex flex-col">
-            <div className="flex justify-between items-center pb-3 border-b border-slate-100">
+            <div className="flex justify-between items-center pb-2">
               <h2 className="text-base font-extrabold text-slate-800">Laporan Masalah Terbaru</h2>
               <button 
                 onClick={() => navigate('/dashboard/reports')} 
@@ -226,14 +226,14 @@ export function UserDashboard() {
               </button>
             </div>
             
-            <div className="divide-y divide-slate-100">
+            <div className="mt-2 bg-[#e5e5e5] rounded-[24px] p-5 shadow-inner">
               {loadingReports ? (
                 <ListSkeleton count={3} />
               ) : recentReports.length === 0 ? (
                 <EmptyState title="Belum ada laporan" description="Laporan yang Anda ajukan akan muncul di sini." />
               ) : (
                 <motion.ul 
-                  className="divide-y divide-slate-100/60"
+                  className="divide-y divide-slate-300/30"
                   variants={containerVariants}
                   initial="hidden"
                   animate="show"
@@ -242,7 +242,7 @@ export function UserDashboard() {
                     <motion.li 
                       key={report.id} 
                       variants={itemVariants} 
-                      className="py-3 flex items-center justify-between gap-4 cursor-pointer hover:opacity-85 transition-opacity"
+                      className="py-3 flex items-center justify-between gap-4 cursor-pointer hover:opacity-80 transition-opacity first:pt-1 last:pb-1"
                       onClick={() => navigate(`/dashboard/reports/${report.id}`)}
                     >
                       <div className="min-w-0 flex-1">
@@ -265,7 +265,7 @@ export function UserDashboard() {
 
           {/* Recent Transfers */}
           <div className="flex flex-col">
-            <div className="flex justify-between items-center pb-3 border-b border-slate-100">
+            <div className="flex justify-between items-center pb-2">
               <h2 className="text-base font-extrabold text-slate-800">Pengajuan Transfer Terbaru</h2>
               <button 
                 onClick={() => navigate('/dashboard/asset-transfers')} 
@@ -275,14 +275,14 @@ export function UserDashboard() {
               </button>
             </div>
             
-            <div className="divide-y divide-slate-100">
+            <div className="mt-2 bg-[#e5e5e5] rounded-[24px] p-5 shadow-inner">
               {loadingTransfers ? (
                 <ListSkeleton count={3} />
               ) : recentTransfers.length === 0 ? (
                 <EmptyState title="Belum ada pengajuan" description="Pengajuan transfer aset Anda akan muncul di sini." />
               ) : (
                 <motion.ul 
-                  className="divide-y divide-slate-100/60"
+                  className="divide-y divide-slate-300/30"
                   variants={containerVariants}
                   initial="hidden"
                   animate="show"
@@ -291,7 +291,7 @@ export function UserDashboard() {
                     <motion.li 
                       key={transfer.id} 
                       variants={itemVariants} 
-                      className="py-3 flex items-center justify-between gap-4 cursor-pointer hover:opacity-85 transition-opacity"
+                      className="py-3 flex items-center justify-between gap-4 cursor-pointer hover:opacity-80 transition-opacity first:pt-1 last:pb-1"
                       onClick={() => navigate('/dashboard/asset-transfers')}
                     >
                       <div className="min-w-0 flex-1">
