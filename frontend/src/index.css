@@ -61,6 +61,17 @@
     color: transparent;
   }
 
+  .gradient-admin {
+    background-image: linear-gradient(135deg, #F9D141 0%, #737373 100%);
+  }
+
+  .text-gradient-admin {
+    background-image: linear-gradient(135deg, #F9D141 0%, #737373 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
   .glass {
     @apply rounded-2xl border border-card-border bg-card backdrop-blur-xl;
     box-shadow: 0 8px 32px rgb(15 23 42 / 0.06);

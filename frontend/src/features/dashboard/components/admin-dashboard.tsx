@@ -189,7 +189,7 @@ function ExportModal({ open, format, onClose }: ExportModalProps) {
                     <label className="flex items-center gap-2 cursor-pointer mb-3">
                       <input
                         type="checkbox"
-                        className="rounded border-gray-300 text-[#ef629f] focus:ring-[#ef629f]"
+                        className="rounded border-gray-300 text-[#F9D141] focus:ring-[#F9D141]"
                         checked={isAllTime}
                         onChange={(e) => setIsAllTime(e.target.checked)}
                       />
@@ -208,7 +208,7 @@ function ExportModal({ open, format, onClose }: ExportModalProps) {
                             <label className="block text-xs font-medium text-gray-500 mb-1">Dari Tanggal</label>
                             <input
                               type="date"
-                              className="flex h-10 w-full rounded-xl border border-gray-200 bg-gray-50 px-3 text-sm focus:border-[#ef629f] focus:ring-[#ef629f] focus:outline-none"
+                              className="flex h-10 w-full rounded-xl border border-gray-200 bg-gray-50 px-3 text-sm focus:border-[#F9D141] focus:ring-[#F9D141] focus:outline-none"
                               value={startDate}
                               onChange={(e) => setStartDate(e.target.value)}
                             />
@@ -217,7 +217,7 @@ function ExportModal({ open, format, onClose }: ExportModalProps) {
                             <label className="block text-xs font-medium text-gray-500 mb-1">Sampai Tanggal</label>
                             <input
                               type="date"
-                              className="flex h-10 w-full rounded-xl border border-gray-200 bg-gray-50 px-3 text-sm focus:border-[#ef629f] focus:ring-[#ef629f] focus:outline-none"
+                              className="flex h-10 w-full rounded-xl border border-gray-200 bg-gray-50 px-3 text-sm focus:border-[#F9D141] focus:ring-[#F9D141] focus:outline-none"
                               value={endDate}
                               onChange={(e) => setEndDate(e.target.value)}
                             />
@@ -238,7 +238,7 @@ function ExportModal({ open, format, onClose }: ExportModalProps) {
                     Batal
                   </Button>
                   <Button
-                    className="flex-1 rounded-xl bg-[#ef629f] text-white hover:bg-[#ef629f]/90"
+                    className="flex-1 rounded-xl bg-gradient-to-r from-[#F9D141] to-[#737373] text-white hover:opacity-90 transition-all font-semibold shadow-sm"
                     onClick={handleExport}
                   >
                     Unduh {format === 'excel' ? 'Excel' : 'PDF'}
@@ -375,7 +375,7 @@ export function AdminDashboard() {
               <AnimatedGlassCard key={c.label} className="p-5 flex items-center justify-between" variants={itemVariants}>
                 <div>
                   <p className="text-sm text-muted">{c.label}</p>
-                  <p className="mt-2 text-3xl font-semibold text-gradient">
+                  <p className="mt-2 text-3xl font-semibold text-gradient-admin">
                     {analyticsLoading ? <Skeleton className="h-9 w-16" /> : (c.value ?? '—')}
                   </p>
                 </div>
@@ -400,7 +400,7 @@ export function AdminDashboard() {
               <AnimatedGlassCard key={c.label} className="p-5 flex items-center justify-between" variants={itemVariants}>
                 <div>
                   <p className="text-sm text-muted">{c.label}</p>
-                  <p className="mt-2 text-3xl font-semibold text-gradient">
+                  <p className="mt-2 text-3xl font-semibold text-gradient-admin">
                     {transfersLoading ? <Skeleton className="h-9 w-16" /> : c.value}
                   </p>
                 </div>
@@ -564,7 +564,7 @@ export function AdminDashboard() {
                         </div>
                         <div className="h-2 overflow-hidden rounded-full bg-white/50">
                           <motion.div
-                            className="h-full gradient-primary rounded-full"
+                            className="h-full gradient-admin rounded-full"
                             initial={{ width: 0 }}
                             animate={{ width: `${pct}%` }}
                             transition={{ duration: 0.7, delay: 0.1 }}
@@ -588,7 +588,7 @@ export function AdminDashboard() {
           <GlassCard className="p-5">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-base font-semibold text-slate-800">Agenda Pemeliharaan Rutin Terdekat</h2>
-              <Link to="/dashboard/maintenance" className="text-xs font-semibold text-[#ef629f] hover:underline">
+              <Link to="/dashboard/maintenance" className="text-xs font-semibold text-[#d9a416] hover:text-[#c29410] hover:underline">
                 Lihat Semua Jadwal
               </Link>
             </div>
@@ -619,7 +619,7 @@ export function AdminDashboard() {
                       <h4 className="font-semibold text-slate-800 line-clamp-1">{item.title}</h4>
                       
                       <div className="flex items-center gap-1.5 text-slate-500">
-                        <Calendar className="h-3.5 w-3.5 text-[#ef629f]" />
+                        <Calendar className="h-3.5 w-3.5 text-[#F9D141]" />
                         <span>{new Date(item.scheduledDate).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}</span>
                       </div>
                       
