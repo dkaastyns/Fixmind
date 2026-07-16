@@ -280,22 +280,31 @@ export function DashboardLayout() {
       <div className="flex flex-1 flex-col min-w-0">
         {!isUserDashboard && (
           <header className="glass relative z-40 mx-4 mt-4 flex items-center justify-between px-4 py-3 md:hidden">
+            {/* Left: Hamburger menu */}
+            <button 
+              onClick={() => setMobileOpen(true)}
+              className="p-1 text-[#ffd043] hover:text-yellow-300 transition-colors cursor-pointer"
+              aria-label="Buka menu"
+            >
+              <Menu className="h-6 w-6" />
+            </button>
+            
+            {/* Center: FixMind title */}
+            <span className="font-extrabold text-xl tracking-tight text-slate-800 dark:text-white">FixMind</span>
+            
+            {/* Right: Search and Notification Bell */}
             <div className="flex items-center gap-2">
-              <img src="/logo.png" alt="Logo" className="h-7 w-7 object-contain" />
-              <span className="font-semibold text-sm">E-Lapor DPRD</span>
-            </div>
-            <div className="flex items-center gap-3">
               <button
                 onClick={() => window.dispatchEvent(new CustomEvent('open-global-search'))}
-                className="flex h-8 w-8 items-center justify-center rounded-xl bg-white hover:bg-white/80 text-muted hover:text-foreground shadow-sm border border-white/50 transition-colors"
+                className="flex h-8 w-8 items-center justify-center rounded-xl bg-white hover:bg-white/80 text-slate-500 hover:text-slate-800 shadow-sm border border-slate-200 transition-colors"
                 title="Cari Aset"
               >
                 <Search className="h-4 w-4" />
               </button>
-              <NotificationBell />
-              <button onClick={() => setMobileOpen(true)} aria-label="Buka menu">
-                <Menu className="h-6 w-6" />
-              </button>
+              <NotificationBell 
+                align="right" 
+                className="bg-transparent border-transparent text-[#ffd043] hover:bg-slate-100 hover:text-[#ffd043] p-1 shadow-none" 
+              />
             </div>
           </header>
         )}
