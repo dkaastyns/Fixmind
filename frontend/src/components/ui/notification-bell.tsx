@@ -8,7 +8,7 @@ import { useAuthStore } from '@/stores/auth-store'
 import { AnimatePresence, motion } from 'framer-motion'
 import { cn } from '@/lib/utils'
 
-export function NotificationBell({ align = 'right' }: { align?: 'left' | 'right' }) {
+export function NotificationBell({ align = 'right', className }: { align?: 'left' | 'right'; className?: string }) {
   const socket = useSocket()
   const user = useAuthStore((s) => s.user)
   const { notifications, addNotification, markAllAsRead, clearAll } = useNotificationStore()
@@ -69,7 +69,10 @@ export function NotificationBell({ align = 'right' }: { align?: 'left' | 'right'
     <div className="relative">
       <button
         onClick={() => setIsOpen((prev) => !prev)}
-        className="relative rounded-xl p-2 bg-white/20 border border-white/30 text-foreground hover:bg-white/45 transition-colors focus:outline-none cursor-pointer"
+        className={cn(
+          "relative rounded-xl p-2 bg-white/20 border border-white/30 text-foreground hover:bg-white/45 transition-colors focus:outline-none cursor-pointer",
+          className
+        )}
       >
         <Bell className="h-5 w-5" />
         {unreadCount > 0 && (

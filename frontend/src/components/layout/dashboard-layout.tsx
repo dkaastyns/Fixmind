@@ -237,6 +237,9 @@ export function DashboardLayout() {
   const location = useLocation()
   const { isOnline, queueLength } = useOfflineSync()
   const token = useAuthStore((s) => s.accessToken)!
+  const user = useAuthStore((s) => s.user)
+
+  const isUserDashboard = location.pathname === '/dashboard' && !user?.isAdmin
 
   const [isCollapsed, setIsCollapsed] = useState(() => {
     const saved = localStorage.getItem('sidebar-collapsed')
@@ -256,6 +259,12 @@ export function DashboardLayout() {
     return () => window.removeEventListener('open-global-search', handleOpenSearch)
   }, [])
 
+  useEffect(() => {
+    const handleOpenMenu = () => setMobileOpen(true)
+    window.addEventListener('open-mobile-menu', handleOpenMenu)
+    return () => window.removeEventListener('open-mobile-menu', handleOpenMenu)
+  }, [])
+
   return (
     <div className="flex min-h-screen">
       <aside className={cn(
@@ -269,25 +278,27 @@ export function DashboardLayout() {
       </aside>
 
       <div className="flex flex-1 flex-col min-w-0">
-        <header className="glass relative z-40 mx-4 mt-4 flex items-center justify-between px-4 py-3 md:hidden">
-          <div className="flex items-center gap-2">
-            <img src="/logo.png" alt="Logo" className="h-7 w-7 object-contain" />
-            <span className="font-semibold text-sm">E-Lapor DPRD</span>
-          </div>
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => window.dispatchEvent(new CustomEvent('open-global-search'))}
-              className="flex h-8 w-8 items-center justify-center rounded-xl bg-white hover:bg-white/80 text-muted hover:text-foreground shadow-sm border border-white/50 transition-colors"
-              title="Cari Aset"
-            >
-              <Search className="h-4 w-4" />
-            </button>
-            <NotificationBell />
-            <button onClick={() => setMobileOpen(true)} aria-label="Buka menu">
-              <Menu className="h-6 w-6" />
-            </button>
-          </div>
-        </header>
+        {!isUserDashboard && (
+          <header className="glass relative z-40 mx-4 mt-4 flex items-center justify-between px-4 py-3 md:hidden">
+            <div className="flex items-center gap-2">
+              <img src="/logo.png" alt="Logo" className="h-7 w-7 object-contain" />
+              <span className="font-semibold text-sm">E-Lapor DPRD</span>
+            </div>
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => window.dispatchEvent(new CustomEvent('open-global-search'))}
+                className="flex h-8 w-8 items-center justify-center rounded-xl bg-white hover:bg-white/80 text-muted hover:text-foreground shadow-sm border border-white/50 transition-colors"
+                title="Cari Aset"
+              >
+                <Search className="h-4 w-4" />
+              </button>
+              <NotificationBell />
+              <button onClick={() => setMobileOpen(true)} aria-label="Buka menu">
+                <Menu className="h-6 w-6" />
+              </button>
+            </div>
+          </header>
+        )}
 
         <AnimatePresence>
           {mobileOpen && (
@@ -351,7 +362,7 @@ export function DashboardLayout() {
           </div>
         )}
 
-        <main className="flex-1 p-4 md:p-6 overflow-x-hidden">
+        <main className={cn("flex-1 p-4 md:p-6 overflow-x-hidden", isUserDashboard && "p-0 md:p-6")}>
           <AnimatePresence mode="wait">
             <motion.div
               key={location.pathname}
