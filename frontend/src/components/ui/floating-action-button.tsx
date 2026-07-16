@@ -81,7 +81,7 @@ export function FloatingActionButton() {
       <button
         onClick={() => setIsOpen(!isOpen)}
         className={cn(
-          "flex h-12 w-12 items-center justify-center rounded-2xl shadow-xl transition-all duration-300 hover:scale-105 active:scale-95 text-white bg-gradient-to-tr from-[#F9D141] to-[#737373] cursor-pointer",
+          "flex h-12 w-12 items-center justify-center rounded-2xl shadow-xl transition-all duration-300 hover:scale-105 active:scale-95 text-white bg-gradient-to-tr from-[#F9D141] to-[#dbb31a] cursor-pointer",
           isOpen && "rotate-45"
         )}
         aria-label="Pilihan Cepat"
