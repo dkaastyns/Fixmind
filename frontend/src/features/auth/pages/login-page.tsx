@@ -68,7 +68,7 @@ export function LoginPage() {
           </div>
           
           <h1 className="text-2xl font-semibold text-white drop-shadow-sm">
-            <span className="text-[#FFD641]">Masuk ke </span>
+            <span className="text-[#FFEBA1]">Masuk ke </span>
             <span className="font-extrabold">FixMind</span>
           </h1>
           <p className="mt-2 text-xs sm:text-sm text-slate-300 font-medium">
@@ -77,7 +77,7 @@ export function LoginPage() {
         </div>
 
         {/* Login Card - Dark Glassmorphism style */}
-        <div className="p-6 sm:p-8 rounded-[24px] border border-white/5 bg-slate-950/60 shadow-[0_20px_45px_rgba(0,0,0,0.5)] backdrop-blur-xl">
+        <div className="p-6 sm:p-8 rounded-[24px] border border-white/10 bg-slate-950/25 shadow-[0_20px_45px_rgba(0,0,0,0.5)] backdrop-blur-xl">
           <form className="space-y-4" onSubmit={form.handleSubmit((v) => mutation.mutate(v))}>
             
             {/* Email */}
