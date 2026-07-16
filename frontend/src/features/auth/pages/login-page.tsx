@@ -77,7 +77,7 @@ export function LoginPage() {
         </div>
 
         {/* Login Card - Dark Glassmorphism style */}
-        <div className="p-6 sm:p-8 rounded-[24px] border border-white/10 bg-slate-950/25 shadow-[0_20px_45px_rgba(0,0,0,0.5)] backdrop-blur-xl">
+        <div className="p-6 sm:p-8 rounded-[24px] border border-white/10 bg-slate-950/15 shadow-[0_20px_45px_rgba(0,0,0,0.5)] backdrop-blur-[2px]">
           <form className="space-y-4" onSubmit={form.handleSubmit((v) => mutation.mutate(v))}>
             
             {/* Email */}
