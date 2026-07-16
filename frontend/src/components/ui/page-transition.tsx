@@ -5,7 +5,7 @@ export function PageTransitionSkeleton() {
   return (
     <div className="w-full h-full p-6 space-y-6">
       {/* Sleek Top Progress Loading Bar */}
-      <div className="fixed top-0 left-0 right-0 h-[3px] bg-gradient-to-r from-[#ef629f] via-pink-400 to-[#ff9ebb] animate-pulse z-[200]" />
+      <div className="fixed top-0 left-0 right-0 h-[3px] bg-gradient-to-r from-[#F9D141] via-amber-300 to-[#FFEBA1] animate-pulse z-[200]" />
       {/* Header Skeleton */}
       <div className="flex items-center justify-between">
         <div className="space-y-2">

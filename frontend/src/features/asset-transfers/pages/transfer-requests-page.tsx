@@ -182,7 +182,7 @@ export function TransferRequestsPage() {
                 placeholder="Cari aset, pemohon, ruangan..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-9 pr-3 py-2 rounded-xl border border-white/60 bg-white/70 text-xs shadow-sm outline-none transition focus:border-[#ef629f] focus:ring-2 focus:ring-[#ef629f]/20 font-medium text-slate-800"
+                className="w-full pl-9 pr-3 py-2 rounded-xl border border-white/60 bg-white/70 text-xs shadow-sm outline-none transition focus:border-[#F9D141] focus:ring-2 focus:ring-[#F9D141]/20 font-medium text-slate-800"
               />
             </div>
 
@@ -262,7 +262,7 @@ export function TransferRequestsPage() {
                         {/* Route diagram */}
                         <div className="flex items-center gap-2 text-sm font-bold bg-white/70 border border-white/80 rounded-xl px-3 py-1.5 w-fit shadow-inner">
                           <span className="text-slate-700">{transfer.fromRoomCode}</span>
-                          <ArrowRight className="w-4 h-4 text-[#ef629f]" />
+                          <ArrowRight className="w-4 h-4 text-[#d9a416]" />
                           <span className="text-slate-800">{transfer.toRoomCode}</span>
                         </div>
 
@@ -330,7 +330,7 @@ export function TransferRequestsPage() {
                           <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider">
                             Catatan Review
                             <textarea
-                              className="mt-2 min-h-[100px] w-full rounded-xl border border-slate-200/80 bg-slate-50/50 px-3 py-2 text-xs shadow-inner outline-none transition placeholder:text-slate-400 focus:border-[#ef629f] focus:ring-2 focus:ring-[#ef629f]/20 font-medium text-slate-800"
+                              className="mt-2 min-h-[100px] w-full rounded-xl border border-slate-200/80 bg-slate-50/50 px-3 py-2 text-xs shadow-inner outline-none transition placeholder:text-slate-400 focus:border-[#F9D141] focus:ring-2 focus:ring-[#F9D141]/20 font-medium text-slate-800"
                               placeholder="Tulis alasan jika menolak, atau catatan tambahan jika disetujui..."
                               value={notes}
                               onChange={(e) => setNotesById((prev) => ({ ...prev, [transfer.id]: e.target.value }))}

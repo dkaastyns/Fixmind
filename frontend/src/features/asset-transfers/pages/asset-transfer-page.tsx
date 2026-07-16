@@ -131,7 +131,7 @@ export function AssetTransferPage() {
             <div className="space-y-5 flex flex-col justify-between">
               <div className="space-y-5">
                 <div className="flex items-start gap-3">
-                  <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#ef629f]/10 text-[#ef629f] shadow-inner">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#F9D141]/10 text-[#d9a416] shadow-inner">
                     <ArrowRightLeft className="h-5 w-5" />
                   </div>
                   <div>
@@ -149,7 +149,7 @@ export function AssetTransferPage() {
                     </label>
                     <select
                       id="direct-source-room"
-                      className="w-full rounded-xl border border-white/60 bg-white/70 px-3.5 py-2.5 text-sm shadow-sm outline-none transition focus:border-[#ef629f] focus:ring-2 focus:ring-[#ef629f]/20 font-medium text-slate-800"
+                      className="w-full rounded-xl border border-white/60 bg-white/70 px-3.5 py-2.5 text-sm shadow-sm outline-none transition focus:border-[#F9D141] focus:ring-2 focus:ring-[#F9D141]/20 font-medium text-slate-800"
                       value={roomId}
                       onChange={(e) => {
                         setRoomId(e.target.value)
@@ -172,7 +172,7 @@ export function AssetTransferPage() {
                     </label>
                     <select
                       id="direct-asset"
-                      className="w-full rounded-xl border border-white/60 bg-white/70 px-3.5 py-2.5 text-sm shadow-sm outline-none transition focus:border-[#ef629f] focus:ring-2 focus:ring-[#ef629f]/20 disabled:opacity-60 font-medium text-slate-800"
+                      className="w-full rounded-xl border border-white/60 bg-white/70 px-3.5 py-2.5 text-sm shadow-sm outline-none transition focus:border-[#F9D141] focus:ring-2 focus:ring-[#F9D141]/20 disabled:opacity-60 font-medium text-slate-800"
                       value={assetId}
                       onChange={(e) => setAssetId(e.target.value)}
                       disabled={!roomId || assets.isLoading}
@@ -192,7 +192,7 @@ export function AssetTransferPage() {
                     </label>
                     <select
                       id="direct-target-room"
-                      className="w-full rounded-xl border border-white/60 bg-white/70 px-3.5 py-2.5 text-sm shadow-sm outline-none transition focus:border-[#ef629f] focus:ring-2 focus:ring-[#ef629f]/20 disabled:opacity-60 font-medium text-slate-800"
+                      className="w-full rounded-xl border border-white/60 bg-white/70 px-3.5 py-2.5 text-sm shadow-sm outline-none transition focus:border-[#F9D141] focus:ring-2 focus:ring-[#F9D141]/20 disabled:opacity-60 font-medium text-slate-800"
                       value={toRoomId}
                       onChange={(e) => setToRoomId(e.target.value)}
                       disabled={!assetId}
@@ -267,7 +267,7 @@ export function AssetTransferPage() {
                           <motion.div
                             animate={{ x: [-4, 4, -4] }}
                             transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
-                            className="text-[#ef629f]"
+                            className="text-[#d9a416]"
                           >
                             <ArrowRightLeft className="w-5 h-5" />
                           </motion.div>
@@ -421,7 +421,7 @@ export function AssetTransferPage() {
         {/* Left Column: Form Pengajuan */}
         <GlassCard className="space-y-6 border border-white/40">
           <div className="flex items-start gap-3">
-            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#ef629f]/10 text-[#ef629f] shadow-inner">
+            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#F9D141]/10 text-[#d9a416] shadow-inner">
               <ArrowRightLeft className="h-5 w-5" />
             </div>
             <div>
@@ -440,7 +440,7 @@ export function AssetTransferPage() {
                 </label>
                 <select
                   id="req-source-room"
-                  className="w-full rounded-xl border border-white/60 bg-white/70 px-3.5 py-2.5 text-sm shadow-sm outline-none transition focus:border-[#ef629f] focus:ring-2 focus:ring-[#ef629f]/20 font-medium text-slate-800"
+                  className="w-full rounded-xl border border-white/60 bg-white/70 px-3.5 py-2.5 text-sm shadow-sm outline-none transition focus:border-[#F9D141] focus:ring-2 focus:ring-[#F9D141]/20 font-medium text-slate-800"
                   value={roomId}
                   onChange={(e) => {
                     setRoomId(e.target.value)
@@ -463,7 +463,7 @@ export function AssetTransferPage() {
                 </label>
                 <select
                   id="req-asset"
-                  className="w-full rounded-xl border border-white/60 bg-white/70 px-3.5 py-2.5 text-sm shadow-sm outline-none transition focus:border-[#ef629f] focus:ring-2 focus:ring-[#ef629f]/20 disabled:opacity-60 font-medium text-slate-800"
+                  className="w-full rounded-xl border border-white/60 bg-white/70 px-3.5 py-2.5 text-sm shadow-sm outline-none transition focus:border-[#F9D141] focus:ring-2 focus:ring-[#F9D141]/20 disabled:opacity-60 font-medium text-slate-800"
                   value={assetId}
                   onChange={(e) => setAssetId(e.target.value)}
                   disabled={!roomId || assets.isLoading}
@@ -512,7 +512,7 @@ export function AssetTransferPage() {
               </label>
               <select
                 id="req-target-room"
-                className="w-full rounded-xl border border-white/60 bg-white/70 px-3.5 py-2.5 text-sm shadow-sm outline-none transition focus:border-[#ef629f] focus:ring-2 focus:ring-[#ef629f]/20 disabled:opacity-60 font-medium text-slate-800"
+                className="w-full rounded-xl border border-white/60 bg-white/70 px-3.5 py-2.5 text-sm shadow-sm outline-none transition focus:border-[#F9D141] focus:ring-2 focus:ring-[#F9D141]/20 disabled:opacity-60 font-medium text-slate-800"
                 value={toRoomId}
                 onChange={(e) => setToRoomId(e.target.value)}
                 disabled={!assetId}
@@ -540,7 +540,7 @@ export function AssetTransferPage() {
                   <motion.div
                     animate={{ x: [-4, 4, -4] }}
                     transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
-                    className="text-[#ef629f]"
+                    className="text-[#d9a416]"
                   >
                     <ArrowRightLeft className="w-5 h-5" />
                   </motion.div>
@@ -562,7 +562,7 @@ export function AssetTransferPage() {
               </label>
               <textarea
                 id="req-reason"
-                className="min-h-[120px] w-full rounded-xl border border-white/60 bg-white/70 px-3.5 py-2.5 text-sm shadow-sm outline-none transition placeholder:text-slate-400 focus:border-[#ef629f] focus:ring-2 focus:ring-[#ef629f]/20 font-medium text-slate-800"
+                className="min-h-[120px] w-full rounded-xl border border-white/60 bg-white/70 px-3.5 py-2.5 text-sm shadow-sm outline-none transition placeholder:text-slate-400 focus:border-[#F9D141] focus:ring-2 focus:ring-[#F9D141]/20 font-medium text-slate-800"
                 value={reason}
                 onChange={(e) => setReason(e.target.value)}
                 placeholder="Contoh: Aset dipindahkan karena penataan ulang ruangan tim keuangan agar lebih dekat dengan pintu lobi utama."

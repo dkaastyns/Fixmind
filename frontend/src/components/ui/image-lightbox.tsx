@@ -173,7 +173,7 @@ export function ImageLightbox({ images, initialIndex = 0, onClose }: ImageLightb
                 style={{ width: 56, height: 56 }}
                 className={`overflow-hidden rounded-xl border-2 transition-all ${
                   i === index
-                    ? 'border-[#ef629f] opacity-100 scale-110 shadow-[0_0_14px_rgba(239,98,159,0.6)]'
+                    ? 'border-[#F9D141] opacity-100 scale-110 shadow-[0_0_14px_rgba(249,209,65,0.6)]'
                     : 'border-white/20 opacity-50 hover:opacity-80 hover:scale-105'
                 }`}
               >

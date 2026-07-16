@@ -95,7 +95,7 @@ export function AnalyticsPage() {
                   <label className="flex items-center gap-2 cursor-pointer">
                     <input
                       type="checkbox"
-                      className="rounded border-gray-300 text-[#ef629f] focus:ring-[#ef629f]"
+                      className="rounded border-gray-300 text-[#d9a416] focus:ring-[#F9D141]"
                       checked={isAllTime}
                       onChange={(e) => setIsAllTime(e.target.checked)}
                     />
@@ -114,7 +114,7 @@ export function AnalyticsPage() {
                           <label className="block text-xs font-medium text-gray-500 mb-1">Dari Tanggal</label>
                           <input
                             type="date"
-                            className="flex h-10 w-full rounded-xl border border-gray-200 bg-gray-50 px-3 text-sm focus:border-[#ef629f] focus:ring-[#ef629f]"
+                            className="flex h-10 w-full rounded-xl border border-gray-200 bg-gray-50 px-3 text-sm focus:border-[#F9D141] focus:ring-[#F9D141]"
                             value={startDate}
                             onChange={(e) => setStartDate(e.target.value)}
                           />
@@ -123,7 +123,7 @@ export function AnalyticsPage() {
                           <label className="block text-xs font-medium text-gray-500 mb-1">Sampai Tanggal</label>
                           <input
                             type="date"
-                            className="flex h-10 w-full rounded-xl border border-gray-200 bg-gray-50 px-3 text-sm focus:border-[#ef629f] focus:ring-[#ef629f]"
+                            className="flex h-10 w-full rounded-xl border border-gray-200 bg-gray-50 px-3 text-sm focus:border-[#F9D141] focus:ring-[#F9D141]"
                             value={endDate}
                             onChange={(e) => setEndDate(e.target.value)}
                           />
@@ -137,7 +137,7 @@ export function AnalyticsPage() {
                   <Button variant="secondary" className="flex-1 rounded-xl text-gray-700 bg-gray-100 hover:bg-gray-200" onClick={() => setShowExportModal(false)}>
                     Batal
                   </Button>
-                  <Button className="flex-1 rounded-xl bg-[#ef629f] text-white hover:bg-[#ef629f]/90" onClick={confirmExport}>
+                  <Button className="flex-1 rounded-xl bg-[#F9D141] text-slate-900 font-bold hover:bg-[#d9a416]" onClick={confirmExport}>
                     Proses Ekspor
                   </Button>
                 </div>

@@ -124,7 +124,7 @@ export function ReportsPage() {
           <input
             type="text"
             placeholder="Cari judul, pelapor, deskripsi..."
-            className="flex h-10 w-full rounded-xl border border-slate-200 bg-white/70 pl-9 pr-3 text-sm shadow-sm transition-all focus:border-[#ef629f]/50 focus:bg-white focus:outline-none focus:ring-4 focus:ring-[#ef629f]/10 text-slate-800"
+            className="flex h-10 w-full rounded-xl border border-slate-200 bg-white/70 pl-9 pr-3 text-sm shadow-sm transition-all focus:border-[#F9D141]/50 focus:bg-white focus:outline-none focus:ring-4 focus:ring-[#F9D141]/10 text-slate-800"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
@@ -179,10 +179,10 @@ export function ReportsPage() {
             transition={{ duration: 0.25, ease: 'easeInOut' }}
             className="overflow-hidden mb-4"
           >
-            <GlassCard className="p-5 border-white/60 bg-white/70 shadow-lg shadow-[#ef629f]/5">
+            <GlassCard className="p-5 border-white/60 bg-white/70 shadow-lg shadow-[#F9D141]/5">
               <div className="flex items-center justify-between mb-4 border-b border-slate-100/60 pb-2">
                 <div className="flex items-center gap-1.5 text-slate-800 font-semibold text-sm">
-                  <Filter className="h-4 w-4 text-[#ef629f]" />
+                  <Filter className="h-4 w-4 text-[#d9a416]" />
                   <span>Filter Lanjutan</span>
                 </div>
                 {hasAdvancedFilter && (
@@ -202,7 +202,7 @@ export function ReportsPage() {
                   <div className="relative">
                     <Building2 className="absolute left-3 top-3 h-4 w-4 text-slate-400 pointer-events-none" />
                     <select
-                      className="flex h-10 w-full rounded-xl border border-slate-200 bg-white/70 pl-9 pr-8 text-sm shadow-sm transition-all focus:border-[#ef629f]/50 focus:bg-white focus:outline-none focus:ring-4 focus:ring-[#ef629f]/10"
+                      className="flex h-10 w-full rounded-xl border border-slate-200 bg-white/70 pl-9 pr-8 text-sm shadow-sm transition-all focus:border-[#F9D141]/50 focus:bg-white focus:outline-none focus:ring-4 focus:ring-[#F9D141]/10"
                       value={advFilter.roomId}
                       onChange={(e) => setAdvFilter((f) => ({ ...f, roomId: e.target.value }))}
                     >
@@ -223,7 +223,7 @@ export function ReportsPage() {
                     <Calendar className="absolute left-3 top-3 h-4 w-4 text-slate-400 pointer-events-none" />
                     <input
                       type="date"
-                      className="flex h-10 w-full rounded-xl border border-slate-200 bg-white/70 pl-9 pr-3 text-sm shadow-sm transition-all focus:border-[#ef629f]/50 focus:bg-white focus:outline-none focus:ring-4 focus:ring-[#ef629f]/10"
+                      className="flex h-10 w-full rounded-xl border border-slate-200 bg-white/70 pl-9 pr-3 text-sm shadow-sm transition-all focus:border-[#F9D141]/50 focus:bg-white focus:outline-none focus:ring-4 focus:ring-[#F9D141]/10"
                       value={advFilter.dateFrom}
                       onChange={(e) => setAdvFilter((f) => ({ ...f, dateFrom: e.target.value }))}
                     />
@@ -237,7 +237,7 @@ export function ReportsPage() {
                     <Calendar className="absolute left-3 top-3 h-4 w-4 text-slate-400 pointer-events-none" />
                     <input
                       type="date"
-                      className="flex h-10 w-full rounded-xl border border-slate-200 bg-white/70 pl-9 pr-3 text-sm shadow-sm transition-all focus:border-[#ef629f]/50 focus:bg-white focus:outline-none focus:ring-4 focus:ring-[#ef629f]/10"
+                      className="flex h-10 w-full rounded-xl border border-slate-200 bg-white/70 pl-9 pr-3 text-sm shadow-sm transition-all focus:border-[#F9D141]/50 focus:bg-white focus:outline-none focus:ring-4 focus:ring-[#F9D141]/10"
                       value={advFilter.dateTo}
                       onChange={(e) => setAdvFilter((f) => ({ ...f, dateTo: e.target.value }))}
                     />
@@ -291,7 +291,7 @@ export function ReportsPage() {
                   {reports.map((r) => (
                     <tr key={r.id} className="border-b border-white/20 hover:bg-white/30">
                       <td className="px-4 py-3">
-                        <Link to={`/dashboard/reports/${r.id}`} className="font-medium hover:text-[#ef629f]">
+                        <Link to={`/dashboard/reports/${r.id}`} className="font-medium hover:text-[#d9a416]">
                           {r.title}
                         </Link>
                       </td>
@@ -490,7 +490,7 @@ function CreateReportForm({
                   key={t.label}
                   type="button"
                   onClick={() => applyTemplate(t)}
-                  className="inline-flex items-center rounded-full border border-[#ef629f]/30 bg-[#ef629f]/10 px-3 py-1 text-xs font-medium text-[#ef629f] transition-all hover:bg-[#ef629f]/20 hover:scale-105 active:scale-95"
+                  className="inline-flex items-center rounded-full border border-[#F9D141]/30 bg-[#F9D141]/10 px-3 py-1 text-xs font-semibold text-[#d9a416] transition-all hover:bg-[#F9D141]/20 hover:scale-105 active:scale-95"
                 >
                   {t.label}
                 </button>
@@ -535,7 +535,7 @@ function CreateReportForm({
               </label>
               <select
                 id="report-asset"
-                className="flex h-10 w-full rounded-xl border border-slate-200 bg-white/70 px-3.5 text-sm shadow-sm transition-all focus:border-[#ef629f]/50 focus:bg-white focus:outline-none focus:ring-4 focus:ring-[#ef629f]/10 disabled:opacity-50"
+                className="flex h-10 w-full rounded-xl border border-slate-200 bg-white/70 px-3.5 text-sm shadow-sm transition-all focus:border-[#F9D141]/50 focus:bg-white focus:outline-none focus:ring-4 focus:ring-[#F9D141]/10 disabled:opacity-50"
                 value={assetId}
                 onChange={(e) => setAssetId(e.target.value)}
                 disabled={!roomId}
@@ -551,7 +551,7 @@ function CreateReportForm({
               <label htmlFor="report-desc" className="text-xs font-semibold text-foreground/75">Deskripsi Lengkap</label>
               <textarea
                 id="report-desc"
-                className="min-h-[100px] w-full resize-y rounded-xl border border-slate-200 bg-white/70 px-3.5 py-2.5 text-sm shadow-sm transition-all focus:border-[#ef629f]/50 focus:bg-white focus:outline-none focus:ring-4 focus:ring-[#ef629f]/10"
+                className="min-h-[100px] w-full resize-y rounded-xl border border-slate-200 bg-white/70 px-3.5 py-2.5 text-sm shadow-sm transition-all focus:border-[#F9D141]/50 focus:bg-white focus:outline-none focus:ring-4 focus:ring-[#F9D141]/10"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="Jelaskan detail kerusakan yang terjadi secara jelas..."
@@ -560,7 +560,7 @@ function CreateReportForm({
             
             <div className="sm:col-span-2 space-y-1.5">
               <label htmlFor="report-file" className="text-xs font-semibold text-foreground/75">Foto Bukti Kerusakan (Maks 3 foto, ukuran 1.5MB/foto)</label>
-              <div className="relative rounded-xl border-2 border-dashed border-slate-200 bg-slate-50/50 p-4 transition-all hover:bg-slate-50 hover:border-[#ef629f]/40 text-center">
+              <div className="relative rounded-xl border-2 border-dashed border-slate-200 bg-slate-50/50 p-4 transition-all hover:bg-slate-50 hover:border-[#F9D141]/40 text-center">
                 <input
                   id="report-file"
                   type="file"
@@ -582,7 +582,7 @@ function CreateReportForm({
                   className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                 />
                 <div className="flex flex-col items-center justify-center gap-1.5 pointer-events-none">
-                  <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#ef629f]/10 text-[#ef629f]">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#F9D141]/10 text-[#d9a416]">
                     <Plus className="h-5 w-5" />
                   </div>
                   <p className="text-xs font-medium text-slate-700">Klik atau seret foto ke sini</p>
@@ -638,23 +638,23 @@ function CreateReportForm({
                 transition={{ duration: 0.3, ease: 'easeOut' }}
                 className="overflow-hidden"
               >
-                <div className="flex items-center gap-3 rounded-xl border border-[#ef629f]/20 bg-gradient-to-r from-[#ef629f]/5 to-purple-500/5 px-4 py-2.5">
+                <div className="flex items-center gap-3 rounded-xl border border-[#F9D141]/20 bg-gradient-to-r from-[#F9D141]/5 to-amber-500/5 px-4 py-2.5">
                   <div className="relative flex-shrink-0">
-                    <Bot className="h-5 w-5 text-[#ef629f]" />
+                    <Bot className="h-5 w-5 text-[#d9a416]" />
                     <span className="absolute -top-1 -right-1 flex h-2.5 w-2.5">
-                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#ef629f] opacity-75" />
-                      <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#ef629f]" />
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#F9D141] opacity-75" />
+                      <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#F9D141]" />
                     </span>
                   </div>
                   <div className="flex-1">
-                    <p className="text-sm font-semibold text-[#ef629f]">AI sedang menganalisis laporan Anda...</p>
+                    <p className="text-sm font-semibold text-[#d9a416]">AI sedang menganalisis laporan Anda...</p>
                     <p className="text-xs text-muted mt-0.5">Menentukan prioritas, estimasi waktu, dan rekomendasi perbaikan</p>
                   </div>
-                  <Loader2 className="h-4 w-4 animate-spin text-[#ef629f]/60 flex-shrink-0" />
+                  <Loader2 className="h-4 w-4 animate-spin text-[#d9a416]/60 flex-shrink-0" />
                 </div>
-                <div className="mt-2 h-1 w-full overflow-hidden rounded-full bg-[#ef629f]/10">
+                <div className="mt-2 h-1 w-full overflow-hidden rounded-full bg-[#F9D141]/10">
                   <motion.div
-                    className="h-full rounded-full bg-gradient-to-r from-[#ef629f] to-purple-500"
+                    className="h-full rounded-full bg-gradient-to-r from-[#F9D141] to-amber-500"
                     animate={{ x: ['-100%', '100%'] }}
                     transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
                     style={{ width: '60%' }}

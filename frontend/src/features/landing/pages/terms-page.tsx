@@ -61,7 +61,7 @@ export function TermsPage() {
         <motion.div 
           animate={{ x: [0, 40, 0], y: [0, 30, 0] }} 
           transition={{ repeat: Infinity, duration: 8, ease: "easeInOut" }}
-          className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-[#ef629f]/10 rounded-full filter blur-[120px] pointer-events-none" 
+          className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-[#F9D141]/10 rounded-full filter blur-[120px] pointer-events-none" 
         />
         <motion.div 
           animate={{ x: [0, -30, 0], y: [0, -40, 0] }} 

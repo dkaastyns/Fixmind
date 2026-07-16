@@ -9,7 +9,7 @@ export function ProtectedRoute() {
     return (
       <div className="flex min-h-screen items-center justify-center bg-gradient-to-tr from-white via-gray-50/50 to-white/90 relative overflow-hidden">
         {/* Soft floating glow background */}
-        <div className="absolute top-1/4 left-1/4 h-72 w-72 rounded-full bg-[#ef629f]/5 blur-3xl" />
+        <div className="absolute top-1/4 left-1/4 h-72 w-72 rounded-full bg-[#F9D141]/5 blur-3xl" />
         <div className="absolute bottom-1/4 right-1/4 h-72 w-72 rounded-full bg-[#eecda3]/5 blur-3xl" />
 
         <motion.div
@@ -31,9 +31,9 @@ export function ProtectedRoute() {
           <p className="mt-1.5 text-xs text-muted font-medium flex items-center gap-1.5 justify-center">
             Menghubungkan ke layanan
             <span className="flex gap-0.5">
-              <span className="h-1.5 w-1.5 rounded-full bg-[#ef629f] animate-bounce" style={{ animationDelay: '0ms' }} />
-              <span className="h-1.5 w-1.5 rounded-full bg-[#ef629f] animate-bounce" style={{ animationDelay: '150ms' }} />
-              <span className="h-1.5 w-1.5 rounded-full bg-[#ef629f] animate-bounce" style={{ animationDelay: '300ms' }} />
+              <span className="h-1.5 w-1.5 rounded-full bg-[#F9D141] animate-bounce" style={{ animationDelay: '0ms' }} />
+              <span className="h-1.5 w-1.5 rounded-full bg-[#F9D141] animate-bounce" style={{ animationDelay: '150ms' }} />
+              <span className="h-1.5 w-1.5 rounded-full bg-[#F9D141] animate-bounce" style={{ animationDelay: '300ms' }} />
             </span>
           </p>
         </motion.div>

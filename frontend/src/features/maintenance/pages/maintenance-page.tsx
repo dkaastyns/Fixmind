@@ -274,7 +274,7 @@ export function MaintenancePage() {
         action={
           <Button
             onClick={openCreate}
-            className="rounded-xl bg-[#ef629f] text-white hover:bg-[#ef629f]/90"
+            className="rounded-xl bg-[#F9D141] text-slate-900 font-bold hover:bg-[#d9a416]"
           >
             <Plus className="h-4 w-4 mr-2" /> Tambah Jadwal Baru
           </Button>
@@ -308,7 +308,7 @@ export function MaintenancePage() {
           <input
             type="text"
             placeholder="Cari agenda, vendor, atau ruangan..."
-            className="flex h-9 w-full rounded-xl border border-slate-200 bg-white px-9 py-2 text-sm focus:border-[#ef629f]/50 focus:outline-none focus:ring-4 focus:ring-[#ef629f]/10"
+            className="flex h-9 w-full rounded-xl border border-slate-200 bg-white px-9 py-2 text-sm focus:border-[#F9D141]/50 focus:outline-none focus:ring-4 focus:ring-[#F9D141]/10"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
@@ -374,7 +374,7 @@ export function MaintenancePage() {
                         {STATUS_LABEL[s.status]}
                       </span>
                       <div className="flex items-center gap-1.5 text-xs text-slate-500 font-medium">
-                        <Calendar className="h-3.5 w-3.5 text-[#ef629f]" />
+                        <Calendar className="h-3.5 w-3.5 text-[#d9a416]" />
                         {new Date(s.scheduledDate).toLocaleDateString('id-ID', {
                           weekday: 'long',
                           year: 'numeric',
@@ -411,7 +411,7 @@ export function MaintenancePage() {
                           </span>
                         </div>
                       )}
-                      <div className="text-[10px] text-[#ef629f] font-semibold bg-[#ef629f]/5 px-2 py-0.5 rounded w-max">
+                      <div className="text-[10px] text-[#d9a416] font-semibold bg-[#F9D141]/10 px-2 py-0.5 rounded w-max">
                         Frekuensi: {FREQUENCY_LABEL[s.frequency]}
                       </div>
                     </div>
@@ -420,18 +420,18 @@ export function MaintenancePage() {
                     <div className="border-t border-slate-100 pt-3 space-y-2">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-1.5 text-xs">
-                          <User className="h-3.5 w-3.5 text-[#ef629f]" />
+                          <User className="h-3.5 w-3.5 text-[#d9a416]" />
                           <span className="font-medium text-slate-800">{s.assigneeName}</span>
                         </div>
                         {s.estimatedCost > 0 && (
-                          <div className="text-xs font-semibold text-[#ef629f]">
+                          <div className="text-xs font-semibold text-[#d9a416]">
                             Rp {s.estimatedCost.toLocaleString('id-ID')}
                           </div>
                         )}
                       </div>
 
                       {(s.vendorContactName || s.vendorPhone) && (
-                        <div className="bg-[#ef629f]/5 p-2 rounded-lg border border-[#ef629f]/10 text-[11px] space-y-1">
+                        <div className="bg-[#F9D141]/5 p-2 rounded-lg border border-[#F9D141]/10 text-[11px] space-y-1">
                           {s.vendorContactName && (
                             <div>
                               CP: <span className="font-medium text-slate-700">{s.vendorContactName}</span>
@@ -594,7 +594,7 @@ export function MaintenancePage() {
                       <input
                         id="maint-title"
                         required
-                        className="flex h-10 w-full rounded-xl border border-slate-200 bg-white px-3.5 text-sm shadow-sm transition-all focus:border-[#ef629f]/50 focus:bg-white focus:outline-none focus:ring-4 focus:ring-[#ef629f]/10"
+                        className="flex h-10 w-full rounded-xl border border-slate-200 bg-white px-3.5 text-sm shadow-sm transition-all focus:border-[#F9D141]/50 focus:bg-white focus:outline-none focus:ring-4 focus:ring-[#F9D141]/10"
                         value={form.title}
                         onChange={(e) => set('title')(e.target.value)}
                         placeholder="Contoh: Servis Rutin AC Ruang Sidang Utama"
@@ -606,7 +606,7 @@ export function MaintenancePage() {
                       <label htmlFor="maint-room" className="text-xs font-semibold text-foreground/75">Ruangan / Fasilitas</label>
                       <select
                         id="maint-room"
-                        className="flex h-10 w-full rounded-xl border border-slate-200 bg-white px-3.5 text-sm shadow-sm transition-all focus:border-[#ef629f]/50 focus:bg-white focus:outline-none focus:ring-4 focus:ring-[#ef629f]/10"
+                        className="flex h-10 w-full rounded-xl border border-slate-200 bg-white px-3.5 text-sm shadow-sm transition-all focus:border-[#F9D141]/50 focus:bg-white focus:outline-none focus:ring-4 focus:ring-[#F9D141]/10"
                         value={form.roomId}
                         onChange={(e) => {
                           set('roomId')(e.target.value)
@@ -627,7 +627,7 @@ export function MaintenancePage() {
                       <label htmlFor="maint-asset" className="text-xs font-semibold text-foreground/75">Aset Terkait (Opsional)</label>
                       <select
                         id="maint-asset"
-                        className="flex h-10 w-full rounded-xl border border-slate-200 bg-white px-3.5 text-sm shadow-sm transition-all focus:border-[#ef629f]/50 focus:bg-white focus:outline-none focus:ring-4 focus:ring-[#ef629f]/10 disabled:opacity-50"
+                        className="flex h-10 w-full rounded-xl border border-slate-200 bg-white px-3.5 text-sm shadow-sm transition-all focus:border-[#F9D141]/50 focus:bg-white focus:outline-none focus:ring-4 focus:ring-[#F9D141]/10 disabled:opacity-50"
                         value={form.assetId}
                         onChange={(e) => set('assetId')(e.target.value)}
                         disabled={!form.roomId}
@@ -648,7 +648,7 @@ export function MaintenancePage() {
                         id="maint-date"
                         type="date"
                         required
-                        className="flex h-10 w-full rounded-xl border border-slate-200 bg-white px-3.5 text-sm shadow-sm transition-all focus:border-[#ef629f]/50 focus:bg-white focus:outline-none focus:ring-4 focus:ring-[#ef629f]/10"
+                        className="flex h-10 w-full rounded-xl border border-slate-200 bg-white px-3.5 text-sm shadow-sm transition-all focus:border-[#F9D141]/50 focus:bg-white focus:outline-none focus:ring-4 focus:ring-[#F9D141]/10"
                         value={form.scheduledDate}
                         onChange={(e) => set('scheduledDate')(e.target.value)}
                       />
@@ -663,7 +663,7 @@ export function MaintenancePage() {
                       <select
                         id="maint-freq"
                         required
-                        className="flex h-10 w-full rounded-xl border border-slate-200 bg-white px-3.5 text-sm shadow-sm transition-all focus:border-[#ef629f]/50 focus:bg-white focus:outline-none focus:ring-4 focus:ring-[#ef629f]/10"
+                        className="flex h-10 w-full rounded-xl border border-slate-200 bg-white px-3.5 text-sm shadow-sm transition-all focus:border-[#F9D141]/50 focus:bg-white focus:outline-none focus:ring-4 focus:ring-[#F9D141]/10"
                         value={form.frequency}
                         onChange={(e) => set('frequency')(e.target.value as MaintenanceFrequency)}
                       >
@@ -681,7 +681,7 @@ export function MaintenancePage() {
                       <input
                         id="maint-vendor"
                         required
-                        className="flex h-10 w-full rounded-xl border border-slate-200 bg-white px-3.5 text-sm shadow-sm transition-all focus:border-[#ef629f]/50 focus:bg-white focus:outline-none focus:ring-4 focus:ring-[#ef629f]/10"
+                        className="flex h-10 w-full rounded-xl border border-slate-200 bg-white px-3.5 text-sm shadow-sm transition-all focus:border-[#F9D141]/50 focus:bg-white focus:outline-none focus:ring-4 focus:ring-[#F9D141]/10"
                         value={form.assigneeName}
                         onChange={(e) => set('assigneeName')(e.target.value)}
                         placeholder="Contoh: CV Maju Jaya Teknik"
@@ -700,7 +700,7 @@ export function MaintenancePage() {
                           id="maint-cost"
                           type="number"
                           min="0"
-                          className="flex h-10 w-full rounded-xl border border-slate-200 bg-white pl-9 pr-3.5 text-sm shadow-sm transition-all focus:border-[#ef629f]/50 focus:bg-white focus:outline-none focus:ring-4 focus:ring-[#ef629f]/10"
+                          className="flex h-10 w-full rounded-xl border border-slate-200 bg-white pl-9 pr-3.5 text-sm shadow-sm transition-all focus:border-[#F9D141]/50 focus:bg-white focus:outline-none focus:ring-4 focus:ring-[#F9D141]/10"
                           value={form.estimatedCost}
                           onChange={(e) => set('estimatedCost')(e.target.value)}
                           placeholder="0"
@@ -709,9 +709,9 @@ export function MaintenancePage() {
                     </div>
 
                     {/* Vendor Contact details */}
-                    <div className="sm:col-span-2 grid gap-3 grid-cols-2 bg-pink-50/20 border border-pink-100/50 p-4 rounded-xl">
+                    <div className="sm:col-span-2 grid gap-3 grid-cols-2 bg-amber-50/20 border border-amber-100/50 p-4 rounded-xl">
                       <div className="space-y-1.5 col-span-2">
-                        <p className="text-[10px] font-bold text-[#ef629f] uppercase tracking-wider">
+                        <p className="text-[10px] font-bold text-[#d9a416] uppercase tracking-wider">
                           Informasi Kontak Vendor Luar
                         </p>
                       </div>
@@ -719,7 +719,7 @@ export function MaintenancePage() {
                         <label htmlFor="maint-contact" className="text-xs font-semibold text-foreground/75">Nama Kontak Person</label>
                         <input
                           id="maint-contact"
-                          className="flex h-10 w-full rounded-xl border border-slate-200 bg-white px-3.5 text-sm shadow-sm focus:border-[#ef629f]/50 focus:outline-none"
+                          className="flex h-10 w-full rounded-xl border border-slate-200 bg-white px-3.5 text-sm shadow-sm focus:border-[#F9D141]/50 focus:outline-none"
                           value={form.vendorContactName}
                           onChange={(e) => set('vendorContactName')(e.target.value)}
                           placeholder="Contoh: Pak Budi"
@@ -729,7 +729,7 @@ export function MaintenancePage() {
                         <label htmlFor="maint-phone" className="text-xs font-semibold text-foreground/75">Nomor Telepon Vendor</label>
                         <input
                           id="maint-phone"
-                          className="flex h-10 w-full rounded-xl border border-slate-200 bg-white px-3.5 text-sm shadow-sm focus:border-[#ef629f]/50 focus:outline-none"
+                          className="flex h-10 w-full rounded-xl border border-slate-200 bg-white px-3.5 text-sm shadow-sm focus:border-[#F9D141]/50 focus:outline-none"
                           value={form.vendorPhone}
                           onChange={(e) => set('vendorPhone')(e.target.value)}
                           placeholder="Contoh: 081234567890"
@@ -742,7 +742,7 @@ export function MaintenancePage() {
                       <label htmlFor="maint-desc" className="text-xs font-semibold text-foreground/75">Deskripsi Pekerjaan / Catatan</label>
                       <textarea
                         id="maint-desc"
-                        className="min-h-[80px] w-full resize-y rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm shadow-sm transition-all focus:border-[#ef629f]/50 focus:bg-white focus:outline-none focus:ring-4 focus:ring-[#ef629f]/10"
+                        className="min-h-[80px] w-full resize-y rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm shadow-sm transition-all focus:border-[#F9D141]/50 focus:bg-white focus:outline-none focus:ring-4 focus:ring-[#F9D141]/10"
                         value={form.description}
                         onChange={(e) => set('description')(e.target.value)}
                         placeholder="Detail pekerjaan pemeliharaan berkala..."
@@ -755,7 +755,7 @@ export function MaintenancePage() {
                         <label className="text-xs font-semibold text-foreground/75">Status Jadwal *</label>
                         <select
                           required
-                          className="flex h-10 w-full rounded-xl border border-slate-200 bg-white px-3.5 text-sm focus:border-[#ef629f]/50 focus:outline-none"
+                          className="flex h-10 w-full rounded-xl border border-slate-200 bg-white px-3.5 text-sm focus:border-[#F9D141]/50 focus:outline-none"
                           value={form.status}
                           onChange={(e) => set('status')(e.target.value as MaintenanceScheduleStatus)}
                         >
@@ -782,7 +782,7 @@ export function MaintenancePage() {
                   <Button
                     type="submit"
                     disabled={isSubmitting}
-                    className="min-w-[120px] bg-[#ef629f] text-white hover:bg-[#ef629f]/90 shadow-md shadow-pink-200 rounded-xl"
+                    className="min-w-[120px] bg-[#F9D141] text-slate-900 font-bold hover:bg-[#d9a416] shadow-md shadow-amber-200 rounded-xl"
                   >
                     {isSubmitting ? 'Menyimpan...' : 'Simpan Jadwal'}
                   </Button>

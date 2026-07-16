@@ -89,8 +89,8 @@ export function ReportDetailPage() {
           </div>
 
           {report.adminNotes && (
-            <div className="mt-4 rounded-xl border border-[#ef629f]/20 bg-[#ef629f]/5 p-4">
-              <h3 className="font-medium text-[#ef629f] mb-1">Instruksi Admin</h3>
+            <div className="mt-4 rounded-xl border border-[#F9D141]/20 bg-[#F9D141]/5 p-4">
+              <h3 className="font-medium text-[#d9a416] mb-1">Instruksi Admin</h3>
               <p className="text-sm">{report.adminNotes}</p>
             </div>
           )}
@@ -100,25 +100,25 @@ export function ReportDetailPage() {
             <motion.div
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
-              className="rounded-xl border border-[#ef629f]/20 bg-gradient-to-r from-[#ef629f]/5 to-purple-500/5 p-4"
+              className="rounded-xl border border-[#F9D141]/20 bg-gradient-to-r from-[#F9D141]/5 to-amber-500/5 p-4"
             >
               <div className="flex items-center gap-3">
                 <div className="relative">
-                  <Bot className="h-5 w-5 text-[#ef629f]" />
+                  <Bot className="h-5 w-5 text-[#d9a416]" />
                   <span className="absolute -top-1 -right-1 flex h-2.5 w-2.5">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#ef629f] opacity-75" />
-                    <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#ef629f]" />
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#F9D141] opacity-75" />
+                    <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#F9D141]" />
                   </span>
                 </div>
                 <div>
-                  <p className="text-sm font-semibold text-[#ef629f]">AI sedang menganalisis laporan...</p>
+                  <p className="text-sm font-semibold text-[#d9a416]">AI sedang menganalisis laporan...</p>
                   <p className="text-xs text-muted mt-0.5">Menentukan prioritas dan rekomendasi perbaikan</p>
                 </div>
-                <Loader2 className="ml-auto h-4 w-4 animate-spin text-[#ef629f]/60" />
+                <Loader2 className="ml-auto h-4 w-4 animate-spin text-[#d9a416]/60" />
               </div>
-              <div className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-[#ef629f]/10">
+              <div className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-[#F9D141]/10">
                 <motion.div
-                  className="h-full rounded-full bg-gradient-to-r from-[#ef629f] to-purple-500"
+                  className="h-full rounded-full bg-gradient-to-r from-[#F9D141] to-amber-500"
                   animate={{ x: ['-100%', '100%'] }}
                   transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
                   style={{ width: '60%' }}
@@ -130,10 +130,10 @@ export function ReportDetailPage() {
               initial={{ opacity: 0, scale: 0.97 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.3 }}
-              className="rounded-xl bg-gradient-to-br from-white/60 to-white/40 border border-[#ef629f]/20 p-4 shadow-sm"
+              className="rounded-xl bg-gradient-to-br from-white/60 to-white/40 border border-[#F9D141]/20 p-4 shadow-sm"
             >
               <div className="flex items-center gap-2 mb-3">
-                <CheckCircle2 className="h-4 w-4 text-[#ef629f]" />
+                <CheckCircle2 className="h-4 w-4 text-[#d9a416]" />
                 <h3 className="font-semibold text-gradient flex items-center">
                   Analisis AI
                   <HelpTooltip text="Prioritas dan saran perbaikan dihasilkan otomatis oleh kecerdasan buatan (AI) berdasarkan riwayat dan kategori laporan." />
@@ -143,7 +143,7 @@ export function ReportDetailPage() {
               <p className="mt-2 text-sm"><strong>Rekomendasi:</strong> {report.aiRecommendation}</p>
               <p className="mt-1 text-sm text-muted">Est. {report.aiEstimatedRepairHours} jam — {report.aiSuggestedAction}</p>
               {report.aiSuggestedTargetDate && (
-                <p className="mt-1 text-sm text-[#ef629f] font-medium">Target Selesai yang Disarankan AI: {new Date(report.aiSuggestedTargetDate).toLocaleDateString('id-ID')}</p>
+                <p className="mt-1 text-sm text-[#d9a416] font-medium">Target Selesai yang Disarankan AI: {new Date(report.aiSuggestedTargetDate).toLocaleDateString('id-ID')}</p>
               )}
             </motion.div>
           ) : null}
@@ -156,7 +156,7 @@ export function ReportDetailPage() {
                   <button
                     key={a.id}
                     onClick={() => setLightboxIndex(i)}
-                    className="group relative overflow-hidden rounded-xl border border-white/30 shadow-sm transition-all hover:scale-105 hover:shadow-lg hover:border-[#ef629f]/50"
+                    className="group relative overflow-hidden rounded-xl border border-white/30 shadow-sm transition-all hover:scale-105 hover:shadow-lg hover:border-[#F9D141]/50"
                     title="Klik untuk memperbesar"
                   >
                     <img src={a.url} alt={a.type} className="h-28 w-28 object-cover" />
@@ -212,7 +212,7 @@ export function ReportDetailPage() {
                   const newLabel = h.newStatus ? (statusLabelMap[h.newStatus] ?? h.newStatus) : null
 
                   return (
-                    <li key={h.id} className="border-l-2 border-[#ef629f]/30 pl-3 text-sm">
+                    <li key={h.id} className="border-l-2 border-[#F9D141]/30 pl-3 text-sm">
                       <p className="font-medium">
                         {actionMap[h.action] ?? h.action.replace(/_/g, ' ').toLowerCase()}
                       </p>
@@ -221,7 +221,7 @@ export function ReportDetailPage() {
                         <p className="mt-0.5 flex items-center gap-1.5 text-xs">
                           <span className="rounded-md bg-gray-100 px-1.5 py-0.5 text-gray-500">{oldLabel}</span>
                           <span className="text-muted">→</span>
-                          <span className="rounded-md bg-[#ef629f]/10 px-1.5 py-0.5 font-medium text-[#ef629f]">{newLabel}</span>
+                          <span className="rounded-md bg-[#F9D141]/10 px-1.5 py-0.5 font-medium text-[#d9a416]">{newLabel}</span>
                         </p>
                       )}
                       {h.note && <p className="mt-0.5 text-muted">{h.note}</p>}
@@ -290,7 +290,7 @@ function AdminActionPanel({
           <select
             value={selectedStatus}
             onChange={(e) => setSelectedStatus(e.target.value)}
-            className="w-full appearance-none rounded-xl border border-white/30 bg-white/50 px-3 py-2.5 pr-8 text-sm font-medium focus:border-[#ef629f]/50 focus:outline-none focus:ring-4 focus:ring-[#ef629f]/10 transition-all"
+            className="w-full appearance-none rounded-xl border border-white/30 bg-white/50 px-3 py-2.5 pr-8 text-sm font-medium focus:border-[#F9D141]/50 focus:outline-none focus:ring-4 focus:ring-[#F9D141]/10 transition-all"
             disabled={mutation.isPending}
           >
             {ADMIN_STATUS_OPTIONS.map((o) => (
@@ -313,7 +313,7 @@ function AdminActionPanel({
           onChange={(e) => setNote(e.target.value)}
           rows={3}
           placeholder="Tambahkan catatan progres untuk teknisi atau pelapor..."
-          className="w-full resize-none rounded-xl border border-white/30 bg-white/50 px-3 py-2.5 text-sm focus:border-[#ef629f]/50 focus:outline-none focus:ring-4 focus:ring-[#ef629f]/10 transition-all"
+          className="w-full resize-none rounded-xl border border-white/30 bg-white/50 px-3 py-2.5 text-sm focus:border-[#F9D141]/50 focus:outline-none focus:ring-4 focus:ring-[#F9D141]/10 transition-all"
           disabled={mutation.isPending}
         />
       </div>
@@ -392,7 +392,7 @@ function CommentSection({ token, reportId }: { token: string; reportId: string }
           nextParts.push(
             <span
               key={`${name}-${idx}`}
-              className="inline-flex items-center rounded-lg bg-[#ef629f]/15 px-2 py-0.5 text-xs font-semibold text-[#ef629f] mr-1.5 shadow-sm border border-[#ef629f]/10"
+              className="inline-flex items-center rounded-lg bg-[#F9D141]/15 px-2 py-0.5 text-xs font-semibold text-[#d9a416] mr-1.5 shadow-sm border border-[#F9D141]/10"
             >
               @{name}
             </span>
@@ -414,7 +414,7 @@ function CommentSection({ token, reportId }: { token: string; reportId: string }
   return (
     <GlassCard className="space-y-4">
       <div className="flex items-center gap-2">
-        <MessageCircle className="h-5 w-5 text-[#ef629f]" />
+        <MessageCircle className="h-5 w-5 text-[#d9a416]" />
         <h3 className="font-semibold">Komentar ({comments.length})</h3>
       </div>
 
@@ -437,7 +437,7 @@ function CommentSection({ token, reportId }: { token: string; reportId: string }
                 <div className="flex items-center justify-between mb-1.5">
                   <div className="flex items-center gap-2">
                     <span className="text-sm font-semibold text-foreground">{c.authorName}</span>
-                    <span className="rounded bg-[#ef629f]/10 px-1.5 py-0.5 text-[10px] font-medium text-[#ef629f] uppercase tracking-wide">
+                    <span className="rounded bg-[#F9D141]/10 px-1.5 py-0.5 text-[10px] font-medium text-[#d9a416] uppercase tracking-wide">
                       {c.authorRole?.toLowerCase() || 'staf'}
                     </span>
                   </div>
@@ -453,7 +453,7 @@ function CommentSection({ token, reportId }: { token: string; reportId: string }
                     </span>
                     <button
                       onClick={() => handleReply(c.authorName)}
-                      className="inline-flex items-center gap-1 text-xs text-[#ef629f] hover:text-[#ef629f]/80 font-medium transition-colors"
+                      className="inline-flex items-center gap-1 text-xs text-[#d9a416] hover:text-[#d9a416]/80 font-medium transition-colors"
                       title="Balas komentar ini"
                     >
                       <Reply className="h-3 w-3" /> Balas
@@ -473,7 +473,7 @@ function CommentSection({ token, reportId }: { token: string; reportId: string }
       <div className="flex gap-2 pt-2 border-t border-white/20">
         <textarea
           ref={inputRef}
-          className="flex-1 min-h-[80px] resize-none rounded-xl border border-white/20 bg-white/40 px-4 py-3 text-sm backdrop-blur-md focus:border-[#ef629f]/50 focus:outline-none focus:ring-4 focus:ring-[#ef629f]/10"
+          className="flex-1 min-h-[80px] resize-none rounded-xl border border-white/20 bg-white/40 px-4 py-3 text-sm backdrop-blur-md focus:border-[#F9D141]/50 focus:outline-none focus:ring-4 focus:ring-[#F9D141]/10"
           placeholder="Tulis komentar Anda... Gunakan @nama untuk menyebut seseorang"
           value={newComment}
           onChange={(e) => setNewComment(e.target.value)}

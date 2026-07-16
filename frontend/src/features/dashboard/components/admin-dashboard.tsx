@@ -165,7 +165,7 @@ function ExportModal({ open, format, onClose }: ExportModalProps) {
                     <div className="grid grid-cols-2 gap-3">
                       {([
                         { val: 'masalah' as ReportKind, label: 'Laporan Masalah', icon: ClipboardList, color: 'text-blue-500 bg-blue-50 border-blue-200' },
-                        { val: 'transfer' as ReportKind, label: 'Transfer Aset', icon: ArrowRightLeft, color: 'text-pink-500 bg-pink-50 border-pink-200' },
+                        { val: 'transfer' as ReportKind, label: 'Transfer Aset', icon: ArrowRightLeft, color: 'text-amber-600 bg-amber-50 border-amber-200' },
                       ] as const).map(({ val, label, icon: Icon, color }) => (
                         <button
                           key={val}

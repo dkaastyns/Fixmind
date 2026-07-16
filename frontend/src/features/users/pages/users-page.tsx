@@ -489,7 +489,7 @@ function UserForm({ token, onClose, onSuccess }: { token: string; onClose: () =>
       </button>
 
       <h2 className="text-base font-bold text-slate-800 flex items-center gap-2">
-        <span className="w-1.5 h-4.5 rounded bg-[#ef629f]"></span>
+        <span className="w-1.5 h-4.5 rounded bg-[#F9D141]"></span>
         Registrasi Pengguna Baru
       </h2>
       <p className="text-xs text-slate-500 mt-1">Daftarkan akun administrator atau user baru untuk sistem E-Lapor.</p>
@@ -521,7 +521,7 @@ function UserForm({ token, onClose, onSuccess }: { token: string; onClose: () =>
             <Shield className="w-3.5 h-3.5" /> Peran / Role Akun
           </label>
           <select
-            className="w-full rounded-xl border border-white/60 bg-white/70 px-3 py-2 text-sm shadow-sm outline-none transition focus:border-[#ef629f] focus:ring-2 focus:ring-[#ef629f]/20 font-medium text-slate-800"
+            className="w-full rounded-xl border border-white/60 bg-white/70 px-3 py-2 text-sm shadow-sm outline-none transition focus:border-[#F9D141] focus:ring-2 focus:ring-[#F9D141]/20 font-medium text-slate-800"
             value={String(isAdmin)}
             onChange={(e) => setIsAdmin(e.target.value === 'true')}
           >
