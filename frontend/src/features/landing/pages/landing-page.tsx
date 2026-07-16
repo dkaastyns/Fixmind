@@ -133,20 +133,20 @@ export function LandingPage() {
                 initial={{ opacity: 0, y: 15 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: index * 0.1, type: "spring", stiffness: 80 }}
-                whileHover={{ y: -8, scale: 1.02 }}
+                whileHover={{ y: -8, scale: 1.01 }}
                 whileTap={{ scale: 0.98 }}
-                className="p-6 rounded-3xl bg-white flex flex-col items-start gap-4 border border-slate-100/80 shadow-[0_8px_30px_rgba(15,23,42,0.04)] hover:border-[#3b82f6] hover:shadow-[0_20px_40px_rgba(59,130,246,0.12)] hover:ring-4 hover:ring-[#3b82f6]/5 transition-all duration-300 cursor-pointer h-full group"
+                className="p-6 rounded-[22px] bg-white flex flex-col items-start gap-4 border border-slate-200/80 shadow-[0_15px_30px_rgba(0,0,0,0.14)] hover:shadow-[0_22px_45px_rgba(0,0,0,0.18)] transition-all duration-300 cursor-pointer h-full group"
               >
-                {/* Icon Container with custom accent background */}
-                <div className="flex h-11 w-11 items-center justify-center rounded-xl shadow-sm text-white bg-gradient-to-br from-orange-500 to-red-600 group-hover:scale-110 group-hover:rotate-6 transition-transform duration-300">
-                  <Icon className="h-5 w-5" />
+                {/* Icon Container with glowing orange-red gradient background and shadow */}
+                <div className="flex h-[46px] w-[46px] items-center justify-center rounded-[14px] text-white bg-gradient-to-br from-[#f97316] via-[#ea580c] to-[#e11d48] shadow-[0_10px_20px_rgba(234,88,12,0.5)] group-hover:scale-105 transition-transform duration-300">
+                  <Icon className="h-5 w-5 text-white" />
                 </div>
 
                 <div>
-                  <h3 className="font-extrabold text-slate-800 text-lg mb-2">
+                  <h3 className="font-bold text-slate-900 text-base mb-1.5 leading-snug">
                     {feature.title}
                   </h3>
-                  <p className="text-sm text-slate-600 leading-relaxed font-medium">
+                  <p className="text-[13px] text-slate-500 leading-relaxed font-normal">
                     {feature.description}
                   </p>
                 </div>
