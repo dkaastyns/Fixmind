@@ -243,7 +243,7 @@ export function RoomsPage() {
               title="Download template Excel untuk import aset"
               className="gap-1.5 h-10 px-3.5 border-slate-200 text-slate-700 bg-white/70 hover:bg-slate-50 transition-all font-semibold rounded-xl text-xs"
             >
-              <Download className="h-4 w-4 text-[#ef629f]" />
+              <Download className="h-4 w-4 text-[#d9a416]" />
               Download Template
             </Button>
 
@@ -284,7 +284,7 @@ export function RoomsPage() {
 
             <Button 
               onClick={() => setShowRoomForm(true)} 
-              className="gap-1.5 h-10 px-4 bg-[#ef629f] hover:bg-[#d8528b] text-white shadow-md hover:shadow-lg transition-all font-semibold rounded-xl text-xs"
+              className="gap-1.5 h-10 px-4 bg-[#F9D141] hover:bg-[#d9a416] text-white shadow-md hover:shadow-lg transition-all font-semibold rounded-xl text-xs"
             >
               <Plus className="h-4 w-4" /> Tambah Ruangan
             </Button>
@@ -298,7 +298,7 @@ export function RoomsPage() {
           {/* Header Panel Ruangan */}
           <div className="flex items-center justify-between border-b border-slate-100 px-4 py-3.5 bg-slate-50/50">
             <div className="flex items-center gap-2">
-              <Building2 className="h-4 w-4 text-[#ef629f]" />
+              <Building2 className="h-4 w-4 text-[#d9a416]" />
               <span className="font-bold text-slate-700 text-sm">Daftar Ruangan ({filteredRooms.length})</span>
             </div>
             <div className="flex items-center gap-1.5">
@@ -342,7 +342,7 @@ export function RoomsPage() {
               <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
               <Input
                 placeholder="Cari kode, nama ruangan, atau gedung..."
-                className="pl-9 h-9 text-xs rounded-lg border-slate-200 focus:border-[#ef629f]/50 bg-white"
+                className="pl-9 h-9 text-xs rounded-lg border-slate-200 focus:border-[#F9D141]/50 bg-white"
                 value={roomSearch}
                 onChange={(e) => setRoomSearch(e.target.value)}
               />
@@ -365,7 +365,7 @@ export function RoomsPage() {
                   className={cn(
                     'group flex cursor-pointer items-center justify-between px-4 py-3.5 transition-all duration-200 focus:outline-none focus:bg-slate-50',
                     selectedRoom === r.id && !isDeletingRooms
-                      ? 'bg-gradient-to-r from-[#ef629f]/10 to-[#ef629f]/5 border-l-4 border-l-[#ef629f] pl-3'
+                      ? 'bg-gradient-to-r from-[#F9D141]/10 to-[#F9D141]/5 border-l-4 border-l-[#d9a416] pl-3'
                       : 'hover:bg-slate-50 border-l-4 border-l-transparent'
                   )}
                   onClick={() => {
@@ -395,14 +395,14 @@ export function RoomsPage() {
                         checked={selectedRoomsToDelete.includes(r.id)} 
                         onChange={() => toggleRoomDelete(r.id)}
                         onClick={(e) => e.stopPropagation()}
-                        className="h-4 w-4 rounded border-slate-300 text-[#ef629f] focus:ring-[#ef629f] cursor-pointer"
+                        className="h-4 w-4 rounded border-slate-300 text-[#d9a416] focus:ring-[#F9D141] cursor-pointer"
                       />
                     )}
                     <div className="p-2 bg-slate-100 text-slate-500 rounded-lg group-hover:bg-white group-hover:shadow-sm transition-all shrink-0">
-                      <Building2 className="w-4 h-4 text-[#ef629f]/75" />
+                      <Building2 className="w-4 h-4 text-[#d9a416]/75" />
                     </div>
                     <div className="min-w-0">
-                      <p className={cn('font-bold text-sm truncate', selectedRoom === r.id && !isDeletingRooms ? 'text-[#ef629f]' : 'text-slate-800')}>
+                      <p className={cn('font-bold text-sm truncate', selectedRoom === r.id && !isDeletingRooms ? 'text-[#d9a416]' : 'text-slate-800')}>
                         {r.code}
                       </p>
                       <p className="text-xs text-slate-500 truncate font-semibold">{r.name}</p>
@@ -415,7 +415,7 @@ export function RoomsPage() {
                       </span>
                     )}
                     {r.floor && (
-                      <span className="bg-pink-50 border border-pink-100 text-[#ef629f] px-1.5 py-0.5 rounded text-[10px] font-bold">
+                      <span className="bg-amber-50 border border-amber-100 text-[#d9a416] px-1.5 py-0.5 rounded text-[10px] font-bold">
                         Lt {r.floor}
                       </span>
                     )}
@@ -431,7 +431,7 @@ export function RoomsPage() {
           {/* Header Panel Aset */}
           <div className="flex items-center justify-between border-b border-slate-100 px-4 py-3.5 bg-slate-50/50">
             <div className="flex items-center gap-2">
-              <Package className="h-4 w-4 text-[#ef629f]" />
+              <Package className="h-4 w-4 text-[#d9a416]" />
               <span className="font-bold text-slate-700 text-sm">
                 Aset Ruangan {selectedRoomObj ? `(${selectedRoomObj.code})` : ''}
               </span>
@@ -490,7 +490,7 @@ export function RoomsPage() {
                   <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
                   <Input
                     placeholder="Cari nama barang, kode, merk, atau nomor register..."
-                    className="pl-9 h-9 text-xs rounded-lg border-slate-200 focus:border-[#ef629f]/50 bg-white"
+                    className="pl-9 h-9 text-xs rounded-lg border-slate-200 focus:border-[#F9D141]/50 bg-white"
                     value={assetSearch}
                     onChange={(e) => setAssetSearch(e.target.value)}
                   />
@@ -529,7 +529,7 @@ export function RoomsPage() {
                             checked={selectedAssetsToDelete.includes(a.id)} 
                             onChange={() => toggleAssetDelete(a.id)}
                             onClick={(e) => e.stopPropagation()}
-                            className="h-4 w-4 rounded border-slate-300 text-[#ef629f] focus:ring-[#ef629f] cursor-pointer mt-1"
+                            className="h-4 w-4 rounded border-slate-300 text-[#d9a416] focus:ring-[#F9D141] cursor-pointer mt-1"
                           />
                         )}
                         <div className="p-2 bg-amber-500/10 text-amber-600 rounded-xl mt-0.5 shrink-0">
@@ -669,7 +669,7 @@ function ImportRoomPickerModal({
             {/* Header */}
             <div className="flex items-center justify-between mb-4 pb-2 border-b border-slate-100">
               <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-pink-50 text-[#ef629f]">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-50 text-[#d9a416]">
                   <FileSpreadsheet className="h-5 w-5" />
                 </div>
                 <div className="min-w-0">
@@ -696,7 +696,7 @@ function ImportRoomPickerModal({
                 </p>
               ) : (
                 <select
-                  className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-800 focus:border-[#ef629f] focus:ring-4 focus:ring-[#ef629f]/10 focus:outline-none transition-all font-semibold"
+                  className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-800 focus:border-[#F9D141] focus:ring-4 focus:ring-[#F9D141]/10 focus:outline-none transition-all font-semibold"
                   value={selectedRoomId}
                   onChange={(e) => onSelectRoom(e.target.value)}
                   disabled={isLoading}
@@ -731,7 +731,7 @@ function ImportRoomPickerModal({
               <Button
                 onClick={onConfirm}
                 disabled={isLoading || !selectedRoomId || rooms.length === 0}
-                className="bg-[#ef629f] hover:bg-[#d8528b] text-white"
+                className="bg-[#F9D141] hover:bg-[#d9a416] text-white"
               >
                 {isLoading ? 'Mengimport...' : 'Import Sekarang'}
               </Button>
@@ -798,7 +798,7 @@ function RoomFormModal({
             <GlassCard className="p-6 bg-white shadow-2xl border-white/80 space-y-4">
               <div className="flex items-center justify-between pb-2 border-b border-slate-100">
                 <div className="flex items-center gap-3">
-                  <div className="p-2.5 bg-pink-50 text-[#ef629f] rounded-xl shadow-inner">
+                  <div className="p-2.5 bg-amber-50 text-[#d9a416] rounded-xl shadow-inner">
                     <Building2 className="w-5 h-5" />
                   </div>
                   <div>
@@ -822,7 +822,7 @@ function RoomFormModal({
                     placeholder="Contoh: Ruang Rapat Paripurna" 
                     value={name} 
                     onChange={(e) => setName(e.target.value)} 
-                    className="rounded-xl border-slate-200 focus:border-[#ef629f]/50"
+                    className="rounded-xl border-slate-200 focus:border-[#F9D141]/50"
                   />
                 </div>
                 <div className="space-y-1.5">
@@ -832,7 +832,7 @@ function RoomFormModal({
                     placeholder="Contoh: R-PRP-3" 
                     value={code} 
                     onChange={(e) => setCode(e.target.value)} 
-                    className="rounded-xl border-slate-200 focus:border-[#ef629f]/50"
+                    className="rounded-xl border-slate-200 focus:border-[#F9D141]/50"
                   />
                 </div>
                 <div className="space-y-1.5">
@@ -842,7 +842,7 @@ function RoomFormModal({
                     placeholder="Contoh: Gedung Paripurna" 
                     value={building} 
                     onChange={(e) => setBuilding(e.target.value)} 
-                    className="rounded-xl border-slate-200 focus:border-[#ef629f]/50"
+                    className="rounded-xl border-slate-200 focus:border-[#F9D141]/50"
                   />
                 </div>
                 <div className="space-y-1.5">
@@ -852,7 +852,7 @@ function RoomFormModal({
                     placeholder="Contoh: 3" 
                     value={floor} 
                     onChange={(e) => setFloor(e.target.value)} 
-                    className="rounded-xl border-slate-200 focus:border-[#ef629f]/50"
+                    className="rounded-xl border-slate-200 focus:border-[#F9D141]/50"
                   />
                 </div>
               </div>
@@ -864,7 +864,7 @@ function RoomFormModal({
                 <Button 
                   onClick={() => mutation.mutate()} 
                   disabled={!name || !code || mutation.isPending} 
-                  className="bg-[#ef629f] hover:bg-[#d8528b] text-white font-semibold rounded-xl"
+                  className="bg-[#F9D141] hover:bg-[#d9a416] text-white font-semibold rounded-xl"
                 >
                   {mutation.isPending ? 'Menyimpan...' : 'Simpan Ruangan'}
                 </Button>
@@ -958,7 +958,7 @@ function AssetFormModal({
                     placeholder="Contoh: AC Split 2 PK" 
                     value={namaBarang} 
                     onChange={(e) => setNamaBarang(e.target.value)} 
-                    className="rounded-xl border-slate-200 focus:border-[#ef629f]/50"
+                    className="rounded-xl border-slate-200 focus:border-[#F9D141]/50"
                   />
                 </div>
                 <div className="space-y-1.5">
@@ -971,7 +971,7 @@ function AssetFormModal({
                     placeholder="Contoh: 12.01.03.04" 
                     value={idpemda} 
                     onChange={(e) => setIdpemda(e.target.value)} 
-                    className="rounded-xl border-slate-200 focus:border-[#ef629f]/50"
+                    className="rounded-xl border-slate-200 focus:border-[#F9D141]/50"
                   />
                 </div>
                 <div className="space-y-1.5">
@@ -984,7 +984,7 @@ function AssetFormModal({
                     placeholder="Contoh: 3.05.01.02.002" 
                     value={kodeBarang} 
                     onChange={(e) => setKodeBarang(e.target.value)} 
-                    className="rounded-xl border-slate-200 focus:border-[#ef629f]/50"
+                    className="rounded-xl border-slate-200 focus:border-[#F9D141]/50"
                   />
                 </div>
                 <div className="space-y-1.5">
@@ -994,7 +994,7 @@ function AssetFormModal({
                     placeholder="Contoh: 0041" 
                     value={nomorRegister} 
                     onChange={(e) => setNomorRegister(e.target.value)} 
-                    className="rounded-xl border-slate-200 focus:border-[#ef629f]/50"
+                    className="rounded-xl border-slate-200 focus:border-[#F9D141]/50"
                   />
                 </div>
                 <div className="space-y-1.5 sm:col-span-2">
@@ -1004,7 +1004,7 @@ function AssetFormModal({
                     placeholder="Contoh: Daikin Inverter Smile" 
                     value={merkType} 
                     onChange={(e) => setMerkType(e.target.value)} 
-                    className="rounded-xl border-slate-200 focus:border-[#ef629f]/50"
+                    className="rounded-xl border-slate-200 focus:border-[#F9D141]/50"
                   />
                 </div>
               </div>
@@ -1016,7 +1016,7 @@ function AssetFormModal({
                 <Button 
                   onClick={() => mutation.mutate()} 
                   disabled={!idpemda || !kodeBarang || !nomorRegister || !namaBarang || !merkType || mutation.isPending} 
-                  className="bg-[#ef629f] hover:bg-[#d8528b] text-white font-semibold rounded-xl"
+                  className="bg-[#F9D141] hover:bg-[#d9a416] text-white font-semibold rounded-xl"
                 >
                   {mutation.isPending ? 'Menyimpan...' : 'Simpan Aset'}
                 </Button>
