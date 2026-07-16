@@ -129,7 +129,7 @@ function SidebarContent({
                   />
                 )}
                 <div className={cn("relative z-10 flex items-center gap-3", isCollapsed && "justify-center")}>
-                  <item.icon className="h-4 w-4 shrink-0" />
+                  <item.icon className="h-4 w-4 shrink-0 group-hover:scale-110 group-hover:rotate-[3deg] transition-all duration-200" />
                   {!isCollapsed && <span>{item.label}</span>}
                   
                   {isCollapsed && (

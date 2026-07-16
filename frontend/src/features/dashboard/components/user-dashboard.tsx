@@ -127,17 +127,17 @@ export function UserDashboard() {
         <div className="grid gap-4 grid-cols-1 sm:grid-cols-2">
           {/* Action 1: Laporkan Masalah */}
           <motion.div
-            whileHover={{ scale: 1.01, y: -2 }}
-            whileTap={{ scale: 0.99 }}
+            whileHover={{ scale: 1.015, y: -2 }}
+            whileTap={{ scale: 0.985 }}
             onClick={() => navigate('/dashboard/reports')}
             className="cursor-pointer rounded-2xl bg-gradient-to-br from-[#d94a26] via-[#e25329] to-[#b32b0f] p-6 flex flex-col justify-between text-white shadow-md hover:shadow-lg transition-all relative overflow-hidden group min-h-[140px]"
           >
-            <div className="absolute right-0 bottom-0 translate-x-3 translate-y-3 opacity-10 group-hover:scale-105 transition-transform duration-300 pointer-events-none">
+            <div className="absolute right-0 bottom-0 translate-x-3 translate-y-3 opacity-10 group-hover:scale-110 group-hover:rotate-6 group-hover:opacity-15 transition-all duration-500 pointer-events-none">
               <AlertCircle className="w-36 h-36" />
             </div>
             
             <div className="p-2 rounded-xl bg-white/20 border border-white/30 backdrop-blur-md w-fit">
-              <AlertCircle className="w-6 h-6 text-white" />
+              <AlertCircle className="w-6 h-6 text-white group-hover:scale-115 group-hover:rotate-[15deg] transition-all duration-300" />
             </div>
 
             <div className="mt-4 relative z-10">
@@ -150,17 +150,17 @@ export function UserDashboard() {
 
           {/* Action 2: Ajukan Transfer Aset */}
           <motion.div
-            whileHover={{ scale: 1.01, y: -2 }}
-            whileTap={{ scale: 0.99 }}
+            whileHover={{ scale: 1.015, y: -2 }}
+            whileTap={{ scale: 0.985 }}
             onClick={() => navigate('/dashboard/asset-transfers')}
             className="cursor-pointer rounded-2xl bg-gradient-to-br from-[#dbb633] to-[#937b26] p-6 flex flex-col justify-between text-white shadow-md hover:shadow-lg transition-all relative overflow-hidden group min-h-[140px]"
           >
-            <div className="absolute right-0 bottom-0 translate-x-3 translate-y-3 opacity-10 group-hover:scale-105 transition-transform duration-300 pointer-events-none">
+            <div className="absolute right-0 bottom-0 translate-x-3 translate-y-3 opacity-10 group-hover:scale-110 group-hover:-rotate-6 group-hover:opacity-15 transition-all duration-500 pointer-events-none">
               <ArrowRightLeft className="w-36 h-36" />
             </div>
             
-            <div className="p-2 rounded-xl bg-[#f7cf41]/40 border border-[#f7cf41]/20 backdrop-blur-md w-fit">
-              <ArrowRightLeft className="w-6 h-6 text-white" />
+            <div className="p-2 rounded-xl bg-white/20 border border-white/30 backdrop-blur-md w-fit">
+              <ArrowRightLeft className="w-6 h-6 text-white group-hover:scale-115 group-hover:rotate-[-15deg] transition-all duration-300" />
             </div>
 
             <div className="mt-4 relative z-10">
@@ -175,27 +175,39 @@ export function UserDashboard() {
         {/* Stats Counter Grid */}
         <div className="grid gap-3 grid-cols-3">
           {/* Stat 1 */}
-          <div className="bg-slate-100/95 border border-slate-200/50 rounded-2xl p-3 flex flex-col justify-between min-h-[105px] shadow-sm">
+          <motion.div 
+            whileHover={{ y: -3, boxShadow: "0 8px 16px -6px rgba(0,0,0,0.1)" }}
+            transition={{ type: "spring", stiffness: 350, damping: 25 }}
+            className="bg-slate-100/95 border border-slate-200/50 rounded-2xl p-3 flex flex-col justify-between min-h-[105px] shadow-sm cursor-default"
+          >
             <span className="text-[11px] md:text-xs font-bold text-slate-700 leading-tight">
               Total Laporan Saya
             </span>
             <span className="text-3xl md:text-4xl font-extrabold text-slate-800 text-center mt-auto block">
               {loadingStats ? <Skeleton className="h-8 w-12 mx-auto" /> : (stats?.total ?? '0')}
             </span>
-          </div>
+          </motion.div>
 
           {/* Stat 2 */}
-          <div className="bg-slate-100/95 border border-slate-200/50 rounded-2xl p-3 flex flex-col justify-between min-h-[105px] shadow-sm">
+          <motion.div 
+            whileHover={{ y: -3, boxShadow: "0 8px 16px -6px rgba(0,0,0,0.1)" }}
+            transition={{ type: "spring", stiffness: 350, damping: 25 }}
+            className="bg-slate-100/95 border border-slate-200/50 rounded-2xl p-3 flex flex-col justify-between min-h-[105px] shadow-sm cursor-default"
+          >
             <span className="text-[11px] md:text-xs font-bold text-slate-700 leading-tight">
               Laporan Selesai
             </span>
             <span className="text-3xl md:text-4xl font-extrabold text-slate-800 text-center mt-auto block">
               {loadingStats ? <Skeleton className="h-8 w-12 mx-auto" /> : (stats?.completedLast30Days ?? '0')}
             </span>
-          </div>
+          </motion.div>
 
           {/* Stat 3 */}
-          <div className="bg-slate-100/95 border border-slate-200/50 rounded-2xl p-3 flex flex-col justify-between min-h-[105px] shadow-sm">
+          <motion.div 
+            whileHover={{ y: -3, boxShadow: "0 8px 16px -6px rgba(0,0,0,0.1)" }}
+            transition={{ type: "spring", stiffness: 350, damping: 25 }}
+            className="bg-slate-100/95 border border-slate-200/50 rounded-2xl p-3 flex flex-col justify-between min-h-[105px] shadow-sm cursor-default"
+          >
             <span className="text-[11px] md:text-xs font-bold text-slate-700 leading-tight">
               Transfer Menunggu
             </span>
@@ -206,7 +218,7 @@ export function UserDashboard() {
                 pendingTransfersCount
               )}
             </span>
-          </div>
+          </motion.div>
         </div>
 
         {/* Split Lists: Reports & Transfers */}
@@ -240,7 +252,7 @@ export function UserDashboard() {
                     <motion.li 
                       key={report.id} 
                       variants={itemVariants} 
-                      className="py-3 flex items-center justify-between gap-4 cursor-pointer hover:opacity-80 transition-opacity first:pt-1 last:pb-1"
+                      className="py-3 flex items-center justify-between gap-4 cursor-pointer hover:bg-white/50 hover:translate-x-1.5 px-3.5 -mx-3.5 rounded-2xl transition-all duration-200 first:pt-1 last:pb-1"
                       onClick={() => navigate(`/dashboard/reports/${report.id}`)}
                     >
                       <div className="min-w-0 flex-1">
@@ -289,7 +301,7 @@ export function UserDashboard() {
                     <motion.li 
                       key={transfer.id} 
                       variants={itemVariants} 
-                      className="py-3 flex items-center justify-between gap-4 cursor-pointer hover:opacity-80 transition-opacity first:pt-1 last:pb-1"
+                      className="py-3 flex items-center justify-between gap-4 cursor-pointer hover:bg-white/50 hover:translate-x-1.5 px-3.5 -mx-3.5 rounded-2xl transition-all duration-200 first:pt-1 last:pb-1"
                       onClick={() => navigate('/dashboard/asset-transfers')}
                     >
                       <div className="min-w-0 flex-1">

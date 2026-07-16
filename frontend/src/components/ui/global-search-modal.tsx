@@ -141,10 +141,10 @@ export function GlobalSearchModal({
       />
 
       <motion.div
-        initial={{ opacity: 0, scale: 0.96, y: -10 }}
+        initial={{ opacity: 0, scale: 0.96, y: -12 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
-        exit={{ opacity: 0, scale: 0.96, y: -10 }}
-        transition={{ duration: 0.2 }}
+        exit={{ opacity: 0, scale: 0.96, y: -12 }}
+        transition={{ type: "spring", stiffness: 350, damping: 25 }}
         className="relative w-full max-w-2xl overflow-hidden rounded-3xl bg-white/95 backdrop-blur-xl border border-white/60 p-6 shadow-2xl flex flex-col max-h-[82vh]"
       >
         {/* Header */}
@@ -244,7 +244,7 @@ export function GlobalSearchModal({
                     {assets.map((asset) => (
                       <div
                         key={asset.id}
-                        className="rounded-2xl border border-white/50 bg-white/60 p-3.5 shadow-sm hover:bg-white/80 transition-colors flex flex-col sm:flex-row justify-between sm:items-center gap-3"
+                        className="rounded-2xl border border-white/50 bg-white/60 p-3.5 shadow-sm hover:bg-white/80 hover:-translate-y-0.5 hover:shadow-md transition-all duration-200 flex flex-col sm:flex-row justify-between sm:items-center gap-3"
                       >
                         <div className="space-y-1 flex-1 min-w-0">
                           <div className="flex flex-wrap items-center gap-2">
@@ -302,7 +302,7 @@ export function GlobalSearchModal({
                         key={report.id}
                         type="button"
                         onClick={() => goTo(`/dashboard/reports?id=${report.id}`)}
-                        className="w-full rounded-2xl border border-white/50 bg-white/60 p-3.5 shadow-sm hover:bg-white/80 transition-colors text-left"
+                        className="w-full rounded-2xl border border-white/50 bg-white/60 p-3.5 shadow-sm hover:bg-white/80 hover:-translate-y-0.5 hover:shadow-md transition-all duration-200 text-left"
                       >
                         <div className="flex items-start justify-between gap-2">
                           <div className="min-w-0">
@@ -348,7 +348,7 @@ export function GlobalSearchModal({
                     {transfers.map((transfer) => (
                       <div
                         key={transfer.id}
-                        className="rounded-2xl border border-white/50 bg-white/60 p-3.5 shadow-sm flex items-center justify-between gap-3"
+                        className="rounded-2xl border border-white/50 bg-white/60 p-3.5 shadow-sm hover:-translate-y-0.5 hover:shadow-md hover:bg-white/80 transition-all duration-200 flex items-center justify-between gap-3"
                       >
                         <div className="min-w-0">
                           <p className="font-semibold text-slate-800 text-sm truncate">{transfer.assetName ?? transfer.assetId}</p>
@@ -390,7 +390,7 @@ export function GlobalSearchModal({
                     {maintenance.map((sched) => (
                       <div
                         key={sched.id}
-                        className="rounded-2xl border border-white/50 bg-white/60 p-3.5 shadow-sm flex items-center justify-between gap-3"
+                        className="rounded-2xl border border-white/50 bg-white/60 p-3.5 shadow-sm hover:-translate-y-0.5 hover:shadow-md hover:bg-white/80 transition-all duration-200 flex items-center justify-between gap-3"
                       >
                         <div className="min-w-0">
                           <p className="font-semibold text-slate-800 text-sm truncate">{sched.title}</p>
