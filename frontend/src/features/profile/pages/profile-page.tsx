@@ -42,7 +42,7 @@ export function ProfilePage() {
   if (!user) {
     return (
       <div className="flex min-h-[50vh] items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-[#ef629f]" />
+        <Loader2 className="w-8 h-8 animate-spin text-[#F9D141]" />
       </div>
     )
   }
@@ -154,7 +154,7 @@ export function ProfilePage() {
       
       {/* Hero / Banner Section */}
       <div className="relative mb-20 md:mb-32">
-        <div className="h-40 md:h-64 w-full rounded-3xl bg-gradient-to-r from-pink-500 via-[#ef629f] to-rose-400 overflow-hidden relative shadow-lg">
+        <div className="h-40 md:h-64 w-full rounded-3xl bg-gradient-to-r from-[#F9D141] via-[#ffd043] to-[#d9a416] overflow-hidden relative shadow-lg">
           {/* Decorative shapes */}
           <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3"></div>
           <div className="absolute bottom-0 left-10 w-40 h-40 bg-white/10 rounded-full blur-2xl translate-y-1/2"></div>
@@ -181,7 +181,7 @@ export function ProfilePage() {
               disabled={uploadAvatarMut.isPending}
             />
             <div 
-              className="flex h-32 w-32 md:h-48 md:w-48 items-center justify-center rounded-[2rem] bg-white text-[#ef629f] overflow-hidden cursor-pointer shadow-2xl relative transition-all group-hover:scale-[1.02] border-[6px] md:border-8 border-slate-50/80"
+              className="flex h-32 w-32 md:h-48 md:w-48 items-center justify-center rounded-[2rem] bg-white text-[#d9a416] overflow-hidden cursor-pointer shadow-2xl relative transition-all group-hover:scale-[1.02] border-[6px] md:border-8 border-slate-50/80"
               onClick={() => setShowPreviewModal(true)}
             >
               {user?.avatarUrl ? (
@@ -254,7 +254,7 @@ export function ProfilePage() {
           {/* Update Profile Form */}
           <GlassCard className="p-6 md:p-8 border-white/60 shadow-sm hover:shadow-md transition-shadow">
             <div className="mb-6 flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-pink-50 text-[#ef629f]">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-yellow-50 text-[#d9a416]">
                 <UserCircle className="h-5 w-5" />
               </div>
               <div>
@@ -273,7 +273,7 @@ export function ProfilePage() {
                     onChange={(e) => setFullName(e.target.value)}
                     placeholder="Masukkan nama lengkap"
                     required
-                    className="h-11 rounded-xl bg-white shadow-sm focus:ring-4 focus:ring-[#ef629f]/10 transition-all border-slate-200 focus:border-[#ef629f]/50 font-medium"
+                    className="h-11 rounded-xl bg-white shadow-sm focus:ring-4 focus:ring-[#F9D141]/10 transition-all border-slate-200 focus:border-[#F9D141]/50 font-medium"
                   />
                 </div>
                 
@@ -288,7 +288,7 @@ export function ProfilePage() {
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
                       placeholder="Contoh: 08123456789"
-                      className="h-11 pl-9 rounded-xl bg-white shadow-sm focus:ring-4 focus:ring-[#ef629f]/10 transition-all border-slate-200 focus:border-[#ef629f]/50 font-medium"
+                      className="h-11 pl-9 rounded-xl bg-white shadow-sm focus:ring-4 focus:ring-[#F9D141]/10 transition-all border-slate-200 focus:border-[#F9D141]/50 font-medium"
                     />
                   </div>
                 </div>
@@ -297,7 +297,7 @@ export function ProfilePage() {
               <div className="flex justify-end pt-2">
                 <Button
                   type="submit"
-                  className="rounded-xl bg-gradient-to-r from-pink-500 to-[#ef629f] text-white hover:opacity-90 h-11 px-8 font-semibold shadow-md shadow-pink-500/20 transition-all"
+                  className="rounded-xl bg-gradient-to-r from-[#F9D141] to-[#d9a416] text-slate-900 font-bold hover:opacity-90 h-11 px-8 shadow-md shadow-yellow-500/10 transition-all cursor-pointer"
                   disabled={profileMut.isPending}
                 >
                   {profileMut.isPending ? (
@@ -469,7 +469,7 @@ export function ProfilePage() {
                 
                 {(uploadAvatarMut.isPending || deleteAvatarMut.isPending) && (
                   <div className="absolute inset-0 bg-white/70 flex items-center justify-center backdrop-blur-[1px]">
-                    <Loader2 className="h-10 w-10 animate-spin text-[#ef629f]" />
+                    <Loader2 className="h-10 w-10 animate-spin text-[#F9D141]" />
                   </div>
                 )}
               </div>
@@ -477,7 +477,7 @@ export function ProfilePage() {
               {/* Edit / Change Actions */}
               <div className="w-full space-y-2.5">
                 <Button
-                  className="w-full rounded-xl bg-gradient-to-r from-pink-500 to-[#ef629f] text-white hover:opacity-90 h-11 font-semibold flex items-center justify-center gap-2 shadow-md shadow-pink-500/20"
+                  className="w-full rounded-xl bg-gradient-to-r from-[#F9D141] to-[#d9a416] text-slate-900 font-bold hover:opacity-90 h-11 flex items-center justify-center gap-2 shadow-md shadow-yellow-500/10 cursor-pointer"
                   onClick={() => {
                     fileInputRef.current?.click()
                   }}
