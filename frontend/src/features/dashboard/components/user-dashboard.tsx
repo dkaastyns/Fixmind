@@ -87,33 +87,31 @@ export function UserDashboard() {
         </div>
 
         {/* Banner Details */}
-        <div className="relative z-10 flex flex-col justify-end flex-grow mt-6 md:mt-0">
-          <div>
-            <p className="text-xs md:text-sm font-semibold opacity-90 tracking-wide text-slate-300">
+        <div className="relative z-10 flex flex-col items-center justify-center text-center flex-grow mt-6 md:mt-4">
+          <div className="flex flex-col items-center text-center">
+            <p className="text-xs md:text-sm font-semibold opacity-90 tracking-wide text-slate-300 text-center w-full">
               {todayStr}
             </p>
-            <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight mt-1 text-white leading-tight">
+            <h1 className="text-2xl md:text-4xl font-extrabold tracking-tight mt-2 text-white leading-tight text-center w-full">
               Halo, {user?.fullName ?? 'Pengguna'}
             </h1>
-            <p className="text-xs md:text-sm mt-1.5 text-slate-200 max-w-xl font-medium leading-relaxed opacity-90">
+            <p className="text-xs md:text-sm mt-2 text-slate-200 max-w-xl font-medium leading-relaxed opacity-90 text-center mx-auto">
               Pantau status laporan kerusakan fasilitas dan pengajuan perpindahan aset
             </p>
           </div>
 
-          {/* Search Bar pill */}
-          <div className="mt-6">
+          {/* Search Bar pill - Light Glassmorphism Style */}
+          <div className="mt-6 w-full max-w-lg mx-auto">
             <div 
               onClick={() => window.dispatchEvent(new CustomEvent('open-global-search'))}
-              className="cursor-pointer flex items-center gap-3.5 bg-black/35 hover:bg-black/45 border border-white/10 rounded-2xl px-4 py-3.5 shadow-inner backdrop-blur-md transition-all group duration-200"
+              className="cursor-pointer flex items-center gap-4 bg-white/20 hover:bg-white/25 border border-white/20 rounded-2xl px-5 py-3.5 shadow-md backdrop-blur-md transition-all group duration-200 text-left"
             >
-              <div className="p-2 rounded-xl bg-[#ffd043]/15 text-[#ffd043]">
-                <Search className="w-5 h-5" />
-              </div>
-              <div className="flex-grow text-left min-w-0">
-                <p className="text-sm font-bold text-white group-hover:text-[#ffd043] transition-colors leading-tight">
+              <Search className="w-5.5 h-5.5 text-[#ffd043] shrink-0" />
+              <div className="flex-grow min-w-0">
+                <p className="text-sm font-bold text-white leading-tight">
                   Cari aset yang seperti apa?
                 </p>
-                <p className="text-[10px] text-slate-300 font-semibold mt-1 tracking-wide">
+                <p className="text-[10px] text-white/85 font-semibold mt-1 tracking-wide">
                   Apapun • Kapanpun • Dimanapun
                 </p>
               </div>
