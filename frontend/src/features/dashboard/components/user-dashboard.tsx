@@ -220,7 +220,7 @@ export function UserDashboard() {
               <h2 className="text-base font-extrabold text-slate-800">Laporan Masalah Terbaru</h2>
               <button 
                 onClick={() => navigate('/dashboard/reports')} 
-                className="text-xs font-bold text-slate-700 hover:text-[#ef629f] cursor-pointer transition-colors"
+                className="text-xs font-bold text-slate-700 hover:text-[#d9a416] cursor-pointer transition-colors"
               >
                 Lihat Semua
               </button>
@@ -246,7 +246,7 @@ export function UserDashboard() {
                       onClick={() => navigate(`/dashboard/reports/${report.id}`)}
                     >
                       <div className="min-w-0 flex-1">
-                        <span className="font-bold text-slate-800 text-sm hover:text-[#ef629f] transition-colors block truncate">
+                        <span className="font-bold text-slate-800 text-sm hover:text-[#d9a416] transition-colors block truncate">
                           {report.title}
                         </span>
                         <p className="text-xs text-slate-500 mt-1 font-semibold flex items-center gap-1.5">
@@ -269,7 +269,7 @@ export function UserDashboard() {
               <h2 className="text-base font-extrabold text-slate-800">Pengajuan Transfer Terbaru</h2>
               <button 
                 onClick={() => navigate('/dashboard/asset-transfers')} 
-                className="text-xs font-bold text-slate-700 hover:text-[#ef629f] cursor-pointer transition-colors"
+                className="text-xs font-bold text-slate-700 hover:text-[#d9a416] cursor-pointer transition-colors"
               >
                 Lihat Semua
               </button>
@@ -295,7 +295,7 @@ export function UserDashboard() {
                       onClick={() => navigate('/dashboard/asset-transfers')}
                     >
                       <div className="min-w-0 flex-1">
-                        <span className="font-bold text-slate-800 text-sm hover:text-[#ef629f] transition-colors block truncate">
+                        <span className="font-bold text-slate-800 text-sm hover:text-[#d9a416] transition-colors block truncate">
                           {transfer.assetName ?? transfer.assetKode ?? 'Aset'}
                         </span>
                         <p className="text-xs text-slate-500 mt-1 font-semibold flex items-center gap-1.5">

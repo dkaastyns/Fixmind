@@ -439,8 +439,8 @@ export function AdminDashboard() {
                       <Bar dataKey="value" fill="url(#reportGrad)" radius={[6, 6, 0, 0]} barSize={32} />
                       <defs>
                         <linearGradient id="reportGrad" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="0%" stopColor="#EF629F" />
-                          <stop offset="100%" stopColor="#EECDA3" />
+                          <stop offset="0%" stopColor="#F9D141" />
+                          <stop offset="100%" stopColor="#737373" />
                         </linearGradient>
                       </defs>
                     </BarChart>

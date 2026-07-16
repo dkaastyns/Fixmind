@@ -75,12 +75,12 @@ export function ChatWidget() {
             <div className="flex-1 overflow-y-auto p-4 space-y-4">
               {messages.map((m, i) => (
                 <div key={i} className={`flex gap-3 ${m.role === 'user' ? 'flex-row-reverse' : ''}`}>
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${m.role === 'user' ? 'bg-[#ef629f] text-white' : 'bg-blue-100 text-blue-600'}`}>
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${m.role === 'user' ? 'bg-[#F9D141] text-slate-900 font-bold' : 'bg-blue-100 text-blue-600'}`}>
                     {m.role === 'user' ? <User className="w-4 h-4" /> : <Bot className="w-4 h-4" />}
                   </div>
                   <div className={`px-4 py-2 rounded-2xl text-sm ${
                     m.role === 'user' 
-                      ? 'bg-[#ef629f] text-white rounded-tr-sm' 
+                      ? 'bg-[#F9D141] text-slate-900 font-semibold rounded-tr-sm' 
                       : 'bg-gray-100 text-gray-800 rounded-tl-sm'
                   }`}>
                     {m.text}
@@ -118,9 +118,9 @@ export function ChatWidget() {
                 <button 
                   type="submit" 
                   disabled={isLoading || !input.trim()}
-                  className="p-2 rounded-lg bg-[#ef629f] text-white disabled:opacity-50 transition-opacity"
+                  className="p-2 rounded-lg bg-[#F9D141] text-slate-900 disabled:opacity-50 transition-opacity"
                 >
-                  <Send className="w-4 h-4" />
+                  <Send className="w-4 h-4 text-slate-900" />
                 </button>
               </form>
             </div>

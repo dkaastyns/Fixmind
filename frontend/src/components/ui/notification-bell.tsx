@@ -96,13 +96,13 @@ export function NotificationBell({ align = 'right', className }: { align?: 'left
                 align === 'right' ? 'right-0' : 'left-0'
               )}
             >
-              <div className="flex items-center justify-between border-b border-white/20 p-3 bg-[#ef629f]/5">
+              <div className="flex items-center justify-between border-b border-white/20 p-3 bg-[#F9D141]/5">
                 <span className="text-sm font-semibold">Notifikasi</span>
                 <div className="flex gap-2">
                   {unreadCount > 0 && (
                     <button
                       onClick={markAllAsRead}
-                      className="text-xs text-[#ef629f] hover:text-[#ef629f]/80 font-medium inline-flex items-center gap-0.5 cursor-pointer"
+                      className="text-xs text-[#d9a416] hover:text-[#c29410] font-medium inline-flex items-center gap-0.5 cursor-pointer"
                       title="Tandai semua dibaca"
                     >
                       <Check className="h-3.5 w-3.5" /> Dibaca
@@ -135,7 +135,7 @@ export function NotificationBell({ align = 'right', className }: { align?: 'left
                       )}
                     >
                       <div className="flex items-start justify-between">
-                        <span className={cn("font-semibold text-foreground", !n.isRead ? "text-[#ef629f]" : "")}>
+                        <span className={cn("font-semibold text-foreground", !n.isRead ? "text-[#d9a416]" : "")}>
                           {n.title}
                         </span>
                         <span className="text-[10px] text-muted">

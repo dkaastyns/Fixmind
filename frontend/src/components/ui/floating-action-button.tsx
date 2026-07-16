@@ -41,7 +41,7 @@ export function FloatingActionButton() {
             {/* Action 1: Lapor Kerusakan */}
             <button
               onClick={handleQuickReport}
-              className="flex items-center justify-center h-10 w-10 rounded-xl bg-white hover:bg-slate-50 text-pink-600 shadow-lg border border-pink-100 hover:scale-105 active:scale-95 transition-all group relative cursor-pointer"
+              className="flex items-center justify-center h-10 w-10 rounded-xl bg-white hover:bg-slate-50 text-[#d9a416] shadow-lg border border-yellow-100 hover:scale-105 active:scale-95 transition-all group relative cursor-pointer"
               title="Lapor Kerusakan"
             >
               <ClipboardList className="h-4 w-4" />
@@ -81,7 +81,7 @@ export function FloatingActionButton() {
       <button
         onClick={() => setIsOpen(!isOpen)}
         className={cn(
-          "flex h-12 w-12 items-center justify-center rounded-2xl shadow-xl transition-all duration-300 hover:scale-105 active:scale-95 text-white bg-gradient-to-tr from-[#ef629f] to-[#ff9ebb] cursor-pointer",
+          "flex h-12 w-12 items-center justify-center rounded-2xl shadow-xl transition-all duration-300 hover:scale-105 active:scale-95 text-white bg-gradient-to-tr from-[#F9D141] to-[#737373] cursor-pointer",
           isOpen && "rotate-45"
         )}
         aria-label="Pilihan Cepat"

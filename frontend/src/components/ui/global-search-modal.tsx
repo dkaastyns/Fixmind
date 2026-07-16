@@ -150,7 +150,7 @@ export function GlobalSearchModal({
         {/* Header */}
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
-            <Search className="h-5 w-5 text-[#ef629f]" />
+            <Search className="h-5 w-5 text-[#d9a416]" />
             <h3 className="text-lg font-semibold text-gray-900">Pencarian Global</h3>
           </div>
           <button
@@ -168,13 +168,13 @@ export function GlobalSearchModal({
           <input
             ref={inputRef}
             type="text"
-            className="flex h-11 w-full rounded-2xl border border-gray-200 bg-gray-50/50 pl-10 pr-4 text-sm focus:border-[#ef629f] focus:bg-white focus:outline-none focus:ring-4 focus:ring-[#ef629f]/10 transition-all text-slate-900 placeholder:text-slate-400"
+            className="flex h-11 w-full rounded-2xl border border-gray-200 bg-gray-50/50 pl-10 pr-4 text-sm focus:border-[#F9D141] focus:bg-white focus:outline-none focus:ring-4 focus:ring-[#F9D141]/10 transition-all text-slate-900 placeholder:text-slate-400"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Cari aset, laporan, transfer, jadwal pemeliharaan..."
           />
           {isLoading && enabled && (
-            <Loader2 className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 animate-spin text-[#ef629f]/60" />
+            <Loader2 className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 animate-spin text-[#F9D141]/60" />
           )}
         </div>
 
@@ -188,7 +188,7 @@ export function GlobalSearchModal({
                 onClick={() => setActiveTab(tab)}
                 className={`rounded-xl px-3 py-1 text-xs font-semibold border transition-all ${
                   activeTab === tab
-                    ? 'bg-[#ef629f] text-white border-transparent'
+                    ? 'bg-[#F9D141] text-slate-900 border-transparent'
                     : 'bg-white text-slate-500 border-slate-200 hover:bg-slate-50'
                 }`}
               >
@@ -207,13 +207,13 @@ export function GlobalSearchModal({
         <div className="flex-1 overflow-y-auto space-y-4 pr-1">
           {!enabled ? (
             <div className="flex flex-col items-center justify-center py-12 text-center text-muted">
-              <Search className="h-8 w-8 mb-2 opacity-40 text-[#ef629f]" />
+              <Search className="h-8 w-8 mb-2 opacity-40 text-[#d9a416]" />
               <p className="text-sm font-medium">Mulai ketik minimal 2 karakter</p>
               <p className="text-xs mt-1 text-slate-400">Cari aset, laporan masalah, transfer, dan jadwal pemeliharaan</p>
             </div>
           ) : isLoading ? (
             <div className="flex flex-col items-center justify-center py-12 text-center text-muted">
-              <Loader2 className="h-8 w-8 animate-spin mb-2 text-[#ef629f]/60" />
+              <Loader2 className="h-8 w-8 animate-spin mb-2 text-[#F9D141]/60" />
               <p className="text-sm font-medium">Mencari di semua data...</p>
             </div>
           ) : totalCount === 0 ? (
@@ -235,7 +235,7 @@ export function GlobalSearchModal({
                     <button
                       type="button"
                       onClick={() => goTo(`/dashboard/rooms?search=${encodeURIComponent(searchQuery)}`)}
-                      className="text-xs text-[#ef629f] hover:underline flex items-center gap-0.5"
+                      className="text-xs text-[#d9a416] hover:underline flex items-center gap-0.5"
                     >
                       Lihat semua <ChevronRight className="h-3 w-3" />
                     </button>
@@ -253,7 +253,7 @@ export function GlobalSearchModal({
                           </div>
                           <p className="text-xs text-muted">
                             <span className="font-medium text-slate-600">Kode:</span> {asset.kodeBarang} ·{' '}
-                            <Building2 className="h-3 w-3 inline text-[#ef629f]" />{' '}
+                            <Building2 className="h-3 w-3 inline text-[#d9a416]" />{' '}
                             {asset.roomCode ?? asset.roomId}{asset.roomName ? ` — ${asset.roomName}` : ''}
                           </p>
                         </div>
@@ -266,9 +266,9 @@ export function GlobalSearchModal({
                           >
                             <ClipboardPlus className="h-3 w-3" /> Lapor
                           </Button>
-                          <Button
+                           <Button
                             size="sm"
-                            className="h-8 gap-1 rounded-xl text-xs bg-[#ef629f] text-white hover:bg-[#ef629f]/90"
+                            className="h-8 gap-1 rounded-xl text-xs bg-[#F9D141] text-slate-900 font-bold hover:bg-[#F9D141]/90"
                             onClick={() => goTo(`/dashboard/asset-transfers?roomId=${asset.roomId}&assetId=${asset.id}`)}
                           >
                             <ArrowRightLeft className="h-3 w-3" /> Pindah
@@ -291,7 +291,7 @@ export function GlobalSearchModal({
                     <button
                       type="button"
                       onClick={() => goTo(`/dashboard/reports?search=${encodeURIComponent(searchQuery)}`)}
-                      className="text-xs text-[#ef629f] hover:underline flex items-center gap-0.5"
+                      className="text-xs text-[#d9a416] hover:underline flex items-center gap-0.5"
                     >
                       Lihat semua <ChevronRight className="h-3 w-3" />
                     </button>
@@ -308,7 +308,7 @@ export function GlobalSearchModal({
                           <div className="min-w-0">
                             <p className="font-semibold text-slate-800 text-sm truncate">{report.title}</p>
                             <p className="text-xs text-muted mt-0.5">
-                              <Building2 className="h-3 w-3 inline text-[#ef629f]" />{' '}
+                              <Building2 className="h-3 w-3 inline text-[#d9a416]" />{' '}
                               {report.roomName ?? report.roomId}
                               {report.reporterName ? ` · ${report.reporterName}` : ''}
                             </p>
@@ -339,7 +339,7 @@ export function GlobalSearchModal({
                     <button
                       type="button"
                       onClick={() => goTo(`${isAdmin ? '/dashboard/asset-transfers/review' : '/dashboard/asset-transfers'}?search=${encodeURIComponent(searchQuery)}`)}
-                      className="text-xs text-[#ef629f] hover:underline flex items-center gap-0.5"
+                      className="text-xs text-[#d9a416] hover:underline flex items-center gap-0.5"
                     >
                       Lihat semua <ChevronRight className="h-3 w-3" />
                     </button>
@@ -381,7 +381,7 @@ export function GlobalSearchModal({
                     <button
                       type="button"
                       onClick={() => goTo(`/dashboard/maintenance?search=${encodeURIComponent(searchQuery)}`)}
-                      className="text-xs text-[#ef629f] hover:underline flex items-center gap-0.5"
+                      className="text-xs text-[#d9a416] hover:underline flex items-center gap-0.5"
                     >
                       Lihat semua <ChevronRight className="h-3 w-3" />
                     </button>
@@ -395,7 +395,7 @@ export function GlobalSearchModal({
                         <div className="min-w-0">
                           <p className="font-semibold text-slate-800 text-sm truncate">{sched.title}</p>
                           <p className="text-xs text-muted mt-0.5">
-                            <Calendar className="h-3 w-3 inline text-[#ef629f]" />{' '}
+                            <Calendar className="h-3 w-3 inline text-[#d9a416]" />{' '}
                             {sched.scheduledDate
                               ? new Date(sched.scheduledDate).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })
                               : '-'}

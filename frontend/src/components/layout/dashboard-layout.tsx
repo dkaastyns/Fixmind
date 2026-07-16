@@ -203,8 +203,8 @@ function SidebarContent({
                 exit={{ opacity: 0, scale: 0.95, y: 10 }}
                 className="relative w-full max-w-sm overflow-hidden rounded-2xl bg-white p-6 text-center shadow-2xl border border-gray-100"
               >
-                <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-[#ef629f]/10">
-                  <LogOut className="h-6 w-6 text-[#ef629f]" />
+                <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-[#F9D141]/10">
+                  <LogOut className="h-6 w-6 text-[#d9a416]" />
                 </div>
                 <h3 className="mb-2 text-lg font-semibold text-gray-900">Keluar dari Akun</h3>
                 <p className="mb-6 text-sm text-gray-500">Apakah Anda yakin ingin keluar dari akun ini?</p>
@@ -214,8 +214,8 @@ function SidebarContent({
                       Tidak
                     </Button>
                   </motion.div>
-                  <motion.div whileHover={{ scale: 1.05, boxShadow: '0 10px 15px -3px rgba(239, 98, 159, 0.4)' }} whileTap={{ scale: 0.98 }} className="flex-1">
-                    <Button className="w-full rounded-xl bg-[#ef629f] text-white hover:bg-[#ef629f]/90" onClick={confirmLogout}>
+                  <motion.div whileHover={{ scale: 1.05, boxShadow: '0 10px 15px -3px rgba(249, 209, 65, 0.4)' }} whileTap={{ scale: 0.98 }} className="flex-1">
+                    <Button className="w-full rounded-xl bg-[#F9D141] text-slate-900 font-bold hover:bg-[#F9D141]/90" onClick={confirmLogout}>
                       Ya, Keluar
                     </Button>
                   </motion.div>
