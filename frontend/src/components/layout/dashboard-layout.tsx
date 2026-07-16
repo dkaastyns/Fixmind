@@ -53,10 +53,12 @@ function SidebarContent({
   onNavigate,
   isCollapsed = false,
   onToggleCollapse,
+  idSuffix = 'desktop',
 }: {
   onNavigate?: () => void
   isCollapsed?: boolean
   onToggleCollapse?: () => void
+  idSuffix?: string
 }) {
   const navigate = useNavigate()
   const { user, accessToken, clearSession } = useAuthStore()
@@ -112,7 +114,7 @@ function SidebarContent({
               cn(
                 'relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors group',
                 isActive
-                  ? 'text-white font-semibold'
+                  ? 'text-[#d9a416] font-bold'
                   : 'text-slate-500 hover:bg-white/50 hover:text-slate-800',
                 isCollapsed && 'justify-center px-0 w-10 h-10 mx-auto'
               )
@@ -122,8 +124,8 @@ function SidebarContent({
               <>
                 {isActive && (
                   <motion.div
-                    layoutId="sidebar-active-indicator"
-                    className="absolute inset-0 rounded-xl gradient-primary shadow-sm"
+                    layoutId={`sidebar-active-indicator-${idSuffix}`}
+                    className="absolute inset-0 rounded-xl bg-[#F9D141]/12 border border-[#F9D141]/20 shadow-sm"
                     transition={{ type: 'spring', damping: 25, stiffness: 200 }}
                     style={{ zIndex: 0 }}
                   />
@@ -274,6 +276,7 @@ export function DashboardLayout() {
         <SidebarContent
           isCollapsed={isCollapsed}
           onToggleCollapse={() => setIsCollapsed(!isCollapsed)}
+          idSuffix="desktop"
         />
       </aside>
 
@@ -329,7 +332,7 @@ export function DashboardLayout() {
                 <button className="mb-4 self-end" onClick={() => setMobileOpen(false)} aria-label="Close menu">
                   <X className="h-6 w-6" />
                 </button>
-                <SidebarContent onNavigate={() => setMobileOpen(false)} />
+                <SidebarContent onNavigate={() => setMobileOpen(false)} idSuffix="mobile" />
               </motion.aside>
             </>
           )}
