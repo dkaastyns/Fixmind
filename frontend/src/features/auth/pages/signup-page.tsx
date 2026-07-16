@@ -72,24 +72,6 @@ export function SignupPage() {
         <div className="absolute inset-0 bg-slate-950/65 backdrop-blur-[2px]" />
       </div>
 
-      {/* Curved Neon Lines */}
-      <svg className="absolute inset-0 w-full h-full pointer-events-none z-1" viewBox="0 0 100 100" preserveAspectRatio="none">
-        <path
-          d="M -10,35 Q 20,40 10,80"
-          fill="none"
-          stroke="#00d2ff"
-          strokeWidth="0.8"
-          className="opacity-70 blur-[1px]"
-        />
-        <path
-          d="M 110,0 Q 50,20 40,65"
-          fill="none"
-          stroke="#00d2ff"
-          strokeWidth="0.8"
-          className="opacity-70 blur-[1px]"
-        />
-      </svg>
-
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
@@ -105,7 +87,7 @@ export function SignupPage() {
           </div>
           
           <h1 className="text-2xl font-semibold text-white drop-shadow-sm">
-            <span className="text-[#ffd043]">Daftar ke </span>
+            <span className="text-[#FFD641]">Daftar ke </span>
             <span className="font-extrabold">FixMind</span>
           </h1>
           <p className="mt-2 text-xs sm:text-sm text-slate-300 font-medium">
@@ -114,7 +96,7 @@ export function SignupPage() {
         </div>
 
         {/* Register Card - Dark Glassmorphism style */}
-        <div className="glass-dark p-6 sm:p-8 shadow-2xl border-white/10 bg-slate-950/45 backdrop-blur-xl">
+        <div className="p-6 sm:p-8 rounded-[24px] border border-white/5 bg-slate-950/60 shadow-[0_20px_45px_rgba(0,0,0,0.5)] backdrop-blur-xl">
           <form className="space-y-4" onSubmit={form.handleSubmit((v) => mutation.mutate(v))}>
             
             {/* Nama Lengkap */}
@@ -127,7 +109,7 @@ export function SignupPage() {
                 placeholder="Goat Satoru"
                 {...form.register('fullName')}
                 disabled={mutation.isPending}
-                className="bg-white/95 focus:bg-white transition-colors border-none text-slate-800 placeholder:text-slate-400 disabled:opacity-60 h-11 rounded-2xl"
+                className="bg-white/95 focus:bg-white transition-colors border-none text-slate-800 placeholder:text-slate-400 disabled:opacity-60 h-11 rounded-[14px]"
               />
               {form.formState.errors.fullName && (
                 <p className="text-xs text-red-400">{form.formState.errors.fullName.message}</p>
@@ -145,7 +127,7 @@ export function SignupPage() {
                 placeholder="nama@email.com"
                 {...form.register('email')}
                 disabled={mutation.isPending}
-                className="bg-white/95 focus:bg-white transition-colors border-none text-slate-800 placeholder:text-slate-400 disabled:opacity-60 h-11 rounded-2xl"
+                className="bg-white/95 focus:bg-white transition-colors border-none text-slate-800 placeholder:text-slate-400 disabled:opacity-60 h-11 rounded-[14px]"
               />
               {form.formState.errors.email && (
                 <p className="text-xs text-red-400">{form.formState.errors.email.message}</p>
@@ -162,7 +144,7 @@ export function SignupPage() {
                 placeholder="••••••••"
                 {...form.register('password')}
                 disabled={mutation.isPending}
-                className="bg-white/95 focus:bg-white transition-colors border-none text-slate-800 placeholder:text-slate-400 disabled:opacity-60 h-11 rounded-2xl pr-10"
+                className="bg-white/95 focus:bg-white transition-colors border-none text-slate-800 placeholder:text-slate-400 disabled:opacity-60 h-11 rounded-[14px] pr-10"
               />
               {form.formState.errors.password && (
                 <p className="text-xs text-red-400">{form.formState.errors.password.message}</p>
@@ -179,7 +161,7 @@ export function SignupPage() {
                 placeholder="••••••••"
                 {...form.register('confirmPassword')}
                 disabled={mutation.isPending}
-                className="bg-white/95 focus:bg-white transition-colors border-none text-slate-800 placeholder:text-slate-400 disabled:opacity-60 h-11 rounded-2xl pr-10"
+                className="bg-white/95 focus:bg-white transition-colors border-none text-slate-800 placeholder:text-slate-400 disabled:opacity-60 h-11 rounded-[14px] pr-10"
               />
               {form.formState.errors.confirmPassword && (
                 <p className="text-xs text-red-400">{form.formState.errors.confirmPassword.message}</p>
@@ -194,15 +176,15 @@ export function SignupPage() {
                   id="agreeToTerms"
                   {...form.register('agreeToTerms')}
                   disabled={mutation.isPending}
-                  className="mt-1 h-4 w-4 shrink-0 rounded border-white/20 bg-white/10 text-[#ffd043] focus:ring-[#ffd043]/30 cursor-pointer accent-[#ffd043]"
+                  className="mt-1 h-4 w-4 shrink-0 rounded border-white/20 bg-white/10 text-[#FFD641] focus:ring-[#FFD641]/30 cursor-pointer accent-[#FFD641]"
                 />
                 <span className="leading-tight select-none">
                   Saya menyetujui{' '}
-                  <Link to="/terms" className="font-semibold text-[#ffd043] hover:underline">
+                  <Link to="/terms" className="font-semibold text-[#FFD641] hover:underline">
                     Ketentuan Layanan
                   </Link>{' '}
                   dan{' '}
-                  <Link to="/privacy" className="font-semibold text-[#ffd043] hover:underline">
+                  <Link to="/privacy" className="font-semibold text-[#FFD641] hover:underline">
                     kebijakan penggunaan FixMind.
                   </Link>
                 </span>
@@ -219,7 +201,7 @@ export function SignupPage() {
               whileHover={{ scale: 1.02, y: -1 }}
               whileTap={{ scale: 0.98 }}
               type="submit"
-              className="w-full mt-4 h-11 rounded-2xl text-white font-bold gradient-gold shadow-[0_4px_15px_rgba(255,214,65,0.2)] hover:opacity-95 transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer"
+              className="w-full mt-4 h-11 rounded-2xl text-white font-bold gradient-gold shadow-[0_8px_20px_rgba(0,0,0,0.35)] hover:opacity-95 transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer"
               disabled={mutation.isPending}
             >
               {mutation.isPending ? (
@@ -241,7 +223,7 @@ export function SignupPage() {
                 exit={{ opacity: 0, y: 8 }}
                 className="mt-4 flex items-center justify-center gap-2 text-xs text-slate-300"
               >
-                <Loader2 className="h-3.5 w-3.5 animate-spin text-[#ffd043]" />
+                <Loader2 className="h-3.5 w-3.5 animate-spin text-[#FFD641]" />
                 <span>Sedang membuat akun Anda...</span>
               </motion.div>
             )}
@@ -250,7 +232,7 @@ export function SignupPage() {
           {/* Login Link */}
           <p className="mt-6 text-center text-xs sm:text-sm text-slate-300">
             Sudah punya akun?{' '}
-            <Link to="/login" className="font-semibold text-[#ffd043] hover:underline">
+            <Link to="/login" className="font-semibold text-[#FFD641] hover:underline">
               Masuk di sini
             </Link>
           </p>
