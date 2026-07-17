@@ -34,13 +34,6 @@
 - [ ] Charts (reports by status, priority, room)
 - [ ] CSV export
 
-## Phase 4 — Chatbot (optional v1.1)
-
-- [ ] Seed knowledge_chunks
-- [ ] Embedding pipeline
-- [ ] Chat endpoint with SSE
-- [ ] Chat UI widget
-
 ## Phase 5 — Production Hardening
 
 - [ ] Unit tests for services

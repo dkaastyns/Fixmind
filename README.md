@@ -72,7 +72,7 @@ Proyek ini menggunakan arsitektur _Clean Architecture_ dan dipisahkan menjadi du
 |----------|---------------------------|
 | **Frontend** | React 19, Vite, Tailwind CSS v4, TanStack Query, Zustand, Framer Motion, **Vite PWA** |
 | **Backend** | NestJS 11, JWT (Otentikasi), WebSockets (Socket.io), class-validator |
-| **Database** | PostgreSQL + Ekstensi `pgvector` (untuk Semantic Search / RAG AI) |
+| **Database** | PostgreSQL |
 | **Kueri DB** | _Raw SQL_ melalui `postgres.js` (performa dan kontrol penuh) |
 | **Kecerdasan Buatan (AI)** | Gemini 2.5 Flash (Google Generative AI) & Groq AI (Llama 3.1) |
 | **Runtime & Package Manager** | [Bun](https://bun.sh/) 1.3+ |

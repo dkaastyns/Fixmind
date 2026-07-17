@@ -23,8 +23,7 @@ For MVP, AI needs only two HTTP calls to Gemini + optional pgvector queries. A s
 2. **`report_histories`** — append-only audit trail for compliance and UX timeline.
 3. **`report_attachments`** — separate table for Cloudinary metadata (damage vs repair photos).
 4. **`ratings`** — one rating per report (`UNIQUE(report_id)`).
-5. **`knowledge_chunks`** — pgvector for future RAG chatbot; embedding dimension 768 (Gemini).
-6. **Soft delete** on core entities; sessions use `revoked_at`.
+5. **Soft delete** on core entities; sessions use `revoked_at`.
 
 ---
 
@@ -235,7 +234,7 @@ Cloudinary `public_id` + `url`, type DAMAGE | REPAIR | OTHER.
 | `idx_reports_reporter_id` | User history |
 | `idx_reports_created_at DESC` | Recent reports list |
 | `idx_sessions_user_id` | Session lookup |
-| `idx_knowledge_chunks_embedding` (HNSW) | Vector similarity search |
+
 | `ux_asset_transfers_pending_asset_id` (Unique) | Prevensi multiple pending transfers untuk satu aset |
 
 ---
@@ -244,20 +243,7 @@ Cloudinary `public_id` + `url`, type DAMAGE | REPAIR | OTHER.
 
 Karena aplikasi ini menggunakan raw SQL tanpa abstraction ORM, optimasi kueri dan penyetelan database sangat krusial untuk menjaga performa di bawah beban kerja tinggi.
 
-### 1. Optimasi Pencarian Vektor (pgvector Tuning)
-Pencarian kemiripan semantik obrolan AI dilakukan menggunakan operator `<=>` (cosine distance) pada kolom `embedding` di tabel `knowledge_chunks`.
-- **Indeks HNSW (Hierarchical Navigable Small World):** Secara default, kueri kemiripan lambat jika memindai seluruh baris secara penuh (*sequential scan*). Kami menggunakan indeks HNSW untuk pencarian ANN (*Approximate Nearest Neighbor*):
-  ```sql
-  CREATE INDEX idx_knowledge_chunks_embedding 
-  ON knowledge_chunks 
-  USING hnsw (embedding vector_cosine_ops)
-  WITH (m = 16, ef_construction = 64);
-  ```
-- **Penyetelan `ef_search`:** Nilai `ef_search` yang lebih tinggi meningkatkan akurasi *recall* pencarian tetapi sedikit mengurangi kecepatan. Setel nilai ini di tingkat sesi sebelum melakukan kueri pencarian vektor:
-  ```typescript
-  // Setel pada sesi sebelum kueri untuk performa optimal
-  await sql`SET LOCAL hnsw.ef_search = 16`;
-  ```
+
 
 ### 2. B-Tree Index untuk Filter & Pagination
 Setiap kueri pelaporan (`reports`) memfilter data berdasarkan status dan tanggal serta menggunakan pengurutan terbalik (`ORDER BY created_at DESC`).
@@ -312,6 +298,7 @@ Located in `backend/migrations/`:
 11. `0011_remove_technician_columns.sql` — pembersihan kolom teknisi usang di reports dan drop maintenance_schedules lama
 12. `0012_create_maintenance_schedules.sql` — buat ulang maintenance_schedules dengan detail vendor & biaya
 13. `0013_add_failed_login_lockout.sql` — lockout login gagal di users
+14. `0014_drop_knowledge_chunks.sql` — hapus tabel knowledge_chunks
 
 Run migrations with: `bun run migrate` (configured with `DATABASE_URL` in `.env`).
 

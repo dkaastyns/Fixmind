@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Plus, ClipboardList, ArrowRightLeft, MessageSquareCode } from 'lucide-react'
+import { Plus, ClipboardList, ArrowRightLeft } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 export function FloatingActionButton() {
@@ -22,10 +22,6 @@ export function FloatingActionButton() {
     setIsOpen(false)
   }
 
-  const handleToggleChat = () => {
-    window.dispatchEvent(new CustomEvent('toggle-ai-chat-widget'))
-    setIsOpen(false)
-  }
 
   return (
     <div className="fixed bottom-24 right-6 z-40 flex flex-col items-center gap-3">
@@ -62,17 +58,7 @@ export function FloatingActionButton() {
               </span>
             </button>
 
-            {/* Action 3: Buka AI Chat */}
-            <button
-              onClick={handleToggleChat}
-              className="flex items-center justify-center h-10 w-10 rounded-xl bg-white hover:bg-slate-50 text-emerald-600 shadow-lg border border-emerald-100 hover:scale-105 active:scale-95 transition-all group relative cursor-pointer"
-              title="Chat AI"
-            >
-              <MessageSquareCode className="h-4 w-4" />
-              <span className="absolute right-full mr-3.5 px-2.5 py-1.5 bg-slate-950 text-white text-[10px] rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity shadow-md font-semibold border border-white/10 leading-normal">
-                Chatbot AI
-              </span>
-            </button>
+
           </motion.div>
         )}
       </AnimatePresence>

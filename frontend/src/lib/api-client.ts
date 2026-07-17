@@ -498,12 +498,6 @@ export const updateMaintenanceStatus = (token: string, id: string, data: { statu
 export const deleteMaintenanceSchedule = (token: string, id: string) =>
   apiFetch(`/maintenance/${id}`, { method: 'DELETE', ...auth(token) })
 
-export const chatAi = (token: string, prompt: string) =>
-  apiFetch<{ answer: string }>(`/ai/chat`, {
-    method: 'POST',
-    body: JSON.stringify({ prompt }),
-    ...auth(token),
-  })
 
 export const uploadAttachment = async (token: string, id: string, file: File, type: string = 'DAMAGE') => {
   const formData = new FormData()

@@ -38,7 +38,7 @@ Manage users/technicians/rooms/assets, review reports, assign technicians, analy
 | **Foundation** (current) | Auth, DB schema, dashboard shell, AI module skeleton |
 | **MVP** | Reports CRUD, room/asset management, technician assignment |
 | **v1** | AI priority on report create, ratings, attachments (Cloudinary), export |
-| **v1.1** | RAG chatbot (pgvector), analytics charts |
+| **v1.1** | Analytics charts |
 
 ## 6. Non-Goals (MVP)
 

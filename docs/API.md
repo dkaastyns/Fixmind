@@ -366,18 +366,6 @@ sequenceDiagram
 
 ---
 
-## AI
-
-| Method | Path | Role | Deskripsi |
-|--------|------|------|-----------|
-| `POST` | `/ai/chat` | Authenticated | Chat dengan AI asisten |
-
-**Body:**
-```json
-{ "prompt": "Bagaimana cara merawat AC agar tidak cepat rusak?" }
-```
-
----
 
 ## Error Catalog & HTTP Status Codes
 

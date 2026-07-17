@@ -25,7 +25,6 @@ import { logoutRequest } from '@/lib/api-client'
 import { useAuthStore } from '@/stores/auth-store'
 import { cn } from '@/lib/utils'
 import { NotificationBell } from '@/components/ui/notification-bell'
-import { ChatWidget } from '@/components/ui/chat-widget'
 import { GlobalSearchModal } from '@/components/ui/global-search-modal'
 import type { UserRole } from '@/types/api'
 import { useOfflineSync } from '@/components/providers/offline-sync-provider'
@@ -388,7 +387,6 @@ export function DashboardLayout() {
           </AnimatePresence>
         </main>
 
-        <ChatWidget />
         <FloatingActionButton />
       </div>
 
