@@ -429,10 +429,9 @@ export function RoomsPage() {
             </ul>
           )}
 
-          {roomsTotalPages > 1 && (
             <div className="flex items-center justify-between border-t border-slate-200/50 pt-3 mt-3 px-1">
               <span className="text-xs text-slate-500 font-medium hidden sm:inline">
-                Hal {roomPage} dari {roomsTotalPages}
+                Hal {roomPage} dari {Math.max(1, roomsTotalPages)}
               </span>
               <div className="flex items-center gap-1 w-full sm:w-auto justify-between sm:justify-end">
                 <Button variant="secondary" size="sm" className="px-1.5 h-8 border-slate-200" disabled={roomPage === 1} onClick={() => setRoomPage(1)}>
@@ -445,22 +444,22 @@ export function RoomsPage() {
                 <select 
                   value={roomPage}
                   onChange={(e) => setRoomPage(Number(e.target.value))}
-                  className="mx-1 h-8 px-1 bg-white border border-slate-200 rounded-lg text-xs font-medium outline-none cursor-pointer"
+                  className="mx-1 h-8 px-1 bg-white border border-slate-200 rounded-lg text-xs font-medium outline-none cursor-pointer disabled:opacity-50"
+                  disabled={roomsTotalPages <= 1}
                 >
-                  {Array.from({ length: roomsTotalPages }, (_, i) => i + 1).map(p => (
+                  {Array.from({ length: Math.max(1, roomsTotalPages) }, (_, i) => i + 1).map(p => (
                     <option key={p} value={p}>{p}</option>
                   ))}
                 </select>
 
-                <Button variant="secondary" size="sm" className="px-1.5 h-8 border-slate-200" disabled={roomPage === roomsTotalPages} onClick={() => setRoomPage(p => Math.min(roomsTotalPages, p + 1))}>
+                <Button variant="secondary" size="sm" className="px-1.5 h-8 border-slate-200" disabled={roomPage >= roomsTotalPages} onClick={() => setRoomPage(p => Math.min(roomsTotalPages, p + 1))}>
                   <ChevronRight className="h-3.5 w-3.5" />
                 </Button>
-                <Button variant="secondary" size="sm" className="px-1.5 h-8 border-slate-200" disabled={roomPage === roomsTotalPages} onClick={() => setRoomPage(roomsTotalPages)}>
+                <Button variant="secondary" size="sm" className="px-1.5 h-8 border-slate-200" disabled={roomPage >= roomsTotalPages} onClick={() => setRoomPage(Math.max(1, roomsTotalPages))}>
                   <ChevronsRight className="h-3.5 w-3.5" />
                 </Button>
               </div>
             </div>
-          )}
         </GlassCard>
 
         {/* Right Column: Aset */}
@@ -594,38 +593,37 @@ export function RoomsPage() {
                 </ul>
               )}
 
-              {assetsTotalPages > 1 && (
-                <div className="flex items-center justify-between border-t border-slate-200/50 pt-3 mt-4 px-1">
-                  <span className="text-xs text-slate-500 font-medium hidden sm:inline">
-                    Hal {assetPage} dari {assetsTotalPages}
-                  </span>
-                  <div className="flex items-center gap-1 w-full sm:w-auto justify-between sm:justify-end">
-                    <Button variant="secondary" size="sm" className="px-1.5 h-8 border-slate-200" disabled={assetPage === 1} onClick={() => setAssetPage(1)}>
-                      <ChevronsLeft className="h-3.5 w-3.5" />
-                    </Button>
-                    <Button variant="secondary" size="sm" className="px-1.5 h-8 border-slate-200" disabled={assetPage === 1} onClick={() => setAssetPage(p => Math.max(1, p - 1))}>
-                      <ChevronLeft className="h-3.5 w-3.5" />
-                    </Button>
-                    
-                    <select 
-                      value={assetPage}
-                      onChange={(e) => setAssetPage(Number(e.target.value))}
-                      className="mx-1 h-8 px-1 bg-white border border-slate-200 rounded-lg text-xs font-medium outline-none cursor-pointer"
-                    >
-                      {Array.from({ length: assetsTotalPages }, (_, i) => i + 1).map(p => (
-                        <option key={p} value={p}>{p}</option>
-                      ))}
-                    </select>
+              <div className="flex items-center justify-between border-t border-slate-200/50 pt-3 mt-4 px-1">
+                <span className="text-xs text-slate-500 font-medium hidden sm:inline">
+                  Hal {assetPage} dari {Math.max(1, assetsTotalPages)}
+                </span>
+                <div className="flex items-center gap-1 w-full sm:w-auto justify-between sm:justify-end">
+                  <Button variant="secondary" size="sm" className="px-1.5 h-8 border-slate-200" disabled={assetPage === 1} onClick={() => setAssetPage(1)}>
+                    <ChevronsLeft className="h-3.5 w-3.5" />
+                  </Button>
+                  <Button variant="secondary" size="sm" className="px-1.5 h-8 border-slate-200" disabled={assetPage === 1} onClick={() => setAssetPage(p => Math.max(1, p - 1))}>
+                    <ChevronLeft className="h-3.5 w-3.5" />
+                  </Button>
+                  
+                  <select 
+                    value={assetPage}
+                    onChange={(e) => setAssetPage(Number(e.target.value))}
+                    className="mx-1 h-8 px-1 bg-white border border-slate-200 rounded-lg text-xs font-medium outline-none cursor-pointer disabled:opacity-50"
+                    disabled={assetsTotalPages <= 1}
+                  >
+                    {Array.from({ length: Math.max(1, assetsTotalPages) }, (_, i) => i + 1).map(p => (
+                      <option key={p} value={p}>{p}</option>
+                    ))}
+                  </select>
 
-                    <Button variant="secondary" size="sm" className="px-1.5 h-8 border-slate-200" disabled={assetPage === assetsTotalPages} onClick={() => setAssetPage(p => Math.min(assetsTotalPages, p + 1))}>
-                      <ChevronRight className="h-3.5 w-3.5" />
-                    </Button>
-                    <Button variant="secondary" size="sm" className="px-1.5 h-8 border-slate-200" disabled={assetPage === assetsTotalPages} onClick={() => setAssetPage(assetsTotalPages)}>
-                      <ChevronsRight className="h-3.5 w-3.5" />
-                    </Button>
-                  </div>
+                  <Button variant="secondary" size="sm" className="px-1.5 h-8 border-slate-200" disabled={assetPage >= assetsTotalPages} onClick={() => setAssetPage(p => Math.min(assetsTotalPages, p + 1))}>
+                    <ChevronRight className="h-3.5 w-3.5" />
+                  </Button>
+                  <Button variant="secondary" size="sm" className="px-1.5 h-8 border-slate-200" disabled={assetPage >= assetsTotalPages} onClick={() => setAssetPage(Math.max(1, assetsTotalPages))}>
+                    <ChevronsRight className="h-3.5 w-3.5" />
+                  </Button>
                 </div>
-              )}
+              </div>
             </>
           )}
         </GlassCard>
