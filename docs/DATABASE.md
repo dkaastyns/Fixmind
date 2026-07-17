@@ -34,26 +34,34 @@ For MVP, AI needs only two HTTP calls to Gemini + optional pgvector queries. A s
 erDiagram
     users ||--o{ sessions : has
     users ||--o{ reports : reports
-    users ||--o{ reports : "assigned as technician"
     users ||--o{ report_histories : acts
     users ||--o{ report_attachments : uploads
-    users ||--o{ ratings : gives
+    users ||--o{ report_comments : writes
+    users ||--o{ asset_transfers : requests
+    users ||--o{ asset_transfers : reviews
+    users ||--o{ maintenance_schedules : creates
     users ||--o{ ai_usage_logs : triggers
 
     rooms ||--o{ assets : contains
     rooms ||--o{ reports : "located in"
+    rooms ||--o{ asset_transfers : "from/to room"
+    rooms ||--o{ maintenance_schedules : "scheduled in"
 
     assets ||--o{ reports : "optional asset"
+    assets ||--o{ asset_transfers : "transferred asset"
+    assets ||--o{ maintenance_schedules : "optional asset"
 
     reports ||--o{ report_histories : logs
     reports ||--o{ report_attachments : has
-    reports ||--o| ratings : "rated once"
+    reports ||--o{ report_comments : has
 
     users {
         uuid id PK
         varchar email UK
         varchar password_hash
         user_role role
+        int failed_login_attempts
+        timestamptz lockout_until
         timestamptz deleted_at
     }
 
@@ -62,7 +70,8 @@ erDiagram
         report_status status
         report_priority priority
         ai_analysis_status ai_analysis_status
-        uuid assigned_technician_id FK
+        timestamptz target_completion_date
+        timestamptz ai_suggested_target_date
     }
 ```
 
@@ -73,20 +82,26 @@ erDiagram
 ```
 users ─────┬──── sessions
            ├──── reports (reporter_id)
-           ├──── reports (assigned_technician_id)
            ├──── report_histories (actor_id)
            ├──── report_attachments (uploaded_by)
-           └──── ratings (user_id)
+           ├──── report_comments (author_id)
+           ├──── asset_transfers (requester_id)
+           ├──── asset_transfers (reviewed_by)
+           ├──── maintenance_schedules (created_by)
+           └──── ai_usage_logs (user_id)
 
 rooms ─────┬──── assets
-           └──── reports
+           ├──── reports
+           ├──── asset_transfers (from_room_id, to_room_id)
+           └──── maintenance_schedules (room_id)
+
+assets ────┬──── reports (optional)
+           ├──── asset_transfers
+           └──── maintenance_schedules (optional)
 
 reports ───┬──── report_histories
            ├──── report_attachments
-           └──── ratings (1:1)
-
-knowledge_chunks (standalone, vector index)
-ai_usage_logs ─── users (optional)
+           └──── report_comments
 ```
 
 ---
@@ -104,6 +119,8 @@ ai_usage_logs ─── users (optional)
 | phone | VARCHAR(30) | Optional contact |
 | avatar_url | TEXT | Cloudinary URL |
 | is_active | BOOLEAN | Account enabled |
+| failed_login_attempts | INT | Count of consecutive failed logins |
+| lockout_until | TIMESTAMPTZ | Timestamp until account is locked |
 | created_at | TIMESTAMPTZ | Created timestamp |
 | updated_at | TIMESTAMPTZ | Last update |
 | deleted_at | TIMESTAMPTZ | Soft delete |
@@ -132,8 +149,11 @@ ai_usage_logs ─── users (optional)
 |--------|------|-------------|
 | id | UUID | Primary key |
 | room_id | UUID | FK → rooms |
-| asset_code | VARCHAR(50) | Unique asset identifier |
-| category | VARCHAR(80) | e.g. AC, Projector |
+| idpemda | VARCHAR(80) | Unique Pemda ID for government asset tracking |
+| kode_barang | VARCHAR(50) | Unique asset code |
+| nomor_register | VARCHAR(80) | Asset registration number |
+| nama_barang | VARCHAR(150) | Display/item name |
+| merk_type | VARCHAR(150) | Brand and type of asset |
 | status | asset_status | OPERATIONAL, NEEDS_MAINTENANCE, OUT_OF_SERVICE |
 
 ### reports
@@ -147,20 +167,63 @@ ai_usage_logs ─── users (optional)
 | description | TEXT | Damage description |
 | status | report_status | Workflow state |
 | priority | report_priority | AI or manual priority |
-| ai_* | various | AI analysis fields |
-| assigned_technician_id | UUID | FK → users (technician) |
+| target_completion_date | TIMESTAMPTZ | Custom targeted completion date |
+| ai_suggested_target_date | TIMESTAMPTZ | AI recommended completion date |
+| ai_* | various | AI analysis fields (score, recommendation, etc.) |
+
+### report_comments
+| Column | Type | Description |
+|--------|------|-------------|
+| id | UUID | Primary key |
+| report_id | UUID | FK → reports |
+| author_id | UUID | FK → users |
+| content | TEXT | Comment content (max 2000 chars) |
+| created_at | TIMESTAMPTZ | Created timestamp |
+| updated_at | TIMESTAMPTZ | Updated timestamp |
+
+### asset_transfers
+| Column | Type | Description |
+|--------|------|-------------|
+| id | UUID | Primary key |
+| asset_id | UUID | FK → assets |
+| requester_id | UUID | FK → users |
+| from_room_id | UUID | FK → rooms |
+| to_room_id | UUID | FK → rooms |
+| reason | TEXT | Reason for asset movement request |
+| status | asset_transfer_status | PENDING, APPROVED, REJECTED |
+| reviewed_by | UUID | Optional FK → users (admin reviewer) |
+| reviewed_at | TIMESTAMPTZ | Timestamp of review |
+| reviewer_notes | TEXT | Feedback notes from admin review |
+| created_at | TIMESTAMPTZ | Creation timestamp |
+| updated_at | TIMESTAMPTZ | Last update timestamp |
+
+### maintenance_schedules
+| Column | Type | Description |
+|--------|------|-------------|
+| id | UUID | Primary key |
+| room_id | UUID | Optional FK → rooms |
+| asset_id | UUID | Optional FK → assets |
+| title | VARCHAR(255) | Schedule/action title |
+| description | TEXT | Detailed action description |
+| frequency | maintenance_frequency | WEEKLY, MONTHLY, QUARTERLY, ANNUALLY, ONE_TIME |
+| scheduled_date | DATE | Scheduled date of maintenance |
+| status | maintenance_schedule_status | SCHEDULED, IN_PROGRESS, DONE, CANCELLED, OVERDUE |
+| assignee_type | maintenance_assignee_type | INTERNAL, EXTERNAL_VENDOR |
+| assignee_name | VARCHAR(255) | Name of internal technician or external company |
+| vendor_contact_name | VARCHAR(255) | Name of contact person for external vendor |
+| vendor_phone | VARCHAR(50) | Phone number of vendor |
+| estimated_cost | NUMERIC(18, 2) | Cost prediction/estimation |
+| notes | TEXT | Maintenance notes / results |
+| created_by | UUID | Optional FK → users |
+| completed_at | TIMESTAMPTZ | Completion timestamp |
+| created_at | TIMESTAMPTZ | Creation timestamp |
+| updated_at | TIMESTAMPTZ | Last update timestamp |
 
 ### report_histories
 Append-only audit log with `action`, `old_status`, `new_status`, `metadata` JSONB.
 
 ### report_attachments
 Cloudinary `public_id` + `url`, type DAMAGE | REPAIR | OTHER.
-
-### ratings
-`score` 1–5, one per report.
-
-### knowledge_chunks
-RAG content with `embedding vector(768)` and HNSW index.
 
 ---
 
@@ -170,10 +233,10 @@ RAG content with `embedding vector(768)` and HNSW index.
 |-------|---------|
 | `idx_reports_status` | Admin dashboard filters |
 | `idx_reports_reporter_id` | User history |
-| `idx_reports_assigned_technician` | Technician inbox |
 | `idx_reports_created_at DESC` | Recent reports list |
 | `idx_sessions_user_id` | Session lookup |
 | `idx_knowledge_chunks_embedding` (HNSW) | Vector similarity search |
+| `ux_asset_transfers_pending_asset_id` (Unique) | Prevensi multiple pending transfers untuk satu aset |
 
 ---
 
@@ -237,10 +300,18 @@ Koneksi database dikelola menggunakan pooling bawaan `postgres.js` di `database.
 Located in `backend/migrations/`:
 
 1. `0001_init_extensions.sql` — pgcrypto, pgvector
-2. `0002_create_users_and_sessions.sql`
-3. `0003_create_facilities.sql`
-4. `0004_create_reports.sql`
-5. `0005_create_ai_tables.sql`
+2. `0002_create_users_and_sessions.sql` — users, sessions
+3. `0003_create_facilities.sql` — rooms, assets
+4. `0004_create_reports.sql` — reports, report_histories, report_attachments, ratings
+5. `0005_create_ai_tables.sql` — knowledge_chunks, ai_usage_logs
+6. `0006_comments_and_maintenance.sql` — report_comments, maintenance_schedules
+7. `0007_add_target_date_reports.sql` — target_completion_date di reports
+8. `0008_update_asset_inventory_columns.sql` — penyesuaian kolom aset Pemda (idpemda, kode_barang, nomor_register, merk_type)
+9. `0009_drop_ratings.sql` — hapus tabel ratings
+10. `0010_create_asset_transfers.sql` — asset_transfers
+11. `0011_remove_technician_columns.sql` — pembersihan kolom teknisi usang di reports dan drop maintenance_schedules lama
+12. `0012_create_maintenance_schedules.sql` — buat ulang maintenance_schedules dengan detail vendor & biaya
+13. `0013_add_failed_login_lockout.sql` — lockout login gagal di users
 
-Run with: `bun run migrate` (after configuring `DATABASE_URL`).
+Run migrations with: `bun run migrate` (configured with `DATABASE_URL` in `.env`).
 

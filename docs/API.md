@@ -226,13 +226,17 @@ sequenceDiagram
 
 | Method | Path | Role | Deskripsi |
 |--------|------|------|-----------|
-| `GET` | `/assets` | Authenticated | Daftar aset (opsional: `?roomId=<uuid>`) |
+| `GET` | `/assets` | Authenticated | Daftar aset (opsional: `?roomId=<uuid>&search=<query>&page=1&limit=50`) |
 | `GET` | `/assets/:id` | Authenticated | Detail aset |
 | `POST` | `/assets` | ADMIN | Tambah aset manual |
 | `PATCH` | `/assets/:id` | ADMIN | Update aset |
 | `DELETE` | `/assets/:id` | ADMIN | Hapus aset (soft delete) |
 | `GET` | `/assets/import/template` | ADMIN | Download template Excel untuk import |
 | `POST` | `/assets/import?roomId=<uuid>` | ADMIN | Import aset dari file Excel |
+| `GET` | `/assets/transfers` | Authenticated | Daftar transfer (opsional: `?status=<enum>&mineOnly=true&search=<query>`) |
+| `GET` | `/assets/transfers/:id` | Authenticated | Detail transfer aset |
+| `POST` | `/assets/transfers` | Authenticated | Pengajuan transfer aset baru |
+| `PATCH` | `/assets/transfers/:id` | ADMIN | Menyetujui/menolak pengajuan transfer |
 
 ### Body POST /assets
 ```json
@@ -275,6 +279,23 @@ sequenceDiagram
 
 > **Upsert:** Jika `kode_barang` sudah ada di database, baris tersebut akan **diperbarui** (bukan duplikat).
 
+### Body POST /assets/transfers (Pengajuan Transfer Aset)
+```json
+{
+  "assetId": "uuid-aset-yang-dipindahkan",
+  "toRoomId": "uuid-ruang-tujuan",
+  "reason": "AC dipindahkan karena ruangan lama di-renovasi"
+}
+```
+
+### Body PATCH /assets/transfers/:id (Review Transfer oleh Admin)
+```json
+{
+  "status": "APPROVED", // atau "REJECTED"
+  "reviewerNotes": "Disetujui, ruangan baru sudah siap digunakan"
+}
+```
+
 ---
 
 ## Reports (Laporan)
@@ -298,10 +319,39 @@ sequenceDiagram
 
 | Method | Path | Role | Deskripsi |
 |--------|------|------|-----------|
-| `GET` | `/maintenance` | Authenticated | Daftar jadwal (filter: `status`, `technicianId`) |
-| `POST` | `/maintenance` | ADMIN | Buat jadwal pemeliharaan |
-| `PATCH` | `/maintenance/:id/status` | TECHNICIAN, ADMIN | Update status jadwal |
-| `DELETE` | `/maintenance/:id` | ADMIN | Hapus jadwal |
+| `GET` | `/maintenance` | Authenticated | Daftar jadwal (filter: `status`, `search`, `page`, `limit`) |
+| `GET` | `/maintenance/:id` | Authenticated | Detail jadwal |
+| `POST` | `/maintenance` | ADMIN | Buat jadwal pemeliharaan baru |
+| `PATCH` | `/maintenance/:id` | ADMIN | Perbarui jadwal pemeliharaan (semua/sebagian kolom) |
+| `PATCH` | `/maintenance/:id/status` | ADMIN | Update status/catatan realisasi pemeliharaan |
+| `DELETE` | `/maintenance/:id` | ADMIN | Hapus jadwal pemeliharaan |
+
+### Body POST /maintenance (Buat Jadwal Baru)
+```json
+{
+  "roomId": "uuid-ruang-opsional",
+  "assetId": "uuid-aset-opsional",
+  "title": "Service AC Ruang Rapat Utama",
+  "description": "Pembersihan rutin filter AC dan tambah freon jika diperlukan",
+  "frequency": "MONTHLY", // "WEEKLY" | "MONTHLY" | "QUARTERLY" | "ANNUALLY" | "ONE_TIME"
+  "scheduledDate": "2026-07-25",
+  "status": "SCHEDULED", // "SCHEDULED" | "IN_PROGRESS" | "DONE" | "CANCELLED" | "OVERDUE"
+  "assigneeType": "EXTERNAL_VENDOR", // "INTERNAL" | "EXTERNAL_VENDOR"
+  "assigneeName": "CV. Sejuk Jaya Pratama",
+  "vendorContactName": "Pak Joko",
+  "vendorPhone": "08123456789",
+  "estimatedCost": 350000,
+  "notes": "Hubungi pak Joko H-1 pengerjaan"
+}
+```
+
+### Body PATCH /maintenance/:id/status (Realisasi/Tutup Jadwal)
+```json
+{
+  "status": "DONE",
+  "notes": "AC selesai dicuci bersih dan freon diisi ulang."
+}
+```
 
 ---
 
