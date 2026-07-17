@@ -844,8 +844,7 @@ export const exportMaintenancePdf = async (
     headStyles: { fillColor: [22, 101, 52], textColor: 255, fontStyle: 'bold' },
     alternateRowStyles: { fillColor: [240, 253, 244] },
     columnStyles: {
-      0: { cellWidth: 8 },
-      1: { cellWidth: 40 },
+      0: { cellWidth: 22 },
       8: { halign: 'right' },
     },
   })
