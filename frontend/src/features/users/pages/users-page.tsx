@@ -1,6 +1,6 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { Plus, Users, UserCheck, Shield, Trash2, KeyRound, X, Lock, Mail, User } from 'lucide-react'
+import { Plus, Users, UserCheck, Shield, Trash2, KeyRound, X, Lock, Mail, User, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react'
 import { toast } from 'sonner'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Button } from '@/components/ui/button'
@@ -32,6 +32,11 @@ export function UsersPage() {
   
   const [showForm, setShowForm] = useState(false)
   const [isAdminFilter, setIsAdminFilter] = useState<boolean | ''>('')
+  const [page, setPage] = useState(1)
+
+  useEffect(() => {
+    setPage(1)
+  }, [isAdminFilter])
   
   // Password reset states
   const [resetUserId, setResetUserId] = useState<string | null>(null)
@@ -109,6 +114,10 @@ export function UsersPage() {
       active: users.filter(u => u.isActive).length,
     }
   }, [users])
+
+  const limit = 8
+  const totalPages = Math.max(1, Math.ceil(filteredUsers.length / limit))
+  const paginatedUsers = useMemo(() => filteredUsers.slice((page - 1) * limit, page * limit), [filteredUsers, page, limit])
 
   return (
     <div className="space-y-6">
@@ -221,7 +230,7 @@ export function UsersPage() {
           <>
             {/* Mobile View: Cards */}
             <div className="grid gap-4 p-4 md:hidden">
-              {filteredUsers.map((u) => (
+              {paginatedUsers.map((u) => (
                 <div key={u.id} className="p-4 rounded-xl border border-white/50 bg-white/70 shadow-sm space-y-3">
                   <div className="flex items-center justify-between gap-3">
                     <div className="flex items-center gap-3">
@@ -305,7 +314,7 @@ export function UsersPage() {
                   animate="show"
                   className="divide-y divide-white/15"
                 >
-                  {filteredUsers.map((u) => (
+                  {paginatedUsers.map((u) => (
                     <motion.tr 
                       key={u.id} 
                       variants={itemVariants}
@@ -382,6 +391,39 @@ export function UsersPage() {
                 </motion.tbody>
               </table>
             </div>
+
+            {totalPages > 1 && (
+              <div className="flex items-center justify-between border-t border-white/20 pt-4 mt-4 px-4 pb-4">
+                <span className="text-xs text-slate-500 font-medium hidden sm:inline">
+                  Menampilkan halaman {page} dari {totalPages}
+                </span>
+                <div className="flex items-center gap-1 w-full sm:w-auto justify-between sm:justify-end">
+                  <Button variant="secondary" size="sm" className="px-2 border-slate-200 bg-white hover:bg-slate-50" disabled={page === 1} onClick={() => setPage(1)} title="Halaman Pertama">
+                    <ChevronsLeft className="h-4 w-4" />
+                  </Button>
+                  <Button variant="secondary" size="sm" className="px-2 border-slate-200 bg-white hover:bg-slate-50" disabled={page === 1} onClick={() => setPage(p => Math.max(1, p - 1))} title="Sebelumnya">
+                    <ChevronLeft className="h-4 w-4" />
+                  </Button>
+                  
+                  <select 
+                    value={page}
+                    onChange={(e) => setPage(Number(e.target.value))}
+                    className="mx-1 h-9 px-2 bg-white border border-slate-200 rounded-xl text-sm font-medium outline-none focus:border-[#F9D141] focus:ring-2 focus:ring-[#F9D141]/20 cursor-pointer"
+                  >
+                    {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
+                      <option key={p} value={p}>Hal {p}</option>
+                    ))}
+                  </select>
+
+                  <Button variant="secondary" size="sm" className="px-2 border-slate-200 bg-white hover:bg-slate-50" disabled={page === totalPages} onClick={() => setPage(p => Math.min(totalPages, p + 1))} title="Selanjutnya">
+                    <ChevronRight className="h-4 w-4" />
+                  </Button>
+                  <Button variant="secondary" size="sm" className="px-2 border-slate-200 bg-white hover:bg-slate-50" disabled={page === totalPages} onClick={() => setPage(totalPages)} title="Halaman Terakhir">
+                    <ChevronsRight className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+            )}
           </>
         )}
       </GlassCard>
