@@ -8,10 +8,10 @@ import {
   exportPdf,
   exportTransfersExcel,
   exportTransfersPdf,
-  exportMaintenanceExcel,
   exportMaintenancePdf,
   fetchAnalyticsSummary,
   fetchAssetTransfers,
+  fetchMaintenanceSchedules,
 } from '@/lib/api-client'
 import { AnimatedGlassCard } from '@/components/ui/animated-glass-card'
 import { GlassCard } from '@/components/ui/glass-card'
@@ -272,23 +272,17 @@ export function AdminDashboard() {
 
   const [showExportModal, setShowExportModal] = useState(false)
   const [exportFormat, setExportFormat] = useState<ExportFormat | null>(null)
-  const [maintenanceAgenda, setMaintenanceAgenda] = useState<any[]>([])
+  const { data: maintenanceData, isLoading: maintenanceLoading } = useQuery({
+    queryKey: ['admin-dashboard-maintenance'],
+    queryFn: () => fetchMaintenanceSchedules(token, { limit: 10 }),
+  })
 
-  useEffect(() => {
-    const saved = localStorage.getItem('fixmind_maintenance_schedules')
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved)
-        const active = parsed
-          .filter((s: any) => s.status === 'SCHEDULED' || s.status === 'IN_PROGRESS')
-          .sort((a: any, b: any) => new Date(a.scheduledDate).getTime() - new Date(b.scheduledDate).getTime())
-          .slice(0, 3)
-        setMaintenanceAgenda(active)
-      } catch {
-        setMaintenanceAgenda([])
-      }
-    }
-  }, [])
+  const maintenanceAgenda = maintenanceData?.data 
+    ? maintenanceData.data
+        .filter((s) => s.status === 'SCHEDULED' || s.status === 'IN_PROGRESS')
+        .sort((a, b) => new Date(a.scheduledDate).getTime() - new Date(b.scheduledDate).getTime())
+        .slice(0, 4)
+    : []
 
   const triggerExport = (fmt: ExportFormat) => {
     setExportFormat(fmt)
@@ -597,55 +591,73 @@ export function AdminDashboard() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.8 }}
         >
-          <GlassCard className="p-5">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-base font-semibold text-slate-800">Agenda Pemeliharaan Rutin Terdekat</h2>
-              <Link to="/dashboard/maintenance" className="text-xs font-semibold text-[#d9a416] hover:text-[#c29410] hover:underline">
-                Lihat Semua Jadwal
+          <GlassCard className="p-5 sm:p-6">
+            <div className="flex justify-between items-center mb-6">
+              <div className="flex items-center gap-2">
+                <div className="p-2 rounded-lg bg-amber-500/10 text-amber-600">
+                  <Calendar className="w-5 h-5" />
+                </div>
+                <h2 className="text-lg font-bold text-slate-800">Agenda Pemeliharaan Rutin Terdekat</h2>
+              </div>
+              <Link to="/dashboard/maintenance" className="text-sm font-bold text-[#d9a416] hover:text-[#c29410] flex items-center gap-1 transition-colors">
+                Lihat Semua <ArrowRightLeft className="w-3.5 h-3.5" />
               </Link>
             </div>
             
-            {maintenanceAgenda.length === 0 ? (
-              <p className="text-xs text-slate-400 italic text-center py-4">
-                Tidak ada jadwal pemeliharaan rutin terdekat yang aktif.
-              </p>
+            {maintenanceLoading ? (
+              <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+                {Array.from({ length: 4 }).map((_, i) => (
+                  <Skeleton key={i} className="h-[140px] rounded-2xl" />
+                ))}
+              </div>
+            ) : maintenanceAgenda.length === 0 ? (
+              <div className="py-10 text-center rounded-2xl border border-dashed border-slate-200 bg-slate-50/50">
+                <p className="text-sm font-semibold text-slate-500">
+                  Tidak ada jadwal pemeliharaan rutin terdekat yang aktif.
+                </p>
+              </div>
             ) : (
-              <div className="grid gap-3 sm:grid-cols-3">
+              <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
                 {maintenanceAgenda.map((item) => (
-                  <div
+                  <motion.div
                     key={item.id}
-                    className="p-3.5 rounded-xl border border-slate-100 bg-slate-50/50 flex flex-col justify-between text-xs space-y-3"
+                    whileHover={{ scale: 1.02 }}
+                    className="group relative p-4 rounded-2xl bg-white border border-slate-100 shadow-sm hover:shadow-md transition-all flex flex-col justify-between space-y-4 overflow-hidden cursor-default"
                   >
-                    <div className="space-y-1.5">
+                    <div className="absolute inset-0 bg-gradient-to-br from-amber-500/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                    <div className="relative space-y-3">
                       <div className="flex justify-between items-center">
-                        <span className="text-[10px] font-bold text-slate-400 uppercase">
+                        <span className="text-[10px] font-extrabold tracking-wider text-slate-400 uppercase">
                           {item.frequency === 'ONE_TIME' ? 'Sekali' : 'Rutin'}
                         </span>
-                        <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${
-                          item.status === 'IN_PROGRESS' ? 'bg-blue-100 text-blue-700' : 'bg-amber-100 text-amber-700'
+                        <span className={`px-2 py-1 rounded-full text-[10px] font-bold shadow-sm ${
+                          item.status === 'IN_PROGRESS' 
+                            ? 'bg-blue-50 text-blue-600 border border-blue-100' 
+                            : 'bg-amber-50 text-amber-600 border border-amber-100'
                         }`}>
                           {item.status === 'IN_PROGRESS' ? 'Dikerjakan' : 'Terjadwal'}
                         </span>
                       </div>
                       
-                      <h4 className="font-semibold text-slate-800 line-clamp-1">{item.title}</h4>
-                      
-                      <div className="flex items-center gap-1.5 text-slate-500">
-                        <Calendar className="h-3.5 w-3.5 text-[#F9D141]" />
-                        <span>{new Date(item.scheduledDate).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}</span>
-                      </div>
-                      
-                      <div className="flex items-center gap-1.5 text-slate-500">
-                        <Building2 className="h-3.5 w-3.5" />
-                        <span className="truncate">{item.roomCode} — {item.roomName}</span>
+                      <div>
+                        <h4 className="font-bold text-slate-800 line-clamp-1 mb-1 group-hover:text-amber-600 transition-colors">{item.title}</h4>
+                        <div className="flex items-center gap-1.5 text-xs text-slate-500 font-medium">
+                          <Building2 className="h-3.5 w-3.5 text-slate-400" />
+                          <span className="truncate">{item.roomCode} — {item.roomName}</span>
+                        </div>
                       </div>
                     </div>
                     
-                    <div className="border-t border-slate-200/60 pt-2 flex items-center justify-between text-[11px]">
-                      <span className="text-slate-400">Petugas:</span>
-                      <span className="font-medium text-slate-700 truncate max-w-[70%]">{item.assigneeName}</span>
+                    <div className="relative border-t border-slate-100 pt-3 flex items-center justify-between">
+                      <div className="flex items-center gap-1.5 text-xs font-bold text-amber-600 bg-amber-50 px-2 py-1 rounded-md">
+                        <Calendar className="h-3.5 w-3.5" />
+                        <span>{new Date(item.scheduledDate).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}</span>
+                      </div>
+                      <div className="flex items-center gap-1.5 text-xs text-slate-600 font-medium truncate max-w-[50%]">
+                        <span className="truncate">{item.assigneeName}</span>
+                      </div>
                     </div>
-                  </div>
+                  </motion.div>
                 ))}
               </div>
             )}
