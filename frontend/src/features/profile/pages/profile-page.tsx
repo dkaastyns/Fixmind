@@ -9,6 +9,7 @@ import { GlassCard } from '@/components/ui/glass-card'
 import { useAuthStore } from '@/stores/auth-store'
 import { updateProfileRequest, changePasswordRequest, uploadAvatarRequest, deleteAvatarRequest } from '@/lib/api-client'
 import { motion, AnimatePresence } from 'framer-motion'
+import { ProfileCard } from '@/components/ui/profile-card'
 
 export function ProfilePage() {
   const { user, accessToken, setUser } = useAuthStore()
@@ -152,100 +153,36 @@ export function ProfilePage() {
   return (
     <div className="space-y-8 pb-10">
       
-      {/* Hero / Banner Section */}
-      <div className="relative mb-20 md:mb-32">
-        <div className="h-40 md:h-64 w-full rounded-3xl bg-gradient-to-r from-[#F9D141] via-[#ffd043] to-[#d9a416] overflow-hidden relative shadow-lg">
-          {/* Decorative shapes */}
-          <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3"></div>
-          <div className="absolute bottom-0 left-10 w-40 h-40 bg-white/10 rounded-full blur-2xl translate-y-1/2"></div>
-          
-          {/* Desktop Title inside Banner */}
-          <div className="absolute bottom-8 left-48 md:left-[280px] hidden md:block z-10 text-white drop-shadow-md">
-            <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight">{user?.fullName || 'Pengguna'}</h1>
-            <p className="text-sm md:text-base font-medium flex items-center gap-2 mt-2 opacity-90">
-              <Mail className="w-5 h-5" />
-              {user?.email}
-            </p>
-          </div>
-        </div>
-
-        {/* Avatar overlapping the banner */}
-        <div className="absolute -bottom-16 md:-bottom-24 left-8 md:left-12">
-          <div className="relative group z-10">
-            <input
-              type="file"
-              ref={fileInputRef}
-              className="hidden"
-              accept="image/jpeg, image/png, image/webp"
-              onChange={handleAvatarChange}
-              disabled={uploadAvatarMut.isPending}
-            />
-            <div 
-              className="flex h-32 w-32 md:h-48 md:w-48 items-center justify-center rounded-[2rem] bg-white text-[#d9a416] overflow-hidden cursor-pointer shadow-2xl relative transition-all group-hover:scale-[1.02] border-[6px] md:border-8 border-slate-50/80"
-              onClick={() => setShowPreviewModal(true)}
-            >
-              {user?.avatarUrl ? (
-                <img src={user.avatarUrl} alt="Avatar" className="h-full w-full object-cover" />
-              ) : (
-                <UserIcon className="h-12 w-12 md:h-20 md:w-20 text-slate-300" />
-              )}
-              
-              <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                <Camera className="h-8 w-8 md:h-12 md:w-12 text-white" />
-              </div>
-            </div>
-            
-            {/* Online badge */}
-            <div className="absolute -bottom-1 -right-1 md:-bottom-2 md:-right-2 h-7 w-7 md:h-10 md:w-10 bg-green-500 rounded-full border-4 md:border-[6px] border-slate-50 z-10 shadow-sm"></div>
-          </div>
-        </div>
-      </div>
-
-      {/* Mobile Title (visible only on small screens below the avatar) */}
-      <div className="px-4 md:hidden text-center flex flex-col items-center">
-         <h1 className="text-2xl font-bold text-slate-800">{user?.fullName || 'Pengguna'}</h1>
-         <div className="flex items-center justify-center gap-2 mt-2">
-            <span className={`px-3 py-1 rounded-full text-[10px] font-bold ${user?.isAdmin ? 'bg-indigo-100 text-indigo-700' : 'bg-slate-100 text-slate-700'}`}>
-                {user?.isAdmin ? 'ADMINISTRATOR' : 'PENGGUNA STANDAR'}
-            </span>
-         </div>
-      </div>
-
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
         
-        {/* Left Column: Read-only Profile Info */}
-        <div className="lg:col-span-4 space-y-6">
-          <GlassCard className="p-6 border-white/60 shadow-sm hover:shadow-md transition-shadow">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="p-2.5 bg-blue-50 text-blue-600 rounded-xl">
-                <ShieldCheck className="w-5 h-5" />
-              </div>
-              <div>
-                <h3 className="font-bold text-slate-800">Akun Anda</h3>
-                <p className="text-xs text-slate-500">Informasi kredensial login</p>
-              </div>
-            </div>
-            
-            <div className="space-y-5">
-              <div>
-                <label className="text-[11px] font-bold uppercase tracking-wider text-slate-400">Role Sistem</label>
-                <div className="mt-1.5 flex items-center gap-2">
-                  <span className={`px-3 py-1.5 rounded-lg text-xs font-bold ${user?.isAdmin ? 'bg-indigo-50 text-indigo-600 border border-indigo-100 shadow-sm' : 'bg-slate-50 text-slate-700 border border-slate-200 shadow-sm'}`}>
-                    {user?.isAdmin ? 'ADMINISTRATOR' : 'PENGGUNA STANDAR'}
-                  </span>
-                </div>
-              </div>
-
-              <div>
-                <label className="text-[11px] font-bold uppercase tracking-wider text-slate-400">Alamat Email</label>
-                <div className="mt-1.5 flex items-center gap-2.5 text-sm font-semibold text-slate-700 bg-slate-50 p-3 rounded-xl border border-slate-200/60 shadow-sm">
-                  <Mail className="w-4 h-4 text-slate-400" />
-                  {user?.email}
-                </div>
-                <p className="text-[10px] text-slate-400 mt-2 ml-1 leading-relaxed">* Email digunakan sebagai identitas unik login dan tidak dapat diubah sendiri.</p>
-              </div>
-            </div>
-          </GlassCard>
+        {/* Left Column: Profile Card 3D */}
+        <div className="lg:col-span-4 flex justify-center items-start pt-2">
+          {/* Hidden File Input for Avatar Upload */}
+          <input
+            type="file"
+            ref={fileInputRef}
+            className="hidden"
+            accept="image/jpeg, image/png, image/webp"
+            onChange={handleAvatarChange}
+            disabled={uploadAvatarMut.isPending}
+          />
+          <ProfileCard
+            name={user?.fullName || 'Pengguna'}
+            title={user?.isAdmin ? 'Administrator' : 'Pengguna Standar'}
+            handle={user?.email || 'email@example.com'}
+            status="Online"
+            contactText="Ubah Avatar"
+            avatarUrl={user?.avatarUrl || `https://api.dicebear.com/7.x/initials/svg?seed=${user?.fullName || 'User'}`}
+            miniAvatarUrl={user?.avatarUrl || `https://api.dicebear.com/7.x/initials/svg?seed=${user?.fullName || 'User'}`}
+            showUserInfo={true}
+            enableTilt={true}
+            enableMobileTilt={false}
+            onContactClick={() => setShowPreviewModal(true)}
+            behindGlowEnabled={true}
+            behindGlowColor="rgba(249, 209, 65, 0.4)"
+            innerGradient="linear-gradient(145deg,#F9D14144 0%,#d9a4168c 100%)"
+            className="w-full max-w-sm"
+          />
         </div>
 
         {/* Right Column: Forms */}
