@@ -35,7 +35,7 @@ export function AssetTransferPage() {
 
   const rooms = useQuery({
     queryKey: ['asset-transfer-rooms'],
-    queryFn: () => fetchRooms(token, true),
+    queryFn: () => fetchRooms(token, { activeOnly: true }),
   })
 
   const assets = useQuery({

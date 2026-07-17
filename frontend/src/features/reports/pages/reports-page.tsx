@@ -66,7 +66,7 @@ export function ReportsPage() {
     return () => clearTimeout(handler)
   }, [searchQuery])
 
-  const rooms = useQuery({ queryKey: ['rooms'], queryFn: () => fetchRooms(token, true) })
+  const rooms = useQuery({ queryKey: ['rooms'], queryFn: () => fetchRooms(token, { activeOnly: true }) })
 
   const hasAdvancedFilter = !!(advFilter.roomId || advFilter.dateFrom || advFilter.dateTo)
 
@@ -422,7 +422,7 @@ function CreateReportForm({
   const [assetId, setAssetId] = useState(initialAssetId)
   const [files, setFiles] = useState<File[]>([])
 
-  const rooms = useQuery({ queryKey: ['rooms'], queryFn: () => fetchRooms(token, true) })
+  const rooms = useQuery({ queryKey: ['rooms'], queryFn: () => fetchRooms(token, { activeOnly: true }) })
   const assets = useQuery({
     queryKey: ['assets', roomId],
     queryFn: () => fetchAssets(token, { roomId }),

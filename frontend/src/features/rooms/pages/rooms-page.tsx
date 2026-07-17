@@ -14,6 +14,10 @@ import {
   Search,
   Package,
   ArrowRight,
+  ChevronLeft,
+  ChevronRight,
+  ChevronsLeft,
+  ChevronsRight,
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
@@ -62,6 +66,8 @@ export function RoomsPage() {
   // Search/Filters states
   const [roomSearch, setRoomSearch] = useState(initialSearch)
   const [assetSearch, setAssetSearch] = useState(initialSearch)
+  const [roomPage, setRoomPage] = useState(1)
+  const [assetPage, setAssetPage] = useState(1)
 
   useEffect(() => {
     const q = searchParams.get('search') ?? ''
@@ -69,50 +75,48 @@ export function RoomsPage() {
     setAssetSearch(q)
   }, [searchParams])
 
+  useEffect(() => {
+    setRoomPage(1)
+  }, [roomSearch])
+
+  useEffect(() => {
+    setAssetPage(1)
+  }, [assetSearch, selectedRoom])
+
   // Import Excel state
   const [showImportModal, setShowImportModal] = useState(false)
   const [importRoomId, setImportRoomId] = useState<string>('')
   const [pendingImportFile, setPendingImportFile] = useState<File | null>(null)
   const headerImportInputRef = useRef<HTMLInputElement>(null)
 
-  const rooms = useQuery({ queryKey: ['rooms'], queryFn: () => fetchRooms(token) })
+  const rooms = useQuery({ 
+    queryKey: ['rooms', roomSearch, roomPage], 
+    queryFn: () => fetchRooms(token, { limit: 10, page: roomPage, search: roomSearch.trim() || undefined }) 
+  })
   
   const assets = useQuery({
-    queryKey: ['assets', selectedRoom],
-    queryFn: () => fetchAssets(token, { roomId: selectedRoom ?? undefined, limit: 200 }),
+    queryKey: ['assets', selectedRoom, assetSearch, assetPage],
+    queryFn: () => fetchAssets(token, { 
+      roomId: selectedRoom ?? undefined, 
+      limit: 10, 
+      page: assetPage,
+      search: assetSearch.trim() || undefined
+    }),
     enabled: !!selectedRoom,
   })
 
+  const roomsList = rooms.data?.data ?? []
+  const roomsMeta = rooms.data?.meta
+  const roomsTotalPages = roomsMeta ? Math.ceil(roomsMeta.total / roomsMeta.limit) : 1
+
+  const assetsList = assets.data?.data ?? []
+  const assetsMeta = assets.data?.meta
+  const assetsTotalPages = assetsMeta ? Math.ceil(assetsMeta.total / assetsMeta.limit) : 1
+
   // Selected Room Object Helper
   const selectedRoomObj = useMemo(() => {
-    return rooms.data?.data.find((r) => r.id === selectedRoom)
-  }, [rooms.data?.data, selectedRoom])
-
-  // Filtered rooms list based on search
-  const filteredRooms = useMemo(() => {
-    const list = rooms.data?.data ?? []
-    if (!roomSearch.trim()) return list
-    const q = roomSearch.toLowerCase()
-    return list.filter((r) => 
-      r.code.toLowerCase().includes(q) || 
-      r.name.toLowerCase().includes(q) ||
-      (r.building && r.building.toLowerCase().includes(q))
-    )
-  }, [rooms.data?.data, roomSearch])
-
-  // Filtered assets list based on search
-  const filteredAssets = useMemo(() => {
-    const list = assets.data?.data ?? []
-    if (!assetSearch.trim()) return list
-    const q = assetSearch.toLowerCase()
-    return list.filter((a) => 
-      a.namaBarang.toLowerCase().includes(q) || 
-      a.kodeBarang.toLowerCase().includes(q) ||
-      a.nomorRegister.toLowerCase().includes(q) ||
-      (a.merkType && a.merkType.toLowerCase().includes(q)) ||
-      a.idpemda.toLowerCase().includes(q)
-    )
-  }, [assets.data?.data, assetSearch])
+    return roomsList.find((r) => r.id === selectedRoom)
+  }, [roomsList, selectedRoom])
 
   const deleteRoomMut = useMutation({
     mutationFn: async (ids: string[]) => {
@@ -299,7 +303,7 @@ export function RoomsPage() {
           <div className="flex items-center justify-between border-b border-slate-100 px-4 py-3.5 bg-slate-50/50">
             <div className="flex items-center gap-2">
               <Building2 className="h-4 w-4 text-[#d9a416]" />
-              <span className="font-bold text-slate-700 text-sm">Daftar Ruangan ({filteredRooms.length})</span>
+              <span className="font-bold text-slate-700 text-sm">Daftar Ruangan ({roomsMeta?.total ?? roomsList.length})</span>
             </div>
             <div className="flex items-center gap-1.5">
               {isAdmin && !isDeletingRooms && rooms.data?.data && rooms.data.data.length > 0 && (
@@ -352,11 +356,11 @@ export function RoomsPage() {
           {/* List Ruangan */}
           {rooms.isLoading ? (
             <div className="p-4"><ListSkeleton count={5} /></div>
-          ) : !filteredRooms.length ? (
+          ) : !roomsList.length ? (
             <div className="py-12"><EmptyState title="Tidak ada ruangan" description={roomSearch ? "Kriteria pencarian Anda tidak cocok" : undefined} /></div>
           ) : (
             <ul className="divide-y divide-slate-100 max-h-[500px] overflow-y-auto">
-              {filteredRooms.map((r) => (
+              {roomsList.map((r) => (
                 <li
                   key={r.id}
                   role="button"
@@ -423,6 +427,39 @@ export function RoomsPage() {
                 </li>
               ))}
             </ul>
+          )}
+
+          {roomsTotalPages > 1 && (
+            <div className="flex items-center justify-between border-t border-slate-200/50 pt-3 mt-3 px-1">
+              <span className="text-xs text-slate-500 font-medium hidden sm:inline">
+                Hal {roomPage} dari {roomsTotalPages}
+              </span>
+              <div className="flex items-center gap-1 w-full sm:w-auto justify-between sm:justify-end">
+                <Button variant="secondary" size="sm" className="px-1.5 h-8 border-slate-200" disabled={roomPage === 1} onClick={() => setRoomPage(1)}>
+                  <ChevronsLeft className="h-3.5 w-3.5" />
+                </Button>
+                <Button variant="secondary" size="sm" className="px-1.5 h-8 border-slate-200" disabled={roomPage === 1} onClick={() => setRoomPage(p => Math.max(1, p - 1))}>
+                  <ChevronLeft className="h-3.5 w-3.5" />
+                </Button>
+                
+                <select 
+                  value={roomPage}
+                  onChange={(e) => setRoomPage(Number(e.target.value))}
+                  className="mx-1 h-8 px-1 bg-white border border-slate-200 rounded-lg text-xs font-medium outline-none cursor-pointer"
+                >
+                  {Array.from({ length: roomsTotalPages }, (_, i) => i + 1).map(p => (
+                    <option key={p} value={p}>{p}</option>
+                  ))}
+                </select>
+
+                <Button variant="secondary" size="sm" className="px-1.5 h-8 border-slate-200" disabled={roomPage === roomsTotalPages} onClick={() => setRoomPage(p => Math.min(roomsTotalPages, p + 1))}>
+                  <ChevronRight className="h-3.5 w-3.5" />
+                </Button>
+                <Button variant="secondary" size="sm" className="px-1.5 h-8 border-slate-200" disabled={roomPage === roomsTotalPages} onClick={() => setRoomPage(roomsTotalPages)}>
+                  <ChevronsRight className="h-3.5 w-3.5" />
+                </Button>
+              </div>
+            </div>
           )}
         </GlassCard>
 
@@ -500,7 +537,7 @@ export function RoomsPage() {
               {/* List Aset */}
               {assets.isLoading ? (
                 <div className="p-4"><ListSkeleton count={4} /></div>
-              ) : !filteredAssets.length ? (
+              ) : !assetsList.length ? (
                 <div className="py-12">
                   <EmptyState 
                     title="Tidak ada aset" 
@@ -509,7 +546,7 @@ export function RoomsPage() {
                 </div>
               ) : (
                 <ul className="divide-y divide-slate-100 max-h-[500px] overflow-y-auto">
-                  {filteredAssets.map((a) => (
+                  {assetsList.map((a) => (
                     <li 
                       key={a.id} 
                       className={cn(
@@ -555,6 +592,39 @@ export function RoomsPage() {
                     </li>
                   ))}
                 </ul>
+              )}
+
+              {assetsTotalPages > 1 && (
+                <div className="flex items-center justify-between border-t border-slate-200/50 pt-3 mt-4 px-1">
+                  <span className="text-xs text-slate-500 font-medium hidden sm:inline">
+                    Hal {assetPage} dari {assetsTotalPages}
+                  </span>
+                  <div className="flex items-center gap-1 w-full sm:w-auto justify-between sm:justify-end">
+                    <Button variant="secondary" size="sm" className="px-1.5 h-8 border-slate-200" disabled={assetPage === 1} onClick={() => setAssetPage(1)}>
+                      <ChevronsLeft className="h-3.5 w-3.5" />
+                    </Button>
+                    <Button variant="secondary" size="sm" className="px-1.5 h-8 border-slate-200" disabled={assetPage === 1} onClick={() => setAssetPage(p => Math.max(1, p - 1))}>
+                      <ChevronLeft className="h-3.5 w-3.5" />
+                    </Button>
+                    
+                    <select 
+                      value={assetPage}
+                      onChange={(e) => setAssetPage(Number(e.target.value))}
+                      className="mx-1 h-8 px-1 bg-white border border-slate-200 rounded-lg text-xs font-medium outline-none cursor-pointer"
+                    >
+                      {Array.from({ length: assetsTotalPages }, (_, i) => i + 1).map(p => (
+                        <option key={p} value={p}>{p}</option>
+                      ))}
+                    </select>
+
+                    <Button variant="secondary" size="sm" className="px-1.5 h-8 border-slate-200" disabled={assetPage === assetsTotalPages} onClick={() => setAssetPage(p => Math.min(assetsTotalPages, p + 1))}>
+                      <ChevronRight className="h-3.5 w-3.5" />
+                    </Button>
+                    <Button variant="secondary" size="sm" className="px-1.5 h-8 border-slate-200" disabled={assetPage === assetsTotalPages} onClick={() => setAssetPage(assetsTotalPages)}>
+                      <ChevronsRight className="h-3.5 w-3.5" />
+                    </Button>
+                  </div>
+                </div>
               )}
             </>
           )}

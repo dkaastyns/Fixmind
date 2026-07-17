@@ -284,8 +284,15 @@ export const deleteUser = (token: string, id: string) =>
   apiFetch(`/users/${id}`, { method: 'DELETE', ...auth(token) })
 
 // Rooms & Assets
-export const fetchRooms = (token: string, activeOnly = false) =>
-  apiFetch<Room[]>(`/rooms?activeOnly=${activeOnly}`, auth(token))
+export const fetchRooms = (token: string, params?: { activeOnly?: boolean; page?: number; limit?: number; search?: string }) => {
+  const q = new URLSearchParams()
+  if (params?.activeOnly) q.set('activeOnly', 'true')
+  if (params?.page) q.set('page', String(params.page))
+  if (params?.limit) q.set('limit', String(params.limit))
+  if (params?.search) q.set('search', params.search)
+  const qs = q.toString() ? `?${q.toString()}` : ''
+  return apiFetch<Room[]>(`/rooms${qs}`, auth(token))
+}
 
 export const createRoom = (token: string, data: object) =>
   apiFetch<Room>('/rooms', { method: 'POST', body: JSON.stringify(data), ...auth(token) })
@@ -296,11 +303,12 @@ export const updateRoom = (token: string, id: string, data: object) =>
 export const deleteRoom = (token: string, id: string) =>
   apiFetch(`/rooms/${id}`, { method: 'DELETE', ...auth(token) })
 
-export const fetchAssets = (token: string, params?: { roomId?: string; search?: string; limit?: number }) => {
+export const fetchAssets = (token: string, params?: { roomId?: string; search?: string; limit?: number; page?: number }) => {
   const q = new URLSearchParams()
   if (params?.roomId) q.set('roomId', params.roomId)
   if (params?.search) q.set('search', params.search)
   if (params?.limit) q.set('limit', String(params.limit))
+  if (params?.page) q.set('page', String(params.page))
   const qs = q.toString() ? `?${q.toString()}` : ''
   return apiFetch<Asset[]>(`/assets${qs}`, auth(token))
 }

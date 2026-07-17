@@ -146,7 +146,7 @@ export function MaintenancePage() {
 
   const roomsQuery = useQuery({
     queryKey: ['rooms-maintenance'],
-    queryFn: () => fetchRooms(token, true),
+    queryFn: () => fetchRooms(token, { activeOnly: true }),
   })
 
   const assetsQuery = useQuery({
