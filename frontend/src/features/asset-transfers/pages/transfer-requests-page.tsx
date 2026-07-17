@@ -2,7 +2,7 @@
 import { useState, useMemo, useEffect } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { CheckCircle2, ShieldAlert, XCircle, Search, ArrowRight, Clock, User } from 'lucide-react'
+import { CheckCircle2, ShieldAlert, XCircle, Search, ArrowRight, Clock, User, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react'
 import { toast } from 'sonner'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Button } from '@/components/ui/button'
@@ -106,7 +106,7 @@ export function TransferRequestsPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Approval Transfer Aset"
+        title="Persetujuan Transfer Aset"
         description="Tinjau pengajuan perpindahan aset. Jika disetujui, sistem otomatis memindahkan lokasi aset di database."
       />
 
@@ -360,25 +360,60 @@ export function TransferRequestsPage() {
 
         {totalPages > 1 && (
           <div className="flex items-center justify-between border-t border-white/20 pt-4 mt-6">
-            <span className="text-xs text-slate-500 font-medium">
+            <span className="text-xs text-slate-500 font-medium hidden sm:inline">
               Menampilkan halaman {page} dari {totalPages}
             </span>
-            <div className="flex gap-2">
+            <div className="flex items-center gap-1 w-full sm:w-auto justify-between sm:justify-end">
               <Button
                 variant="secondary"
                 size="sm"
+                className="px-2"
                 disabled={page === 1}
-                onClick={() => setPage(p => Math.max(1, p - 1))}
+                onClick={() => setPage(1)}
+                title="Halaman Pertama"
               >
-                Sebelumnya
+                <ChevronsLeft className="h-4 w-4" />
               </Button>
               <Button
                 variant="secondary"
                 size="sm"
+                className="px-2"
+                disabled={page === 1}
+                onClick={() => setPage(p => Math.max(1, p - 1))}
+                title="Sebelumnya"
+              >
+                <ChevronLeft className="h-4 w-4" />
+              </Button>
+              
+              <select 
+                value={page}
+                onChange={(e) => setPage(Number(e.target.value))}
+                className="mx-1 h-9 px-2 bg-white border border-slate-200 rounded-xl text-sm font-medium outline-none focus:border-[#F9D141] focus:ring-2 focus:ring-[#F9D141]/20 cursor-pointer"
+              >
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
+                  <option key={p} value={p}>Hal {p}</option>
+                ))}
+              </select>
+
+              <Button
+                variant="secondary"
+                size="sm"
+                className="px-2"
                 disabled={page === totalPages}
                 onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                title="Selanjutnya"
               >
-                Selanjutnya
+                <ChevronRight className="h-4 w-4" />
+              </Button>
+              <Button
+                variant="secondary"
+                size="sm"
+                className="px-2"
+                disabled={page === totalPages}
+                onClick={() => setPage(totalPages)}
+                title="Halaman Terakhir"
+              >
+                <ChevronsRight className="h-4 w-4" />
               </Button>
             </div>
           </div>

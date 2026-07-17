@@ -19,6 +19,10 @@ import {
   Search,
   FileSpreadsheet,
   FileText,
+  ChevronLeft,
+  ChevronRight,
+  ChevronsLeft,
+  ChevronsRight,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { GlassCard } from '@/components/ui/glass-card'
@@ -111,19 +115,25 @@ export function MaintenancePage() {
   // Filters
   const [searchQuery, setSearchQuery] = useState(initialSearch)
   const [statusFilter, setStatusFilter] = useState<string>('ALL')
+  const [page, setPage] = useState(1)
 
   useEffect(() => {
     const q = searchParams.get('search') ?? ''
     setSearchQuery(q)
   }, [searchParams])
 
+  useEffect(() => {
+    setPage(1)
+  }, [searchQuery, statusFilter])
+
   // ─── Queries ─────────────────────────────────────────────────────────────
 
   const schedulesQuery = useQuery({
-    queryKey: ['maintenance-schedules', statusFilter, searchQuery],
+    queryKey: ['maintenance-schedules', statusFilter, searchQuery, page],
     queryFn: () =>
       fetchMaintenanceSchedules(token, {
-        limit: 200,
+        limit: 2,
+        page,
         status: statusFilter !== 'ALL' ? (statusFilter as MaintenanceScheduleStatus) : undefined,
         search: searchQuery.trim() || undefined,
       }),
@@ -131,6 +141,8 @@ export function MaintenancePage() {
   })
 
   const schedules = schedulesQuery.data?.data ?? []
+  const meta = schedulesQuery.data?.meta
+  const totalPages = meta ? Math.ceil(meta.total / meta.limit) : 1
 
   const roomsQuery = useQuery({
     queryKey: ['rooms-maintenance'],
@@ -570,6 +582,67 @@ export function MaintenancePage() {
               </motion.div>
             ))}
           </AnimatePresence>
+        </div>
+      )}
+
+      {totalPages > 1 && (
+        <div className="flex items-center justify-between border-t border-slate-200/50 pt-4 mt-6 px-1">
+          <span className="text-xs text-slate-500 font-medium hidden sm:inline">
+            Menampilkan halaman {page} dari {totalPages}
+          </span>
+          <div className="flex items-center gap-1 w-full sm:w-auto justify-between sm:justify-end">
+            <Button
+              variant="secondary"
+              size="sm"
+              className="px-2 border-slate-200 bg-white hover:bg-slate-50"
+              disabled={page === 1}
+              onClick={() => setPage(1)}
+              title="Halaman Pertama"
+            >
+              <ChevronsLeft className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="secondary"
+              size="sm"
+              className="px-2 border-slate-200 bg-white hover:bg-slate-50"
+              disabled={page === 1}
+              onClick={() => setPage(p => Math.max(1, p - 1))}
+              title="Sebelumnya"
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
+            
+            <select 
+              value={page}
+              onChange={(e) => setPage(Number(e.target.value))}
+              className="mx-1 h-9 px-2 bg-white border border-slate-200 rounded-xl text-sm font-medium outline-none focus:border-[#F9D141] focus:ring-2 focus:ring-[#F9D141]/20 cursor-pointer"
+            >
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
+                <option key={p} value={p}>Hal {p}</option>
+              ))}
+            </select>
+
+            <Button
+              variant="secondary"
+              size="sm"
+              className="px-2 border-slate-200 bg-white hover:bg-slate-50"
+              disabled={page === totalPages}
+              onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+              title="Selanjutnya"
+            >
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="secondary"
+              size="sm"
+              className="px-2 border-slate-200 bg-white hover:bg-slate-50"
+              disabled={page === totalPages}
+              onClick={() => setPage(totalPages)}
+              title="Halaman Terakhir"
+            >
+              <ChevronsRight className="h-4 w-4" />
+            </Button>
+          </div>
         </div>
       )}
 
