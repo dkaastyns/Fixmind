@@ -36,11 +36,16 @@ export function TransferRequestsPage() {
 
   const [statusFilter, setStatusFilter] = useState<AssetTransferStatus | 'ALL'>('PENDING')
   const [searchQuery, setSearchQuery] = useState(initialSearch)
+  const [page, setPage] = useState(1)
 
   useEffect(() => {
     const q = searchParams.get('search') ?? ''
     setSearchQuery(q)
   }, [searchParams])
+
+  useEffect(() => {
+    setPage(1)
+  }, [statusFilter, searchQuery])
   const [notesById, setNotesById] = useState<Record<string, string>>({})
   const [pendingReviewId, setPendingReviewId] = useState<string | null>(null)
 
@@ -52,10 +57,12 @@ export function TransferRequestsPage() {
 
   // Fetch filtered list
   const transfers = useQuery({
-    queryKey: ['asset-transfers', 'admin', statusFilter],
+    queryKey: ['asset-transfers', 'admin', statusFilter, page, searchQuery],
     queryFn: () => fetchAssetTransfers(token, {
       status: statusFilter === 'ALL' ? undefined : statusFilter,
-      limit: 100,
+      limit: 2,
+      page,
+      search: searchQuery || undefined,
     }),
   })
 
@@ -93,23 +100,8 @@ export function TransferRequestsPage() {
   }, [allTransfers.data?.data])
 
   const items = transfers.data?.data ?? []
-
-  // Filter list with search keyword locally
-  const filteredItems = useMemo(() => {
-    let list = items
-    if (searchQuery.trim()) {
-      const q = searchQuery.toLowerCase()
-      list = list.filter((item) =>
-        (item.assetName?.toLowerCase() ?? '').includes(q) ||
-        (item.assetKode?.toLowerCase() ?? '').includes(q) ||
-        (item.requesterName?.toLowerCase() ?? '').includes(q) ||
-        (item.fromRoomCode?.toLowerCase() ?? '').includes(q) ||
-        (item.toRoomCode?.toLowerCase() ?? '').includes(q) ||
-        (item.reason?.toLowerCase() ?? '').includes(q)
-      )
-    }
-    return list
-  }, [items, searchQuery])
+  const meta = transfers.data?.meta
+  const totalPages = meta ? Math.ceil(meta.total / meta.limit) : 1
 
   return (
     <div className="space-y-6">
@@ -220,7 +212,7 @@ export function TransferRequestsPage() {
         {/* List items */}
         {transfers.isLoading ? (
           <ListSkeleton count={4} />
-        ) : filteredItems.length === 0 ? (
+        ) : items.length === 0 ? (
           <EmptyState
             title="Tidak ada pengajuan"
             description={searchQuery ? 'Tidak ada data pengajuan yang cocok dengan pencarian Anda.' : 'Belum ada data yang cocok dengan filter saat ini.'}
@@ -233,7 +225,7 @@ export function TransferRequestsPage() {
             animate="show"
           >
             <AnimatePresence mode="popLayout">
-              {filteredItems.map((transfer) => {
+              {items.map((transfer) => {
                 const notes = notesById[transfer.id] ?? transfer.reviewerNotes ?? ''
                 const isPending = transfer.status === 'PENDING'
                 const isBusy = pendingReviewId === transfer.id && reviewMutation.isPending
@@ -364,6 +356,32 @@ export function TransferRequestsPage() {
               })}
             </AnimatePresence>
           </motion.div>
+        )}
+
+        {totalPages > 1 && (
+          <div className="flex items-center justify-between border-t border-white/20 pt-4 mt-6">
+            <span className="text-xs text-slate-500 font-medium">
+              Menampilkan halaman {page} dari {totalPages}
+            </span>
+            <div className="flex gap-2">
+              <Button
+                variant="secondary"
+                size="sm"
+                disabled={page === 1}
+                onClick={() => setPage(p => Math.max(1, p - 1))}
+              >
+                Sebelumnya
+              </Button>
+              <Button
+                variant="secondary"
+                size="sm"
+                disabled={page === totalPages}
+                onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+              >
+                Selanjutnya
+              </Button>
+            </div>
+          </div>
         )}
       </GlassCard>
 
