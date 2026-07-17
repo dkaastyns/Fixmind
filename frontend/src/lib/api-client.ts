@@ -695,6 +695,164 @@ export const exportTransfersPdf = async (
   doc.save('fixmind-transfer-aset.pdf')
 }
 
+// ─── Maintenance Schedule Exports (client-side generation) ──────────────────
+
+const FREQUENCY_LABEL_EXPORT: Record<string, string> = {
+  WEEKLY: 'Mingguan',
+  MONTHLY: 'Bulanan',
+  QUARTERLY: 'Triwulan',
+  ANNUALLY: 'Tahunan',
+  ONE_TIME: 'Sekali Saja',
+}
+
+const STATUS_LABEL_EXPORT: Record<string, string> = {
+  SCHEDULED: 'Terjadwal',
+  IN_PROGRESS: 'Dikerjakan',
+  DONE: 'Selesai',
+  CANCELLED: 'Dibatalkan',
+  OVERDUE: 'Terlambat',
+}
+
+export const exportMaintenanceExcel = async (
+  token: string,
+  startDate?: string,
+  endDate?: string,
+  status?: string,
+) => {
+  const res = await apiFetch<MaintenanceSchedule[]>(
+    `/maintenance?limit=10000${status ? `&status=${status}` : ''}`,
+    auth(token),
+  )
+  let schedules = res.data ?? []
+
+  if (startDate || endDate) {
+    schedules = schedules.filter((s) => {
+      const d = new Date(s.scheduledDate)
+      if (startDate && d < new Date(startDate)) return false
+      if (endDate && d > new Date(endDate)) return false
+      return true
+    })
+  }
+
+  const { utils, writeFile } = await import('xlsx')
+  const rows = schedules.map((s, i) => ({
+    No: i + 1,
+    'Judul Agenda': s.title,
+    'Ruangan': s.roomName ? `${s.roomName} (${s.roomCode ?? ''})` : '-',
+    'Aset': s.assetName ? `${s.assetName} (${s.assetKode ?? ''})` : '-',
+    'Frekuensi': FREQUENCY_LABEL_EXPORT[s.frequency] ?? s.frequency,
+    'Tanggal Jadwal': s.scheduledDate
+      ? new Date(s.scheduledDate).toLocaleDateString('id-ID')
+      : '-',
+    'Status': STATUS_LABEL_EXPORT[s.status] ?? s.status,
+    'Jenis Petugas': s.assigneeType === 'INTERNAL' ? 'Internal' : 'Vendor Eksternal',
+    'Nama Petugas/Vendor': s.assigneeName ?? '-',
+    'Kontak Vendor': s.vendorContactName
+      ? `${s.vendorContactName}${s.vendorPhone ? ' | ' + s.vendorPhone : ''}`
+      : '-',
+    'Estimasi Biaya (Rp)': Number(s.estimatedCost ?? 0),
+    'Catatan': s.notes ?? '-',
+    'Selesai Pada': s.completedAt
+      ? new Date(s.completedAt).toLocaleDateString('id-ID')
+      : '-',
+  }))
+
+  const ws = utils.json_to_sheet(rows)
+  // Style header row
+  const range = utils.decode_range(ws['!ref'] ?? 'A1')
+  for (let C = range.s.c; C <= range.e.c; ++C) {
+    const addr = utils.encode_cell({ r: 0, c: C })
+    if (!ws[addr]) continue
+    ws[addr].s = {
+      font: { bold: true, color: { rgb: 'FFFFFF' } },
+      fill: { fgColor: { rgb: '166534' } },
+    }
+  }
+  const wb = utils.book_new()
+  utils.book_append_sheet(wb, ws, 'Jadwal Pemeliharaan')
+  writeFile(wb, 'fixmind-jadwal-pemeliharaan.xlsx')
+}
+
+export const exportMaintenancePdf = async (
+  token: string,
+  startDate?: string,
+  endDate?: string,
+  status?: string,
+) => {
+  const res = await apiFetch<MaintenanceSchedule[]>(
+    `/maintenance?limit=10000${status ? `&status=${status}` : ''}`,
+    auth(token),
+  )
+  let schedules = res.data ?? []
+
+  if (startDate || endDate) {
+    schedules = schedules.filter((s) => {
+      const d = new Date(s.scheduledDate)
+      if (startDate && d < new Date(startDate)) return false
+      if (endDate && d > new Date(endDate)) return false
+      return true
+    })
+  }
+
+  const { default: jsPDF } = await import('jspdf')
+  const { default: autoTable } = await import('jspdf-autotable')
+
+  const doc = new jsPDF({ orientation: 'landscape' })
+
+  doc.setFontSize(16)
+  doc.setTextColor(22, 101, 52) // green-800
+  doc.text('Jadwal Pemeliharaan — FixMind', 14, 16)
+
+  doc.setFontSize(9)
+  doc.setTextColor(100)
+  const rangeLabel =
+    startDate || endDate
+      ? `Periode: ${startDate ? new Date(startDate).toLocaleDateString('id-ID') : '—'} s/d ${endDate ? new Date(endDate).toLocaleDateString('id-ID') : '—'}`
+      : 'Periode: Semua Waktu'
+  doc.text(rangeLabel, 14, 23)
+  doc.text(`Dicetak: ${new Date().toLocaleString('id-ID')}`, 14, 29)
+
+  autoTable(doc, {
+    startY: 35,
+    head: [
+      [
+        'No',
+        'Judul Agenda',
+        'Ruangan',
+        'Aset',
+        'Frekuensi',
+        'Tgl Jadwal',
+        'Status',
+        'Petugas/Vendor',
+        'Estimasi Biaya',
+        'Selesai Pada',
+      ],
+    ],
+    body: schedules.map((s, i) => [
+      i + 1,
+      s.title,
+      s.roomName ? `${s.roomName}${s.roomCode ? ' (' + s.roomCode + ')' : ''}` : '-',
+      s.assetName ?? '-',
+      FREQUENCY_LABEL_EXPORT[s.frequency] ?? s.frequency,
+      s.scheduledDate ? new Date(s.scheduledDate).toLocaleDateString('id-ID') : '-',
+      STATUS_LABEL_EXPORT[s.status] ?? s.status,
+      s.assigneeName ?? '-',
+      `Rp ${Number(s.estimatedCost ?? 0).toLocaleString('id-ID')}`,
+      s.completedAt ? new Date(s.completedAt).toLocaleDateString('id-ID') : '-',
+    ]),
+    styles: { fontSize: 7.5, cellPadding: 2.5 },
+    headStyles: { fillColor: [22, 101, 52], textColor: 255, fontStyle: 'bold' },
+    alternateRowStyles: { fillColor: [240, 253, 244] },
+    columnStyles: {
+      0: { cellWidth: 8 },
+      1: { cellWidth: 40 },
+      8: { halign: 'right' },
+    },
+  })
+
+  doc.save('fixmind-jadwal-pemeliharaan.pdf')
+}
+
 export async function syncOfflineQueue(token: string) {
   const queue = JSON.parse(localStorage.getItem('offline-sync-queue') || '[]')
   if (queue.length === 0) return

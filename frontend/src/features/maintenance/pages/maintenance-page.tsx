@@ -17,6 +17,8 @@ import {
   X,
   AlertCircle,
   Search,
+  FileSpreadsheet,
+  FileText,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { GlassCard } from '@/components/ui/glass-card'
@@ -32,6 +34,8 @@ import {
   updateMaintenanceSchedule,
   updateMaintenanceStatus,
   deleteMaintenanceSchedule,
+  exportMaintenanceExcel,
+  exportMaintenancePdf,
   type MaintenanceSchedule,
   type MaintenanceFrequency,
   type MaintenanceScheduleStatus,
@@ -95,6 +99,7 @@ export function MaintenancePage() {
   const [editingId, setEditingId] = useState<string | null>(null)
   const [deletingId, setDeletingId] = useState<string | null>(null)
   const [cancellingId, setCancellingId] = useState<string | null>(null)
+  const [isExporting, setIsExporting] = useState<'excel' | 'pdf' | null>(null)
 
   // Form fields
   const [form, setForm] = useState(EMPTY_FORM)
@@ -264,6 +269,32 @@ export function MaintenancePage() {
 
   const isSubmitting = createMutation.isPending || updateMutation.isPending
 
+  const handleExportExcel = async () => {
+    setIsExporting('excel')
+    try {
+      const activeStatus = statusFilter !== 'ALL' ? statusFilter : undefined
+      await exportMaintenanceExcel(token, undefined, undefined, activeStatus)
+      toast.success('File Excel Jadwal Pemeliharaan berhasil diunduh')
+    } catch {
+      toast.error('Gagal mengekspor data. Coba lagi.')
+    } finally {
+      setIsExporting(null)
+    }
+  }
+
+  const handleExportPdf = async () => {
+    setIsExporting('pdf')
+    try {
+      const activeStatus = statusFilter !== 'ALL' ? statusFilter : undefined
+      await exportMaintenancePdf(token, undefined, undefined, activeStatus)
+      toast.success('File PDF Jadwal Pemeliharaan berhasil diunduh')
+    } catch {
+      toast.error('Gagal mengekspor data. Coba lagi.')
+    } finally {
+      setIsExporting(null)
+    }
+  }
+
   return (
     <div className="space-y-6">
       <Breadcrumb items={[{ label: 'Jadwal Pemeliharaan' }]} />
@@ -272,12 +303,32 @@ export function MaintenancePage() {
         title="Jadwal Pemeliharaan Rutin"
         description="Kelola jadwal pemeliharaan fasilitas berkala dan monitoring vendor luar/teknisi"
         action={
-          <Button
-            onClick={openCreate}
-            className="rounded-xl bg-[#F9D141] text-slate-900 font-bold hover:bg-[#d9a416]"
-          >
-            <Plus className="h-4 w-4 mr-2" /> Tambah Jadwal Baru
-          </Button>
+          <div className="flex flex-wrap gap-2 items-center">
+            <Button
+              variant="secondary"
+              onClick={handleExportExcel}
+              disabled={isExporting !== null}
+              className="rounded-xl border border-gray-200 bg-white text-slate-700 hover:bg-gray-50 text-sm"
+            >
+              <FileSpreadsheet className="h-4 w-4 text-green-500" />
+              {isExporting === 'excel' ? 'Mengunduh...' : 'Export Excel'}
+            </Button>
+            <Button
+              variant="secondary"
+              onClick={handleExportPdf}
+              disabled={isExporting !== null}
+              className="rounded-xl border border-gray-200 bg-white text-slate-700 hover:bg-gray-50 text-sm"
+            >
+              <FileText className="h-4 w-4 text-red-400" />
+              {isExporting === 'pdf' ? 'Mengunduh...' : 'Export PDF'}
+            </Button>
+            <Button
+              onClick={openCreate}
+              className="rounded-xl bg-[#F9D141] text-slate-900 font-bold hover:bg-[#d9a416]"
+            >
+              <Plus className="h-4 w-4 mr-2" /> Tambah Jadwal Baru
+            </Button>
+          </div>
         }
       />
 

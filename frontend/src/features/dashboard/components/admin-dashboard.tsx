@@ -8,6 +8,8 @@ import {
   exportPdf,
   exportTransfersExcel,
   exportTransfersPdf,
+  exportMaintenanceExcel,
+  exportMaintenancePdf,
   fetchAnalyticsSummary,
   fetchAssetTransfers,
 } from '@/lib/api-client'
@@ -28,6 +30,7 @@ import {
   FileText,
   Star,
   Timer,
+  Wrench,
   X,
 } from 'lucide-react'
 import {
@@ -77,7 +80,7 @@ const TRANSFER_STATUS_COLORS: Record<string, string> = {
 
 // ─── Export Modal ─────────────────────────────────────────────────────────────
 type ExportFormat = 'excel' | 'pdf'
-type ReportKind = 'masalah' | 'transfer'
+type ReportKind = 'masalah' | 'transfer' | 'maintenance'
 
 interface ExportModalProps {
   open: boolean
@@ -105,13 +108,21 @@ function ExportModal({ open, format, onClose }: ExportModalProps) {
           await exportPdf(token, sDate, eDate)
           toast.success('File PDF Laporan Masalah berhasil diunduh')
         }
-      } else {
+      } else if (kind === 'transfer') {
         if (format === 'excel') {
           await exportTransfersExcel(token, sDate, eDate)
           toast.success('File Excel Transfer Aset berhasil diunduh')
         } else {
           await exportTransfersPdf(token, sDate, eDate)
           toast.success('File PDF Transfer Aset berhasil diunduh')
+        }
+      } else {
+        if (format === 'excel') {
+          await exportMaintenanceExcel(token, sDate, eDate)
+          toast.success('File Excel Jadwal Pemeliharaan berhasil diunduh')
+        } else {
+          await exportMaintenancePdf(token, sDate, eDate)
+          toast.success('File PDF Jadwal Pemeliharaan berhasil diunduh')
         }
       }
     } catch {
@@ -162,10 +173,11 @@ function ExportModal({ open, format, onClose }: ExportModalProps) {
                     <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">
                       Jenis Laporan
                     </p>
-                    <div className="grid grid-cols-2 gap-3">
+                    <div className="grid grid-cols-3 gap-2">
                       {([
                         { val: 'masalah' as ReportKind, label: 'Laporan Masalah', icon: ClipboardList, color: 'text-blue-500 bg-blue-50 border-blue-200' },
                         { val: 'transfer' as ReportKind, label: 'Transfer Aset', icon: ArrowRightLeft, color: 'text-amber-600 bg-amber-50 border-amber-200' },
+                        { val: 'maintenance' as ReportKind, label: 'Jadwal Pemeliharaan', icon: Wrench, color: 'text-green-600 bg-green-50 border-green-200' },
                       ] as const).map(({ val, label, icon: Icon, color }) => (
                         <button
                           key={val}
@@ -175,7 +187,7 @@ function ExportModal({ open, format, onClose }: ExportModalProps) {
                           }`}
                         >
                           <Icon className={`h-5 w-5 ${kind === val ? '' : 'text-gray-400'}`} />
-                          <span className={`text-xs font-medium ${kind === val ? '' : 'text-gray-500'}`}>{label}</span>
+                          <span className={`text-xs font-medium text-center leading-tight ${kind === val ? '' : 'text-gray-500'}`}>{label}</span>
                         </button>
                       ))}
                     </div>
