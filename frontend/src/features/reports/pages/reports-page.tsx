@@ -4,7 +4,7 @@ import { createPortal } from 'react-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
-import { ChevronDown, ChevronUp, Filter, Plus, X, Loader2, Bot, Building2, Calendar, Search } from 'lucide-react'
+import { ChevronDown, ChevronUp, Filter, Plus, X, Loader2, Bot, Building2, Calendar, Search, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { GlassCard } from '@/components/ui/glass-card'
@@ -309,61 +309,33 @@ export function ReportsPage() {
               </table>
             </div>
             {totalPages > 1 && (
-              <div className="flex flex-col sm:flex-row justify-between items-center gap-4 p-4 border-t border-white/20 bg-white/10">
-                <p className="text-xs text-slate-500 font-semibold">
-                  Menampilkan {Math.min((page - 1) * LIMIT + 1, totalReports)} - {Math.min(page * LIMIT, totalReports)} dari {totalReports} laporan
-                </p>
-                <div className="flex items-center gap-1">
-                  <Button
-                    variant="secondary"
-                    size="sm"
-                    className="h-8 text-xs rounded-xl"
-                    onClick={() => setPage((p) => Math.max(p - 1, 1))}
-                    disabled={page === 1}
-                  >
-                    Sebelumnya
+              <div className="flex items-center justify-between border-t border-white/20 pt-4 mt-4 px-4 pb-4">
+                <span className="text-xs text-slate-500 font-medium hidden sm:inline">
+                  Menampilkan halaman {page} dari {totalPages}
+                </span>
+                <div className="flex items-center gap-1 w-full sm:w-auto justify-between sm:justify-end">
+                  <Button variant="secondary" size="sm" className="px-2 border-slate-200 bg-white hover:bg-slate-50" disabled={page === 1} onClick={() => setPage(1)} title="Halaman Pertama">
+                    <ChevronsLeft className="h-4 w-4" />
                   </Button>
-                  {Array.from({ length: totalPages }).map((_, i) => {
-                    const pNum = i + 1
-                    if (
-                      pNum === 1 ||
-                      pNum === totalPages ||
-                      Math.abs(pNum - page) <= 1
-                    ) {
-                      return (
-                        <button
-                          key={pNum}
-                          onClick={() => setPage(pNum)}
-                          className={`w-8 h-8 rounded-xl text-xs font-bold transition-all ${
-                            page === pNum
-                              ? 'gradient-primary text-white shadow-sm'
-                              : 'text-slate-500 hover:text-slate-800 hover:bg-white/30'
-                          }`}
-                        >
-                          {pNum}
-                        </button>
-                      )
-                    }
-                    if (
-                      (pNum === 2 && page > 3) ||
-                      (pNum === totalPages - 1 && page < totalPages - 2)
-                    ) {
-                      return (
-                        <span key={pNum} className="text-slate-400 text-xs px-1 font-bold">
-                          ...
-                        </span>
-                      )
-                    }
-                    return null
-                  })}
-                  <Button
-                    variant="secondary"
-                    size="sm"
-                    className="h-8 text-xs rounded-xl"
-                    onClick={() => setPage((p) => Math.min(p + 1, totalPages))}
-                    disabled={page === totalPages}
+                  <Button variant="secondary" size="sm" className="px-2 border-slate-200 bg-white hover:bg-slate-50" disabled={page === 1} onClick={() => setPage(p => Math.max(1, p - 1))} title="Sebelumnya">
+                    <ChevronLeft className="h-4 w-4" />
+                  </Button>
+                  
+                  <select 
+                    value={page}
+                    onChange={(e) => setPage(Number(e.target.value))}
+                    className="mx-1 h-9 px-2 bg-white border border-slate-200 rounded-xl text-sm font-medium outline-none focus:border-[#F9D141] focus:ring-2 focus:ring-[#F9D141]/20 cursor-pointer"
                   >
-                    Selanjutnya
+                    {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
+                      <option key={p} value={p}>Hal {p}</option>
+                    ))}
+                  </select>
+
+                  <Button variant="secondary" size="sm" className="px-2 border-slate-200 bg-white hover:bg-slate-50" disabled={page === totalPages} onClick={() => setPage(p => Math.min(totalPages, p + 1))} title="Selanjutnya">
+                    <ChevronRight className="h-4 w-4" />
+                  </Button>
+                  <Button variant="secondary" size="sm" className="px-2 border-slate-200 bg-white hover:bg-slate-50" disabled={page === totalPages} onClick={() => setPage(totalPages)} title="Halaman Terakhir">
+                    <ChevronsRight className="h-4 w-4" />
                   </Button>
                 </div>
               </div>
