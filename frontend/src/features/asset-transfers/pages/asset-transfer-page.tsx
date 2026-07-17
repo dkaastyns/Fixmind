@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { ArrowRightLeft, Send, Sparkles, Package, Building, ArrowRight, ClipboardList, HelpCircle } from 'lucide-react'
+import { ArrowRightLeft, Send, Sparkles, Package, Building, ArrowRight, ClipboardList, HelpCircle, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react'
 import { toast } from 'sonner'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Button } from '@/components/ui/button'
@@ -32,6 +32,12 @@ export function AssetTransferPage() {
 
   // Local state for filtering history
   const [historyStatusFilter, setHistoryStatusFilter] = useState<'ALL' | 'PENDING' | 'APPROVED' | 'REJECTED'>('ALL')
+  const [page, setPage] = useState(1)
+  const LIMIT = 2
+
+  useEffect(() => {
+    setPage(1)
+  }, [historyStatusFilter])
 
   const rooms = useQuery({
     queryKey: ['asset-transfer-rooms'],
@@ -45,9 +51,18 @@ export function AssetTransferPage() {
   })
 
   const myTransfers = useQuery({
-    queryKey: ['asset-transfers', 'mine'],
-    queryFn: () => fetchAssetTransfers(token, { mineOnly: true, limit: 100 }),
+    queryKey: ['asset-transfers', 'mine', page, historyStatusFilter],
+    queryFn: () => fetchAssetTransfers(token, { 
+      mineOnly: true, 
+      limit: LIMIT, 
+      page,
+      status: historyStatusFilter === 'ALL' ? undefined : historyStatusFilter
+    }),
   })
+
+  const filteredTransfers = myTransfers.data?.data ?? []
+  const totalTransfers = myTransfers.data?.meta?.total ?? 0
+  const totalPages = Math.ceil(totalTransfers / LIMIT)
 
   const selectedAsset = useMemo(
     () => assets.data?.data.find((asset) => asset.id === assetId),
@@ -107,14 +122,7 @@ export function AssetTransferPage() {
     if (paramAsset && paramAsset !== assetId) setAssetId(paramAsset)
   }, [assetId, roomId, searchParams])
 
-  // Filter history logic
-  const filteredTransfers = useMemo(() => {
-    let list = myTransfers.data?.data ?? []
-    if (historyStatusFilter !== 'ALL') {
-      list = list.filter((t) => t.status === historyStatusFilter)
-    }
-    return list
-  }, [myTransfers.data?.data, historyStatusFilter])
+  // (Filtering is now handled server-side via the query)
 
   if (isAdmin) {
     return (
@@ -682,6 +690,39 @@ export function AssetTransferPage() {
                 ))}
               </div>
             )}
+          </div>
+
+          {/* Pagination UI */}
+          <div className="flex items-center justify-between border-t border-slate-200/50 pt-3 mt-4 px-1">
+            <span className="text-xs text-slate-500 font-medium hidden sm:inline">
+              Hal {page} dari {Math.max(1, totalPages)}
+            </span>
+            <div className="flex items-center gap-1 w-full sm:w-auto justify-between sm:justify-end">
+              <Button variant="secondary" size="sm" className="px-1.5 h-8 border-slate-200" disabled={page === 1} onClick={() => setPage(1)}>
+                <ChevronsLeft className="h-3.5 w-3.5" />
+              </Button>
+              <Button variant="secondary" size="sm" className="px-1.5 h-8 border-slate-200" disabled={page === 1} onClick={() => setPage(p => Math.max(1, p - 1))}>
+                <ChevronLeft className="h-3.5 w-3.5" />
+              </Button>
+              
+              <select 
+                value={page}
+                onChange={(e) => setPage(Number(e.target.value))}
+                className="mx-1 h-8 px-1 bg-white border border-slate-200 rounded-lg text-xs font-medium outline-none cursor-pointer disabled:opacity-50"
+                disabled={totalPages <= 1}
+              >
+                {Array.from({ length: Math.max(1, totalPages) }, (_, i) => i + 1).map(p => (
+                  <option key={p} value={p}>{p}</option>
+                ))}
+              </select>
+
+              <Button variant="secondary" size="sm" className="px-1.5 h-8 border-slate-200" disabled={page >= totalPages} onClick={() => setPage(p => Math.min(totalPages, p + 1))}>
+                <ChevronRight className="h-3.5 w-3.5" />
+              </Button>
+              <Button variant="secondary" size="sm" className="px-1.5 h-8 border-slate-200" disabled={page >= totalPages} onClick={() => setPage(Math.max(1, totalPages))}>
+                <ChevronsRight className="h-3.5 w-3.5" />
+              </Button>
+            </div>
           </div>
         </GlassCard>
       </div>
