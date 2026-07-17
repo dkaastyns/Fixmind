@@ -226,17 +226,17 @@ export function UserDashboard() {
           
           {/* Recent Reports */}
           <div className="flex flex-col">
-            <div className="flex justify-between items-center pb-2">
-              <h2 className="text-base font-extrabold text-slate-800">Laporan Masalah Terbaru</h2>
+            <div className="flex justify-between items-center pb-2 px-1">
+              <h2 className="text-base lg:text-lg font-extrabold text-slate-800">Laporan Masalah Terbaru</h2>
               <button 
                 onClick={() => navigate('/dashboard/reports')} 
-                className="text-xs font-bold text-slate-700 hover:text-[#d9a416] cursor-pointer transition-colors"
+                className="text-sm font-bold text-slate-400 hover:text-slate-600 cursor-pointer transition-colors"
               >
                 Lihat Semua
               </button>
             </div>
             
-            <div className="mt-2 bg-[#e5e5e5] rounded-[24px] p-5 shadow-inner">
+            <div className="mt-2 bg-white rounded-3xl p-5 shadow-sm border border-slate-100/50">
               {loadingReports ? (
                 <ListSkeleton count={3} />
               ) : recentReports.length === 0 ? (
@@ -275,17 +275,17 @@ export function UserDashboard() {
 
           {/* Recent Transfers */}
           <div className="flex flex-col">
-            <div className="flex justify-between items-center pb-2">
-              <h2 className="text-base font-extrabold text-slate-800">Pengajuan Transfer Terbaru</h2>
+            <div className="flex justify-between items-center pb-2 px-1">
+              <h2 className="text-base lg:text-lg font-extrabold text-slate-800">Pengajuan Transfer Terbaru</h2>
               <button 
                 onClick={() => navigate('/dashboard/asset-transfers')} 
-                className="text-xs font-bold text-slate-700 hover:text-[#d9a416] cursor-pointer transition-colors"
+                className="text-sm font-bold text-slate-400 hover:text-slate-600 cursor-pointer transition-colors"
               >
                 Lihat Semua
               </button>
             </div>
             
-            <div className="mt-2 bg-[#e5e5e5] rounded-[24px] p-5 shadow-inner">
+            <div className="mt-2 bg-white rounded-3xl p-5 shadow-sm border border-slate-100/50">
               {loadingTransfers ? (
                 <ListSkeleton count={3} />
               ) : recentTransfers.length === 0 ? (
@@ -308,9 +308,8 @@ export function UserDashboard() {
                         <span className="font-bold text-slate-800 text-sm hover:text-[#d9a416] transition-colors block truncate">
                           {transfer.assetName ?? transfer.assetKode ?? 'Aset'}
                         </span>
-                        <p className="text-xs text-slate-500 mt-1 font-semibold flex items-center gap-1.5">
-                          <span>{new Date(transfer.createdAt).toLocaleDateString('id-ID')}</span>
-                          <span>•</span>
+                        <p className="text-[11px] md:text-xs text-slate-500 mt-1 font-semibold flex items-center gap-1.5 flex-wrap">
+                          <span className="border border-slate-300 rounded px-1.5 py-0.5 text-slate-700">{transfer.assetKode ?? 'KODE-ASET'}</span>
                           <span className="truncate">{transfer.fromRoomCode} → {transfer.toRoomCode}</span>
                         </p>
                       </div>
