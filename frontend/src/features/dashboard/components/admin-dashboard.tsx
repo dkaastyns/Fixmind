@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -8,6 +8,7 @@ import {
   exportPdf,
   exportTransfersExcel,
   exportTransfersPdf,
+  exportMaintenanceExcel,
   exportMaintenancePdf,
   fetchAnalyticsSummary,
   fetchAssetTransfers,
