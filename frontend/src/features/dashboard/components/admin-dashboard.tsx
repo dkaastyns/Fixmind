@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { motion, AnimatePresence } from 'framer-motion'
 import { createPortal } from 'react-dom'
@@ -270,6 +270,7 @@ function ExportModal({ open, format, onClose }: ExportModalProps) {
 export function AdminDashboard() {
   const token = useAuthStore((s) => s.accessToken)!
   const user = useAuthStore((s) => s.user)
+  const navigate = useNavigate()
 
   const [showExportModal, setShowExportModal] = useState(false)
   const [exportFormat, setExportFormat] = useState<ExportFormat | null>(null)
@@ -379,7 +380,7 @@ export function AdminDashboard() {
             animate="show"
           >
             {reportCards.map((c) => (
-              <AnimatedGlassCard key={c.label} className="p-5 flex items-center justify-between" variants={itemVariants}>
+              <AnimatedGlassCard key={c.label} className="p-5 flex items-center justify-between cursor-pointer hover:ring-2 hover:ring-[#F9D141]/50 transition-all hover:-translate-y-1" variants={itemVariants} onClick={() => navigate('/dashboard/reports')}>
                 <div>
                   <p className="text-sm text-muted">{c.label}</p>
                   <p className="mt-2 text-3xl font-semibold text-gradient-admin">
@@ -404,7 +405,7 @@ export function AdminDashboard() {
             animate="show"
           >
             {transferCards.map((c) => (
-              <AnimatedGlassCard key={c.label} className="p-5 flex items-center justify-between" variants={itemVariants}>
+              <AnimatedGlassCard key={c.label} className="p-5 flex items-center justify-between cursor-pointer hover:ring-2 hover:ring-[#F9D141]/50 transition-all hover:-translate-y-1" variants={itemVariants} onClick={() => navigate('/dashboard/asset-transfers')}>
                 <div>
                   <p className="text-sm text-muted">{c.label}</p>
                   <p className="mt-2 text-3xl font-semibold text-gradient-admin">
@@ -523,7 +524,7 @@ export function AdminDashboard() {
           {/* Progress bars — Prioritas */}
           {stats?.byPriority && (
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }}>
-              <GlassCard>
+              <GlassCard className="cursor-pointer hover:shadow-lg transition-shadow hover:border-[#F9D141]/50" onClick={() => navigate('/dashboard/reports')}>
                 <h2 className="text-base font-semibold mb-4">Detail Prioritas Laporan</h2>
                 <div className="space-y-3">
                   {Object.entries(stats.byPriority).map(([priority, count]) => {
@@ -557,7 +558,7 @@ export function AdminDashboard() {
           {/* Progress bars — Ruangan Terbanyak */}
           {stats?.byRoom && stats.byRoom.length > 0 && (
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.7 }}>
-              <GlassCard>
+              <GlassCard className="cursor-pointer hover:shadow-lg transition-shadow hover:border-[#F9D141]/50" onClick={() => navigate('/dashboard/rooms')}>
                 <h2 className="text-base font-semibold mb-4">Ruangan dengan Laporan Terbanyak</h2>
                 <div className="space-y-3">
                   {stats.byRoom.map((r) => {
@@ -623,7 +624,8 @@ export function AdminDashboard() {
                   <motion.div
                     key={item.id}
                     whileHover={{ scale: 1.02 }}
-                    className="group relative p-4 rounded-2xl bg-white border border-slate-100 shadow-sm hover:shadow-md transition-all flex flex-col justify-between space-y-4 overflow-hidden cursor-default"
+                    onClick={() => navigate('/dashboard/maintenance')}
+                    className="group relative p-4 rounded-2xl bg-white border border-slate-100 shadow-sm hover:shadow-md transition-all flex flex-col justify-between space-y-4 overflow-hidden cursor-pointer"
                   >
                     <div className="absolute inset-0 bg-gradient-to-br from-amber-500/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                     <div className="relative space-y-3">
