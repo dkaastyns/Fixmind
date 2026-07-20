@@ -135,7 +135,7 @@ function SidebarContent({
                 {isActive && (
                   <motion.div
                     layoutId={`sidebar-active-indicator-${idSuffix}`}
-                    className="absolute inset-0 rounded-[14px] bg-[#cca32c] shadow-md"
+                    className="absolute inset-0 rounded-[14px] bg-gradient-to-r from-[#937C27] to-[#D8B432] shadow-md"
                     transition={{ type: 'spring', damping: 25, stiffness: 200 }}
                     style={{ zIndex: 0 }}
                   />
