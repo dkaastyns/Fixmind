@@ -52,11 +52,13 @@ function SidebarContent({
   onNavigate,
   isCollapsed = false,
   onToggleCollapse,
+  onCloseMobile,
   idSuffix = 'desktop',
 }: {
   onNavigate?: () => void
   isCollapsed?: boolean
   onToggleCollapse?: () => void
+  onCloseMobile?: () => void
   idSuffix?: string
 }) {
   const navigate = useNavigate()
@@ -78,22 +80,31 @@ function SidebarContent({
 
   return (
     <>
-      <div className={cn("mb-8 flex flex-col gap-4 items-center px-2", !isCollapsed && "flex-row justify-between")}>
-        <div className="flex items-center gap-3 min-w-0">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl overflow-hidden bg-white shadow-sm p-1 shrink-0">
-            <img src="/logo.png" alt="Logo Semarang" className="h-full w-full object-contain" />
-          </div>
-          {!isCollapsed && (
-            <div className="min-w-0">
-              <p className="font-semibold text-[15px] leading-tight truncate">E-Lapor DPRD</p>
-              <p className="text-xs text-muted truncate">Kota Semarang</p>
+      <div className={cn("mb-6 flex flex-col gap-4 px-2", !isCollapsed && "border-b border-slate-200 pb-5")}>
+        <div className="flex items-center gap-3 min-w-0 justify-between">
+          <div className="flex items-center gap-3 min-w-0 flex-1">
+            <div className="flex h-12 w-12 items-center justify-center rounded-full overflow-hidden bg-slate-100 shadow-sm shrink-0 border border-slate-200">
+              <img src={user?.avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.fullName || 'User')}&background=F9D141&color=000`} alt="User Avatar" className="h-full w-full object-cover" />
             </div>
+            {!isCollapsed && (
+              <div className="flex flex-col min-w-0 flex-1">
+                <p className="font-bold text-[16px] leading-tight truncate text-slate-800">
+                  {user?.role === 'ADMIN' ? 'Admin' : 'User'}
+                </p>
+                <p className="text-xs text-slate-500 truncate">{user?.fullName}</p>
+              </div>
+            )}
+          </div>
+          {!isCollapsed && onCloseMobile && (
+            <button onClick={onCloseMobile} className="text-slate-500 hover:text-slate-800 transition-colors p-1 ml-auto" aria-label="Close menu">
+               <X className="h-5 w-5" />
+            </button>
           )}
         </div>
-        <div className={cn("flex items-center gap-1.5 shrink-0", isCollapsed && "flex-col")}>
+        <div className={cn("flex items-center gap-2", isCollapsed ? "flex-col justify-center" : "")}>
           <button
             onClick={() => window.dispatchEvent(new CustomEvent('open-global-search'))}
-            className="flex h-8 w-8 items-center justify-center rounded-xl bg-white hover:bg-white/80 text-muted hover:text-foreground shadow-sm border border-white/50 transition-colors"
+            className="flex h-8 w-8 items-center justify-center rounded-xl bg-white hover:bg-white/80 text-slate-500 hover:text-slate-800 shadow-sm border border-slate-200 transition-colors"
             title="Cari Aset"
           >
             <Search className="h-4 w-4" />
@@ -111,11 +122,11 @@ function SidebarContent({
             onClick={onNavigate}
             className={({ isActive }) =>
               cn(
-                'relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors group',
+                'relative flex items-center gap-3 rounded-[14px] px-3 py-3 text-[15px] transition-all group',
                 isActive
-                  ? 'text-[#d9a416] font-bold'
-                  : 'text-slate-500 hover:bg-white/50 hover:text-slate-800',
-                isCollapsed && 'justify-center px-0 w-10 h-10 mx-auto'
+                  ? 'text-white font-bold'
+                  : 'text-slate-800 font-semibold hover:bg-slate-100',
+                isCollapsed && 'justify-center px-0 w-12 h-12 mx-auto'
               )
             }
           >
@@ -124,13 +135,13 @@ function SidebarContent({
                 {isActive && (
                   <motion.div
                     layoutId={`sidebar-active-indicator-${idSuffix}`}
-                    className="absolute inset-0 rounded-xl bg-[#F9D141]/12 border border-[#F9D141]/20 shadow-sm"
+                    className="absolute inset-0 rounded-[14px] bg-[#cca32c] shadow-md"
                     transition={{ type: 'spring', damping: 25, stiffness: 200 }}
                     style={{ zIndex: 0 }}
                   />
                 )}
-                <div className={cn("relative z-10 flex items-center gap-3", isCollapsed && "justify-center")}>
-                  <item.icon className="h-4 w-4 shrink-0 group-hover:scale-110 group-hover:rotate-[3deg] transition-all duration-200" />
+                <div className={cn("relative z-10 flex items-center gap-3 w-full", isCollapsed && "justify-center")}>
+                  <item.icon className={cn("h-5 w-5 shrink-0 transition-transform duration-200", isActive ? "text-white" : "text-slate-800 group-hover:text-black")} />
                   {!isCollapsed && <span>{item.label}</span>}
                   
                   {isCollapsed && (
@@ -172,16 +183,16 @@ function SidebarContent({
         <Button
           variant="ghost"
           className={cn(
-            "justify-start group relative text-rose-500 hover:text-rose-600 hover:bg-rose-50/50",
-            isCollapsed ? "justify-center px-0 w-10 h-10 mx-auto" : "px-3"
+            "justify-start group relative text-red-600 hover:text-red-700 hover:bg-red-50 font-bold text-[15px] h-12 rounded-[14px]",
+            isCollapsed ? "justify-center px-0 w-12 h-12 mx-auto" : "px-3"
           )}
           onClick={() => setShowLogoutModal(true)}
         >
-          <LogOut className="h-4 w-4 shrink-0" />
-          {!isCollapsed && "Keluar"}
+          <LogOut className="h-5 w-5 shrink-0" />
+          {!isCollapsed && "Logout"}
           {isCollapsed && (
             <div className="absolute left-full ml-3 px-2 py-1 bg-slate-900 text-white text-xs rounded-md whitespace-nowrap opacity-0 pointer-events-none group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-200 z-50 shadow-md font-normal">
-              Keluar
+              Logout
             </div>
           )}
         </Button>
@@ -328,10 +339,7 @@ export function DashboardLayout() {
                 transition={{ duration: 0.2 }}
                 className="glass fixed inset-y-0 left-0 z-50 flex w-72 flex-col p-4 md:hidden"
               >
-                <button className="mb-4 self-end" onClick={() => setMobileOpen(false)} aria-label="Close menu">
-                  <X className="h-6 w-6" />
-                </button>
-                <SidebarContent onNavigate={() => setMobileOpen(false)} idSuffix="mobile" />
+                <SidebarContent onNavigate={() => setMobileOpen(false)} onCloseMobile={() => setMobileOpen(false)} idSuffix="mobile" />
               </motion.aside>
             </>
           )}
