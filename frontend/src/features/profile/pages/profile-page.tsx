@@ -26,6 +26,7 @@ export function ProfilePage() {
 
   // Confirmation Modal State
   const [showConfirmModal, setShowConfirmModal] = useState(false)
+  const [showProfileConfirmModal, setShowProfileConfirmModal] = useState(false)
   const [showPreviewModal, setShowPreviewModal] = useState(false)
 
   // File Input Ref
@@ -96,10 +97,12 @@ export function ProfilePage() {
       if (res.data) {
         setUser(res.data)
         toast.success('Profil berhasil diperbarui')
+        setShowProfileConfirmModal(false)
       }
     },
     onError: (err: any) => {
       toast.error(err.message ?? 'Gagal memperbarui profil')
+      setShowProfileConfirmModal(false)
     },
   })
 
@@ -126,6 +129,10 @@ export function ProfilePage() {
       toast.error('Nama Lengkap tidak boleh kosong')
       return
     }
+    setShowProfileConfirmModal(true)
+  }
+
+  const handleConfirmProfileUpdate = () => {
     profileMut.mutate({ fullName, phone })
   }
 
@@ -357,6 +364,55 @@ export function ProfilePage() {
                   disabled={passwordMut.isPending}
                 >
                   {passwordMut.isPending ? 'Memproses...' : 'Ya, Ubah'}
+                </Button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Profile Confirmation Modal */}
+      <AnimatePresence>
+        {showProfileConfirmModal && (
+          <motion.div
+            key="confirm-profile-modal"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] flex items-center justify-center p-4"
+          >
+            <div
+              className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+              onClick={() => setShowProfileConfirmModal(false)}
+            />
+            <motion.div 
+              initial={{ scale: 0.95, opacity: 0, y: 10 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.95, opacity: 0, y: 10 }}
+              className="relative w-full max-w-sm overflow-hidden rounded-2xl bg-white p-7 text-center shadow-2xl border border-gray-100"
+            >
+              <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-full bg-blue-50 text-blue-500 shadow-inner">
+                <UserCircle className="h-7 w-7" />
+              </div>
+              <h3 className="mb-2 text-xl font-bold text-gray-900">Simpan Perubahan?</h3>
+              <p className="mb-8 text-sm text-gray-500 leading-relaxed">
+                Anda yakin ingin menyimpan perubahan informasi profil ini?
+              </p>
+              <div className="flex gap-3">
+                <Button
+                  variant="secondary"
+                  className="flex-1 rounded-xl text-gray-700 bg-gray-100 hover:bg-gray-200 h-11 font-semibold"
+                  onClick={() => setShowProfileConfirmModal(false)}
+                  disabled={profileMut.isPending}
+                >
+                  Batal
+                </Button>
+                <Button
+                  className="flex-1 rounded-xl bg-gradient-to-r from-[#F9D141] to-[#d9a416] text-slate-900 hover:opacity-90 h-11 font-semibold shadow-lg shadow-yellow-500/20"
+                  onClick={handleConfirmProfileUpdate}
+                  disabled={profileMut.isPending}
+                >
+                  {profileMut.isPending ? 'Menyimpan...' : 'Ya, Simpan'}
                 </Button>
               </div>
             </motion.div>
