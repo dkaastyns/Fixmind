@@ -359,12 +359,20 @@ export function AdminDashboard() {
           title={`Selamat datang kembali, ${user?.fullName?.split(' ')[0] ?? 'Admin'}`}
           description="Ringkasan global aktivitas pemeliharaan fasilitas & transfer aset"
           action={
-            <div className="flex flex-wrap gap-2">
-              <Button variant="secondary" onClick={() => triggerExport('excel')}>
-                <FileSpreadsheet className="h-4 w-4" /> Export Excel
+            <div className="flex flex-wrap gap-3">
+              <Button 
+                variant="secondary" 
+                onClick={() => triggerExport('excel')}
+                className="hover:-translate-y-0.5 hover:shadow-md hover:ring-2 hover:ring-green-500/30 transition-all duration-200 bg-white"
+              >
+                <FileSpreadsheet className="h-4 w-4 text-green-600" /> Export Excel
               </Button>
-              <Button variant="secondary" onClick={() => triggerExport('pdf')}>
-                <FileText className="h-4 w-4" /> Export PDF
+              <Button 
+                variant="secondary" 
+                onClick={() => triggerExport('pdf')}
+                className="hover:-translate-y-0.5 hover:shadow-md hover:ring-2 hover:ring-red-500/30 transition-all duration-200 bg-white"
+              >
+                <FileText className="h-4 w-4 text-red-600" /> Export PDF
               </Button>
             </div>
           }
