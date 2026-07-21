@@ -422,14 +422,14 @@ export function ProfilePage() {
         </div>
 
         {/* Circular Avatar */}
-        <div className="relative z-20 flex justify-center -mt-[60px]">
+        <div className="relative z-20 flex justify-center -mt-[70px]">
           <div className="relative">
-            <div className="w-[120px] h-[120px] rounded-full overflow-hidden border-4 border-[#F5F5F5] bg-white shadow-lg">
+            <div className="w-[140px] h-[140px] rounded-full overflow-hidden border-4 border-[#F5F5F5] bg-white shadow-lg">
               {user?.avatarUrl ? (
                 <img src={user.avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
               ) : (
                 <div className="w-full h-full flex items-center justify-center text-slate-300">
-                  <UserIcon className="w-12 h-12" />
+                  <UserIcon className="w-14 h-14" />
                 </div>
               )}
             </div>
