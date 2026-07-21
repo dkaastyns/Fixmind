@@ -406,14 +406,14 @@ export function ProfilePage() {
           {/* Read Only Fields */}
           <div>
             <label className="text-[11px] font-bold text-gray-400 mb-1.5 block uppercase tracking-wider">Peran Dalam Sistem</label>
-            <div className="bg-gray-200/50 rounded-xl px-4 py-3 text-[13px] font-bold text-gray-600 inline-block">
+            <div className="bg-gradient-to-r from-white to-gray-200 shadow-sm border border-gray-200/60 rounded-xl px-4 py-3 text-[13px] font-bold text-gray-700 inline-block">
               {user?.isAdmin ? 'ADMINISTRATOR' : 'PENGGUNA STANDAR'}
             </div>
           </div>
           
           <div>
             <label className="text-[11px] font-bold text-gray-400 mb-1.5 block uppercase tracking-wider">Alamat Email</label>
-            <div className="bg-gray-200/50 rounded-xl px-4 py-3 flex items-center gap-2 border border-gray-300/30">
+            <div className="bg-gradient-to-r from-white to-gray-200 shadow-sm border border-gray-200/60 rounded-xl px-4 py-3 flex items-center gap-2">
                <Mail className="w-4 h-4 text-gray-500" />
                <span className="text-sm font-bold text-gray-800">{user?.email}</span>
             </div>
