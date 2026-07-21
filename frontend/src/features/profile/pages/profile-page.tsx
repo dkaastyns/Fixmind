@@ -237,7 +237,7 @@ export function ProfilePage() {
                     onChange={(e) => setFullName(e.target.value)}
                     placeholder="Masukkan nama lengkap"
                     required
-                    className="h-11 rounded-xl bg-white shadow-sm hover:bg-slate-50 focus:bg-white focus:ring-4 focus:ring-[#F9D141]/10 transition-all duration-300 border-slate-200 focus:border-[#F9D141]/50 font-medium"
+                    className="h-11 rounded-xl bg-white shadow-md hover:bg-slate-50 focus:bg-white focus:ring-4 focus:ring-[#F9D141]/10 transition-all duration-300 border-slate-200 focus:border-[#F9D141]/50 font-medium"
                   />
                 </div>
                 
@@ -252,7 +252,7 @@ export function ProfilePage() {
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
                       placeholder="Contoh: 08123456789"
-                      className="h-11 pl-9 rounded-xl bg-white shadow-sm hover:bg-slate-50 focus:bg-white focus:ring-4 focus:ring-[#F9D141]/10 transition-all duration-300 border-slate-200 focus:border-[#F9D141]/50 font-medium"
+                      className="h-11 pl-9 rounded-xl bg-white shadow-md hover:bg-slate-50 focus:bg-white focus:ring-4 focus:ring-[#F9D141]/10 transition-all duration-300 border-slate-200 focus:border-[#F9D141]/50 font-medium"
                     />
                   </div>
                 </div>
@@ -299,7 +299,7 @@ export function ProfilePage() {
                     onChange={(e) => setOldPassword(e.target.value)}
                     placeholder="Masukkan password Anda saat ini"
                     required
-                    className="h-11 rounded-xl bg-white shadow-sm font-medium"
+                    className="h-11 rounded-xl bg-white shadow-md font-medium"
                   />
                 </div>
 
@@ -311,7 +311,7 @@ export function ProfilePage() {
                       onChange={(e) => setNewPassword(e.target.value)}
                       placeholder="Minimal 8 karakter"
                       required
-                      className="h-11 rounded-xl bg-white shadow-sm font-medium"
+                      className="h-11 rounded-xl bg-white shadow-md font-medium"
                     />
                   </div>
 
@@ -322,7 +322,7 @@ export function ProfilePage() {
                       onChange={(e) => setConfirmPassword(e.target.value)}
                       placeholder="Ulangi password baru"
                       required
-                      className="h-11 rounded-xl bg-white shadow-sm font-medium"
+                      className="h-11 rounded-xl bg-white shadow-md font-medium"
                     />
                   </div>
                 </div>
@@ -406,14 +406,14 @@ export function ProfilePage() {
           {/* Read Only Fields */}
           <div>
             <label className="text-[11px] font-bold text-gray-400 mb-1.5 block uppercase tracking-wider">Peran Dalam Sistem</label>
-            <div className="bg-gradient-to-r from-white to-gray-200 shadow-sm border border-gray-200/60 rounded-xl px-4 py-3 text-[13px] font-bold text-gray-700 inline-block">
+            <div className="bg-gradient-to-r from-white to-gray-200 shadow-md border border-gray-200/60 rounded-xl px-4 py-3 text-[13px] font-bold text-gray-700 inline-block">
               {user?.isAdmin ? 'ADMINISTRATOR' : 'PENGGUNA STANDAR'}
             </div>
           </div>
           
           <div>
             <label className="text-[11px] font-bold text-gray-400 mb-1.5 block uppercase tracking-wider">Alamat Email</label>
-            <div className="bg-gradient-to-r from-white to-gray-200 shadow-sm border border-gray-200/60 rounded-xl px-4 py-3 flex items-center gap-2">
+            <div className="bg-gradient-to-r from-white to-gray-200 shadow-md border border-gray-200/60 rounded-xl px-4 py-3 flex items-center gap-2">
                <Mail className="w-4 h-4 text-gray-500" />
                <span className="text-sm font-bold text-gray-800">{user?.email}</span>
             </div>
@@ -429,7 +429,7 @@ export function ProfilePage() {
                 onChange={(e) => setFullName(e.target.value)}
                 placeholder="Masukkan nama lengkap"
                 required
-                className="h-12 rounded-xl bg-white shadow-sm font-bold text-gray-800 border-none"
+                className="h-12 rounded-xl bg-white shadow-md font-bold text-gray-800 border-none"
               />
             </div>
             <div>
@@ -439,7 +439,7 @@ export function ProfilePage() {
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
                 placeholder="Contoh: 08123456789"
-                className="h-12 rounded-xl bg-white shadow-sm font-bold text-gray-800 border-none"
+                className="h-12 rounded-xl bg-white shadow-md font-bold text-gray-800 border-none"
               />
             </div>
             <div className="flex justify-end pt-2">
@@ -459,7 +459,12 @@ export function ProfilePage() {
 
           {/* Password Section */}
           <form onSubmit={handlePasswordSubmit} className="space-y-4">
-            <h3 className="text-sm font-bold text-gray-800 mb-4">Ubah Kata Sandi</h3>
+            <div className="mb-4 flex items-center gap-2.5">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-100 text-slate-700">
+                <KeyRound className="h-4 w-4" />
+              </div>
+              <h3 className="text-sm font-bold text-gray-800">Ubah Kata Sandi</h3>
+            </div>
             <div>
               <label className="text-xs font-bold text-gray-700 mb-1.5 block">Password Saat Ini</label>
               <PasswordInput
@@ -467,7 +472,7 @@ export function ProfilePage() {
                 onChange={(e) => setOldPassword(e.target.value)}
                 placeholder="Masukkan password saat ini"
                 required
-                className="h-12 rounded-xl bg-white shadow-sm font-medium border-none"
+                className="h-12 rounded-xl bg-white shadow-md font-medium border-none"
               />
             </div>
             <div>
@@ -477,7 +482,7 @@ export function ProfilePage() {
                 onChange={(e) => setNewPassword(e.target.value)}
                 placeholder="Minimal 8 karakter"
                 required
-                className="h-12 rounded-xl bg-white shadow-sm font-medium border-none"
+                className="h-12 rounded-xl bg-white shadow-md font-medium border-none"
               />
             </div>
             <div>
@@ -487,7 +492,7 @@ export function ProfilePage() {
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 placeholder="Ulangi password baru"
                 required
-                className="h-12 rounded-xl bg-white shadow-sm font-medium border-none"
+                className="h-12 rounded-xl bg-white shadow-md font-medium border-none"
               />
             </div>
             <div className="flex justify-end pt-2">
