@@ -250,7 +250,7 @@ export function TransferRequestsPage() {
               {items.map((transfer) => {
                 const notes = notesById[transfer.id] ?? transfer.reviewerNotes ?? ''
                 const isPending = transfer.status === 'PENDING'
-                const isBusy = pendingReviewId === transfer.id && reviewMutation.isPending
+                const isBusy = (approvingId === transfer.id || rejectingId === transfer.id) && reviewMutation.isPending
 
                 return (
                   <motion.div 
