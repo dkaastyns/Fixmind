@@ -245,7 +245,7 @@ export function RoomsPage() {
               onClick={() => downloadTemplateMut.mutate()}
               disabled={downloadTemplateMut.isPending}
               title="Download template Excel untuk import aset"
-              className="gap-1.5 h-10 px-3.5 border-slate-200 text-slate-700 bg-white/70 hover:bg-slate-50 transition-all font-semibold rounded-xl text-xs"
+              className="gap-1.5 h-10 px-3.5 border-slate-200 text-slate-700 bg-white/70 hover:bg-white hover:-translate-y-0.5 hover:shadow-md active:scale-95 transition-all duration-200 font-semibold rounded-xl text-xs"
             >
               <Download className="h-4 w-4 text-[#d9a416]" />
               Download Template
@@ -263,7 +263,7 @@ export function RoomsPage() {
               onClick={() => headerImportInputRef.current?.click()}
               disabled={importAssetsMut.isPending}
               title="Import aset dari file Excel"
-              className="gap-1.5 h-10 px-3.5 border-slate-200 text-slate-700 bg-white/70 hover:bg-slate-50 transition-all font-semibold rounded-xl text-xs"
+              className="gap-1.5 h-10 px-3.5 border-slate-200 text-slate-700 bg-white/70 hover:bg-white hover:-translate-y-0.5 hover:shadow-md active:scale-95 transition-all duration-200 font-semibold rounded-xl text-xs"
             >
               <FileSpreadsheet className="h-4 w-4 text-emerald-600" />
               {importAssetsMut.isPending ? 'Mengimport...' : 'Import Excel'}
@@ -280,7 +280,7 @@ export function RoomsPage() {
                 setShowAssetForm(true)
               }}
               title="Tambah aset baru secara manual"
-              className="gap-1.5 h-10 px-3.5 border-slate-200 text-slate-700 bg-white/70 hover:bg-slate-50 transition-all font-semibold rounded-xl text-xs"
+              className="gap-1.5 h-10 px-3.5 border-slate-200 text-slate-700 bg-white/70 hover:bg-white hover:-translate-y-0.5 hover:shadow-md active:scale-95 transition-all duration-200 font-semibold rounded-xl text-xs"
             >
               <Plus className="h-4 w-4 text-amber-500" />
               Tambah Aset
@@ -288,7 +288,7 @@ export function RoomsPage() {
 
             <Button 
               onClick={() => setShowRoomForm(true)} 
-              className="gap-1.5 h-10 px-4 bg-[#F9D141] hover:bg-[#d9a416] text-white shadow-md hover:shadow-lg transition-all font-semibold rounded-xl text-xs"
+              className="gap-1.5 h-10 px-4 bg-[#F9D141] hover:bg-[#e0bc38] text-white shadow-md hover:shadow-lg hover:-translate-y-0.5 active:scale-95 transition-all duration-200 font-semibold rounded-xl text-xs"
             >
               <Plus className="h-4 w-4" /> Tambah Ruangan
             </Button>
