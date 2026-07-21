@@ -1,7 +1,9 @@
 import { useRef, useState, useEffect } from 'react'
 import { useMutation } from '@tanstack/react-query'
 import { toast } from 'sonner'
-import { KeyRound, User as UserIcon, Camera, Loader2, Phone, UserCircle, X, Trash2, Mail, Menu } from 'lucide-react'
+import { KeyRound, User as UserIcon, Camera, Loader2, Phone, UserCircle, X, Trash2, Mail, Menu, Crop } from 'lucide-react'
+import Cropper from 'react-easy-crop'
+import { getCroppedImg } from '@/utils/cropImage'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { PasswordInput } from '@/components/ui/password-input'
@@ -29,6 +31,14 @@ export function ProfilePage() {
 
   // File Input Ref
   const fileInputRef = useRef<HTMLInputElement>(null)
+
+  // Crop Modal State
+  const [cropModalOpen, setCropModalOpen] = useState(false)
+  const [imageToCrop, setImageToCrop] = useState<string | null>(null)
+  const [crop, setCrop] = useState({ x: 0, y: 0 })
+  const [zoom, setZoom] = useState(1)
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState<any>(null)
+  const [isCropping, setIsCropping] = useState(false)
 
   // Sync state with user store once user hydrates or changes
   useEffect(() => {
@@ -84,7 +94,35 @@ export function ProfilePage() {
       toast.error('Ukuran file maksimal 5MB')
       return
     }
-    uploadAvatarMut.mutate(file)
+    const reader = new FileReader()
+    reader.addEventListener('load', () => {
+      setImageToCrop(reader.result?.toString() || null)
+      setCropModalOpen(true)
+    })
+    reader.readAsDataURL(file)
+    
+    // Clear input
+    if (fileInputRef.current) fileInputRef.current.value = ''
+  }
+
+  const onCropComplete = (_croppedArea: any, croppedAreaPixels: any) => {
+    setCroppedAreaPixels(croppedAreaPixels)
+  }
+
+  const handleCropSave = async () => {
+    if (!imageToCrop || !croppedAreaPixels) return
+    try {
+      setIsCropping(true)
+      const croppedBlob = await getCroppedImg(imageToCrop, croppedAreaPixels, 0)
+      const file = new File([croppedBlob], 'avatar.jpg', { type: 'image/jpeg' })
+      setCropModalOpen(false)
+      setImageToCrop(null)
+      uploadAvatarMut.mutate(file)
+    } catch (e) {
+      toast.error('Gagal memotong gambar')
+    } finally {
+      setIsCropping(false)
+    }
   }
 
   // Update Profile Mutation
@@ -718,6 +756,85 @@ export function ProfilePage() {
                 >
                   Tutup
                 </Button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      {/* Crop Modal */}
+      <AnimatePresence>
+        {cropModalOpen && imageToCrop && (
+          <motion.div
+            key="crop-modal"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[110] flex items-center justify-center p-4"
+          >
+            <div
+              className="absolute inset-0 bg-black/80 backdrop-blur-md"
+              onClick={() => setCropModalOpen(false)}
+            />
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              className="relative w-full max-w-md overflow-hidden rounded-[2rem] bg-white p-6 shadow-2xl flex flex-col"
+            >
+              <h3 className="text-xl font-bold text-gray-900 mb-4 text-center">Sesuaikan Foto</h3>
+              <div className="relative w-full h-[300px] md:h-[400px] bg-slate-100 rounded-xl overflow-hidden mb-5">
+                <Cropper
+                  image={imageToCrop}
+                  crop={crop}
+                  zoom={zoom}
+                  aspect={1}
+                  cropShape="round"
+                  showGrid={false}
+                  onCropChange={setCrop}
+                  onCropComplete={onCropComplete}
+                  onZoomChange={setZoom}
+                />
+              </div>
+              
+              <div className="flex flex-col gap-3">
+                <div className="flex items-center gap-3 mb-2 px-2">
+                  <span className="text-xs font-semibold text-gray-500">Zoom</span>
+                  <input
+                    type="range"
+                    value={zoom}
+                    min={1}
+                    max={3}
+                    step={0.1}
+                    aria-labelledby="Zoom"
+                    onChange={(e) => {
+                      setZoom(Number(e.target.value))
+                    }}
+                    className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-[#F9D141]"
+                  />
+                </div>
+                <div className="flex gap-3">
+                  <Button
+                    variant="secondary"
+                    className="flex-1 rounded-xl text-gray-700 bg-gray-100 hover:bg-gray-200 h-11 font-semibold"
+                    onClick={() => {
+                      setCropModalOpen(false)
+                      setImageToCrop(null)
+                    }}
+                    disabled={isCropping || uploadAvatarMut.isPending}
+                  >
+                    Batal
+                  </Button>
+                  <Button
+                    className="gradient-gold flex-1 rounded-xl text-white hover:opacity-90 h-11 font-bold shadow-md border-none"
+                    onClick={handleCropSave}
+                    disabled={isCropping || uploadAvatarMut.isPending}
+                  >
+                    {(isCropping || uploadAvatarMut.isPending) ? (
+                       <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Memproses...</>
+                    ) : (
+                       <><Crop className="w-4 h-4 mr-2" /> Potong & Simpan</>
+                    )}
+                  </Button>
+                </div>
               </div>
             </motion.div>
           </motion.div>
