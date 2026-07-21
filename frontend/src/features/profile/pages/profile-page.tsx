@@ -188,20 +188,23 @@ export function ProfilePage() {
             disabled={uploadAvatarMut.isPending}
           />
           <div className="relative">
-            <div className="w-56 h-56 rounded-[2.5rem] overflow-hidden border-[8px] border-white bg-white shadow-xl shadow-gray-200/60">
-              {user?.avatarUrl ? (
-                <img src={user.avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center text-slate-300">
-                  <UserIcon className="w-24 h-24" />
-                </div>
-              )}
+            {/* Wrapper for golden gradient border */}
+            <div className="w-64 h-64 md:w-72 md:h-72 rounded-[3rem] p-2 bg-gradient-to-br from-[#FFD641] via-[#d9a416] to-[#FFD641] shadow-2xl shadow-yellow-500/30">
+              <div className="w-full h-full rounded-[2.6rem] overflow-hidden bg-white">
+                {user?.avatarUrl ? (
+                  <img src={user.avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center text-slate-300">
+                    <UserIcon className="w-28 h-28" />
+                  </div>
+                )}
+              </div>
             </div>
             <button 
               onClick={() => fileInputRef.current?.click()}
-              className="absolute bottom-2 right-2 bg-gradient-to-r from-[#FFD641] to-[#515151] text-white p-4 rounded-full shadow-lg hover:scale-105 transition-all border-4 border-white"
+              className="absolute bottom-2 right-2 md:bottom-3 md:right-3 bg-gradient-to-r from-[#FFD641] to-[#515151] text-white p-4 rounded-full shadow-lg hover:scale-105 transition-all border-4 border-white"
             >
-              <Camera className="w-6 h-6" />
+              <Camera className="w-6 h-6 md:w-7 md:h-7" />
             </button>
           </div>
         </div>
