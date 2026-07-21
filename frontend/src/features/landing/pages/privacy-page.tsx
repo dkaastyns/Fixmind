@@ -117,9 +117,10 @@ export function PrivacyPage() {
               {sections.map((section, idx) => (
                 <motion.div
                   key={section.title}
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: idx * 0.08, duration: 0.4 }}
+                  initial={{ opacity: 0, x: -20 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true, margin: "-20px" }}
+                  transition={{ delay: idx * 0.1, duration: 0.5, type: "spring", stiffness: 100 }}
                   whileHover={{ x: 6, backgroundColor: "rgba(255, 255, 255, 0.03)" }}
                   className="group flex gap-4 rounded-2xl p-4 transition-colors cursor-pointer"
                 >
