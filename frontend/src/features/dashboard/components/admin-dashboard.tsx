@@ -60,7 +60,7 @@ const itemVariants = {
 
 // ─── Priority Colors ─────────────────────────────────────────────────────────
 const PRIORITY_COLORS: Record<string, string> = {
-  CRITICAL: '#EF4444',
+  CRITICAL: '#D42115',
   HIGH: '#F97316',
   MEDIUM: '#EAB308',
   LOW: '#22C55E',
@@ -76,7 +76,7 @@ const PRIORITY_LABEL: Record<string, string> = {
 const TRANSFER_STATUS_COLORS: Record<string, string> = {
   PENDING: '#F97316',
   APPROVED: '#22C55E',
-  REJECTED: '#EF4444',
+  REJECTED: '#D42115',
 }
 
 // ─── Export Modal ─────────────────────────────────────────────────────────────
@@ -158,7 +158,7 @@ function ExportModal({ open, format, onClose }: ExportModalProps) {
                   <div className="flex items-center gap-2">
                     {format === 'excel'
                       ? <FileSpreadsheet className="h-5 w-5 text-green-500" />
-                      : <FileText className="h-5 w-5 text-red-400" />}
+                      : <FileText className="h-5 w-5 text-danger" />}
                     <h3 className="text-base font-semibold text-gray-900">
                       Export {format === 'excel' ? 'Excel' : 'PDF'}
                     </h3>
@@ -370,9 +370,9 @@ export function AdminDashboard() {
               <Button 
                 variant="secondary" 
                 onClick={() => triggerExport('pdf')}
-                className="hover:-translate-y-0.5 hover:shadow-md hover:ring-2 hover:ring-red-500/30 transition-all duration-200 bg-white"
+                className="hover:-translate-y-0.5 hover:shadow-md hover:ring-2 hover:ring-danger/30 transition-all duration-200 bg-white"
               >
-                <FileText className="h-4 w-4 text-red-600" /> Export PDF
+                <FileText className="h-4 w-4 text-danger" /> Export PDF
               </Button>
             </div>
           }

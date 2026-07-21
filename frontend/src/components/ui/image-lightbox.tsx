@@ -103,7 +103,7 @@ export function ImageLightbox({ images, initialIndex = 0, onClose }: ImageLightb
             </a>
             <button
               onClick={onClose}
-              className="ml-2 rounded-xl bg-white/10 p-2 text-white hover:bg-red-500/60 transition-colors"
+              className="ml-2 rounded-xl bg-white/10 p-2 text-white hover:bg-danger/60 transition-colors"
               title="Tutup (Esc)"
             >
               <X className="h-4 w-4" />

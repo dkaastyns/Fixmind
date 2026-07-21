@@ -76,7 +76,7 @@ export function NotificationBell({ align = 'right', className }: { align?: 'left
       >
         <Bell className="h-5 w-5" />
         {unreadCount > 0 && (
-          <span className="absolute -top-1.5 -right-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white ring-2 ring-white/40">
+          <span className="absolute -top-1.5 -right-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-danger text-[10px] font-bold text-white ring-2 ring-white/40">
             {unreadCount}
           </span>
         )}
@@ -111,7 +111,7 @@ export function NotificationBell({ align = 'right', className }: { align?: 'left
                   {notifications.length > 0 && (
                     <button
                       onClick={clearAll}
-                      className="text-xs text-slate-400 hover:text-red-500 font-medium inline-flex items-center gap-1 cursor-pointer transition-colors"
+                      className="text-xs text-slate-400 hover:text-danger font-medium inline-flex items-center gap-1 cursor-pointer transition-colors"
                       title="Hapus semua"
                     >
                       <Trash2 className="h-3.5 w-3.5" /> Hapus

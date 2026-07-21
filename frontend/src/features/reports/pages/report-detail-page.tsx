@@ -26,7 +26,7 @@ const ADMIN_STATUS_OPTIONS = [
   { value: 'IN_PROGRESS',  label: 'Sedang Dikerjakan', color: 'text-indigo-600' },
   { value: 'COMPLETED',    label: 'Selesai',         color: 'text-green-600' },
   { value: 'CANCELLED',    label: 'Dibatalkan',      color: 'text-gray-500' },
-  { value: 'REJECTED',     label: 'Ditolak',         color: 'text-red-600' },
+  { value: 'REJECTED',     label: 'Ditolak',         color: 'text-danger' },
 ] as const
 
 export function ReportDetailPage() {

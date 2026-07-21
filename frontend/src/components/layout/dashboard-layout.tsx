@@ -183,7 +183,7 @@ function SidebarContent({
         <Button
           variant="ghost"
           className={cn(
-            "justify-start group relative text-red-600 hover:text-red-700 hover:bg-red-50 font-bold text-[15px] h-12 rounded-[14px]",
+            "justify-start group relative text-danger hover:text-danger hover:bg-danger/10 font-bold text-[15px] h-12 rounded-[14px]",
             isCollapsed ? "justify-center px-0 w-12 h-12 mx-auto" : "px-3"
           )}
           onClick={() => setShowLogoutModal(true)}

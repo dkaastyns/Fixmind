@@ -65,7 +65,7 @@ const STATUS_COLOR: Record<MaintenanceScheduleStatus, string> = {
   IN_PROGRESS: 'bg-blue-50 text-blue-600 border-blue-200/50',
   DONE: 'bg-green-50 text-green-600 border-green-200/50',
   CANCELLED: 'bg-rose-50 text-rose-600 border-rose-200/50',
-  OVERDUE: 'bg-red-50 text-red-700 border-red-200/50',
+  OVERDUE: 'bg-danger/10 text-danger border-danger/30',
 }
 
 const STATUS_LABEL: Record<MaintenanceScheduleStatus, string> = {
@@ -354,7 +354,7 @@ export function MaintenancePage() {
               disabled={isExporting !== null}
               className="rounded-xl border border-gray-200 bg-white text-slate-700 hover:bg-white hover:-translate-y-0.5 hover:shadow-md active:scale-95 transition-all duration-200 text-sm"
             >
-              <FileText className="h-4 w-4 text-red-400" />
+              <FileText className="h-4 w-4 text-danger" />
               {isExporting === 'pdf' ? 'Mengunduh...' : 'Export PDF'}
             </Button>
             <Button

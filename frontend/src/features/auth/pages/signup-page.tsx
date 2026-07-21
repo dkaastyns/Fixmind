@@ -112,7 +112,7 @@ export function SignupPage() {
                 className="bg-white/95 focus:bg-white transition-colors border-none text-slate-800 placeholder:text-slate-400 disabled:opacity-60 h-11 rounded-[14px]"
               />
               {form.formState.errors.fullName && (
-                <p className="text-xs text-red-400">{form.formState.errors.fullName.message}</p>
+                <p className="text-xs text-danger">{form.formState.errors.fullName.message}</p>
               )}
             </div>
 
@@ -130,7 +130,7 @@ export function SignupPage() {
                 className="bg-white/95 focus:bg-white transition-colors border-none text-slate-800 placeholder:text-slate-400 disabled:opacity-60 h-11 rounded-[14px]"
               />
               {form.formState.errors.email && (
-                <p className="text-xs text-red-400">{form.formState.errors.email.message}</p>
+                <p className="text-xs text-danger">{form.formState.errors.email.message}</p>
               )}
             </div>
 
@@ -147,7 +147,7 @@ export function SignupPage() {
                 className="bg-white/95 focus:bg-white transition-colors border-none text-slate-800 placeholder:text-slate-400 disabled:opacity-60 h-11 rounded-[14px] pr-10"
               />
               {form.formState.errors.password && (
-                <p className="text-xs text-red-400">{form.formState.errors.password.message}</p>
+                <p className="text-xs text-danger">{form.formState.errors.password.message}</p>
               )}
             </div>
 
@@ -164,7 +164,7 @@ export function SignupPage() {
                 className="bg-white/95 focus:bg-white transition-colors border-none text-slate-800 placeholder:text-slate-400 disabled:opacity-60 h-11 rounded-[14px] pr-10"
               />
               {form.formState.errors.confirmPassword && (
-                <p className="text-xs text-red-400">{form.formState.errors.confirmPassword.message}</p>
+                <p className="text-xs text-danger">{form.formState.errors.confirmPassword.message}</p>
               )}
             </div>
 
@@ -190,7 +190,7 @@ export function SignupPage() {
                 </span>
               </label>
               {form.formState.errors.agreeToTerms && (
-                <p className="text-xs text-red-400 pl-[26px]">{form.formState.errors.agreeToTerms.message}</p>
+                <p className="text-xs text-danger pl-[26px]">{form.formState.errors.agreeToTerms.message}</p>
               )}
             </div>
 

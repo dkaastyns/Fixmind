@@ -413,7 +413,7 @@ export function GlobalSearchModal({
                           sched.status === 'DONE' ? 'bg-green-50 text-green-600 border-green-200' :
                           sched.status === 'IN_PROGRESS' ? 'bg-blue-50 text-blue-600 border-blue-200' :
                           sched.status === 'CANCELLED' ? 'bg-rose-50 text-rose-600 border-rose-200' :
-                          sched.status === 'OVERDUE' ? 'bg-red-50 text-red-700 border-red-200' :
+                          sched.status === 'OVERDUE' ? 'bg-danger/10 text-danger border-danger/30' :
                           'bg-amber-50 text-amber-600 border-amber-200'
                         }`}>
                           {STATUS_MAP[sched.status] ?? sched.status}

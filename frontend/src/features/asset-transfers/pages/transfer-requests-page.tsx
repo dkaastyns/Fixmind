@@ -153,7 +153,7 @@ export function TransferRequestsPage() {
         </GlassCard>
 
         <GlassCard className="p-5 flex items-center gap-4 border border-white/40">
-          <div className="p-3.5 rounded-xl bg-red-500/10 text-red-500 shadow-inner">
+          <div className="p-3.5 rounded-xl bg-danger/10 text-danger shadow-inner">
             <XCircle className="w-6 h-6" />
           </div>
           <div>

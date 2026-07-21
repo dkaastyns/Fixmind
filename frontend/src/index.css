@@ -11,7 +11,7 @@
   --color-card-border: rgb(255 255 255 / 0.45);
   --color-success: #22c55e;
   --color-warning: #f59e0b;
-  --color-danger: #ef4444;
+  --color-danger: #D42115;
   --color-info: #3b82f6;
 
   --radius-xl: 1rem;
@@ -55,7 +55,7 @@
   }
 
   .text-gradient-orange-red {
-    background-image: linear-gradient(90deg, #f97316 0%, #ef4444 100%);
+    background-image: linear-gradient(90deg, #f97316 0%, #D42115 100%);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;

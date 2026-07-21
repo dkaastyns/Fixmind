@@ -286,7 +286,7 @@ export function UsersPage() {
                     <Button 
                       variant="ghost" 
                       size="sm" 
-                      className="flex-1 h-9 text-xs rounded-xl text-red-500 hover:text-red-700 hover:bg-red-500/5 border border-transparent hover:border-red-200/40 gap-1 flex items-center justify-center" 
+                      className="flex-1 h-9 text-xs rounded-xl text-danger hover:text-danger hover:bg-danger/5 border border-transparent hover:border-danger/20 gap-1 flex items-center justify-center" 
                       onClick={() => triggerDeleteUser(u.id, u.fullName)}
                     >
                       <Trash2 className="w-3.5 h-3.5" /> Hapus
@@ -379,7 +379,7 @@ export function UsersPage() {
                           <Button 
                             variant="ghost" 
                             size="sm" 
-                            className="h-8 text-xs rounded-xl text-red-500 hover:text-red-700 hover:bg-red-500/5 border border-transparent hover:border-red-200/40 gap-1" 
+                            className="h-8 text-xs rounded-xl text-danger hover:text-danger hover:bg-danger/5 border border-transparent hover:border-danger/20 gap-1" 
                             onClick={() => triggerDeleteUser(u.id, u.fullName)}
                           >
                             <Trash2 className="w-3.5 h-3.5" /> Hapus
