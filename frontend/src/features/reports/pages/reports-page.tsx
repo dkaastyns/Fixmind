@@ -437,6 +437,28 @@ function CreateReportForm({
         transition={{ type: 'spring', duration: 0.4 }}
         className="relative w-full max-w-2xl bg-white/95 border border-slate-100 shadow-2xl flex flex-col h-full md:h-auto md:max-h-[90vh] rounded-none md:rounded-2xl overflow-hidden z-10"
       >
+        {/* Loading Overlay */}
+        <AnimatePresence>
+          {mutation.isPending && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-white/80 backdrop-blur-sm"
+            >
+              <Loader2 className="h-14 w-14 animate-spin text-[#d9a416] mb-5" />
+              <motion.p
+                animate={{ opacity: [0.5, 1, 0.5] }}
+                transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
+                className="text-xl font-bold bg-gradient-to-r from-[#FFD641] to-[#515151] bg-clip-text text-transparent"
+              >
+                Mengirim Laporan...
+              </motion.p>
+              <p className="text-sm font-medium text-gray-500 mt-2">Mohon tunggu, data sedang diunggah ke server.</p>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         {/* Header */}
         <div className="flex items-center justify-between border-b border-slate-150 px-6 py-4 bg-slate-50/50">
           <div>
