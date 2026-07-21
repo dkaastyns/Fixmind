@@ -64,7 +64,11 @@ Implemented per [Design.md](./Design.md):
 |------|--------|------|
 | /login | Guest | Login |
 | /dashboard | Auth | Home stats |
-| /dashboard/reports | Auth | Reports (placeholder) |
-| /dashboard/rooms | Auth | Rooms (placeholder) |
-| /dashboard/users | Admin | Users (placeholder) |
-| /dashboard/analytics | Admin | Analytics (placeholder) |
+| /dashboard/profile | Auth | User Profile & Settings |
+| /dashboard/reports | Auth | Reports Management |
+| /dashboard/rooms | Auth | Rooms & Assets Management |
+| /dashboard/asset-transfers | Auth | Asset Transfer Requests |
+| /dashboard/asset-transfers/review | Admin | Asset Transfer Approvals |
+| /dashboard/maintenance | Auth | Maintenance Schedules |
+| /dashboard/users | Admin | Users Management |
+| /dashboard/analytics | Admin | Analytics Dashboard |

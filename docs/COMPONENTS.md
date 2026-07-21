@@ -56,7 +56,12 @@ Lonceng notifikasi real-time yang terhubung ke server WebSocket.
 * **File:** [notification-bell.tsx](file:///d:/FixMind/frontend/src/components/ui/notification-bell.tsx)
 * **Fitur Utama:** Menampilkan badge jumlah notifikasi aktif secara dinamis, serta popover daftar notifikasi terbaru yang dapat diklik langsung.
 
-### F. Error Boundary (`ErrorBoundary`)
+### F. Confirmation Modal (`DeleteConfirmationModal`)
+Komponen pop-up serbaguna untuk memberikan pengamanan ganda (Double Confirmation) sebelum pengguna atau admin melakukan aksi destruktif atau kritikal.
+* **File:** [delete-confirmation-modal.tsx](file:///d:/FixMind/frontend/src/components/ui/delete-confirmation-modal.tsx)
+* **Fitur Utama:** Mendukung kustomisasi ikon, warna latar ikon, judul, deskripsi, teks tombol konfirmasi, dan status *loading* (*full-screen loading overlay*). Digunakan pada fitur penghapusan data, persetujuan/penolakan transfer aset, serta mulai/selesai pengerjaan pemeliharaan.
+
+### G. Error Boundary (`ErrorBoundary`)
 Komponen pengaman untuk menangani crash pada React rendering tree di halaman tertentu.
 * **File:** [error-boundary.tsx](file:///d:/FixMind/frontend/src/components/ui/error-boundary.tsx)
 * **Fitur Utama:** Menghindari layar putih polos (*blank white screen*) jika terjadi kegagalan sistem dengan menyajikan tampilan fallback premium beserta tombol untuk memuat ulang halaman (*reload*).
