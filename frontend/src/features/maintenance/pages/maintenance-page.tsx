@@ -23,6 +23,7 @@ import {
   ChevronRight,
   ChevronsLeft,
   ChevronsRight,
+  Loader2,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { GlassCard } from '@/components/ui/glass-card'
@@ -103,6 +104,7 @@ export function MaintenancePage() {
   const [editingId, setEditingId] = useState<string | null>(null)
   const [deletingId, setDeletingId] = useState<string | null>(null)
   const [cancellingId, setCancellingId] = useState<string | null>(null)
+  const [startingId, setStartingId] = useState<string | null>(null)
   const [isExporting, setIsExporting] = useState<'excel' | 'pdf' | null>(null)
 
   // Form fields
@@ -309,6 +311,26 @@ export function MaintenancePage() {
 
   return (
     <div className="space-y-6">
+      <AnimatePresence>
+        {statusMutation.isPending && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-white/80 backdrop-blur-sm"
+          >
+            <Loader2 className="h-14 w-14 animate-spin text-[#d9a416] mb-5" />
+            <motion.p
+              animate={{ opacity: [0.5, 1, 0.5] }}
+              transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
+              className="text-xl font-bold bg-gradient-to-r from-[#FFD641] to-[#515151] bg-clip-text text-transparent"
+            >
+              Memperbarui Status...
+            </motion.p>
+            <p className="text-sm font-medium text-gray-500 mt-2">Mohon tunggu, perubahan data sedang disimpan.</p>
+          </motion.div>
+        )}
+      </AnimatePresence>
       <Breadcrumb items={[{ label: 'Jadwal Pemeliharaan' }]} />
       {/* Header */}
       <PageHeader
@@ -530,7 +552,7 @@ export function MaintenancePage() {
                         <Button
                           size="sm"
                           className="h-8 rounded-lg text-xs bg-blue-500 hover:bg-blue-600 text-white"
-                          onClick={() => statusMutation.mutate({ id: s.id, status: 'IN_PROGRESS' })}
+                          onClick={() => setStartingId(s.id)}
                           disabled={statusMutation.isPending}
                         >
                           Mulai Kerja
@@ -663,11 +685,29 @@ export function MaintenancePage() {
         isOpen={!!cancellingId}
         onClose={() => setCancellingId(null)}
         onConfirm={() => {
-          if (cancellingId) statusMutation.mutate({ id: cancellingId, status: 'CANCELLED' })
+          if (cancellingId) {
+            statusMutation.mutate({ id: cancellingId, status: 'CANCELLED' })
+            setCancellingId(null)
+          }
         }}
-        isLoading={statusMutation.isPending}
+        isLoading={false}
         title="Batalkan Jadwal"
         description="Apakah Anda yakin ingin membatalkan jadwal pemeliharaan ini? Status akan diubah menjadi Batal."
+      />
+
+      {/* Start Confirmation Modal */}
+      <DeleteConfirmationModal
+        isOpen={!!startingId}
+        onClose={() => setStartingId(null)}
+        onConfirm={() => {
+          if (startingId) {
+            statusMutation.mutate({ id: startingId, status: 'IN_PROGRESS' })
+            setStartingId(null)
+          }
+        }}
+        isLoading={false}
+        title="Mulai Pekerjaan"
+        description="Apakah Anda yakin ingin memulai pekerjaan pemeliharaan ini?"
       />
 
       {/* Create / Edit Modal */}
