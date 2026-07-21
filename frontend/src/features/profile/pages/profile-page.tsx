@@ -171,7 +171,12 @@ export function ProfilePage() {
         
         {/* Main Content overlapping banner */}
         <div className="relative z-10 px-8 -mt-[120px]">
-          <div className="grid grid-cols-1 gap-8 lg:grid-cols-12">
+          <motion.div 
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, staggerChildren: 0.1 }}
+            className="grid grid-cols-1 gap-8 lg:grid-cols-12"
+          >
             
             {/* Left Column: Profile Card 3D */}
         <div className="lg:col-span-4 flex justify-center items-start pt-2">
@@ -189,7 +194,7 @@ export function ProfilePage() {
             <div className="w-64 h-64 md:w-72 md:h-72 rounded-[3rem] p-2 bg-gradient-to-br from-[#FFD641] via-[#d9a416] to-[#FFD641] shadow-2xl shadow-yellow-500/30">
               <div className="w-full h-full rounded-[2.6rem] overflow-hidden bg-white">
                 {user?.avatarUrl ? (
-                  <img src={user.avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
+                  <img src={user.avatarUrl} alt="Avatar" className="w-full h-full object-cover hover:scale-110 transition-transform duration-500" />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-slate-300">
                     <UserIcon className="w-28 h-28" />
@@ -211,9 +216,9 @@ export function ProfilePage() {
         <div className="lg:col-span-8 space-y-6">
           
           {/* Update Profile Form */}
-          <div className="bg-white/95 backdrop-blur-md rounded-3xl p-6 md:p-8 border border-gray-100 shadow-xl shadow-gray-200/50">
+          <div className="group bg-white/95 backdrop-blur-md rounded-3xl p-6 md:p-8 border border-gray-100 shadow-xl shadow-gray-200/50 hover:-translate-y-1 hover:shadow-2xl transition-all duration-300">
             <div className="mb-6 flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-yellow-50 text-[#d9a416]">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-yellow-50 text-[#d9a416] group-hover:rotate-12 transition-transform duration-300">
                 <UserCircle className="h-5 w-5" />
               </div>
               <div>
@@ -232,7 +237,7 @@ export function ProfilePage() {
                     onChange={(e) => setFullName(e.target.value)}
                     placeholder="Masukkan nama lengkap"
                     required
-                    className="h-11 rounded-xl bg-white shadow-sm focus:ring-4 focus:ring-[#F9D141]/10 transition-all border-slate-200 focus:border-[#F9D141]/50 font-medium"
+                    className="h-11 rounded-xl bg-white shadow-sm hover:bg-slate-50 focus:bg-white focus:ring-4 focus:ring-[#F9D141]/10 transition-all duration-300 border-slate-200 focus:border-[#F9D141]/50 font-medium"
                   />
                 </div>
                 
@@ -247,7 +252,7 @@ export function ProfilePage() {
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
                       placeholder="Contoh: 08123456789"
-                      className="h-11 pl-9 rounded-xl bg-white shadow-sm focus:ring-4 focus:ring-[#F9D141]/10 transition-all border-slate-200 focus:border-[#F9D141]/50 font-medium"
+                      className="h-11 pl-9 rounded-xl bg-white shadow-sm hover:bg-slate-50 focus:bg-white focus:ring-4 focus:ring-[#F9D141]/10 transition-all duration-300 border-slate-200 focus:border-[#F9D141]/50 font-medium"
                     />
                   </div>
                 </div>
@@ -257,7 +262,7 @@ export function ProfilePage() {
                 <Button
                   type="submit"
                   style={{ background: 'linear-gradient(90deg, #FFD641 0%, #515151 100%)' }}
-                  className="rounded-xl text-white font-bold hover:opacity-90 h-11 px-8 shadow-md border-none transition-all cursor-pointer"
+                  className="rounded-xl text-white font-bold hover:opacity-90 active:scale-95 h-11 px-8 shadow-md border-none transition-all cursor-pointer"
                   disabled={profileMut.isPending}
                 >
                   {profileMut.isPending ? (
@@ -269,15 +274,15 @@ export function ProfilePage() {
           </div>
 
           {/* Change Password Form */}
-          <div className="bg-white/95 backdrop-blur-md rounded-3xl p-6 md:p-8 border border-gray-100 shadow-xl shadow-gray-200/50 relative overflow-hidden">
+          <div className="group bg-white/95 backdrop-blur-md rounded-3xl p-6 md:p-8 border border-gray-100 shadow-xl shadow-gray-200/50 relative overflow-hidden hover:-translate-y-1 hover:shadow-2xl transition-all duration-300">
             {/* decorative subtle background */}
-            <div className="absolute top-0 right-0 p-8 opacity-[0.02] pointer-events-none">
+            <div className="absolute top-0 right-0 p-8 opacity-[0.02] pointer-events-none group-hover:opacity-[0.04] group-hover:scale-110 transition-all duration-500">
               <KeyRound className="w-40 h-40" />
             </div>
 
             <div className="relative z-10">
               <div className="mb-6 flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-100 text-slate-700">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-100 text-slate-700 group-hover:rotate-12 transition-transform duration-300">
                   <KeyRound className="h-5 w-5" />
                 </div>
                 <div>
@@ -326,7 +331,7 @@ export function ProfilePage() {
                   <Button
                     type="submit"
                     style={{ background: 'linear-gradient(90deg, #FFD641 0%, #515151 100%)' }}
-                    className="rounded-xl text-white hover:opacity-90 h-11 px-6 font-bold shadow-md border-none w-full md:w-auto transition-all cursor-pointer"
+                    className="rounded-xl text-white hover:opacity-90 active:scale-95 h-11 px-6 font-bold shadow-md border-none w-full md:w-auto transition-all cursor-pointer"
                     disabled={passwordMut.isPending}
                   >
                     Perbarui Kata Sandi
@@ -336,12 +341,17 @@ export function ProfilePage() {
             </div>
           </div>
         </div>
-          </div>
+          </motion.div>
         </div>
       </div>
 
       {/* === MOBILE VIEW === */}
-      <div className="block lg:hidden min-h-screen bg-[#F5F5F5] pb-24 -mt-4 -mx-4 overflow-x-hidden relative">
+      <motion.div 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5 }}
+        className="block lg:hidden min-h-screen bg-[#F5F5F5] pb-24 -mt-4 -mx-4 overflow-x-hidden relative"
+      >
         {/* Header with background image */}
         <div className="relative h-[280px] w-full rounded-b-[40px] overflow-hidden shadow-md">
           <div 
@@ -437,7 +447,7 @@ export function ProfilePage() {
                 type="submit"
                 disabled={profileMut.isPending}
                 style={{ background: 'linear-gradient(90deg, #FFD641 0%, #515151 100%)' }}
-                className="rounded-xl text-white font-bold hover:opacity-90 h-11 px-8 shadow-md border-none transition-all"
+                className="rounded-xl text-white font-bold hover:opacity-90 active:scale-95 h-11 px-8 shadow-md border-none transition-all"
               >
                 {profileMut.isPending ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
                 Simpan
@@ -485,7 +495,7 @@ export function ProfilePage() {
                 type="submit"
                 disabled={passwordMut.isPending}
                 style={{ background: 'linear-gradient(90deg, #FFD641 0%, #515151 100%)' }}
-                className="rounded-xl text-white font-bold hover:opacity-90 h-11 px-6 shadow-md border-none w-full transition-all"
+                className="rounded-xl text-white font-bold hover:opacity-90 active:scale-95 h-11 px-6 shadow-md border-none w-full transition-all"
               >
                 {passwordMut.isPending ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
                 Perbarui Kata Sandi
@@ -494,7 +504,7 @@ export function ProfilePage() {
           </form>
 
         </div>
-      </div>
+      </motion.div>
 
 
       {/* Confirmation Modal */}
@@ -648,7 +658,7 @@ export function ProfilePage() {
               <div className="w-full space-y-2.5">
                 <Button
                   style={{ background: 'linear-gradient(90deg, #FFD641 0%, #515151 100%)' }}
-                  className="w-full rounded-xl text-white font-bold hover:opacity-90 h-11 flex items-center justify-center gap-2 shadow-md border-none cursor-pointer"
+                  className="w-full rounded-xl text-white font-bold hover:opacity-90 active:scale-95 h-11 flex items-center justify-center gap-2 shadow-md border-none cursor-pointer transition-all"
                   onClick={() => {
                     fileInputRef.current?.click()
                   }}
@@ -661,7 +671,7 @@ export function ProfilePage() {
                 {user?.avatarUrl && (
                   <Button
                     style={{ background: 'linear-gradient(90deg, #FFD641 0%, #515151 100%)' }}
-                    className="w-full rounded-xl text-white font-bold hover:opacity-90 h-11 flex items-center justify-center gap-2 shadow-md border-none cursor-pointer"
+                    className="w-full rounded-xl text-white font-bold hover:opacity-90 active:scale-95 h-11 flex items-center justify-center gap-2 shadow-md border-none cursor-pointer transition-all"
                     onClick={() => {
                       if (confirm('Apakah Anda yakin ingin menghapus foto profil ini?')) {
                         deleteAvatarMut.mutate()
@@ -676,7 +686,7 @@ export function ProfilePage() {
 
                 <Button
                   style={{ background: 'linear-gradient(90deg, #FFD641 0%, #515151 100%)' }}
-                  className="w-full rounded-xl text-white font-bold hover:opacity-90 h-11 shadow-md border-none cursor-pointer"
+                  className="w-full rounded-xl text-white font-bold hover:opacity-90 active:scale-95 h-11 shadow-md border-none cursor-pointer transition-all"
                   onClick={() => setShowPreviewModal(false)}
                   disabled={uploadAvatarMut.isPending || deleteAvatarMut.isPending}
                 >
