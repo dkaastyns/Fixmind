@@ -187,23 +187,23 @@ export function ProfilePage() {
             onChange={handleAvatarChange}
             disabled={uploadAvatarMut.isPending}
           />
-          <ProfileCard
-            name={user?.fullName || 'Pengguna'}
-            title={user?.isAdmin ? 'Administrator' : 'Pengguna Standar'}
-            handle={user?.email || 'email@example.com'}
-            status="Online"
-            contactText="Ubah Avatar"
-            avatarUrl={user?.avatarUrl || `https://api.dicebear.com/7.x/initials/svg?seed=${user?.fullName || 'User'}`}
-            miniAvatarUrl={user?.avatarUrl || `https://api.dicebear.com/7.x/initials/svg?seed=${user?.fullName || 'User'}`}
-            showUserInfo={true}
-            enableTilt={true}
-            enableMobileTilt={false}
-            onContactClick={() => setShowPreviewModal(true)}
-            behindGlowEnabled={true}
-            behindGlowColor="rgba(249, 209, 65, 0.4)"
-            innerGradient="linear-gradient(145deg,#F9D14144 0%,#d9a4168c 100%)"
-            className="w-full max-w-sm"
-          />
+          <div className="relative">
+            <div className="w-56 h-56 rounded-[2.5rem] overflow-hidden border-[8px] border-white bg-white shadow-xl shadow-gray-200/60">
+              {user?.avatarUrl ? (
+                <img src={user.avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center text-slate-300">
+                  <UserIcon className="w-24 h-24" />
+                </div>
+              )}
+            </div>
+            <button 
+              onClick={() => fileInputRef.current?.click()}
+              className="absolute bottom-2 right-2 bg-gradient-to-r from-[#FFD641] to-[#515151] text-white p-4 rounded-full shadow-lg hover:scale-105 transition-all border-4 border-white"
+            >
+              <Camera className="w-6 h-6" />
+            </button>
+          </div>
         </div>
 
         {/* Right Column: Forms */}
