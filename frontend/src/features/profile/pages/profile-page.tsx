@@ -179,7 +179,7 @@ export function ProfilePage() {
           >
             
             {/* Left Column: Profile Card 3D */}
-        <div className="lg:col-span-4 flex justify-center items-start pt-2">
+        <div className="lg:col-span-4 flex flex-col items-center justify-start pt-2">
           {/* Hidden File Input for Avatar Upload */}
           <input
             type="file"
@@ -209,6 +209,23 @@ export function ProfilePage() {
             >
               <Camera className="w-6 h-6 md:w-7 md:h-7" />
             </button>
+          </div>
+          
+          {/* Read Only Fields for Desktop */}
+          <div className="mt-8 space-y-5 w-full max-w-[280px]">
+            <div className="flex flex-col items-center">
+              <label className="text-[11px] font-bold text-gray-400 mb-1.5 uppercase tracking-wider text-center">Peran Dalam Sistem</label>
+              <div className="bg-gradient-to-r from-white to-gray-200 shadow-lg border border-gray-200/60 rounded-xl px-5 py-3 text-sm font-bold text-gray-700 w-full text-center">
+                {user?.isAdmin ? 'ADMINISTRATOR' : 'PENGGUNA STANDAR'}
+              </div>
+            </div>
+            <div className="flex flex-col items-center">
+              <label className="text-[11px] font-bold text-gray-400 mb-1.5 uppercase tracking-wider text-center">Alamat Email</label>
+              <div className="bg-gradient-to-r from-white to-gray-200 shadow-lg border border-gray-200/60 rounded-xl px-5 py-3 flex items-center justify-center gap-2.5 w-full">
+                 <Mail className="w-4 h-4 text-gray-500" />
+                 <span className="text-sm font-bold text-gray-800 truncate">{user?.email}</span>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -406,14 +423,14 @@ export function ProfilePage() {
           {/* Read Only Fields */}
           <div>
             <label className="text-[11px] font-bold text-gray-400 mb-1.5 block uppercase tracking-wider">Peran Dalam Sistem</label>
-            <div className="bg-gradient-to-r from-white to-gray-200 shadow-md border border-gray-200/60 rounded-xl px-4 py-3 text-[13px] font-bold text-gray-700 inline-block">
+            <div className="bg-gradient-to-r from-white to-gray-200 shadow-lg border border-gray-200/60 rounded-xl px-4 py-3 text-[13px] font-bold text-gray-700 inline-block">
               {user?.isAdmin ? 'ADMINISTRATOR' : 'PENGGUNA STANDAR'}
             </div>
           </div>
           
           <div>
             <label className="text-[11px] font-bold text-gray-400 mb-1.5 block uppercase tracking-wider">Alamat Email</label>
-            <div className="bg-gradient-to-r from-white to-gray-200 shadow-md border border-gray-200/60 rounded-xl px-4 py-3 flex items-center gap-2">
+            <div className="bg-gradient-to-r from-white to-gray-200 shadow-lg border border-gray-200/60 rounded-xl px-4 py-3 flex items-center gap-2">
                <Mail className="w-4 h-4 text-gray-500" />
                <span className="text-sm font-bold text-gray-800">{user?.email}</span>
             </div>
