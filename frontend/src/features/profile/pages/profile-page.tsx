@@ -132,6 +132,7 @@ export function ProfilePage() {
 
   const handleConfirmProfileUpdate = () => {
     profileMut.mutate({ fullName, phone })
+    setShowProfileConfirmModal(false)
   }
 
   const handlePasswordSubmit = (e: React.FormEvent) => {
@@ -153,11 +154,34 @@ export function ProfilePage() {
 
   const handleConfirmPasswordChange = () => {
     passwordMut.mutate({ oldPassword, newPassword })
+    setShowConfirmModal(false)
   }
 
   return (
     <div className="w-full">
       
+      {/* Full-screen Loading Overlay */}
+      <AnimatePresence>
+        {(profileMut.isPending || passwordMut.isPending) && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[200] flex flex-col items-center justify-center bg-white/80 backdrop-blur-sm"
+          >
+            <Loader2 className="h-14 w-14 animate-spin text-[#d9a416] mb-5" />
+            <motion.p
+              animate={{ opacity: [0.5, 1, 0.5] }}
+              transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
+              className="text-xl font-bold bg-gradient-to-r from-[#FFD641] to-[#515151] bg-clip-text text-transparent"
+            >
+              Menyimpan Perubahan...
+            </motion.p>
+            <p className="text-sm font-medium text-gray-500 mt-2">Mohon tunggu sebentar.</p>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* === DESKTOP VIEW === */}
       <div className="hidden lg:block relative -mx-6 -mt-6 mb-10 pb-10">
         {/* Desktop Banner */}
