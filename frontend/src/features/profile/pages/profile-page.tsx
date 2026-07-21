@@ -760,6 +760,8 @@ export function ProfilePage() {
             </motion.div>
           </motion.div>
         )}
+      </AnimatePresence>
+
       {/* Crop Modal */}
       <AnimatePresence>
         {cropModalOpen && imageToCrop && (
