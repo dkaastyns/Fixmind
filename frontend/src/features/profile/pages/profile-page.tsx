@@ -569,7 +569,7 @@ export function ProfilePage() {
             <div className="flex justify-end pt-2">
               <Button
                 type="submit"
-                disabled={passwordMut.isPending} className="gradient-gold rounded-xl text-white font-bold hover:opacity-90 active:scale-95 h-11 px-6 shadow-md border-none w-full transition-all"
+                disabled={passwordMut.isPending} className="gradient-gold rounded-xl text-white font-bold hover:opacity-90 active:scale-95 h-11 px-8 shadow-md border-none transition-all"
               >
                 {passwordMut.isPending ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
                 Perbarui Kata Sandi
