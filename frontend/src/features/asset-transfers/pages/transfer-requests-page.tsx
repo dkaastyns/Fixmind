@@ -2,7 +2,7 @@
 import { useState, useMemo, useEffect } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { CheckCircle2, ShieldAlert, XCircle, Search, ArrowRight, Clock, User, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react'
+import { CheckCircle2, ShieldAlert, XCircle, Search, ArrowRight, Clock, User, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Button } from '@/components/ui/button'
@@ -105,6 +105,26 @@ export function TransferRequestsPage() {
 
   return (
     <div className="space-y-6">
+      <AnimatePresence>
+        {reviewMutation.isPending && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-white/80 backdrop-blur-sm"
+          >
+            <Loader2 className="h-14 w-14 animate-spin text-[#d9a416] mb-5" />
+            <motion.p
+              animate={{ opacity: [0.5, 1, 0.5] }}
+              transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
+              className="text-xl font-bold bg-gradient-to-r from-[#FFD641] to-[#515151] bg-clip-text text-transparent"
+            >
+              Memproses Persetujuan...
+            </motion.p>
+            <p className="text-sm font-medium text-gray-500 mt-2">Mohon tunggu, keputusan Anda sedang disimpan ke server.</p>
+          </motion.div>
+        )}
+      </AnimatePresence>
       <PageHeader
         title="Persetujuan Transfer Aset"
         description="Tinjau pengajuan perpindahan aset. Jika disetujui, sistem otomatis memindahkan lokasi aset di database."
