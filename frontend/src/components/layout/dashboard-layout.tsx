@@ -252,6 +252,7 @@ export function DashboardLayout() {
   const user = useAuthStore((s) => s.user)
 
   const isUserDashboard = location.pathname === '/dashboard' && !user?.isAdmin
+  const isProfilePage = location.pathname === '/dashboard/profile'
 
   const [isCollapsed, setIsCollapsed] = useState(() => {
     const saved = localStorage.getItem('sidebar-collapsed')
@@ -291,7 +292,7 @@ export function DashboardLayout() {
       </aside>
 
       <div className="flex flex-1 flex-col min-w-0">
-        {!isUserDashboard && (
+        {!isUserDashboard && !isProfilePage && (
           <header className="glass relative z-40 mx-4 mt-4 flex items-center justify-between px-4 py-3 md:hidden">
             {/* Left: Hamburger menu */}
             <button 
@@ -381,7 +382,7 @@ export function DashboardLayout() {
           </div>
         )}
 
-        <main className={cn("flex-1 p-4 md:p-6 overflow-x-hidden", isUserDashboard && "p-0 md:p-6")}>
+        <main className={cn("flex-1 p-4 md:p-6 overflow-x-hidden", (isUserDashboard || isProfilePage) && "p-0 md:p-6")}>
           <AnimatePresence mode="wait">
             <motion.div
               key={location.pathname}

@@ -1,11 +1,12 @@
 import { useRef, useState, useEffect } from 'react'
 import { useMutation } from '@tanstack/react-query'
 import { toast } from 'sonner'
-import { KeyRound, User as UserIcon, Camera, Loader2, Phone, UserCircle, X, Trash2 } from 'lucide-react'
+import { KeyRound, User as UserIcon, Camera, Loader2, Phone, UserCircle, X, Trash2, Mail, Menu } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { PasswordInput } from '@/components/ui/password-input'
 import { GlassCard } from '@/components/ui/glass-card'
+import { NotificationBell } from '@/components/ui/notification-bell'
 import { useAuthStore } from '@/stores/auth-store'
 import { updateProfileRequest, changePasswordRequest, uploadAvatarRequest, deleteAvatarRequest } from '@/lib/api-client'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -158,9 +159,10 @@ export function ProfilePage() {
   }
 
   return (
-    <div className="space-y-8 pb-10">
+    <div className="w-full">
       
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
+      {/* === DESKTOP VIEW === */}
+      <div className="hidden lg:grid grid-cols-1 gap-6 lg:grid-cols-12 space-y-8 pb-10">
         
         {/* Left Column: Profile Card 3D */}
         <div className="lg:col-span-4 flex justify-center items-start pt-2">
@@ -321,6 +323,161 @@ export function ProfilePage() {
           </GlassCard>
         </div>
       </div>
+
+      {/* === MOBILE VIEW === */}
+      <div className="block lg:hidden min-h-screen bg-[#F5F5F5] pb-24 -mt-4 -mx-4 overflow-x-hidden relative">
+        {/* Header with background image */}
+        <div className="relative h-[280px] w-full rounded-b-[40px] overflow-hidden shadow-md">
+          <div 
+            className="absolute inset-0 bg-cover bg-center" 
+            style={{ backgroundImage: 'url(/new-bg_dprd.jpg)' }}
+          />
+          <div className="absolute inset-0 bg-black/60" />
+
+          {/* Top Nav */}
+          <div className="relative z-10 flex items-center justify-between p-4 pt-6">
+            <button onClick={() => window.dispatchEvent(new CustomEvent('open-mobile-menu'))} className="text-[#F9D141] hover:text-yellow-300">
+              <Menu className="w-7 h-7" />
+            </button>
+            <h1 className="text-2xl font-light text-white tracking-wide">Profile</h1>
+            <NotificationBell align="right" className="text-[#F9D141] bg-transparent border-none shadow-none hover:bg-white/10 p-1" />
+          </div>
+
+          {/* User Info overlay */}
+          <div className="relative z-10 px-6 pt-4">
+            <p className="text-white/80 text-sm mb-1">{user?.isAdmin ? 'Administrator' : 'User'}</p>
+            <h2 className="text-3xl font-light text-white mb-2 leading-tight">{user?.fullName}</h2>
+            <div className="flex items-center text-white/80 gap-2 text-sm">
+              <Mail className="w-4 h-4" />
+              <span>{user?.email}</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Circular Avatar */}
+        <div className="relative z-20 flex justify-center -mt-[60px]">
+          <div className="relative">
+            <div className="w-[120px] h-[120px] rounded-full overflow-hidden border-4 border-[#F5F5F5] bg-white shadow-lg">
+              {user?.avatarUrl ? (
+                <img src={user.avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center text-slate-300">
+                  <UserIcon className="w-12 h-12" />
+                </div>
+              )}
+            </div>
+            <button 
+              onClick={() => fileInputRef.current?.click()}
+              className="absolute bottom-1 right-1 bg-[#F9D141] text-black p-2.5 rounded-full shadow-md hover:bg-[#e0bc38] transition-colors"
+            >
+              <Camera className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+
+        {/* Form Content */}
+        <div className="px-6 pt-8 space-y-6">
+          {/* Read Only Fields */}
+          <div>
+            <label className="text-[11px] font-bold text-gray-400 mb-1.5 block uppercase tracking-wider">Peran Dalam Sistem</label>
+            <div className="bg-gray-200/50 rounded-xl px-4 py-3 text-[13px] font-bold text-gray-600 inline-block">
+              {user?.isAdmin ? 'ADMINISTRATOR' : 'PENGGUNA STANDAR'}
+            </div>
+          </div>
+          
+          <div>
+            <label className="text-[11px] font-bold text-gray-400 mb-1.5 block uppercase tracking-wider">Alamat Email</label>
+            <div className="bg-gray-200/50 rounded-xl px-4 py-3 flex items-center gap-2 border border-gray-300/30">
+               <Mail className="w-4 h-4 text-gray-500" />
+               <span className="text-sm font-bold text-gray-800">{user?.email}</span>
+            </div>
+            <p className="text-[10px] text-gray-400 mt-1.5">* Email digunakan sebagai identitas unik dan tidak dapat diubah sendiri.</p>
+          </div>
+
+          <form onSubmit={handleUpdateProfile} className="space-y-4 pt-2">
+            <div>
+              <label className="text-xs font-bold text-gray-700 mb-1.5 block">Nama Lengkap</label>
+              <Input
+                type="text"
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
+                placeholder="Masukkan nama lengkap"
+                required
+                className="h-12 rounded-xl bg-white shadow-sm font-bold text-gray-800 border-none"
+              />
+            </div>
+            <div>
+              <label className="text-xs font-bold text-gray-700 mb-1.5 block">Nomor Telepon (Opsional)</label>
+              <Input
+                type="tel"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                placeholder="Contoh: 08123456789"
+                className="h-12 rounded-xl bg-white shadow-sm font-bold text-gray-800 border-none"
+              />
+            </div>
+            <div className="flex justify-end pt-2">
+              <Button
+                type="submit"
+                disabled={profileMut.isPending}
+                className="rounded-xl bg-gradient-to-b from-[#b3952f] to-[#7a641a] text-white font-bold hover:opacity-90 h-11 px-8 shadow-md"
+              >
+                {profileMut.isPending ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
+                Simpan
+              </Button>
+            </div>
+          </form>
+
+          <hr className="border-gray-300/50 my-8" />
+
+          {/* Password Section */}
+          <form onSubmit={handlePasswordSubmit} className="space-y-4">
+            <h3 className="text-sm font-bold text-gray-800 mb-4">Ubah Kata Sandi</h3>
+            <div>
+              <label className="text-xs font-bold text-gray-700 mb-1.5 block">Password Saat Ini</label>
+              <PasswordInput
+                value={oldPassword}
+                onChange={(e) => setOldPassword(e.target.value)}
+                placeholder="Masukkan password saat ini"
+                required
+                className="h-12 rounded-xl bg-white shadow-sm font-medium border-none"
+              />
+            </div>
+            <div>
+              <label className="text-xs font-bold text-gray-700 mb-1.5 block">Password Baru</label>
+              <PasswordInput
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                placeholder="Minimal 8 karakter"
+                required
+                className="h-12 rounded-xl bg-white shadow-sm font-medium border-none"
+              />
+            </div>
+            <div>
+              <label className="text-xs font-bold text-gray-700 mb-1.5 block">Konfirmasi Password Baru</label>
+              <PasswordInput
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                placeholder="Ulangi password baru"
+                required
+                className="h-12 rounded-xl bg-white shadow-sm font-medium border-none"
+              />
+            </div>
+            <div className="flex justify-end pt-2">
+              <Button
+                type="submit"
+                disabled={passwordMut.isPending}
+                className="rounded-xl bg-gradient-to-b from-[#b3952f] to-[#7a641a] text-white font-bold hover:opacity-90 h-11 px-6 shadow-md w-full"
+              >
+                {passwordMut.isPending ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
+                Perbarui Kata Sandi
+              </Button>
+            </div>
+          </form>
+
+        </div>
+      </div>
+
 
       {/* Confirmation Modal */}
       <AnimatePresence>
