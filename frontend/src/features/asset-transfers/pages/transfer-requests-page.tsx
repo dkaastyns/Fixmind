@@ -8,6 +8,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Button } from '@/components/ui/button'
 import { GlassCard } from '@/components/ui/glass-card'
 import { EmptyState, PageHeader, StatusBadge } from '@/components/ui/feedback'
+import { DeleteConfirmationModal } from '@/components/ui/delete-confirmation-modal'
 import { fetchAssetTransfers, reviewAssetTransfer } from '@/lib/api-client'
 import { useAuthStore } from '@/stores/auth-store'
 import type { AssetTransferStatus } from '@/types/api'
@@ -47,7 +48,8 @@ export function TransferRequestsPage() {
     setPage(1)
   }, [statusFilter, searchQuery])
   const [notesById, setNotesById] = useState<Record<string, string>>({})
-  const [pendingReviewId, setPendingReviewId] = useState<string | null>(null)
+  const [approvingId, setApprovingId] = useState<string | null>(null)
+  const [rejectingId, setRejectingId] = useState<string | null>(null)
 
   // Fetch all transfers to calculate statistics counter badges
   const allTransfers = useQuery({
@@ -353,7 +355,7 @@ export function TransferRequestsPage() {
                             <Button
                               className="flex-1 gap-1.5"
                               disabled={isBusy}
-                              onClick={() => reviewMutation.mutate({ id: transfer.id, decision: 'APPROVED', notes: notes.trim() || undefined })}
+                              onClick={() => setApprovingId(transfer.id)}
                             >
                               <CheckCircle2 className="h-4 w-4" />
                               {isBusy ? 'Memproses...' : 'Setujui'}
@@ -362,7 +364,7 @@ export function TransferRequestsPage() {
                               variant="danger"
                               className="flex-1 gap-1.5"
                               disabled={isBusy}
-                              onClick={() => reviewMutation.mutate({ id: transfer.id, decision: 'REJECTED', notes: notes.trim() || undefined })}
+                              onClick={() => setRejectingId(transfer.id)}
                             >
                               <XCircle className="h-4 w-4" />
                               {isBusy ? 'Memproses...' : 'Tolak'}
@@ -445,6 +447,54 @@ export function TransferRequestsPage() {
           Halaman ini khusus untuk administrator. Akses normal tersedia di menu Pengajuan Transfer.
         </p>
       )}
+
+      {/* Approve Confirmation Modal */}
+      <DeleteConfirmationModal
+        isOpen={!!approvingId}
+        onClose={() => setApprovingId(null)}
+        onConfirm={() => {
+          if (approvingId) {
+            reviewMutation.mutate({ 
+              id: approvingId, 
+              decision: 'APPROVED', 
+              notes: notesById[approvingId]?.trim() || undefined 
+            })
+            setApprovingId(null)
+          }
+        }}
+        isLoading={reviewMutation.isPending}
+        title="Setujui Pemindahan Aset"
+        description="Apakah Anda yakin ingin menyetujui pemindahan aset ini? Lokasi aset akan otomatis diperbarui di sistem."
+        icon={<CheckCircle2 className="h-6 w-6" />}
+        iconBgClass="bg-emerald-50 text-emerald-500"
+        confirmText="Ya, Setujui"
+        confirmClass="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white"
+        loadingText="Menyetujui..."
+      />
+
+      {/* Reject Confirmation Modal */}
+      <DeleteConfirmationModal
+        isOpen={!!rejectingId}
+        onClose={() => setRejectingId(null)}
+        onConfirm={() => {
+          if (rejectingId) {
+            reviewMutation.mutate({ 
+              id: rejectingId, 
+              decision: 'REJECTED', 
+              notes: notesById[rejectingId]?.trim() || undefined 
+            })
+            setRejectingId(null)
+          }
+        }}
+        isLoading={reviewMutation.isPending}
+        title="Tolak Pemindahan Aset"
+        description="Apakah Anda yakin ingin menolak pengajuan pemindahan aset ini?"
+        icon={<XCircle className="h-6 w-6" />}
+        iconBgClass="bg-rose-50 text-rose-500"
+        confirmText="Ya, Tolak"
+        confirmClass="flex-1 bg-rose-600 hover:bg-rose-700 text-white"
+        loadingText="Menolak..."
+      />
     </div>
   )
 }
