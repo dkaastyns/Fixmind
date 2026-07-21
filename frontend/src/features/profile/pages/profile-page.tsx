@@ -198,7 +198,7 @@ export function ProfilePage() {
               </div>
             </div>
             <button 
-              onClick={() => fileInputRef.current?.click()}
+              onClick={() => setShowPreviewModal(true)}
               style={{ background: 'linear-gradient(90deg, #FFD641 0%, #515151 100%)' }}
               className="absolute bottom-2 right-2 md:bottom-3 md:right-3 text-white p-4 rounded-full shadow-lg hover:scale-105 transition-all border-4 border-white"
             >
@@ -383,7 +383,7 @@ export function ProfilePage() {
               )}
             </div>
             <button 
-              onClick={() => fileInputRef.current?.click()}
+              onClick={() => setShowPreviewModal(true)}
               className="absolute bottom-1 right-1 bg-[#F9D141] text-black p-2.5 rounded-full shadow-md hover:bg-[#e0bc38] transition-colors"
             >
               <Camera className="w-4 h-4" />
@@ -660,8 +660,8 @@ export function ProfilePage() {
 
                 {user?.avatarUrl && (
                   <Button
-                    variant="secondary"
-                    className="w-full rounded-xl text-rose-600 bg-rose-50 hover:bg-rose-100 h-11 font-semibold flex items-center justify-center gap-2 border border-rose-100/60"
+                    style={{ background: 'linear-gradient(90deg, #FFD641 0%, #515151 100%)' }}
+                    className="w-full rounded-xl text-white font-bold hover:opacity-90 h-11 flex items-center justify-center gap-2 shadow-md border-none cursor-pointer"
                     onClick={() => {
                       if (confirm('Apakah Anda yakin ingin menghapus foto profil ini?')) {
                         deleteAvatarMut.mutate()
@@ -675,8 +675,8 @@ export function ProfilePage() {
                 )}
 
                 <Button
-                  variant="secondary"
-                  className="w-full rounded-xl text-gray-700 bg-slate-100 hover:bg-slate-200 h-11 font-semibold"
+                  style={{ background: 'linear-gradient(90deg, #FFD641 0%, #515151 100%)' }}
+                  className="w-full rounded-xl text-white font-bold hover:opacity-90 h-11 shadow-md border-none cursor-pointer"
                   onClick={() => setShowPreviewModal(false)}
                   disabled={uploadAvatarMut.isPending || deleteAvatarMut.isPending}
                 >
