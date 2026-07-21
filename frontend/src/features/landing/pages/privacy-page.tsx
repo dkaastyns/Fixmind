@@ -99,7 +99,7 @@ export function PrivacyPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
-          <div className="glass-dark p-8 md:p-12 shadow-2xl border-white/10 bg-slate-950/45 backdrop-blur-xl rounded-3xl">
+          <div className="p-8 md:p-12 shadow-[0_8px_32px_rgba(0,0,0,0.3)] border border-white/10 bg-slate-950/25 backdrop-blur-2xl rounded-3xl relative overflow-hidden">
             <div className="mb-10 text-center">
               <div className="mx-auto mb-4 inline-flex h-14 w-14 items-center justify-center rounded-2xl gradient-gold shadow-md">
                 <ShieldCheck className="h-7 w-7 text-white" />
