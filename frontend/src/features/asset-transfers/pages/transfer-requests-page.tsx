@@ -71,9 +71,6 @@ export function TransferRequestsPage() {
   const reviewMutation = useMutation({
     mutationFn: (params: { id: string; decision: 'APPROVED' | 'REJECTED'; notes?: string }) =>
       reviewAssetTransfer(token, params.id, { decision: params.decision, notes: params.notes }),
-    onMutate: (variables) => {
-      setPendingReviewId(variables.id)
-    },
     onSuccess: (_, variables) => {
       qc.invalidateQueries({ queryKey: ['asset-transfers'] })
       qc.invalidateQueries({ queryKey: ['assets'] })
@@ -85,9 +82,6 @@ export function TransferRequestsPage() {
       })
     },
     onError: (error: Error) => toast.error(error.message),
-    onSettled: () => {
-      setPendingReviewId(null)
-    },
   })
 
   // Calculate statistics counters
