@@ -38,6 +38,10 @@ export function ReportDetailPage() {
     queryKey: ['report', id],
     queryFn: () => fetchReport(token, id!),
     enabled: !!id,
+    refetchInterval: (query) => {
+      const status = query.state?.data?.data?.aiAnalysisStatus;
+      return status === 'PENDING' || status === 'PROCESSING' ? 3000 : false;
+    }
   })
 
   const qc = useQueryClient()
