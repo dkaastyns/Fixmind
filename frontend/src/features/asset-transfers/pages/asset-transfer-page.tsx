@@ -139,7 +139,7 @@ export function AssetTransferPage() {
               <motion.p
                 animate={{ opacity: [0.5, 1, 0.5] }}
                 transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
-                className="text-xl font-bold bg-gradient-to-r from-[#F9D141] to-[#dbb31a] bg-clip-text text-transparent"
+                className="text-xl font-bold bg-gradient-to-r from-[#F9D141] to-[#1A1A1A] bg-clip-text text-transparent"
               >
                 Memindahkan Aset...
               </motion.p>
@@ -451,7 +451,7 @@ export function AssetTransferPage() {
             <motion.p
               animate={{ opacity: [0.5, 1, 0.5] }}
               transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
-              className="text-xl font-bold bg-gradient-to-r from-[#F9D141] to-[#dbb31a] bg-clip-text text-transparent"
+              className="text-xl font-bold bg-gradient-to-r from-[#F9D141] to-[#1A1A1A] bg-clip-text text-transparent"
             >
               Mengirim Pengajuan...
             </motion.p>

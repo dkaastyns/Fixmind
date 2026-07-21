@@ -251,7 +251,7 @@ function ExportModal({ open, format, onClose }: ExportModalProps) {
                     Batal
                   </Button>
                   <Button
-                    className="flex-1 rounded-xl bg-gradient-to-r from-[#F9D141] to-[#dbb31a] text-slate-900 font-bold hover:opacity-90 transition-all shadow-sm"
+                    className="flex-1 rounded-xl bg-gradient-to-r from-[#F9D141] to-[#1A1A1A] text-slate-900 font-bold hover:opacity-90 transition-all shadow-sm"
                     onClick={handleExport}
                   >
                     Unduh {format === 'excel' ? 'Excel' : 'PDF'}
@@ -456,7 +456,7 @@ export function AdminDashboard() {
                       <defs>
                         <linearGradient id="reportGrad" x1="0" y1="0" x2="0" y2="1">
                           <stop offset="0%" stopColor="#F9D141" />
-                          <stop offset="100%" stopColor="#dbb31a" />
+                          <stop offset="100%" stopColor="#1A1A1A" />
                         </linearGradient>
                       </defs>
                     </BarChart>
