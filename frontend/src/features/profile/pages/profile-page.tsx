@@ -173,7 +173,7 @@ export function ProfilePage() {
             <motion.p
               animate={{ opacity: [0.5, 1, 0.5] }}
               transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
-              className="text-xl font-bold bg-gradient-to-r from-[#FFD641] to-[#515151] bg-clip-text text-transparent"
+              className="text-xl font-bold bg-gradient-to-r from-[#FFD641] to-[#d9a416] bg-clip-text text-transparent"
             >
               Menyimpan Perubahan...
             </motion.p>
@@ -227,9 +227,7 @@ export function ProfilePage() {
               </div>
             </div>
             <button 
-              onClick={() => setShowPreviewModal(true)}
-              style={{ background: 'linear-gradient(90deg, #FFD641 0%, #515151 100%)' }}
-              className="absolute bottom-2 right-2 md:bottom-3 md:right-3 text-white p-4 rounded-full shadow-lg hover:scale-105 transition-all border-4 border-white"
+              onClick={() => setShowPreviewModal(true)} className="gradient-gold absolute bottom-2 right-2 md:bottom-3 md:right-3 text-white p-4 rounded-full shadow-lg hover:scale-105 transition-all border-4 border-white"
             >
               <Camera className="w-6 h-6 md:w-7 md:h-7" />
             </button>
@@ -301,9 +299,7 @@ export function ProfilePage() {
 
               <div className="flex justify-end pt-2">
                 <Button
-                  type="submit"
-                  style={{ background: 'linear-gradient(90deg, #FFD641 0%, #515151 100%)' }}
-                  className="rounded-xl text-white font-bold hover:opacity-90 active:scale-95 h-11 px-8 shadow-md border-none transition-all cursor-pointer"
+                  type="submit" className="gradient-gold rounded-xl text-white font-bold hover:opacity-90 active:scale-95 h-11 px-8 shadow-md border-none transition-all cursor-pointer"
                   disabled={profileMut.isPending}
                 >
                   {profileMut.isPending ? (
@@ -370,9 +366,7 @@ export function ProfilePage() {
 
                 <div className="pt-2">
                   <Button
-                    type="submit"
-                    style={{ background: 'linear-gradient(90deg, #FFD641 0%, #515151 100%)' }}
-                    className="rounded-xl text-white hover:opacity-90 active:scale-95 h-11 px-6 font-bold shadow-md border-none w-full md:w-auto transition-all cursor-pointer"
+                    type="submit" className="gradient-gold rounded-xl text-white hover:opacity-90 active:scale-95 h-11 px-6 font-bold shadow-md border-none w-full md:w-auto transition-all cursor-pointer"
                     disabled={passwordMut.isPending}
                   >
                     Perbarui Kata Sandi
@@ -486,9 +480,7 @@ export function ProfilePage() {
             <div className="flex justify-end pt-2">
               <Button
                 type="submit"
-                disabled={profileMut.isPending}
-                style={{ background: 'linear-gradient(90deg, #FFD641 0%, #515151 100%)' }}
-                className="rounded-xl text-white font-bold hover:opacity-90 active:scale-95 h-11 px-8 shadow-md border-none transition-all"
+                disabled={profileMut.isPending} className="gradient-gold rounded-xl text-white font-bold hover:opacity-90 active:scale-95 h-11 px-8 shadow-md border-none transition-all"
               >
                 {profileMut.isPending ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
                 Simpan
@@ -539,9 +531,7 @@ export function ProfilePage() {
             <div className="flex justify-end pt-2">
               <Button
                 type="submit"
-                disabled={passwordMut.isPending}
-                style={{ background: 'linear-gradient(90deg, #FFD641 0%, #515151 100%)' }}
-                className="rounded-xl text-white font-bold hover:opacity-90 active:scale-95 h-11 px-6 shadow-md border-none w-full transition-all"
+                disabled={passwordMut.isPending} className="gradient-gold rounded-xl text-white font-bold hover:opacity-90 active:scale-95 h-11 px-6 shadow-md border-none w-full transition-all"
               >
                 {passwordMut.isPending ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
                 Perbarui Kata Sandi
@@ -589,9 +579,7 @@ export function ProfilePage() {
                 >
                   Batal
                 </Button>
-                <Button
-                  style={{ background: 'linear-gradient(90deg, #FFD641 0%, #515151 100%)' }}
-                  className="flex-1 rounded-xl text-white hover:opacity-90 h-11 font-bold shadow-md border-none"
+                <Button className="gradient-gold flex-1 rounded-xl text-white hover:opacity-90 h-11 font-bold shadow-md border-none"
                   onClick={handleConfirmPasswordChange}
                   disabled={passwordMut.isPending}
                 >
@@ -639,9 +627,7 @@ export function ProfilePage() {
                 >
                   Batal
                 </Button>
-                <Button
-                  style={{ background: 'linear-gradient(90deg, #FFD641 0%, #515151 100%)' }}
-                  className="flex-1 rounded-xl text-white hover:opacity-90 h-11 font-bold shadow-md border-none"
+                <Button className="gradient-gold flex-1 rounded-xl text-white hover:opacity-90 h-11 font-bold shadow-md border-none"
                   onClick={handleConfirmProfileUpdate}
                   disabled={profileMut.isPending}
                 >
@@ -702,9 +688,7 @@ export function ProfilePage() {
 
               {/* Edit / Change Actions */}
               <div className="w-full space-y-2.5">
-                <Button
-                  style={{ background: 'linear-gradient(90deg, #FFD641 0%, #515151 100%)' }}
-                  className="w-full rounded-xl text-white font-bold hover:opacity-90 active:scale-95 h-11 flex items-center justify-center gap-2 shadow-md border-none cursor-pointer transition-all"
+                <Button className="gradient-gold w-full rounded-xl text-white font-bold hover:opacity-90 active:scale-95 h-11 flex items-center justify-center gap-2 shadow-md border-none cursor-pointer transition-all"
                   onClick={() => {
                     fileInputRef.current?.click()
                   }}
@@ -715,9 +699,7 @@ export function ProfilePage() {
                 </Button>
 
                 {user?.avatarUrl && (
-                  <Button
-                    style={{ background: 'linear-gradient(90deg, #FFD641 0%, #515151 100%)' }}
-                    className="w-full rounded-xl text-white font-bold hover:opacity-90 active:scale-95 h-11 flex items-center justify-center gap-2 shadow-md border-none cursor-pointer transition-all"
+                  <Button className="gradient-gold w-full rounded-xl text-white font-bold hover:opacity-90 active:scale-95 h-11 flex items-center justify-center gap-2 shadow-md border-none cursor-pointer transition-all"
                     onClick={() => {
                       if (confirm('Apakah Anda yakin ingin menghapus foto profil ini?')) {
                         deleteAvatarMut.mutate()
@@ -730,9 +712,7 @@ export function ProfilePage() {
                   </Button>
                 )}
 
-                <Button
-                  style={{ background: 'linear-gradient(90deg, #FFD641 0%, #515151 100%)' }}
-                  className="w-full rounded-xl text-white font-bold hover:opacity-90 active:scale-95 h-11 shadow-md border-none cursor-pointer transition-all"
+                <Button className="gradient-gold w-full rounded-xl text-white font-bold hover:opacity-90 active:scale-95 h-11 shadow-md border-none cursor-pointer transition-all"
                   onClick={() => setShowPreviewModal(false)}
                   disabled={uploadAvatarMut.isPending || deleteAvatarMut.isPending}
                 >
