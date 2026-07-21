@@ -199,7 +199,8 @@ export function ProfilePage() {
             </div>
             <button 
               onClick={() => fileInputRef.current?.click()}
-              className="absolute bottom-2 right-2 md:bottom-3 md:right-3 bg-gradient-to-r from-[#FFD641] to-[#515151] text-white p-4 rounded-full shadow-lg hover:scale-105 transition-all border-4 border-white"
+              style={{ background: 'linear-gradient(90deg, #FFD641 0%, #515151 100%)' }}
+              className="absolute bottom-2 right-2 md:bottom-3 md:right-3 text-white p-4 rounded-full shadow-lg hover:scale-105 transition-all border-4 border-white"
             >
               <Camera className="w-6 h-6 md:w-7 md:h-7" />
             </button>
@@ -255,7 +256,8 @@ export function ProfilePage() {
               <div className="flex justify-end pt-2">
                 <Button
                   type="submit"
-                  className="rounded-xl bg-gradient-to-r from-[#FFD641] to-[#515151] text-white font-bold hover:opacity-90 h-11 px-8 shadow-md border-none transition-all cursor-pointer"
+                  style={{ background: 'linear-gradient(90deg, #FFD641 0%, #515151 100%)' }}
+                  className="rounded-xl text-white font-bold hover:opacity-90 h-11 px-8 shadow-md border-none transition-all cursor-pointer"
                   disabled={profileMut.isPending}
                 >
                   {profileMut.isPending ? (
@@ -323,7 +325,8 @@ export function ProfilePage() {
                 <div className="pt-2">
                   <Button
                     type="submit"
-                    className="rounded-xl bg-gradient-to-r from-[#FFD641] to-[#515151] text-white hover:opacity-90 h-11 px-6 font-bold shadow-md border-none w-full md:w-auto transition-all cursor-pointer"
+                    style={{ background: 'linear-gradient(90deg, #FFD641 0%, #515151 100%)' }}
+                    className="rounded-xl text-white hover:opacity-90 h-11 px-6 font-bold shadow-md border-none w-full md:w-auto transition-all cursor-pointer"
                     disabled={passwordMut.isPending}
                   >
                     Perbarui Kata Sandi
@@ -433,7 +436,8 @@ export function ProfilePage() {
               <Button
                 type="submit"
                 disabled={profileMut.isPending}
-                className="rounded-xl bg-gradient-to-r from-[#FFD641] to-[#515151] text-white font-bold hover:opacity-90 h-11 px-8 shadow-md border-none transition-all"
+                style={{ background: 'linear-gradient(90deg, #FFD641 0%, #515151 100%)' }}
+                className="rounded-xl text-white font-bold hover:opacity-90 h-11 px-8 shadow-md border-none transition-all"
               >
                 {profileMut.isPending ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
                 Simpan
@@ -480,7 +484,8 @@ export function ProfilePage() {
               <Button
                 type="submit"
                 disabled={passwordMut.isPending}
-                className="rounded-xl bg-gradient-to-r from-[#FFD641] to-[#515151] text-white font-bold hover:opacity-90 h-11 px-6 shadow-md border-none w-full transition-all"
+                style={{ background: 'linear-gradient(90deg, #FFD641 0%, #515151 100%)' }}
+                className="rounded-xl text-white font-bold hover:opacity-90 h-11 px-6 shadow-md border-none w-full transition-all"
               >
                 {passwordMut.isPending ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
                 Perbarui Kata Sandi
@@ -529,7 +534,8 @@ export function ProfilePage() {
                   Batal
                 </Button>
                 <Button
-                  className="flex-1 rounded-xl bg-gradient-to-r from-[#FFD641] to-[#515151] text-white hover:opacity-90 h-11 font-bold shadow-md border-none"
+                  style={{ background: 'linear-gradient(90deg, #FFD641 0%, #515151 100%)' }}
+                  className="flex-1 rounded-xl text-white hover:opacity-90 h-11 font-bold shadow-md border-none"
                   onClick={handleConfirmPasswordChange}
                   disabled={passwordMut.isPending}
                 >
@@ -578,7 +584,8 @@ export function ProfilePage() {
                   Batal
                 </Button>
                 <Button
-                  className="flex-1 rounded-xl bg-gradient-to-r from-[#FFD641] to-[#515151] text-white hover:opacity-90 h-11 font-bold shadow-md border-none"
+                  style={{ background: 'linear-gradient(90deg, #FFD641 0%, #515151 100%)' }}
+                  className="flex-1 rounded-xl text-white hover:opacity-90 h-11 font-bold shadow-md border-none"
                   onClick={handleConfirmProfileUpdate}
                   disabled={profileMut.isPending}
                 >
@@ -640,7 +647,8 @@ export function ProfilePage() {
               {/* Edit / Change Actions */}
               <div className="w-full space-y-2.5">
                 <Button
-                  className="w-full rounded-xl bg-gradient-to-r from-[#FFD641] to-[#515151] text-white font-bold hover:opacity-90 h-11 flex items-center justify-center gap-2 shadow-md border-none cursor-pointer"
+                  style={{ background: 'linear-gradient(90deg, #FFD641 0%, #515151 100%)' }}
+                  className="w-full rounded-xl text-white font-bold hover:opacity-90 h-11 flex items-center justify-center gap-2 shadow-md border-none cursor-pointer"
                   onClick={() => {
                     fileInputRef.current?.click()
                   }}
