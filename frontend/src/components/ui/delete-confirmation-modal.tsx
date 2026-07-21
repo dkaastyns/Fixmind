@@ -11,6 +11,11 @@ interface DeleteConfirmationModalProps {
   title: string
   description: string
   isLoading?: boolean
+  icon?: React.ReactNode
+  iconBgClass?: string
+  confirmText?: string
+  loadingText?: string
+  confirmClass?: string
 }
 
 export function DeleteConfirmationModal({
@@ -20,6 +25,11 @@ export function DeleteConfirmationModal({
   title,
   description,
   isLoading,
+  icon,
+  iconBgClass = "bg-rose-50 text-rose-500",
+  confirmText = "Ya, Hapus",
+  loadingText = "Menghapus...",
+  confirmClass = "flex-1 bg-rose-600 hover:bg-rose-700 text-white",
 }: DeleteConfirmationModalProps) {
   if (typeof document === 'undefined') return null
 
@@ -40,8 +50,8 @@ export function DeleteConfirmationModal({
             exit={{ opacity: 0, scale: 0.95, y: 15 }}
             className="relative w-full max-w-sm overflow-hidden rounded-2xl bg-white p-6 text-center shadow-2xl border border-slate-100 z-10"
           >
-            <div className="mx-auto mb-3.5 flex h-12 w-12 items-center justify-center rounded-full bg-rose-50 text-rose-500">
-              <Trash2 className="h-6 w-6" />
+            <div className={`mx-auto mb-3.5 flex h-12 w-12 items-center justify-center rounded-full ${iconBgClass}`}>
+              {icon || <Trash2 className="h-6 w-6" />}
             </div>
             <h3 className="mb-1 text-base font-bold text-slate-800">{title}</h3>
             <p className="mb-5 text-xs text-slate-500 font-medium leading-relaxed">{description}</p>
@@ -57,12 +67,11 @@ export function DeleteConfirmationModal({
               </Button>
               <Button
                 type="button"
-                variant="danger"
                 onClick={onConfirm}
                 disabled={isLoading}
-                className="flex-1 bg-rose-600 hover:bg-rose-700"
+                className={confirmClass}
               >
-                {isLoading ? 'Menghapus...' : 'Ya, Hapus'}
+                {isLoading ? loadingText : confirmText}
               </Button>
             </div>
           </motion.div>

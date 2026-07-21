@@ -105,6 +105,7 @@ export function MaintenancePage() {
   const [deletingId, setDeletingId] = useState<string | null>(null)
   const [cancellingId, setCancellingId] = useState<string | null>(null)
   const [startingId, setStartingId] = useState<string | null>(null)
+  const [completingId, setCompletingId] = useState<string | null>(null)
   const [isExporting, setIsExporting] = useState<'excel' | 'pdf' | null>(null)
 
   // Form fields
@@ -562,7 +563,7 @@ export function MaintenancePage() {
                         <Button
                           size="sm"
                           className="h-8 rounded-lg text-xs bg-green-500 hover:bg-green-600 text-white"
-                          onClick={() => statusMutation.mutate({ id: s.id, status: 'DONE' })}
+                          onClick={() => setCompletingId(s.id)}
                           disabled={statusMutation.isPending}
                         >
                           Selesai
@@ -708,6 +709,29 @@ export function MaintenancePage() {
         isLoading={false}
         title="Mulai Pekerjaan"
         description="Apakah Anda yakin ingin memulai pekerjaan pemeliharaan ini?"
+        icon={<Wrench className="h-6 w-6" />}
+        iconBgClass="bg-blue-50 text-blue-500"
+        confirmText="Ya, Mulai"
+        confirmClass="flex-1 bg-blue-600 hover:bg-blue-700 text-white"
+      />
+
+      {/* Complete Confirmation Modal */}
+      <DeleteConfirmationModal
+        isOpen={!!completingId}
+        onClose={() => setCompletingId(null)}
+        onConfirm={() => {
+          if (completingId) {
+            statusMutation.mutate({ id: completingId, status: 'DONE' })
+            setCompletingId(null)
+          }
+        }}
+        isLoading={false}
+        title="Selesaikan Pekerjaan"
+        description="Apakah Anda yakin pekerjaan pemeliharaan ini telah diselesaikan?"
+        icon={<CheckCircle2 className="h-6 w-6" />}
+        iconBgClass="bg-emerald-50 text-emerald-500"
+        confirmText="Ya, Selesai"
+        confirmClass="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white"
       />
 
       {/* Create / Edit Modal */}
