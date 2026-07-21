@@ -343,7 +343,7 @@ export function MaintenancePage() {
               variant="secondary"
               onClick={handleExportExcel}
               disabled={isExporting !== null}
-              className="rounded-xl border border-gray-200 bg-white text-slate-700 hover:bg-gray-50 text-sm"
+              className="rounded-xl border border-gray-200 bg-white text-slate-700 hover:bg-white hover:-translate-y-0.5 hover:shadow-md active:scale-95 transition-all duration-200 text-sm"
             >
               <FileSpreadsheet className="h-4 w-4 text-green-500" />
               {isExporting === 'excel' ? 'Mengunduh...' : 'Export Excel'}
@@ -352,14 +352,14 @@ export function MaintenancePage() {
               variant="secondary"
               onClick={handleExportPdf}
               disabled={isExporting !== null}
-              className="rounded-xl border border-gray-200 bg-white text-slate-700 hover:bg-gray-50 text-sm"
+              className="rounded-xl border border-gray-200 bg-white text-slate-700 hover:bg-white hover:-translate-y-0.5 hover:shadow-md active:scale-95 transition-all duration-200 text-sm"
             >
               <FileText className="h-4 w-4 text-red-400" />
               {isExporting === 'pdf' ? 'Mengunduh...' : 'Export PDF'}
             </Button>
             <Button
               onClick={openCreate}
-              className="rounded-xl bg-[#F9D141] text-slate-900 font-bold hover:bg-[#d9a416]"
+              className="rounded-xl bg-[#F9D141] text-slate-900 font-bold hover:bg-[#e0bc38] shadow-md hover:shadow-lg hover:-translate-y-0.5 active:scale-95 transition-all duration-200"
             >
               <Plus className="h-4 w-4 mr-2" /> Tambah Jadwal Baru
             </Button>
