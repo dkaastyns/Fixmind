@@ -5,13 +5,10 @@ import { KeyRound, User as UserIcon, Camera, Loader2, Phone, UserCircle, X, Tras
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { PasswordInput } from '@/components/ui/password-input'
-import { GlassCard } from '@/components/ui/glass-card'
 import { NotificationBell } from '@/components/ui/notification-bell'
 import { useAuthStore } from '@/stores/auth-store'
 import { updateProfileRequest, changePasswordRequest, uploadAvatarRequest, deleteAvatarRequest } from '@/lib/api-client'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ProfileCard } from '@/components/ui/profile-card'
-
 export function ProfilePage() {
   const { user, accessToken, setUser } = useAuthStore()
   const token = accessToken!
