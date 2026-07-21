@@ -183,12 +183,12 @@ function ExportModal({ open, format, onClose }: ExportModalProps) {
                         <button
                           key={val}
                           onClick={() => setKind(val)}
-                          className={`flex flex-col items-center gap-2 p-3 rounded-xl border-2 transition-all ${
-                            kind === val ? color + ' shadow-sm' : 'border-gray-100 hover:border-gray-200'
+                          className={`group flex flex-col items-center gap-2 p-3 rounded-xl border-2 transition-all duration-200 hover:-translate-y-1 hover:shadow-md active:scale-95 ${
+                            kind === val ? color + ' shadow-sm ring-2 ring-offset-1 ' + color.split(' ')[0].replace('text-', 'ring-') : 'border-gray-100 hover:border-gray-300 hover:bg-gray-50'
                           }`}
                         >
-                          <Icon className={`h-5 w-5 ${kind === val ? '' : 'text-gray-400'}`} />
-                          <span className={`text-xs font-medium text-center leading-tight ${kind === val ? '' : 'text-gray-500'}`}>{label}</span>
+                          <Icon className={`h-5 w-5 transition-colors ${kind === val ? '' : 'text-gray-400 group-hover:text-gray-600'}`} />
+                          <span className={`text-xs font-medium text-center leading-tight transition-colors ${kind === val ? '' : 'text-gray-500 group-hover:text-gray-700'}`}>{label}</span>
                         </button>
                       ))}
                     </div>
