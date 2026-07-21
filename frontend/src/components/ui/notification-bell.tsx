@@ -92,12 +92,12 @@ export function NotificationBell({ align = 'right', className }: { align?: 'left
               exit={{ opacity: 0, y: 10, scale: 0.95 }}
               transition={{ duration: 0.15 }}
               className={cn(
-                "absolute mt-2 z-50 w-80 rounded-2xl border border-white/30 bg-white/90 shadow-xl backdrop-blur-md overflow-hidden",
+                "absolute mt-3 z-50 w-80 sm:w-96 rounded-2xl border border-slate-200/60 bg-white shadow-[0_8px_30px_rgb(0,0,0,0.12)] overflow-hidden",
                 align === 'right' ? 'right-0' : 'left-0'
               )}
             >
-              <div className="flex items-center justify-between border-b border-white/20 p-3 bg-[#F9D141]/5">
-                <span className="text-sm font-semibold">Notifikasi</span>
+              <div className="flex items-center justify-between border-b border-slate-100 p-4 bg-slate-50/50">
+                <span className="text-[15px] font-bold text-slate-800">Notifikasi</span>
                 <div className="flex gap-2">
                   {unreadCount > 0 && (
                     <button
@@ -111,7 +111,7 @@ export function NotificationBell({ align = 'right', className }: { align?: 'left
                   {notifications.length > 0 && (
                     <button
                       onClick={clearAll}
-                      className="text-xs text-muted hover:text-danger font-medium inline-flex items-center gap-0.5 cursor-pointer"
+                      className="text-xs text-slate-400 hover:text-red-500 font-medium inline-flex items-center gap-1 cursor-pointer transition-colors"
                       title="Hapus semua"
                     >
                       <Trash2 className="h-3.5 w-3.5" /> Hapus
@@ -120,9 +120,12 @@ export function NotificationBell({ align = 'right', className }: { align?: 'left
                 </div>
               </div>
 
-              <div className="max-h-72 overflow-y-auto divide-y divide-white/20">
+              <div className="max-h-[350px] overflow-y-auto divide-y divide-slate-100">
                 {notifications.length === 0 ? (
-                  <p className="p-6 text-center text-xs text-muted">Tidak ada notifikasi baru</p>
+                  <div className="py-12 flex flex-col items-center justify-center">
+                    <Bell className="h-8 w-8 text-slate-200 mb-3" />
+                    <p className="text-[13px] font-medium text-slate-500">Tidak ada notifikasi baru</p>
+                  </div>
                 ) : (
                   notifications.map((n) => (
                     <Link
@@ -130,19 +133,21 @@ export function NotificationBell({ align = 'right', className }: { align?: 'left
                       to={n.link}
                       onClick={() => setIsOpen(false)}
                       className={cn(
-                        "block p-3.5 text-xs hover:bg-white/40 transition-colors",
-                        !n.isRead ? "bg-white/60 font-medium" : "text-muted"
+                        "block p-4 transition-colors hover:bg-slate-50",
+                        !n.isRead ? "bg-blue-50/40" : ""
                       )}
                     >
-                      <div className="flex items-start justify-between">
-                        <span className={cn("font-semibold text-foreground", !n.isRead ? "text-[#d9a416]" : "")}>
+                      <div className="flex items-start justify-between mb-1.5">
+                        <span className={cn("text-[13px] font-bold", !n.isRead ? "text-slate-900" : "text-slate-600")}>
                           {n.title}
                         </span>
-                        <span className="text-[10px] text-muted">
+                        <span className="text-[11px] font-medium text-slate-400 shrink-0 ml-4">
                           {new Date(n.createdAt).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}
                         </span>
                       </div>
-                      <p className="mt-1 text-muted-foreground leading-normal">{n.body}</p>
+                      <p className={cn("leading-relaxed text-[12px]", !n.isRead ? "text-slate-700" : "text-slate-500")}>
+                        {n.body}
+                      </p>
                     </Link>
                   ))
                 )}
