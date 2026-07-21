@@ -211,7 +211,7 @@ export function ProfilePage() {
             <motion.p
               animate={{ opacity: [0.5, 1, 0.5] }}
               transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
-              className="text-xl font-bold bg-gradient-to-r from-[#FFD641] to-[#d9a416] bg-clip-text text-transparent"
+              className="text-xl font-bold bg-gradient-to-r from-[#F9D141] to-[#d9a416] bg-clip-text text-transparent"
             >
               Menyimpan Perubahan...
             </motion.p>
@@ -253,7 +253,7 @@ export function ProfilePage() {
           />
           <div className="relative">
             {/* Wrapper for golden gradient border */}
-            <div className="w-64 h-64 md:w-72 md:h-72 rounded-[3rem] p-2 bg-gradient-to-br from-[#FFD641] via-[#d9a416] to-[#FFD641] shadow-2xl shadow-yellow-500/30">
+            <div className="w-64 h-64 md:w-72 md:h-72 rounded-[3rem] p-2 bg-gradient-to-br from-[#F9D141] via-[#d9a416] to-[#F9D141] shadow-2xl shadow-yellow-500/30">
               <div className="w-full h-full rounded-[2.6rem] overflow-hidden bg-white">
                 {user?.avatarUrl ? (
                   <img src={user.avatarUrl} alt="Avatar" className="w-full h-full object-cover hover:scale-110 transition-transform duration-500" />

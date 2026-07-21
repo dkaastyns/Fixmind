@@ -176,15 +176,15 @@ export function SignupPage() {
                   id="agreeToTerms"
                   {...form.register('agreeToTerms')}
                   disabled={mutation.isPending}
-                  className="mt-1 h-4 w-4 shrink-0 rounded border-white/20 bg-white/10 text-[#FFD641] focus:ring-[#FFD641]/30 cursor-pointer accent-[#FFD641]"
+                  className="mt-1 h-4 w-4 shrink-0 rounded border-white/20 bg-white/10 text-[#F9D141] focus:ring-[#F9D141]/30 cursor-pointer accent-[#F9D141]"
                 />
                 <span className="leading-tight select-none">
                   Saya menyetujui{' '}
-                  <Link to="/terms" className="font-semibold text-[#FFD641] hover:underline">
+                  <Link to="/terms" className="font-semibold text-[#F9D141] hover:underline">
                     Ketentuan Layanan
                   </Link>{' '}
                   dan{' '}
-                  <Link to="/privacy" className="font-semibold text-[#FFD641] hover:underline">
+                  <Link to="/privacy" className="font-semibold text-[#F9D141] hover:underline">
                     kebijakan penggunaan FixMind.
                   </Link>
                 </span>
@@ -223,7 +223,7 @@ export function SignupPage() {
                 exit={{ opacity: 0, y: 8 }}
                 className="mt-4 flex items-center justify-center gap-2 text-xs text-slate-300"
               >
-                <Loader2 className="h-3.5 w-3.5 animate-spin text-[#FFD641]" />
+                <Loader2 className="h-3.5 w-3.5 animate-spin text-[#F9D141]" />
                 <span>Sedang membuat akun Anda...</span>
               </motion.div>
             )}
@@ -232,7 +232,7 @@ export function SignupPage() {
           {/* Login Link */}
           <p className="mt-6 text-center text-xs sm:text-sm text-slate-300">
             Sudah punya akun?{' '}
-            <Link to="/login" className="font-semibold text-[#FFD641] hover:underline">
+            <Link to="/login" className="font-semibold text-[#F9D141] hover:underline">
               Masuk di sini
             </Link>
           </p>

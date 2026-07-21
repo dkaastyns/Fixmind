@@ -144,7 +144,7 @@ export function LoginPage() {
                 exit={{ opacity: 0, y: 8 }}
                 className="mt-4 flex items-center justify-center gap-2 text-xs text-slate-300"
               >
-                <Loader2 className="h-3.5 w-3.5 animate-spin text-[#FFD641]" />
+                <Loader2 className="h-3.5 w-3.5 animate-spin text-[#F9D141]" />
                 <span>Sedang menghubungi server...</span>
               </motion.div>
             )}
@@ -153,7 +153,7 @@ export function LoginPage() {
           {/* Signup Link */}
           <p className="mt-6 text-center text-xs sm:text-sm text-slate-300">
             Belum punya akun?{' '}
-            <Link to="/signup" className="font-semibold text-[#FFD641] hover:underline">
+            <Link to="/signup" className="font-semibold text-[#F9D141] hover:underline">
               Daftar di sini
             </Link>
           </p>

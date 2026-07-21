@@ -450,7 +450,7 @@ function CreateReportForm({
               <motion.p
                 animate={{ opacity: [0.5, 1, 0.5] }}
                 transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
-                className="text-xl font-bold bg-gradient-to-r from-[#FFD641] to-[#515151] bg-clip-text text-transparent"
+                className="text-xl font-bold bg-gradient-to-r from-[#F9D141] to-[#dbb31a] bg-clip-text text-transparent"
               >
                 Mengirim Laporan...
               </motion.p>
