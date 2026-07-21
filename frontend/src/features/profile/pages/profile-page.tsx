@@ -162,9 +162,21 @@ export function ProfilePage() {
     <div className="w-full">
       
       {/* === DESKTOP VIEW === */}
-      <div className="hidden lg:grid grid-cols-1 gap-6 lg:grid-cols-12 space-y-8 pb-10">
+      <div className="hidden lg:block relative -mx-6 -mt-6 mb-10 pb-10">
+        {/* Desktop Banner */}
+        <div className="h-[260px] w-full relative rounded-b-[40px] overflow-hidden shadow-md">
+          <div 
+            className="absolute inset-0 bg-cover bg-center" 
+            style={{ backgroundImage: 'url(/new-bg_dprd.jpg)' }}
+          />
+          <div className="absolute inset-0 bg-black/40" />
+        </div>
         
-        {/* Left Column: Profile Card 3D */}
+        {/* Main Content overlapping banner */}
+        <div className="relative z-10 px-8 -mt-[120px]">
+          <div className="grid grid-cols-1 gap-8 lg:grid-cols-12">
+            
+            {/* Left Column: Profile Card 3D */}
         <div className="lg:col-span-4 flex justify-center items-start pt-2">
           {/* Hidden File Input for Avatar Upload */}
           <input
@@ -198,7 +210,7 @@ export function ProfilePage() {
         <div className="lg:col-span-8 space-y-6">
           
           {/* Update Profile Form */}
-          <GlassCard className="p-6 md:p-8 border-white/60 shadow-sm hover:shadow-md transition-shadow">
+          <div className="bg-white/95 backdrop-blur-md rounded-3xl p-6 md:p-8 border border-gray-100 shadow-xl shadow-gray-200/50">
             <div className="mb-6 flex items-center gap-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-yellow-50 text-[#d9a416]">
                 <UserCircle className="h-5 w-5" />
@@ -243,7 +255,7 @@ export function ProfilePage() {
               <div className="flex justify-end pt-2">
                 <Button
                   type="submit"
-                  className="rounded-xl bg-gradient-to-r from-[#F9D141] to-[#d9a416] text-slate-900 font-bold hover:opacity-90 h-11 px-8 shadow-md shadow-yellow-500/10 transition-all cursor-pointer"
+                  className="rounded-xl bg-gradient-to-r from-[#FFD641] to-[#515151] text-white font-bold hover:opacity-90 h-11 px-8 shadow-md border-none transition-all cursor-pointer"
                   disabled={profileMut.isPending}
                 >
                   {profileMut.isPending ? (
@@ -252,10 +264,10 @@ export function ProfilePage() {
                 </Button>
               </div>
             </form>
-          </GlassCard>
+          </div>
 
           {/* Change Password Form */}
-          <GlassCard className="p-6 md:p-8 border-white/60 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden">
+          <div className="bg-white/95 backdrop-blur-md rounded-3xl p-6 md:p-8 border border-gray-100 shadow-xl shadow-gray-200/50 relative overflow-hidden">
             {/* decorative subtle background */}
             <div className="absolute top-0 right-0 p-8 opacity-[0.02] pointer-events-none">
               <KeyRound className="w-40 h-40" />
@@ -311,8 +323,7 @@ export function ProfilePage() {
                 <div className="pt-2">
                   <Button
                     type="submit"
-                    variant="secondary"
-                    className="rounded-xl border-slate-200 text-slate-700 hover:bg-slate-200 h-11 px-6 font-semibold shadow-sm w-full md:w-auto"
+                    className="rounded-xl bg-gradient-to-r from-[#FFD641] to-[#515151] text-white hover:opacity-90 h-11 px-6 font-bold shadow-md border-none w-full md:w-auto transition-all cursor-pointer"
                     disabled={passwordMut.isPending}
                   >
                     Perbarui Kata Sandi
@@ -320,7 +331,9 @@ export function ProfilePage() {
                 </div>
               </form>
             </div>
-          </GlassCard>
+          </div>
+        </div>
+          </div>
         </div>
       </div>
 
@@ -420,7 +433,7 @@ export function ProfilePage() {
               <Button
                 type="submit"
                 disabled={profileMut.isPending}
-                className="rounded-xl bg-gradient-to-b from-[#b3952f] to-[#7a641a] text-white font-bold hover:opacity-90 h-11 px-8 shadow-md"
+                className="rounded-xl bg-gradient-to-r from-[#FFD641] to-[#515151] text-white font-bold hover:opacity-90 h-11 px-8 shadow-md border-none transition-all"
               >
                 {profileMut.isPending ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
                 Simpan
@@ -467,7 +480,7 @@ export function ProfilePage() {
               <Button
                 type="submit"
                 disabled={passwordMut.isPending}
-                className="rounded-xl bg-gradient-to-b from-[#b3952f] to-[#7a641a] text-white font-bold hover:opacity-90 h-11 px-6 shadow-md w-full"
+                className="rounded-xl bg-gradient-to-r from-[#FFD641] to-[#515151] text-white font-bold hover:opacity-90 h-11 px-6 shadow-md border-none w-full transition-all"
               >
                 {passwordMut.isPending ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
                 Perbarui Kata Sandi
@@ -516,7 +529,7 @@ export function ProfilePage() {
                   Batal
                 </Button>
                 <Button
-                  className="flex-1 rounded-xl bg-gray-900 text-white hover:bg-gray-800 h-11 font-semibold shadow-lg shadow-gray-900/20"
+                  className="flex-1 rounded-xl bg-gradient-to-r from-[#FFD641] to-[#515151] text-white hover:opacity-90 h-11 font-bold shadow-md border-none"
                   onClick={handleConfirmPasswordChange}
                   disabled={passwordMut.isPending}
                 >
@@ -565,7 +578,7 @@ export function ProfilePage() {
                   Batal
                 </Button>
                 <Button
-                  className="flex-1 rounded-xl bg-gradient-to-r from-[#F9D141] to-[#d9a416] text-slate-900 hover:opacity-90 h-11 font-semibold shadow-lg shadow-yellow-500/20"
+                  className="flex-1 rounded-xl bg-gradient-to-r from-[#FFD641] to-[#515151] text-white hover:opacity-90 h-11 font-bold shadow-md border-none"
                   onClick={handleConfirmProfileUpdate}
                   disabled={profileMut.isPending}
                 >
@@ -627,7 +640,7 @@ export function ProfilePage() {
               {/* Edit / Change Actions */}
               <div className="w-full space-y-2.5">
                 <Button
-                  className="w-full rounded-xl bg-gradient-to-r from-[#F9D141] to-[#d9a416] text-slate-900 font-bold hover:opacity-90 h-11 flex items-center justify-center gap-2 shadow-md shadow-yellow-500/10 cursor-pointer"
+                  className="w-full rounded-xl bg-gradient-to-r from-[#FFD641] to-[#515151] text-white font-bold hover:opacity-90 h-11 flex items-center justify-center gap-2 shadow-md border-none cursor-pointer"
                   onClick={() => {
                     fileInputRef.current?.click()
                   }}
