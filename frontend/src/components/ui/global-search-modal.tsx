@@ -244,7 +244,9 @@ export function GlobalSearchModal({
                     {assets.map((asset) => (
                       <div
                         key={asset.id}
-                        className="rounded-2xl border border-white/50 bg-white/60 p-3.5 shadow-sm hover:bg-white/80 hover:-translate-y-0.5 hover:shadow-md transition-all duration-200 flex flex-col sm:flex-row justify-between sm:items-center gap-3"
+                        role="button"
+                        onClick={() => goTo(`/dashboard/rooms?search=${encodeURIComponent(asset.kodeBarang)}`)}
+                        className="rounded-2xl border border-white/50 bg-white/60 p-3.5 shadow-sm hover:bg-white/80 hover:-translate-y-0.5 hover:shadow-md hover:ring-2 hover:ring-[#F9D141]/30 transition-all duration-200 flex flex-col sm:flex-row justify-between sm:items-center gap-3 cursor-pointer text-left"
                       >
                         <div className="space-y-1 flex-1 min-w-0">
                           <div className="flex flex-wrap items-center gap-2">
@@ -262,14 +264,14 @@ export function GlobalSearchModal({
                             size="sm"
                             variant="secondary"
                             className="h-8 gap-1 rounded-xl text-xs"
-                            onClick={() => goTo(`/dashboard/reports?openForm=true&roomId=${asset.roomId}&assetId=${asset.id}`)}
+                            onClick={(e) => { e.stopPropagation(); goTo(`/dashboard/reports?openForm=true&roomId=${asset.roomId}&assetId=${asset.id}`); }}
                           >
                             <ClipboardPlus className="h-3 w-3" /> Lapor
                           </Button>
                            <Button
                             size="sm"
                             className="h-8 gap-1 rounded-xl text-xs bg-[#F9D141] text-slate-900 font-bold hover:bg-[#F9D141]/90"
-                            onClick={() => goTo(`/dashboard/asset-transfers?roomId=${asset.roomId}&assetId=${asset.id}`)}
+                            onClick={(e) => { e.stopPropagation(); goTo(`/dashboard/asset-transfers?roomId=${asset.roomId}&assetId=${asset.id}`); }}
                           >
                             <ArrowRightLeft className="h-3 w-3" /> Pindah
                           </Button>
@@ -302,7 +304,7 @@ export function GlobalSearchModal({
                         key={report.id}
                         type="button"
                         onClick={() => goTo(`/dashboard/reports?id=${report.id}`)}
-                        className="w-full rounded-2xl border border-white/50 bg-white/60 p-3.5 shadow-sm hover:bg-white/80 hover:-translate-y-0.5 hover:shadow-md transition-all duration-200 text-left"
+                        className="w-full rounded-2xl border border-white/50 bg-white/60 p-3.5 shadow-sm hover:bg-white/80 hover:-translate-y-0.5 hover:shadow-md hover:ring-2 hover:ring-blue-500/30 transition-all duration-200 text-left"
                       >
                         <div className="flex items-start justify-between gap-2">
                           <div className="min-w-0">
@@ -346,9 +348,11 @@ export function GlobalSearchModal({
                   </div>
                   <div className="space-y-2">
                     {transfers.map((transfer) => (
-                      <div
+                      <button
                         key={transfer.id}
-                        className="rounded-2xl border border-white/50 bg-white/60 p-3.5 shadow-sm hover:-translate-y-0.5 hover:shadow-md hover:bg-white/80 transition-all duration-200 flex items-center justify-between gap-3"
+                        type="button"
+                        onClick={() => goTo(`${isAdmin ? '/dashboard/asset-transfers/review' : '/dashboard/asset-transfers'}?search=${encodeURIComponent(transfer.assetName ?? transfer.assetId)}`)}
+                        className="w-full text-left rounded-2xl border border-white/50 bg-white/60 p-3.5 shadow-sm hover:-translate-y-0.5 hover:shadow-md hover:bg-white/80 hover:ring-2 hover:ring-emerald-500/30 transition-all duration-200 flex items-center justify-between gap-3"
                       >
                         <div className="min-w-0">
                           <p className="font-semibold text-slate-800 text-sm truncate">{transfer.assetName ?? transfer.assetId}</p>
@@ -364,7 +368,7 @@ export function GlobalSearchModal({
                         }`}>
                           {STATUS_MAP[transfer.status] ?? transfer.status}
                         </span>
-                      </div>
+                      </button>
                     ))}
                   </div>
                 </div>
@@ -388,9 +392,11 @@ export function GlobalSearchModal({
                   </div>
                   <div className="space-y-2">
                     {maintenance.map((sched) => (
-                      <div
+                      <button
                         key={sched.id}
-                        className="rounded-2xl border border-white/50 bg-white/60 p-3.5 shadow-sm hover:-translate-y-0.5 hover:shadow-md hover:bg-white/80 transition-all duration-200 flex items-center justify-between gap-3"
+                        type="button"
+                        onClick={() => goTo(`/dashboard/maintenance?search=${encodeURIComponent(sched.title)}`)}
+                        className="w-full text-left rounded-2xl border border-white/50 bg-white/60 p-3.5 shadow-sm hover:-translate-y-0.5 hover:shadow-md hover:bg-white/80 hover:ring-2 hover:ring-orange-500/30 transition-all duration-200 flex items-center justify-between gap-3"
                       >
                         <div className="min-w-0">
                           <p className="font-semibold text-slate-800 text-sm truncate">{sched.title}</p>
@@ -412,7 +418,7 @@ export function GlobalSearchModal({
                         }`}>
                           {STATUS_MAP[sched.status] ?? sched.status}
                         </span>
-                      </div>
+                      </button>
                     ))}
                   </div>
                 </div>
