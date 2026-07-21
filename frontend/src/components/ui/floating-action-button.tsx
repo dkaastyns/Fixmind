@@ -119,7 +119,7 @@ export function FloatingActionButton() {
         whileTap={{ scale: 0.95 }}
         onClick={() => setIsOpen(!isOpen)}
         className={cn(
-          "flex h-14 w-14 items-center justify-center rounded-2xl shadow-xl transition-colors duration-300 text-white bg-gradient-to-tr from-[#F9D141] to-[#dbb31a] hover:from-[#dbb31a] hover:to-[#c29c13] cursor-pointer"
+          "flex h-14 w-14 items-center justify-center rounded-2xl shadow-xl transition-all duration-300 text-white gradient-gold hover:brightness-110 cursor-pointer"
         )}
         aria-label="Pilihan Cepat"
         title="Menu Pilihan Cepat"
