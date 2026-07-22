@@ -231,7 +231,7 @@ export function ProfilePage() {
           style={{ backgroundImage: 'url("/new-bg_dprd.jpg")' }}
         >
           {/* Ambient Glow & Dark Overlay */}
-          <div className="absolute inset-0 bg-gradient-to-r from-slate-950/95 via-slate-950/80 to-slate-900/85 backdrop-blur-[2px] z-0" />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/65 via-black/40 to-black/55 z-0" />
           <div className="absolute -top-24 -right-24 w-96 h-96 bg-[#F9D141]/10 rounded-full blur-3xl pointer-events-none group-hover:bg-[#F9D141]/20 transition-all duration-700" />
 
           {/* Hero Content */}
@@ -274,16 +274,16 @@ export function ProfilePage() {
                   <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-extrabold uppercase tracking-wider bg-[#F9D141]/20 text-[#F9D141] border border-[#F9D141]/40 backdrop-blur-md">
                     {user?.isAdmin ? 'ADMINISTRATOR' : 'PENGGUNA STANDAR'}
                   </span>
-                  <div className="flex items-center gap-1.5 text-xs text-slate-300 bg-white/10 backdrop-blur-md px-3 py-1 rounded-full border border-white/10">
+                  <div className="flex items-center gap-1.5 text-xs text-slate-200 bg-black/30 backdrop-blur-md px-3 py-1 rounded-full border border-white/15">
                     <Mail className="w-3.5 h-3.5 text-[#F9D141]" />
                     <span className="font-semibold">{user?.email}</span>
                   </div>
                 </div>
 
-                <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight text-white leading-tight">
+                <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight text-white leading-tight drop-shadow-md">
                   {user?.fullName ?? 'Pengguna'}
                 </h1>
-                <p className="text-sm text-slate-300 max-w-xl font-medium leading-relaxed opacity-90">
+                <p className="text-sm text-slate-200 max-w-xl font-medium leading-relaxed opacity-95 drop-shadow-sm">
                   Kelola informasi akun pribadi, foto profil, dan tingkatkan keamanan kata sandi Anda.
                 </p>
               </div>
