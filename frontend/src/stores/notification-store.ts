@@ -3,6 +3,7 @@ import { persist } from 'zustand/middleware'
 
 export interface NotificationItem {
   id: string
+  userId: string
   title: string
   body: string
   link: string
@@ -12,20 +13,24 @@ export interface NotificationItem {
 
 interface NotificationState {
   notifications: NotificationItem[]
-  addNotification: (item: Omit<NotificationItem, 'id' | 'isRead' | 'createdAt'>) => void
-  markAllAsRead: () => void
-  clearAll: () => void
+  addNotification: (
+    userId: string,
+    item: Omit<NotificationItem, 'id' | 'userId' | 'isRead' | 'createdAt'>
+  ) => void
+  markAllAsRead: (userId: string) => void
+  clearAll: (userId: string) => void
 }
 
 export const useNotificationStore = create<NotificationState>()(
   persist(
     (set) => ({
       notifications: [],
-      addNotification: (item) =>
+      addNotification: (userId, item) =>
         set((state) => ({
           notifications: [
             {
               ...item,
+              userId,
               id: Math.random().toString(36).substring(7),
               isRead: false,
               createdAt: new Date().toISOString(),
@@ -33,14 +38,19 @@ export const useNotificationStore = create<NotificationState>()(
             ...state.notifications,
           ].slice(0, 50), // Limit to 50 notifications
         })),
-      markAllAsRead: () =>
+      markAllAsRead: (userId) =>
         set((state) => ({
-          notifications: state.notifications.map((n) => ({ ...n, isRead: true })),
+          notifications: state.notifications.map((n) =>
+            n.userId === userId ? { ...n, isRead: true } : n
+          ),
         })),
-      clearAll: () => set({ notifications: [] }),
+      clearAll: (userId) =>
+        set((state) => ({
+          notifications: state.notifications.filter((n) => n.userId !== userId),
+        })),
     }),
     {
-      name: 'e-lapor-notifications',
+      name: 'e-lapor-notifications-v2',
     }
   )
 )

@@ -14,17 +14,20 @@ export function NotificationBell({ align = 'right', className }: { align?: 'left
   const { notifications, addNotification, markAllAsRead, clearAll } = useNotificationStore()
   const [isOpen, setIsOpen] = useState(false)
 
-  const unreadCount = notifications.filter((n) => !n.isRead).length
+  const userNotifications = notifications.filter((n) => n.userId === user?.id)
+  const unreadCount = userNotifications.filter((n) => !n.isRead).length
 
   useEffect(() => {
     if (!socket || !user) return
 
+    const isUserAdmin = user.role === 'ADMIN' || Boolean(user.isAdmin)
+
     // Handler for new report (Admin only)
     const handleReportCreated = (report: any) => {
-      if (!user.isAdmin) return
+      if (!isUserAdmin) return
       const title = 'Laporan Baru Masuk'
-      const body = `${report.reporterName} melaporkan "${report.title}" di ${report.roomName}`
-      addNotification({
+      const body = `${report.reporterName || 'Pengguna'} melaporkan "${report.title}" di ${report.roomName || 'Ruangan'}`
+      addNotification(user.id, {
         title,
         body,
         link: `/dashboard/reports/${report.id}`,
@@ -32,22 +35,22 @@ export function NotificationBell({ align = 'right', className }: { align?: 'left
       toast.info(title, { description: body })
     }
 
-    // Handler for report updates (All roles, filtered accordingly)
+    // Handler for report updates (Admin or target reporter)
     const handleReportUpdated = (report: any) => {
       let notify = false
       let title = 'Laporan Diperbarui'
       let body = `Laporan "${report.title}" telah diperbarui.`
 
-      if (user.isAdmin) {
+      if (isUserAdmin) {
         notify = true
-        body = `Laporan "${report.title}" oleh ${report.reporterName} diperbarui.`
+        body = `Laporan "${report.title}" oleh ${report.reporterName || 'Pengguna'} diperbarui.`
       } else if (report.reporterId === user.id) {
         notify = true
         body = `Laporan Anda "${report.title}" diubah statusnya menjadi ${report.status}.`
       }
 
       if (notify) {
-        addNotification({
+        addNotification(user.id, {
           title,
           body,
           link: `/dashboard/reports/${report.id}`,
@@ -99,18 +102,18 @@ export function NotificationBell({ align = 'right', className }: { align?: 'left
               <div className="flex items-center justify-between border-b border-slate-100 p-4 bg-slate-50/50">
                 <span className="text-[15px] font-bold text-slate-800">Notifikasi</span>
                 <div className="flex gap-2">
-                  {unreadCount > 0 && (
+                  {unreadCount > 0 && user && (
                     <button
-                      onClick={markAllAsRead}
+                      onClick={() => markAllAsRead(user.id)}
                       className="text-xs text-[#d9a416] hover:text-[#c29410] font-medium inline-flex items-center gap-0.5 cursor-pointer"
                       title="Tandai semua dibaca"
                     >
                       <Check className="h-3.5 w-3.5" /> Dibaca
                     </button>
                   )}
-                  {notifications.length > 0 && (
+                  {userNotifications.length > 0 && user && (
                     <button
-                      onClick={clearAll}
+                      onClick={() => clearAll(user.id)}
                       className="text-xs text-slate-400 hover:text-danger font-medium inline-flex items-center gap-1 cursor-pointer transition-colors"
                       title="Hapus semua"
                     >
@@ -121,13 +124,13 @@ export function NotificationBell({ align = 'right', className }: { align?: 'left
               </div>
 
               <div className="max-h-[350px] overflow-y-auto divide-y divide-slate-100">
-                {notifications.length === 0 ? (
+                {userNotifications.length === 0 ? (
                   <div className="py-12 flex flex-col items-center justify-center">
                     <Bell className="h-8 w-8 text-slate-200 mb-3" />
                     <p className="text-[13px] font-medium text-slate-500">Tidak ada notifikasi baru</p>
                   </div>
                 ) : (
-                  notifications.map((n) => (
+                  userNotifications.map((n) => (
                     <Link
                       key={n.id}
                       to={n.link}
