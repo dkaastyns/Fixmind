@@ -61,7 +61,7 @@ export function FloatingActionButton() {
   }
 
   return (
-    <div className="fixed bottom-8 right-6 md:bottom-10 md:right-10 z-40 flex flex-col items-center gap-3">
+    <div className="fixed bottom-20 right-6 md:bottom-24 md:right-8 z-40 flex flex-col items-center gap-3 pointer-events-none">
       <AnimatePresence>
         {isOpen && (
           <motion.div
@@ -75,7 +75,7 @@ export function FloatingActionButton() {
             <motion.button
               variants={itemVariants}
               onClick={handleQuickReport}
-              className="flex items-center justify-center h-11 w-11 rounded-xl bg-white hover:bg-slate-50 text-[#d9a416] shadow-lg border border-yellow-100 hover:scale-105 active:scale-95 transition-all group relative cursor-pointer"
+              className="flex items-center justify-center h-11 w-11 rounded-xl bg-white hover:bg-slate-50 text-[#d9a416] shadow-lg border border-yellow-100 hover:scale-105 active:scale-95 transition-all group relative cursor-pointer pointer-events-auto"
               title="Lapor Kerusakan"
             >
               <ClipboardList className="h-5 w-5" />
@@ -88,7 +88,7 @@ export function FloatingActionButton() {
             <motion.button
               variants={itemVariants}
               onClick={handleTransfer}
-              className="flex items-center justify-center h-11 w-11 rounded-xl bg-white hover:bg-slate-50 text-blue-600 shadow-lg border border-blue-100 hover:scale-105 active:scale-95 transition-all group relative cursor-pointer"
+              className="flex items-center justify-center h-11 w-11 rounded-xl bg-white hover:bg-slate-50 text-blue-600 shadow-lg border border-blue-100 hover:scale-105 active:scale-95 transition-all group relative cursor-pointer pointer-events-auto"
               title="Ajukan Transfer"
             >
               <ArrowRightLeft className="h-5 w-5" />
@@ -101,7 +101,7 @@ export function FloatingActionButton() {
             <motion.button
               variants={itemVariants}
               onClick={handleMaintenance}
-              className="flex items-center justify-center h-11 w-11 rounded-xl bg-white hover:bg-slate-50 text-emerald-600 shadow-lg border border-emerald-100 hover:scale-105 active:scale-95 transition-all group relative cursor-pointer"
+              className="flex items-center justify-center h-11 w-11 rounded-xl bg-white hover:bg-slate-50 text-emerald-600 shadow-lg border border-emerald-100 hover:scale-105 active:scale-95 transition-all group relative cursor-pointer pointer-events-auto"
               title="Jadwal Pemeliharaan"
             >
               <CalendarClock className="h-5 w-5" />
@@ -119,7 +119,7 @@ export function FloatingActionButton() {
         whileTap={{ scale: 0.95 }}
         onClick={() => setIsOpen(!isOpen)}
         className={cn(
-          "flex h-14 w-14 items-center justify-center rounded-2xl shadow-xl transition-all duration-300 text-white gradient-gold hover:brightness-110 cursor-pointer"
+          "flex h-14 w-14 items-center justify-center rounded-2xl shadow-xl transition-all duration-300 text-white gradient-gold hover:brightness-110 cursor-pointer pointer-events-auto"
         )}
         aria-label="Pilihan Cepat"
         title="Menu Pilihan Cepat"

@@ -297,7 +297,7 @@ export function ReportsPage() {
           <EmptyState title="Belum ada laporan" description="Buat laporan jika Anda menemukan kerusakan fasilitas." />
         ) : (
           <>
-            <div className="overflow-x-auto">
+            <div className="overflow-x-auto no-scrollbar">
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-slate-200/60 text-left text-slate-500 font-bold bg-slate-50/50">
