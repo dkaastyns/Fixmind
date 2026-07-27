@@ -297,9 +297,9 @@ export function RoomsPage() {
             <motion.div whileHover={{ scale: 1.04, y: -2 }} whileTap={{ scale: 0.96 }}>
               <Button 
                 onClick={() => setShowRoomForm(true)} 
-                className="gap-1.5 h-10 px-4 bg-[#F9D141] hover:bg-[#e0bc38] text-white shadow-md hover:shadow-lg transition-all duration-200 font-semibold rounded-xl text-xs cursor-pointer"
+                className="gap-1.5 h-10 px-4 bg-[#d9a416] hover:bg-[#b88b12] text-white shadow-md hover:shadow-lg transition-all duration-200 font-extrabold rounded-xl text-xs cursor-pointer"
               >
-                <Plus className="h-4 w-4" /> Tambah Ruangan
+                <Plus className="h-4 w-4 text-white" /> Tambah Ruangan
               </Button>
             </motion.div>
           </div>

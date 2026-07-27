@@ -359,9 +359,9 @@ export function MaintenancePage() {
             </Button>
             <Button
               onClick={openCreate}
-              className="rounded-xl bg-[#F9D141] text-slate-900 font-bold hover:bg-[#e0bc38] shadow-md hover:shadow-lg hover:-translate-y-0.5 active:scale-95 transition-all duration-200"
+              className="rounded-xl bg-[#d9a416] hover:bg-[#b88b12] text-white font-extrabold shadow-md hover:shadow-lg hover:-translate-y-0.5 active:scale-95 transition-all duration-200 cursor-pointer"
             >
-              <Plus className="h-4 w-4 mr-2" /> Tambah Jadwal Baru
+              <Plus className="h-4 w-4 mr-2 text-white" /> Tambah Jadwal Baru
             </Button>
           </div>
         }
