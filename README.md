@@ -1,169 +1,172 @@
-# E-Lapor DPRD (FixMind)
+# E-Lapor DPRD (FixMind) — Sistem Manajemen Pelaporan & Pemeliharaan Fasilitas Berbasis AI
 
-E-Lapor DPRD (dengan nama kode FixMind) adalah sebuah sistem manajemen pelaporan dan pemeliharaan fasilitas modern berbasis _Artificial Intelligence_ (AI) yang dirancang khusus untuk mengelola, melacak, dan menyelesaikan berbagai kerusakan atau kendala fasilitas di lingkungan gedung dewan maupun perkantoran.
+[![Tech Stack: Bun](https://img.shields.io/badge/Runtime-Bun%201.3%2B-black?logo=bun)](https://bun.sh/)
+[![Backend: NestJS 11](https://img.shields.io/badge/Backend-NestJS%2011-e0234e?logo=nestjs)](https://nestjs.com/)
+[![Frontend: React 19](https://img.shields.io/badge/Frontend-React%2019-61dafb?logo=react)](https://react.dev/)
+[![Database: PostgreSQL](https://img.shields.io/badge/Database-PostgreSQL%2016-336791?logo=postgresql)](https://www.postgresql.org/)
+[![AI Engine: Gemini 2.5](https://img.shields.io/badge/AI-Gemini%202.5%20Flash-4285f4?logo=google)](https://ai.google.dev/)
+[![PWA Ready](https://img.shields.io/badge/PWA-Vite%20PWA-purple?logo=pwa)](https://vite-pwa-org.netlify.app/)
 
-Sistem ini membantu mempermudah pelaporan, di mana AI (menggunakan Gemini 2.5 Flash) secara otomatis menganalisis masalah, menentukan prioritas, memberikan estimasi waktu, serta menyajikan rekomendasi perbaikan untuk dipantau oleh admin dan pengguna.
+**E-Lapor DPRD (FixMind)** adalah sistem manajemen pelaporan kerusakan, pengajuan perpindahan aset, dan penjadwalan pemeliharaan fasilitas modern berbasis *Artificial Intelligence* (AI) dan *Progressive Web App* (PWA) yang dirancang khusus untuk Sekretariat DPRD Kota Semarang.
 
-## Fitur Utama
-- **Pelaporan Pintar dengan AI:** Identifikasi prioritas, kategori masalah, dan estimasi pengerjaan otomatis.
-- **Jadwal Pemeliharaan Rutin:** Manajemen penjadwalan pemeliharaan fasilitas dan aset secara berkala (Mingguan, Bulanan, dll) dengan manajemen pihak ketiga (vendor).
-- **Pengajuan Pemindahan Aset:** User dapat mengajukan perpindahan aset antar ruangan, lalu admin meninjau dan menyetujuinya sebelum lokasi aset otomatis diubah di database.
-- **Pencarian Global Terpadu:** Cari semua informasi dengan cepat dan akurat melintasi Aset, Laporan Masalah, Transfer, dan Jadwal Pemeliharaan dalam satu kolom pencarian pintar.
-- **Dukungan Aplikasi Mobile (PWA):** Frontend telah mendukung standar Progressive Web App (PWA). Aplikasi dapat langsung di-install pada smartphone Android maupun iOS langsung dari peramban web (tanpa perlu APK terpisah).
-- **Linimasa (Timeline) Pelaporan:** Lacak status tiket dari mulai dibuat, ditugaskan, hingga selesai dikerjakan.
-- **Ekspor Data & Laporan (Analytics):** Analisis kinerja pelaporan fasilitas dalam bentuk metrik visual dan ekspor (CSV, Excel, PDF) dengan rentang waktu.
-- **Notifikasi Real-time:** Memberikan pembaruan instan (*WebSockets*) kepada admin maupun pelapor jika status laporan berubah.
-- **Import Aset dari Excel:** Admin dapat mengimpor data aset inventaris Pemda secara massal dari file `.xlsx`/`.xls` langsung ke database.
+Sistem ini mempermudah alur pengaduan dan pemeliharaan fasilitas secara digital, terintegrasi, dan transparan. AI (Google Gemini 2.5 Flash & Groq) secara otomatis menganalisis isi laporan, mengkalkulasi skor prioritas, memberikan estimasi durasi pengerjaan, serta memberikan rekomendasi langkah penanganan teknis bagi administrator dan teknisi.
 
 ---
 
-## Fitur Baru: Jadwal Pemeliharaan (Maintenance Schedule)
+## 🌟 Fitur Utama Sistem
 
-Fitur untuk menjadwalkan perbaikan rutin fasilitas dan aset dengan manajemen vendor pihak ketiga.
-- Fitur pencatatan lengkap: Nama vendor, kontak person, nomor HP vendor, serta estimasi biaya perbaikan.
-- Pengaturan siklus: Sekali saja (One-time), Mingguan, Bulanan, Triwulan, hingga Tahunan.
-- Pelacakan status jadwal yang komprehensif: Terjadwal, Dikerjakan, Selesai, Batal, atau Terlambat (Overdue).
+### 1. 🤖 Pelaporan Kerusakan Cerdas Berbasis AI
+- **Analisis Prioritas Otomatis:** AI menganalisis deskripsi masalah dan kategori aset untuk menentukan prioritas (`LOW`, `MEDIUM`, `HIGH`, `CRITICAL`), estimasi jam pengerjaan, dan saran solusi teknis.
+- **Linimasa (Timeline) & Histori Audit:** Pelacakan transparan status tiket laporan dari pembuatan (`PENDING`), penugasan teknisi (`IN_PROGRESS`), hingga penyelesaian (`DONE`) beserta lampiran foto kerusakan dan perbaikan.
+- **Komentar & Diskusi Real-time:** Fitur kolom diskusi interaktif pada setiap laporan untuk komunikasi antara pelapor, admin, dan teknisi.
 
-## Fitur Pengajuan Pemindahan Aset
+### 2. 🗓️ Jadwal Pemeliharaan Rutin (Maintenance Schedule)
+- **Manajemen Agenda Pemeliharaan:** Penjadwalan perawatan preventif gedung dan aset berkala (Mingguan, Bulanan, Triwulan, Tahunan, atau Sekali Saja).
+- **Manajemen Vendor Eksternal & Biaya:** Pencatatan nama perusahaan vendor, nama *contact person*, nomor telepon vendor, serta estimasi dan realisasi biaya pemeliharaan.
+- **Status Siklus Kerja:** Pelacakan status pengerjaan (*Terjadwal*, *Sedang Dikerjakan*, *Selesai*, *Batal*, *Terlambat/Overdue*).
 
-Fitur ini memperluas alur aplikasi dari sekadar pengaduan masalah menjadi juga pengelolaan perpindahan aset antar ruangan.
+### 3. 🔄 Pengajuan Pemindahan Aset (Asset Transfer Workflow)
+- **Alur Persetujuan Bertingkat:** Pegawai dapat mengajukan permohonan pemindahan aset antar ruangan beserta alasannya.
+- **Verifikasi Administrator:** Admin dapat meninjau (*Approve* / *Reject*) pengajuan transfer. Jika disetujui, lokasi `room_id` aset otomatis diperbarui secara otomatis di database.
 
-### Alur Penggunaan
-1. **User** membuka menu **Pengajuan Transfer** di dashboard.
-2. User memilih **ruangan asal**, **aset**, **ruangan tujuan**, lalu menuliskan **alasan pemindahan**.
-3. Pengajuan tersimpan dengan status **PENDING**.
-4. **Admin** membuka menu **Approval Transfer** di dashboard.
-5. Admin meninjau detail pengajuan lalu memilih **Setuju** atau **Tolak**.
-6. Jika **disetujui**, sistem otomatis mengubah `room_id` aset ke ruangan tujuan di database.
+### 4. 🔍 Pencarian Global Terpadu (Global Instant Search)
+- **Pencarian Melintas Entitas:** Satu kolom pencarian pintar untuk menemukan Aset, Laporan Kerusakan, Pengajuan Transfer, dan Jadwal Pemeliharaan secara instan dari seluruh sudut aplikasi.
 
-### Endpoint API Aset & Pemeliharaan
+### 5. 📊 Dasbor Analitik & Ekspor Laporan
+- **Visualisasi Kinerja:** Metrik statistik laporan aktif, performa teknisi, status ruangan, dan grafik distribusi laporan.
+- **Ekspor Dokumen:** Mendukung pengunduhan laporan dan agenda pemeliharaan ke format **Excel (.xlsx)** dan **PDF**.
 
-| Method | Endpoint | Deskripsi |
-|--------|----------|-----------|
-| `GET` | `/assets/transfers` | Daftar pengajuan transfer |
-| `PATCH` | `/assets/transfers/:id` | Review transfer oleh admin (`APPROVED` / `REJECTED`) |
-| `GET` | `/maintenance` | Daftar agenda pemeliharaan |
-| `POST` | `/maintenance` | Buat jadwal pemeliharaan baru |
-| `PATCH` | `/maintenance/:id/status` | Ubah status pengerjaan pemeliharaan |
+### 6. 📱 Progressive Web App (PWA) & Mode Offline
+- **Instalasi Tanpa APK:** Dapat langsung di-install pada smartphone Android/iOS maupun desktop melalui peramban web (Chrome, Safari, Edge).
+- **Offline Sync:** Mampu menyimpan draf dan aksi saat jaringan terputus, lalu otomatis menyinkronkan data ketika online kembali.
 
----
-
-## Fitur Import Aset (Excel)
-
-Fitur ini memungkinkan admin mengimpor data aset inventaris dari **file Excel (.xlsx/.xls)** ke dalam database secara massal.
-
-### Cara Penggunaan
-1. **Buka halaman** `Fasilitas & Ruangan` di dashboard admin.
-2. Klik tombol **Template** di pojok kanan atas untuk mengunduh template Excel.
-3. Isi data aset di file template sesuai kolom yang tersedia.
-4. Klik tombol **Import Excel** dan unggah file tersebut.
-
-### Format Kolom Excel (Wajib)
-| idpemda | kode_barang | nomor_register | nama_barang | merk_type |
-|---------|-------------|----------------|-------------|-----------|
+### 7. ⚡ Notifikasi Real-time & Keamanan Tinggi
+- **WebSockets (Socket.io):** Pembaruan status laporan dan pengajuan transfer dipancarkan secara instan ke layar pengguna dan admin tanpa perlu refresh.
+- **Proteksi Brute-Force & Lockout:** Penguncian akun otomatis setelah 5x gagal login berturut-turut untuk melindungi akun admin dari serangan peretasan.
 
 ---
 
-## Tech Stack (Tumpukan Teknologi)
+## 🛠️ Tech Stack (Tumpukan Teknologi)
 
-Proyek ini menggunakan arsitektur _Clean Architecture_ dan dipisahkan menjadi dua bagian utama (Frontend & Backend), tanpa menggunakan ORM berat untuk menjaga performa optimal.
-
-| Komponen | Teknologi yang Digunakan |
-|----------|---------------------------|
-| **Frontend** | React 19, Vite, Tailwind CSS v4, TanStack Query, Zustand, Framer Motion, **Vite PWA** |
-| **Backend** | NestJS 11, JWT (Otentikasi), WebSockets (Socket.io), class-validator |
-| **Database** | PostgreSQL |
-| **Kueri DB** | _Raw SQL_ melalui `postgres.js` (performa dan kontrol penuh) |
-| **Kecerdasan Buatan (AI)** | Gemini 2.5 Flash (Google Generative AI) & Groq AI (Llama 3.1) |
-| **Runtime & Package Manager** | [Bun](https://bun.sh/) 1.3+ |
+| Komponen | Teknologi | Keterangan |
+|----------|-----------|------------|
+| **Runtime & PM** | [Bun](https://bun.sh/) 1.3+ | Runtime JavaScript/TypeScript super cepat & package manager |
+| **Backend Framework** | NestJS 11 | Framework Node.js/TypeScript enterprise dengan modul terpisah |
+| **Frontend Framework** | React 19 + Vite | UI library modern dengan Vite bundler dan React Router 7 |
+| **Styling & Motion** | Tailwind CSS v4 + Framer Motion | Desain *Dark Glassmorphism* modern dengan animasi kinetic halus |
+| **State Management** | TanStack Query + Zustand | Management server-state dan auth session in-memory |
+| **Database** | PostgreSQL 16 + pgvector | Database relasional dengan ekstensi pencarian vektor |
+| **Database Access** | `postgres.js` | Kueri *Raw SQL* berkinerja tinggi tanpa ORM overhead |
+| **Kecerdasan Buatan (AI)** | Gemini 2.5 Flash & Groq (Llama 3.1) | Mesin analisis prioritas, durasi pengerjaan, dan saran teknis |
+| **Real-time Engine** | Socket.io (WebSockets) | Event streaming untuk notifikasi instan |
+| **Media Storage** | Cloudinary | Penyimpanan cloud untuk bukti foto kerusakan & perbaikan |
 
 ---
 
-## Panduan Menjalankan Proyek (Quick Start)
+## 📂 Struktur Repositori & Dokumentasi Terkait
 
-### Persyaratan Sistem
-- [Bun](https://bun.sh/) **1.3+** - digunakan sebagai runtime **dan** package manager (pengganti Node.js/npm).
-- PostgreSQL 16+ dengan ekstensi **pgvector** sudah terpasang (untuk development lokal tanpa Docker).
-- Buat sebuah database kosong di PostgreSQL bernama `fixmind`.
+Struktur lengkap proyek dan panduan pengembang tersedia di folder `docs/`:
 
-> **Penting:** Proyek ini menggunakan **Bun**, bukan `npm` atau `yarn`. Install Bun: `powershell -c "irm bun.sh/install.ps1 | iex"`
+| File Dokumentasi | Isi & Deskripsi |
+|------------------|-----------------|
+| 📘 [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | Arsitektur global, diagram alur siklus laporan, dan transfer aset |
+| 📘 [docs/API.md](docs/API.md) | Katalog lengkap REST API endpoints, DTO, contoh cURL & WebSockets |
+| 📘 [docs/DATABASE.md](docs/DATABASE.md) | ERD, kamus data (Data Dictionary), indeks, dan riwayat migrasi |
+| 📘 [docs/FRONTEND-ARCHITECTURE.md](docs/FRONTEND-ARCHITECTURE.md) | Arsitektur React 19, Zustand, router-guards, dan design system |
+| 📘 [docs/BACKEND-ARCHITECTURE.md](docs/BACKEND-ARCHITECTURE.md) | Modul NestJS, middleware security (Helmet/Throttler), dan kueri `postgres.js` |
+| 📘 [docs/AI.md](docs/AI.md) | Konfigurasi prompt Gemini 2.5 Flash, penentuan prioritas & RAG roadmap |
+| 📘 [docs/FOLDER-STRUCTURE.md](docs/FOLDER-STRUCTURE.md) | Struktur pohon folder backend & frontend secara menyeluruh |
+| 📘 [docs/ROADMAP.md](docs/ROADMAP.md) | Daftar status pengerjaan fitur proyek dan fase pengembangan |
+| 📘 [docs/SECURITY.md](docs/SECURITY.md) | Audit keamanan, JWT token rotation, rate limiting, & account lockout |
+| 📘 [docs/TESTING.md](docs/TESTING.md) | Panduan pengujian unit test dan verifikasi TypeScript |
+| 📘 [docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md) | Solusi masalah umum saat instalasi dan penanganan galat |
+| 📘 [CONTRIBUTING.md](CONTRIBUTING.md) | Standar Conventional Commits, git branching, dan PR workflow |
 
-### 1. Konfigurasi Environment & Instalasi
-**Backend:**
-1. Masuk ke folder backend: `cd backend`
-2. Salin file contoh environment: `copy .env.example .env`
-3. Edit file `.env` dan lengkapi variabel berikut:
-   - `DATABASE_URL` (koneksi PostgreSQL)
-   - `JWT_ACCESS_SECRET` dan `JWT_REFRESH_SECRET` (Wajib minimal 32 karakter demi keamanan kriptografis)
-   - `GEMINI_API_KEY` (untuk fitur analisis AI)
-4. Jalankan instalasi dan migrasi database:
-   ```powershell
-   bun install
-   bun run migrate
-   bun run seed
-   ```
+---
 
-**Frontend:**
-1. Masuk ke folder frontend: `cd frontend`
-2. Salin file contoh environment: `copy .env.example .env`
-3. Jalankan instalasi:
-   ```powershell
-   bun install
-   ```
+## 🚀 Panduan Memulai (Quick Start Guide)
 
-### 2. Menjalankan Server Pengembangan Lokal
+### Prasyarat Sistem
+1. Pasang **[Bun](https://bun.sh/) 1.3+** (pengganti Node.js/npm).
+   - Windows PowerShell: `powershell -c "irm bun.sh/install.ps1 | iex"`
+   - Linux/macOS: `curl -fsSL https://bun.sh/install | bash`
+2. Pasang **PostgreSQL 16+** (dengan ekstensi `pgvector`).
+3. Buat database baru bernama `fixmind` di PostgreSQL lokal Anda.
 
-**Terminal 1 (Backend):**
+---
+
+### Step 1: Konfigurasi & Jalankan Backend
+
 ```powershell
+# 1. Masuk ke direktori backend
 cd backend
+
+# 2. Salin file environment
+copy .env.example .env
+
+# 3. Sesuaikan isi .env (DATABASE_URL, JWT_ACCESS_SECRET, GEMINI_API_KEY, dll)
+
+# 4. Install dependensi
+bun install
+
+# 5. Jalankan migrasi database & seed data admin awal
+bun run migrate
+bun run seed
+
+# 6. Menjalankan server backend (Mode Development)
 bun run start:dev
 ```
+Backend API akan berjalan di: `http://localhost:3000/api/v1`
 
-**Terminal 2 (Frontend):**
+---
+
+### Step 2: Konfigurasi & Jalankan Frontend
+
 ```powershell
+# 1. Masuk ke direktori frontend
 cd frontend
+
+# 2. Salin file environment
+copy .env.example .env
+
+# 3. Install dependensi
+bun install
+
+# 4. Menjalankan server frontend (Vite Dev Server)
 bun run dev
 ```
-
-- **Akses Aplikasi (Frontend):** `http://localhost:5173`
-- **Akses API (Backend):** `http://localhost:3000/api/v1`
+Frontend web akan berjalan di: `http://localhost:5173`
 
 ---
 
-## Menjalankan dengan Docker Compose (Produksi / Staging)
+## 🐳 Menjalankan dengan Docker Compose (Produksi / Staging)
 
-Sistem ini dikonfigurasi dengan standar keamanan tinggi untuk lingkungan produksi:
-1. Salin `.env.example` di folder root / backend ke file `.env` sebelum menjalankan container.
-2. Jalankan perintah:
-   ```bash
-   docker compose up -d --build
-   ```
+Seluruh sistem (Nginx, Backend NestJS, PostgreSQL 16) dapat dijalankan menggunakan Docker Compose:
 
-### Catatan Keamanan Penting (Hardening):
-- **Tanpa Fallback Rahasia:** Docker Compose akan **gagal start** jika `DATABASE_URL`, `JWT_ACCESS_SECRET`, `JWT_REFRESH_SECRET`, dan `POSTGRES_PASSWORD` tidak diset di file `.env`. Ini mencegah sistem berjalan dengan kunci rahasia bawaan pabrik.
-- **Port Tertutup (Internal Network Only):** Port database PostgreSQL (`5432`) dan port NestJS API (`3000`) **tidak di-expose** ke host luar demi keamanan. Seluruh traffic dari luar wajib melalui Nginx di port `80`/`443`.
-- **Akses Database untuk Migrasi/Debug:** Jika Anda perlu mengakses database langsung dari host luar (misal menggunakan DBeaver atau menjalankan migrasi lokal ke DB Docker), buka `docker-compose.yml` lalu uncomment baris `ports` pada service `db` dan `backend` secara sementara. Jangan biarkan baris ini aktif di produksi.
+```bash
+# Salin contoh file .env root
+cp .env.example .env
 
----
+# Build dan jalankan seluruh container
+docker compose up -d --build
+```
 
-## PWA & Dukungan Mobile (Instalasi Aplikasi Tanpa APK)
-
-Aplikasi ini sudah diprogram agar dikenali sebagai _Progressive Web App_ (PWA) yang native-like.
-
-1. Buka URL aplikasi ini di _browser_ Handphone Anda (disarankan Google Chrome untuk Android, atau Safari untuk iOS).
-2. Akan muncul prompt **"Add to Home Screen"** atau **"Install App"**.
-3. Jika tidak muncul, tekan tombol opsi (titik tiga) di Chrome dan pilih "Tambahkan ke Layar Utama".
-4. Aplikasi akan terpasang di HP layaknya aplikasi _native_ lengkap dengan _icon_ dan kemampuan berjalan secara penuh.
+- **URL Aplikasi Production:** `http://localhost` (melalui Nginx Reverse Proxy di port 80/443).
+- **Keamanan Production:** Port internal database (`5432`) dan backend NestJS (`3000`) sengaja disembunyikan dari akses publik demi keamanan *hardening*.
 
 ---
 
-## Dokumentasi Tambahan
+## 🔑 Kredensial Login Default (Development Seed)
 
-Detail mengenai arsitektur dan kebutuhan sistem lainnya dapat dibaca pada folder `docs/`:
+Setelah menjalankan `bun run seed` di backend, Anda dapat menggunakan akun berikut untuk menguji aplikasi:
 
-| File | Deskripsi |
-|------|-----------|
-| [docs/PRD.md](docs/PRD.md) | Kebutuhan Produk (Product Requirements) |
-| [docs/DATABASE.md](docs/DATABASE.md) | ERD, Skema, dan Indeks Database |
-| [docs/API.md](docs/API.md) | Referensi Endpoints API |
-| [docs/ROADMAP.md](docs/ROADMAP.md) | Fase-fase Pengembangan Proyek |
+| Peran (Role) | Email Kredensial | Kata Sandi (Password) | Akses |
+|--------------|------------------|-----------------------|-------|
+| **ADMIN** | `admin@fixmind.local` | `AdminPassword123!` | Akses Penuh (Kelola Ruangan, Aset, User, Maintenance, Transfer Review, Analitik) |
+| **USER** | `user@fixmind.local` | `UserPassword123!` | Akses Pegawai (Pelaporan Kerusakan, Pengajuan Transfer Aset, Profil) |
+
+---
+
+## 📄 Lisensi
+
+Hak Cipta © 2026 Sekretariat DPRD Kota Semarang / Tim Pengembang FixMind. Berlisensi di bawah [MIT License](LICENSE).

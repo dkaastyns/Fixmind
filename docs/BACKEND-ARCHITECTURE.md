@@ -1,77 +1,90 @@
 # FixMind — Backend Architecture
 
-## Stack
+Dokumen ini menjelaskan arsitektur teknis server backend NestJS 11 pada sistem **E-Lapor DPRD (FixMind)**.
 
-- **NestJS 11** on **Bun**
-- **postgres.js** for database access
-- **JWT + httpOnly refresh cookies**
-- **class-validator** DTOs
-- **helmet + throttler** for security
+---
 
-## Module Structure
+## 🛠️ Tech Stack Backend
 
-```
+- **NestJS 11** pada runtime **Bun 1.3+**
+- **postgres.js** — Driver SQL murni dengan *tagged template literals* tanpa ORM
+- **PostgreSQL 16** + **pgvector** — Database relasional dengan indeks vektor
+- **Otentikasi Hybrida JWT**: Access Token (JSON) + HTTP-Only Cookie Refresh Token Rotation
+- **Security Middleware**: `helmet`, `class-validator`, & `@nestjs/throttler` (Rate Limiting)
+- **Real-Time Gateway**: `@nestjs/websockets` + **Socket.io**
+- **Mesin AI**: Google Gemini 2.5 Flash API & Groq AI (Llama 3.1)
+
+---
+
+## 📂 Struktur Modul Backend (`backend/src/`)
+
+```text
 backend/src/
-├── main.ts                 # Bootstrap, global pipes, CORS, helmet
-├── app.module.ts           # Root module, global guards/filters
+├── main.ts                 # Bootstrap server, global pipes, CORS, Helmet
+├── app.module.ts           # Root module, pendaftaran guard/filter global
 ├── config/
-│   └── env.validation.ts   # Validated environment variables
+│   └── env.validation.ts   # Skema validasi variabel lingkungan (.env)
 ├── database/
-│   ├── database.module.ts  # Global SQL connection provider
-│   └── sql.ts              # postgres.js factory
+│   ├── database.module.ts  # Provider global koneksi database
+│   └── sql.ts              # Factory postgres.js & konversi snake_case -> camelCase
 ├── common/
-│   ├── decorators/         # @Roles, @Public, @CurrentUser
-│   ├── filters/            # AllExceptionsFilter
-│   ├── interceptors/       # TransformInterceptor (API envelope)
-│   └── types/              # ApiResponse, database row types
+│   ├── decorators/         # @Roles(), @Public(), @CurrentUser()
+│   ├── filters/            # AllExceptionsFilter (envelope error standar)
+│   ├── interceptors/       # TransformInterceptor (envelope respon sukses standar)
+│   └── types/              # DTO interface, API response, & row database types
 └── modules/
-    ├── auth/               # Login, refresh, logout, me
-    ├── health/             # Health check
-    └── ai/                 # LlmProvider, PriorityEngine
+    ├── ai/                 # LlmProviderService & Priority Engine
+    ├── analytics/          # Controller & Service statistik dasbor admin
+    ├── asset-transfers/    # Controller, Service, & Repo pengajuan transfer aset
+    ├── assets/             # Controller, Service, Repo aset & bulk import Excel
+    ├── auth/               # Controller, Service, & Session Repo (login, refresh, logout)
+    ├── health/             # Controller health check status server
+    ├── maintenance/        # Controller, Service, & Repo agenda pemeliharaan & vendor
+    ├── reports/            # Controller, Service, & Repo laporan kerusakan & PDF/Excel export
+    ├── rooms/              # Controller, Service, & Repo ruangan DPRD
+    ├── users/              # Controller, Service, & Repo manajemen akun & lockout
+    └── websockets/         # Gateway Socket.io pemancar notifikasi real-time
 ```
 
-## Per-Module Pattern
+---
 
-```
-modules/<name>/
-├── <name>.controller.ts    # Routing only
-├── <name>.module.ts
-├── dto/
-├── services/               # Business logic
-├── repositories/           # Raw SQL only
-└── entities/               # Row types (optional)
-```
+## 🔄 Pola Struktur Setiap Modul (Per-Module Architecture)
 
-## Request Flow
+Setiap modul di `backend/src/modules/` menerapkan pemisahan tanggung jawab yang jelas (*Clean Layered Architecture*):
 
-```
-HTTP Request
-  → ThrottlerGuard
-  → JwtAuthGuard (@Public bypass)
-  → RolesGuard
-  → Controller (DTO validation)
-  → Service (business rules)
-  → Repository (SQL)
-  → TransformInterceptor (envelope)
+```text
+modules/<nama-modul>/
+├── <nama-modul>.controller.ts    # Hanya menangani routing HTTP & parsing request
+├── <nama-modul>.module.ts        # Pendaftaran dependency injection NestJS
+├── dto/                          # DTO validasi class-validator untuk Request Body
+├── services/                     # Logika bisnis & aturan aplikasi
+└── repositories/                 # Kueri Raw SQL murni via postgres.js (Query Layer)
 ```
 
-## Security Layers
+---
 
-1. **helmet** — secure HTTP headers
-2. **ValidationPipe** — whitelist + forbid unknown fields
-3. **RBAC** — `@Roles()` decorator on endpoints
-4. **Rate limiting** — `@nestjs/throttler`
-5. **Password hashing** — bcrypt cost 12
-6. **Refresh tokens** — SHA-256 hash in DB, httpOnly cookie
+## 🔒 Lapisan Keamanan (Security Hardening)
 
-## AI Architecture
+1. **Helmet HTTP Headers**: Mengamankan header HTTP terhadap serangan XSS, Clickjacking, dan MIME sniffing.
+2. **ValidationPipe Strict Whitelist**: Menolak dan membuang bidang (*fields*) ilegal yang tidak terdaftar di DTO request.
+3. **Role-Based Access Control (RBAC)**: Guard `@Roles('ADMIN')` memverifikasi peran pengguna secara ketat di setiap endpoint terproteksi.
+4. **Rate Limiting (Throttler)**: Membatasi maksimal 100 request/menit per IP untuk mencegah serangan DoS/brute force.
+5. **Account Lockout Protection**: Akun otomatis dikunci selama 15 menit jika 5 kali berturut-turut gagal memasukkan kata sandi.
+6. **Password Hashing**: Menggunakan `bcrypt` dengan faktor *salt cost* 12.
+7. **Refresh Token Rotation**: Refresh token disimpan di database sebagai hash SHA-256 dan dikirim melalui cookie HTTP-Only.
 
+---
+
+## 🤖 Arsitektur Kecerdasan Buatan (AI Engine)
+
+```text
+Laporan Baru Dibuat (POST /reports)
+  → Simpan Laporan ke Database (Status: PENDING)
+  → Pemicu Asinkron LlmProviderService
+  → Request ke Google Gemini 2.5 Flash / Groq AI
+  → Parse Respon JSON: priority, score, recommendation, estimatedHours
+  → Update Kolom ai_* di Tabel reports
+  → Pancarkan Event Real-time WebSockets ke Admin
 ```
-ReportCreatedEvent (future)
-  → PriorityEngineService
-    → LlmProviderService (Gemini HTTP)
-  → Update report ai_* fields async
-  → On failure: ai_analysis_status = FAILED, report still valid
-```
 
-Interface `LlmProviderService` allows future swap to external Python service without changing consumers.
+Jika terjadi gangguan koneksi ke API Gemini, pembuatan laporan pengguna tetap **berhasil**, dan kolom `ai_analysis_status` di-set menjadi `FAILED` tanpa membatalkan transaksi.

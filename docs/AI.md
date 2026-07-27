@@ -4,9 +4,9 @@
 
 AI is **advisory only**. Administrators assign technicians and set final priority. The system never auto-closes or auto-assigns based solely on AI output.
 
-## Scope (MVP)
+## Scope
 
-Two capabilities:
+Two capabilities provided by AI analysis:
 
 ### 1. Priority Classification
 
@@ -24,38 +24,28 @@ Two capabilities:
 }
 ```
 
-### 2. Maintenance Recommendation
+### 2. Maintenance Recommendation & Duration Estimation
 
 Included in the same JSON response above (`recommendation`, `estimatedRepairHours`, `suggestedAction`).
 
 ## Implementation
 
 - **Module:** `backend/src/modules/ai/`
-- **Provider:** Gemini 2.5 Flash via REST API
-- **Trigger:** Async after report creation (to be wired in ReportsModule)
-- **Failure mode:** `ai_analysis_status = FAILED`; report creation unaffected
+- **Provider:** Google Gemini 2.5 Flash via REST API (with Groq AI Llama 3.1 fallback option)
+- **Trigger:** Fully wired asynchronously in `ReportsService` immediately after report creation.
+- **Failure Mode:** `ai_analysis_status = FAILED`; report creation is completely unaffected and proceeds safely.
 
 ## Configuration
 
 ```env
 LLM_PROVIDER=gemini
-GEMINI_API_KEY=your-key
+GEMINI_API_KEY=your-gemini-key
 GEMINI_MODEL=gemini-2.5-flash
+GROQ_API_KEY=optional-groq-key
 ```
 
-## Reliability
+## Reliability & Resiliency
 
 - 15s timeout per request
-- Errors logged, null returned to caller
-- `ai_usage_logs` table for cost monitoring (future wiring)
-
-## Future: RAG Chatbot
-
-- Table `knowledge_chunks` with `vector(768)` embeddings
-- Similarity search via pgvector `<=>` operator
-- SSE streaming to frontend
-- No external vector DB for MVP
-
-## Why not FastAPI?
-
-See [DATABASE.md](./DATABASE.md#why-internal-aimodule-instead-of-fastapi). The `LlmProviderService` interface preserves option to extract to Python later.
+- Errors logged gracefully, null returned on exception
+- `ai_usage_logs` table records API execution metrics and token counts

@@ -1,64 +1,117 @@
-# FixMind — Folder Structure
+# FixMind — Structure Directory & Folder Tree
 
-```
+Dokumen ini menyajikan peta struktur pohon direktori proyek **E-Lapor DPRD (FixMind)** untuk memudahkan pengembang memahami letak berkas backend dan frontend.
+
+---
+
+## 🌳 Root Directory Overview
+
+```text
 FixMind/
-├── backend/
-│   ├── migrations/              # Numbered SQL migrations
-│   │   ├── 0001_init_extensions.sql
-│   │   ├── 0002_create_users_and_sessions.sql
-│   │   ├── 0003_create_facilities.sql
-│   │   ├── 0004_create_reports.sql
-│   │   └── 0005_create_ai_tables.sql
-│   ├── scripts/
-│   │   ├── migrate.ts           # Migration runner (bun run migrate)
-│   │   └── seed.ts              # Admin seed (bun run seed)
-│   ├── src/
-│   │   ├── main.ts
-│   │   ├── app.module.ts
-│   │   ├── config/
-│   │   ├── database/
-│   │   ├── common/
-│   │   └── modules/
-│   │       ├── auth/
-│   │       ├── health/
-│   │       └── ai/
-│   ├── .env.example
-│   ├── Dockerfile
-│   └── package.json
-├── frontend/
-│   ├── src/
-│   │   ├── app/
-│   │   ├── components/
-│   │   ├── features/
-│   │   ├── lib/
-│   │   ├── stores/
-│   │   └── types/
-│   ├── .env.example
-│   ├── Dockerfile
-│   └── package.json
-├── docs/                        # All project documentation
-├── infra/
-│   └── nginx/                   # Reverse proxy configs
-├── docker-compose.yml
+├── backend/                  # NestJS 11 Server (API, DB Migrations, WebSockets, AI)
+├── frontend/                 # React 19 + Vite Client (PWA, Tailwind v4, Components)
+├── docs/                     # Berkas Dokumentasi Lengkap Proyek
+├── infra/                    # Konfigurasi Infrastruktur & Reverse Proxy (Nginx)
+├── .env.example              # File contoh variabel lingkungan root / docker
+├── .githooks/                # Pre-commit hook pemindai rahasia & kredensial
+├── CONTRIBUTING.md           # Panduan Kontribusi, Branching, & Commit Convention
+├── LICENSE                   # Lisensi Proyek (MIT)
+├── README.md                 # Dokumentasi Utama & Panduan Memulai
+└── docker-compose.yml        # Orchestration Container Docker Produksi
+```
+
+---
+
+## 📦 Backend Directory Structure (`backend/`)
+
+```text
+backend/
+├── migrations/               # Berkas Migrasi SQL (Dieksekusi secara berurutan)
+│   ├── 0001_init_extensions.sql
+│   ├── 0002_create_users_and_sessions.sql
+│   ├── 0003_create_facilities.sql
+│   ├── 0004_create_reports.sql
+│   ├── 0005_create_ai_tables.sql
+│   ├── 0006_comments_and_maintenance.sql
+│   ├── 0007_add_target_date_reports.sql
+│   ├── 0008_update_asset_inventory_columns.sql
+│   ├── 0009_drop_ratings.sql
+│   ├── 0010_create_asset_transfers.sql
+│   ├── 0011_remove_technician_columns.sql
+│   ├── 0012_create_maintenance_schedules.sql
+│   ├── 0013_add_failed_login_lockout.sql
+│   └── 0014_drop_knowledge_chunks.sql
+├── scripts/                  # Skrip Bantuan Execution
+│   ├── migrate.ts            # Migration runner script (bun run migrate)
+│   └── seed.ts               # Database seed script akun awal (bun run seed)
+├── src/
+│   ├── main.ts               # Entry point NestJS, global pipe, Cors, Helmet
+│   ├── app.module.ts         # Root App Module, import seluruh fitur & middleware
+│   ├── config/               # Validasi schema environment variable
+│   ├── database/             # Provider koneksi postgres.js (sql.ts, database.module.ts)
+│   ├── common/               # Resource bersama
+│   │   ├── decorators/       # @Roles(), @Public(), @CurrentUser()
+│   │   ├── filters/          # AllExceptionsFilter (envelope error terstruktur)
+│   │   ├── interceptors/     # TransformInterceptor (envelope response sukses)
+│   │   └── types/            # API Response envelope & row database interfaces
+│   └── modules/              # Sub-modul Fitur Aplikasi
+│       ├── ai/               # LlmProviderService (Gemini & Groq Integration)
+│       ├── analytics/        # Endpoint statistik dasbor & performa teknisi
+│       ├── asset-transfers/  # Pengajuan & persetujuan pemindahan aset
+│       ├── assets/           # Kelola aset inventaris & bulk import Excel
+│       ├── auth/             # Login, refresh token rotation, logout, & profile
+│       ├── health/           # Endpoint health check status server
+│       ├── maintenance/      # Kelola jadwal pemeliharaan rutin & vendor
+│       ├── reports/          # Kelola laporan kerusakan, histori audit, & PDF/Excel export
+│       ├── rooms/            # Kelola fasilitas ruangan DPRD
+│       ├── users/            # Kelola akun pengguna, teknisi, & lockout
+│       └── websockets/       # Socket.io Gateway untuk notifikasi real-time
 ├── .env.example
-└── README.md
+├── Dockerfile
+└── package.json
 ```
 
-## Planned Module Additions
+---
 
-```
-backend/src/modules/
-├── users/
-├── rooms/
-├── assets/
-├── reports/
-└── analytics/
-```
+## 🎨 Frontend Directory Structure (`frontend/`)
 
-```
-frontend/src/features/
-├── reports/
-├── rooms/
-├── users/
-└── analytics/
+```text
+frontend/
+├── public/                   # Asset Statis (PWA icons, JDIH logo, background images)
+│   ├── favicon.ico
+│   ├── jdih-logo.png
+│   ├── new-bg_dprd.jpg
+│   ├── icon-192.png
+│   └── icon-512.png
+├── src/
+│   ├── main.tsx              # Entry point React 19 & Provider Wrappers
+│   ├── index.css             # Tailwind CSS v4 design tokens, glass utilities
+│   ├── app/                  # Konfigurasi Rute Aplikasi
+│   │   ├── router.tsx        # Deklarasi URL Path & Elemen Halaman
+│   │   └── router-guards.tsx # Router Guard (ProtectedRoute, AdminRoute, GuestRoute)
+│   ├── components/           # Komponen UI Reusable
+│   │   ├── layout/           # DashboardLayout & Mobile Sidebar Navigation
+│   │   ├── providers/        # OfflineSyncProvider (PWA Sync Handler)
+│   │   └── ui/               # Button, Input, GlassCard, FullPageLoading, GlobalSearchModal, FloatingActionButton, etc.
+│   ├── features/             # Modul Halaman Berdasarkan Fitur
+│   │   ├── analytics/pages/  # Halaman Dasbor Analitik & Grafik Metrik
+│   │   ├── asset-transfers/  # Halaman Pengajuan & Persetujuan Transfer Aset
+│   │   ├── auth/pages/       # Halaman Login & Signup (Dark Glassmorphism)
+│   │   ├── landing/pages/    # Halaman Utama (Landing, Terms, Privacy Policy, Opening Intro)
+│   │   ├── maintenance/      # Halaman Agenda Pemeliharaan Rutin & Form Modal
+│   │   ├── profile/pages/    # Halaman Pengaturan Profil Pengguna
+│   │   ├── reports/pages/    # Halaman Daftar Laporan Masalah & Detail Laporan
+│   │   ├── rooms/pages/      # Halaman Kelola Ruangan & Inventaris Aset
+│   │   └── users/pages/      # Halaman Manajemen Akun Pengguna & Admin
+│   ├── lib/                  # Library & API Wrapper
+│   │   ├── api-client.ts     # Wrapper Fetch API terintegrasi Token Refresh
+│   │   └── utils.ts          # Helpers `cn()` (clsx + tailwind-merge)
+│   ├── stores/               # State Management Lokal & Sesi
+│   │   └── auth-store.ts     # Zustand Store (AccessToken memory & Data User)
+│   └── types/                # Type Definitions & DTO Interfaces
+│       └── api.ts
+├── .env.example
+├── Dockerfile
+├── vite.config.ts            # Konfigurasi Vite & Vite PWA Plugin
+└── package.json
 ```
