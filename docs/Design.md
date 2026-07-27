@@ -1,283 +1,75 @@
-# DESIGN PHILOSOPHY
+# FixMind — Filosofi & Sistem Desain UI/UX (Design System)
 
-The application must be designed with a modern enterprise dashboard experience.
-
-## Design Principles
-
-- Mobile-First Design
-- Responsive on all screen sizes
-- Clean and Minimalist
-- Professional
-- Elegant
-- Premium
-- Simple navigation
-- Consistent spacing
-- Accessibility friendly
-
-Avoid visual clutter.
-
-Every page should feel lightweight and comfortable to use.
+Dokumen ini berisi panduan gaya visual, sistem warna, tipografi, serta aturan UX pada aplikasi **E-Lapor DPRD (FixMind)**. Aplikasi ini dirancang agar memberikan pengalaman dasbor enterprise modern yang cepat, elegan, dan intuitif.
 
 ---
 
-# UI STYLE
+## 1. Prinsip Desain Utama (Design Principles)
 
-Design Language
-
-Minimalism + Glassmorphism
-
-The interface should use subtle glass effects instead of heavy shadows.
-
-Cards should have soft transparency with backdrop blur.
-
-Rounded corners should be consistent across the application.
-
-Animations should feel smooth and professional.
-
-Never overuse animations.
+- **Mobile-First Design:** Dirancang utama untuk perangkat seluler terlebih dahulu, kemudian ditingkatkan secara responsif untuk tablet dan desktop.
+- **Bersih & Minimalis (Clean & Minimalist):** Menghindari elemen visual berlebihan yang mengganggu konsentrasi pengguna.
+- **Profesional & Premium:** Menggunakan estetika modern setara produk SaaS kelas dunia (seperti Vercel, Linear, atau Stripe).
+- **Aksesibilitas & Hirarki Jelas:** Memperhatikan kontras teks, keterbacaan, dan ukuran area sentuh (*thumb-friendly*).
 
 ---
 
-# COLOR PALETTE
+## 2. Bahasa Desain & Gaya Visual (UI Style)
 
-Primary Gradient
+**Desain Bahasa:** *Minimalism + Glassmorphic Aesthetics*
 
-Start
-
-#EECDA3
-
-End
-
-#EF629F
-
-Use this gradient consistently across:
-
-- Login Background
-- Primary Buttons
-- Statistics Cards
-- Progress Bars
-- Active Navigation
-- Charts Accent
-- Loading Components
-
-Gradient
-
-linear-gradient(90deg, #EECDA3 0%, #EF629F 100%)
-
-Background
-
-#FAFAFC
-
-Card
-
-rgba(255,255,255,0.72)
-
-Card Border
-
-rgba(255,255,255,0.45)
-
-Primary Text
-
-#1E293B
-
-Secondary Text
-
-#64748B
-
-Success
-
-#22C55E
-
-Warning
-
-#F59E0B
-
-Danger
-
-#EF4444
-
-Info
-
-#3B82F6
+- Menggunakan kartu transparan (*glass card*) dengan efek blur latar belakang (*backdrop blur*) alih-alih bayangan gelap yang berat.
+- Sudut elemen yang konsisten (`rounded-xl` / `rounded-2xl`).
+- Animasi transisi yang halus, profesional, dan tidak berlebihan.
 
 ---
 
-# TYPOGRAPHY
+## 3. Palet Warna (Color Palette)
 
-Font
-
-Inter
-
-Font Weight
-
-400
-500
-600
-700
-
-Avoid decorative fonts.
-
-Use consistent typography hierarchy.
+### Warna Gradasi Utama (Primary Gradient)
+- **Warna Aksen:** `#F9D141` / `#d9a416` (Emas DPRD) dipadukan dengan aksen hangat.
+- **Latar Belakang:** `#FAFAFC` (Terang) & `#090D16` / `slate-950` (Tirai Kaca Gelap)
+- **Kartu Transparan (Glass Card):** `rgba(255, 255, 255, 0.72)` dengan border `rgba(255, 255, 255, 0.45)`
+- **Teks Utama:** `#1E293B` (Teks Terang) & `#FFFFFF` (Teks Kaca Gelap)
+- **Teks Sekunder:** `#64748B` / `slate-400`
+- **Status Indikator:**
+  - Sukses (Success): `#22C55E`
+  - Peringatan (Warning): `#F59E0B`
+  - Bahaya (Danger): `#EF4444` / `#D42115`
+  - Informasi (Info): `#3B82F6`
 
 ---
 
-# COMPONENT STYLE
+## 4. Tipografi (Typography)
 
-Cards
-
-- Rounded XL
-- Glassmorphism
-- Soft Border
-- Backdrop Blur
-- Smooth Hover
-
-Buttons
-
-Primary
-
-Gradient
-
-#EECDA3 → #EF629F
-
-Secondary
-
-White
-
-Ghost
-
-Transparent
-
-Danger
-
-Red
-
-Inputs
-
-Rounded
-
-Soft Border
-
-Focus Ring
-
-Gradient Accent
-
-Tables
-
-Minimal
-
-Clean
-
-Alternating hover effect
-
-No excessive borders
-
-Sidebar
-
-Collapsible
-
-Minimal
-
-Glass Effect
-
-Dashboard
-
-Large statistic cards
-
-Simple charts
-
-Minimal icons
-
-Professional spacing
+- **Font Utama:** Inter (Google Fonts)
+- **Ketebalan Font (Font Weight):** 400 (Regular), 500 (Medium), 600 (SemiBold), 700 (Bold), 800 (ExtraBold).
+- Hindari font dekoratif yang sulit dibaca. Gunakan hirarki ukuran yang konsisten dari judul hingga teks kecil.
 
 ---
 
-# ANIMATION
+## 5. Gaya Komponen UI (Component Style)
 
-Use Framer Motion.
-
-Animations should feel natural.
-
-Allowed animations
-
-- Fade
-- Slide
-- Scale
-- Stagger
-- Hover Lift
-- Page Transition
-
-Animation Duration
-
-150ms–300ms
-
-Never create distracting animations.
-
-The UI should look like a modern SaaS dashboard.
+- **Kartu (Cards):** Sudut melengkung `rounded-xl`, batas tipis transparan, backdrop blur, dan animasi hover angkat (*lift on hover*).
+- **Tombol (Buttons):**
+  - Primary: Gradasi warna aksen dengan teks putih tegas (`text-white font-extrabold`).
+  - Secondary: Putih bersih / glass transparan dengan efek hover halus.
+  - Danger: Merah tegas untuk konfirmasi aksi destruktif.
+- **Tabel Data:** Minimalis, bersih, dengan efek hover baris bergantian tanpa border berlebihan.
+- **Sidebar Navigasi:** Dapat diciutkan (*collapsible*), mendukung mode melayang mobile, dan indikator aktif berpendar.
 
 ---
 
-# MOBILE FIRST
+## 6. Prinsip Animasi (Animation Principles)
 
-Always design for mobile first.
-
-Then progressively enhance for:
-
-Tablet
-
-Desktop
-
-Large Desktop
-
-All pages must be fully responsive.
-
-Responsive breakpoints should be consistent.
-
-Never ignore mobile usability.
-
-Navigation should automatically adapt.
-
-Tables should become responsive.
-
-Forms should stack vertically on smaller screens.
-
-Buttons must remain thumb-friendly.
+Menggunakan **Framer Motion** dengan durasi transisi 150ms–300ms.
+- Animasi yang diperbolehkan: *Fade*, *Slide*, *Scale*, *Stagger*, *Hover Lift*, dan *Page Transition*.
+- Dilarang membuat animasi yang terlalu ramai atau memperlambat interaksi pengguna.
 
 ---
 
-# UX PRINCIPLES
+## 7. Prinsip Pengalaman Pengguna (UX Principles)
 
-Always prioritize usability over aesthetics.
-
-Reduce user clicks whenever possible.
-
-Use confirmation dialogs for destructive actions.
-
-Display loading states.
-
-Display empty states.
-
-Display error states.
-
-Use toast notifications.
-
-Provide clear validation messages.
-
-Every interaction should have visual feedback.
-
----
-
-# DESIGN GOAL
-
-The application should feel like a premium SaaS product instead of a student project.
-
-Think of products similar to:
-
-- Linear
-- Notion
-- Vercel Dashboard
-- Clerk Dashboard
-- Stripe Dashboard
-
-Do NOT copy them.
-
-Only use them as inspiration for simplicity, spacing, typography, and professionalism.
+- Utamakan kegunaan (*usability*) di atas estetika semata.
+- Minimalkan jumlah klik pengguna untuk menyelesaikan tugas.
+- Selalu sediakan dialog konfirmasi (*confirmation modal*) untuk aksi penghapusan atau perubahan status kritikal.
+- Berikan umpan balik visual (*visual feedback*) pada setiap interaksi (loading state, toast notification, empty state, error message).

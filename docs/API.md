@@ -1,11 +1,13 @@
-# FixMind — API Documentation
+# FixMind — Dokumentasi API & Integrasi Endpoint
 
-Base URL: `http://localhost:3000/api/v1`
+URL Utama (Base URL): `http://localhost:3000/api/v1`
 
-## API Authentication & cURL Examples
+---
+
+## Otentikasi API & Contoh cURL
 
 Semua endpoint yang membutuhkan autentikasi wajib menyertakan header:
-```
+```http
 Authorization: Bearer <accessToken>
 ```
 
@@ -101,9 +103,9 @@ curl -X POST http://localhost:3000/api/v1/auth/logout \
 
 ---
 
-## Response Format
+## Format Respon Standar (API Envelope)
 
-### Success
+### Format Respon Berhasil (Success)
 ```json
 {
   "success": true,
@@ -112,7 +114,7 @@ curl -X POST http://localhost:3000/api/v1/auth/logout \
 }
 ```
 
-### Error
+### Format Respon Galat (Error)
 ```json
 {
   "success": false,
@@ -123,13 +125,11 @@ curl -X POST http://localhost:3000/api/v1/auth/logout \
 
 ---
 
-## Authentication
+## Modul Otentikasi (Auth)
 
-Refresh token disimpan di **httpOnly cookie** `fixmind_refresh` pada path `/api/v1/auth`.
+Refresh token disimpan di **httpOnly cookie** `fixmind_refresh` pada path `/api/v1/auth`. Access token dikembalikan dalam format JSON dan dikirim via `Authorization: Bearer <token>`.
 
-Access token dikembalikan di JSON dan dikirim sebagai `Authorization: Bearer <token>`.
-
-### Token Authentication Flow
+### Diagram Alur Token Authentication
 
 ```mermaid
 sequenceDiagram
@@ -163,82 +163,64 @@ sequenceDiagram
     API-->>Client: Set httpOnly cookie baru & return Access Token baru
 ```
 
-### POST /auth/login
-**Public** | Login
-
-**Body:**
-```json
-{ "email": "admin@fixmind.local", "password": "Admin123!@#" }
-```
-
-**Response data:**
-```json
-{
-  "user": { "id": "...", "email": "...", "fullName": "...", "role": "ADMIN" },
-  "accessToken": "eyJ...",
-  "expiresIn": "15m"
-}
-```
-
-### POST /auth/refresh
-**Public** | Refresh access token (menggunakan cookie)
-
-### POST /auth/logout
-**Authenticated** | Cabut sesi, hapus cookie
-
-### GET /auth/me
-**Authenticated** | Profil pengguna yang sedang login
+| Method | Path | Akses | Deskripsi |
+|--------|------|-------|-----------|
+| `POST` | `/auth/login` | Publik | Login pengguna |
+| `POST` | `/auth/refresh` | Publik | Refresh access token via cookie |
+| `POST` | `/auth/logout` | Terautentikasi | Cabut sesi & bersihkan cookie |
+| `GET` | `/auth/me` | Terautentikasi | Profil pengguna yang sedang login |
 
 ---
 
-## Health
+## Modul Health Check
 
-### GET /health
-**Public** | Cek status server API
+| Method | Path | Akses | Deskripsi |
+|--------|------|-------|-----------|
+| `GET` | `/health` | Publik | Cek status kesehatan server API |
 
 ---
 
-## Users
+## Modul Pengguna (Users)
 
-| Method | Path | Role | Deskripsi |
-|--------|------|------|-----------|
-| `GET` | `/users` | ADMIN | Daftar semua pengguna |
+| Method | Path | Peran Akses | Deskripsi |
+|--------|------|-------------|-----------|
+| `GET` | `/users` | ADMIN | Daftar semua akun pengguna |
 | `GET` | `/users/technicians` | ADMIN | Daftar teknisi aktif |
-| `POST` | `/users` | ADMIN | Buat pengguna baru |
-| `PATCH` | `/users/:id` | ADMIN | Update data pengguna |
-| `DELETE` | `/users/:id` | ADMIN | Hapus pengguna |
+| `POST` | `/users` | ADMIN | Buat akun pengguna baru |
+| `PATCH` | `/users/:id` | ADMIN | Perbarui data / status pengguna |
+| `DELETE` | `/users/:id` | ADMIN | Hapus akun pengguna |
 
 ---
 
-## Rooms (Ruangan)
+## Modul Ruangan (Rooms)
 
-| Method | Path | Role | Deskripsi |
-|--------|------|------|-----------|
-| `GET` | `/rooms` | Authenticated | Daftar semua ruangan |
-| `GET` | `/rooms/:id` | Authenticated | Detail ruangan |
+| Method | Path | Peran Akses | Deskripsi |
+|--------|------|-------------|-----------|
+| `GET` | `/rooms` | Terautentikasi | Daftar semua ruangan |
+| `GET` | `/rooms/:id` | Terautentikasi | Detail data ruangan |
 | `POST` | `/rooms` | ADMIN | Tambah ruangan baru |
-| `PATCH` | `/rooms/:id` | ADMIN | Update ruangan |
+| `PATCH` | `/rooms/:id` | ADMIN | Perbarui data ruangan |
 | `DELETE` | `/rooms/:id` | ADMIN | Hapus ruangan |
 
 ---
 
-## Assets (Aset Inventaris)
+## Modul Aset (Assets)
 
-| Method | Path | Role | Deskripsi |
-|--------|------|------|-----------|
-| `GET` | `/assets` | Authenticated | Daftar aset (opsional: `?roomId=<uuid>&search=<query>&page=1&limit=50`) |
-| `GET` | `/assets/:id` | Authenticated | Detail aset |
+| Method | Path | Peran Akses | Deskripsi |
+|--------|------|-------------|-----------|
+| `GET` | `/assets` | Terautentikasi | Daftar aset (`?roomId=<uuid>&search=<query>&page=1&limit=50`) |
+| `GET` | `/assets/:id` | Terautentikasi | Detail data aset |
 | `POST` | `/assets` | ADMIN | Tambah aset manual |
-| `PATCH` | `/assets/:id` | ADMIN | Update aset |
+| `PATCH` | `/assets/:id` | ADMIN | Perbarui data aset |
 | `DELETE` | `/assets/:id` | ADMIN | Hapus aset (soft delete) |
-| `GET` | `/assets/import/template` | ADMIN | Download template Excel untuk import |
-| `POST` | `/assets/import?roomId=<uuid>` | ADMIN | Import aset dari file Excel |
-| `GET` | `/assets/transfers` | Authenticated | Daftar transfer (opsional: `?status=<enum>&mineOnly=true&search=<query>`) |
-| `GET` | `/assets/transfers/:id` | Authenticated | Detail transfer aset |
-| `POST` | `/assets/transfers` | Authenticated | Pengajuan transfer aset baru |
-| `PATCH` | `/assets/transfers/:id` | ADMIN | Menyetujui/menolak pengajuan transfer |
+| `GET` | `/assets/import/template` | ADMIN | Download template Excel import aset |
+| `POST` | `/assets/import?roomId=<uuid>` | ADMIN | Import aset dari file Excel massal |
+| `GET` | `/assets/transfers` | Terautentikasi | Daftar pengajuan transfer (`?status=<enum>&mineOnly=true`) |
+| `GET` | `/assets/transfers/:id` | Terautentikasi | Detail pengajuan transfer aset |
+| `POST` | `/assets/transfers` | Terautentikasi | Buat pengajuan transfer aset baru |
+| `PATCH` | `/assets/transfers/:id` | ADMIN | Persetujuan/penolakan transfer aset |
 
-### Body POST /assets
+### Body POST /assets (Tambah Aset Manual)
 ```json
 {
   "roomId": "uuid-ruangan",
@@ -252,32 +234,18 @@ sequenceDiagram
 
 ### Import Excel (POST /assets/import)
 - **Content-Type:** `multipart/form-data`
-- **Query param:** `roomId` (UUID ruangan tujuan) — **wajib**
-- **Form field:** `file` — file `.xlsx` atau `.xls`
+- **Query param:** `roomId` (UUID ruangan tujuan) — **Wajib**
+- **Form field:** `file` — Berkas `.xlsx` atau `.xls`
 
 **Kolom Excel yang wajib ada di baris header:**
 
-| Nama Kolom | Alias yang Diterima |
-|------------|---------------------|
+| Nama Kolom Utama | Alias yang Diterima |
+|------------------|---------------------|
 | `idpemda` | `id_pemda` |
 | `kode_barang` | `kode_brg` |
 | `nomor_register` | `no_register`, `no_reg` |
 | `nama_barang` | `nama_brg` |
 | `merk_type` | `merk_dan_type`, `merk_tipe`, `merk_dan_tipe`, `merk` |
-
-**Response:**
-```json
-{
-  "success": true,
-  "message": "Assets imported",
-  "data": {
-    "imported": 10,
-    "data": [ { "id": "...", "kodeBarang": "...", ... } ]
-  }
-}
-```
-
-> **Upsert:** Jika `kode_barang` sudah ada di database, baris tersebut akan **diperbarui** (bukan duplikat).
 
 ### Body POST /assets/transfers (Pengajuan Transfer Aset)
 ```json
@@ -288,55 +256,47 @@ sequenceDiagram
 }
 ```
 
-### Body PATCH /assets/transfers/:id (Review Transfer oleh Admin)
-```json
-{
-  "status": "APPROVED", // atau "REJECTED"
-  "reviewerNotes": "Disetujui, ruangan baru sudah siap digunakan"
-}
-```
+---
+
+## Modul Laporan Kerusakan (Reports)
+
+| Method | Path | Peran Akses | Deskripsi |
+|--------|------|-------------|-----------|
+| `GET` | `/reports` | Terautentikasi | Daftar laporan (`?status=<enum>&roomId=<uuid>&search=<query>`) |
+| `GET` | `/reports/:id` | Terautentikasi | Detail laporan beserta riwayat audit & lampiran foto |
+| `POST` | `/reports` | USER, ADMIN | Buat tiket laporan kerusakan baru |
+| `PATCH` | `/reports/:id/status` | TECHNICIAN, ADMIN | Update status pengerjaan laporan |
+| `POST` | `/reports/:id/assign` | ADMIN | Penugasan teknisi |
+| `POST` | `/reports/:id/attachments` | USER, TECHNICIAN | Upload foto kerusakan/perbaikan (multipart) |
+| `GET` | `/reports/:id/comments` | Terautentikasi | Ambil daftar komentar laporan |
+| `POST` | `/reports/:id/comments` | Terautentikasi | Tambah komentar baru |
+| `GET` | `/reports/export/excel` | ADMIN | Export data laporan ke Excel |
+| `GET` | `/reports/export/pdf` | ADMIN | Export data laporan ke PDF |
 
 ---
 
-## Reports (Laporan)
+## Modul Jadwal Pemeliharaan (Maintenance)
 
-| Method | Path | Role | Deskripsi |
-|--------|------|------|-----------|
-| `GET` | `/reports` | Authenticated | Daftar laporan (filter: `status`, `roomId`, `dateFrom`, `dateTo`) |
-| `GET` | `/reports/:id` | Authenticated | Detail laporan beserta riwayat & lampiran |
-| `POST` | `/reports` | USER, ADMIN | Buat laporan baru |
-| `PATCH` | `/reports/:id/status` | TECHNICIAN, ADMIN | Update status laporan |
-| `POST` | `/reports/:id/assign` | ADMIN | Tugaskan teknisi |
-| `POST` | `/reports/:id/attachments` | USER, TECHNICIAN | Upload foto (multipart) |
-| `GET` | `/reports/:id/comments` | Authenticated | Ambil komentar laporan |
-| `POST` | `/reports/:id/comments` | Authenticated | Tambah komentar |
-| `GET` | `/reports/export/excel` | ADMIN | Export laporan ke Excel |
-| `GET` | `/reports/export/pdf` | ADMIN | Export laporan ke PDF |
-
----
-
-## Maintenance (Jadwal Pemeliharaan)
-
-| Method | Path | Role | Deskripsi |
-|--------|------|------|-----------|
-| `GET` | `/maintenance` | Authenticated | Daftar jadwal (filter: `status`, `search`, `page`, `limit`) |
-| `GET` | `/maintenance/:id` | Authenticated | Detail jadwal |
+| Method | Path | Peran Akses | Deskripsi |
+|--------|------|-------------|-----------|
+| `GET` | `/maintenance` | Terautentikasi | Daftar jadwal pemeliharaan (`?status=<enum>&search=<query>`) |
+| `GET` | `/maintenance/:id` | Terautentikasi | Detail agenda pemeliharaan |
 | `POST` | `/maintenance` | ADMIN | Buat jadwal pemeliharaan baru |
-| `PATCH` | `/maintenance/:id` | ADMIN | Perbarui jadwal pemeliharaan (semua/sebagian kolom) |
+| `PATCH` | `/maintenance/:id` | ADMIN | Perbarui data pemeliharaan |
 | `PATCH` | `/maintenance/:id/status` | ADMIN | Update status/catatan realisasi pemeliharaan |
 | `DELETE` | `/maintenance/:id` | ADMIN | Hapus jadwal pemeliharaan |
 
-### Body POST /maintenance (Buat Jadwal Baru)
+### Body POST /maintenance (Buat Jadwal Pemeliharaan Baru)
 ```json
 {
   "roomId": "uuid-ruang-opsional",
   "assetId": "uuid-aset-opsional",
   "title": "Service AC Ruang Rapat Utama",
   "description": "Pembersihan rutin filter AC dan tambah freon jika diperlukan",
-  "frequency": "MONTHLY", // "WEEKLY" | "MONTHLY" | "QUARTERLY" | "ANNUALLY" | "ONE_TIME"
+  "frequency": "MONTHLY",
   "scheduledDate": "2026-07-25",
-  "status": "SCHEDULED", // "SCHEDULED" | "IN_PROGRESS" | "DONE" | "CANCELLED" | "OVERDUE"
-  "assigneeType": "EXTERNAL_VENDOR", // "INTERNAL" | "EXTERNAL_VENDOR"
+  "status": "SCHEDULED",
+  "assigneeType": "EXTERNAL_VENDOR",
   "assigneeName": "CV. Sejuk Jaya Pratama",
   "vendorContactName": "Pak Joko",
   "vendorPhone": "08123456789",
@@ -345,71 +305,40 @@ sequenceDiagram
 }
 ```
 
-### Body PATCH /maintenance/:id/status (Realisasi/Tutup Jadwal)
-```json
-{
-  "status": "DONE",
-  "notes": "AC selesai dicuci bersih dan freon diisi ulang."
-}
-```
-
 ---
 
-## Analytics
+## Modul Analitik (Analytics)
 
-| Method | Path | Role | Deskripsi |
-|--------|------|------|-----------|
-| `GET` | `/analytics/overview` | ADMIN | Ringkasan dashboard (laporan aktif, dll) |
-| `GET` | `/analytics/summary` | ADMIN | Statistik lengkap dengan breakdown |
-| `GET` | `/analytics/technician-stats` | ADMIN | Statistik performa teknisi |
+| Method | Path | Peran Akses | Deskripsi |
+|--------|------|-------------|-----------|
+| `GET` | `/analytics/overview` | ADMIN | Ringkasan dasbor (metrik laporan aktif, dll) |
+| `GET` | `/analytics/summary` | ADMIN | Statistik lengkap dengan rincian status |
+| `GET` | `/analytics/technician-stats` | ADMIN | Statistik performa pengerjaan teknisi |
 | `GET` | `/analytics/export` | ADMIN | Export data analitik |
 
 ---
 
+## Katalog Kode Status HTTP Error (Error Catalog)
 
-## Error Catalog & HTTP Status Codes
-
-FixMind menggunakan kode status HTTP standar dikombinasikan dengan pesan kesalahan terstruktur untuk memudahkan penanganan error pada sisi client.
-
-### Struktur Response Error
-Setiap terjadi kesalahan, API akan mengembalikan format berikut:
-```json
-{
-  "success": false,
-  "message": "Pesan deskripsi kesalahan dalam bahasa Inggris",
-  "errors": [
-    {
-      "field": "nama_field_yang_bermasalah",
-      "message": "Detail pesan validasi"
-    }
-  ]
-}
-```
-
-### Katalog Kesalahan Umum (Error Catalog)
-
-| HTTP Status | Pesan Error (`message`) | Skenario / Penyebab |
-|-------------|-------------------------|---------------------|
-| **400 Bad Request** | `Validation failed` | Payload DTO tidak lengkap atau tidak sesuai dengan aturan `class-validator` (misal: format email salah). |
+| HTTP Status | Pesan Error (`message`) | Skenario / Penyebab Utama |
+|-------------|-------------------------|---------------------------|
+| **400 Bad Request** | `Validation failed` | Request Body DTO tidak lengkap atau tidak sesuai aturan `class-validator`. |
 | **401 Unauthorized** | `Invalid credentials` | Email tidak terdaftar, password salah, atau akun dinonaktifkan (`is_active = false`). |
-| **401 Unauthorized** | `Account locked. Please try again in X minutes.` | Akun terkunci sementara karena 5 kali berturut-turut memasukkan password yang salah. |
-| **401 Unauthorized** | `Too many failed attempts. Account locked for 15 minutes.` | Tepat pada percobaan ke-5 yang gagal, pesan ini dikembalikan dan akun langsung dikunci. |
-| **401 Unauthorized** | `Invalid refresh token` | Refresh token pada cookie tidak valid, telah kedaluwarsa, atau sudah pernah digunakan/dicabut. |
-| **403 Forbidden** | `Forbidden resource` | Pengguna tidak memiliki peran (Role) yang sesuai dengan guard `@Roles()` pada endpoint tersebut. |
-| **404 Not Found** | `Report not found` / `Asset not found` | ID data (UUID) yang diminta tidak ditemukan di database. |
-| **409 Conflict** | `Email already registered` | Mencoba melakukan registrasi akun baru dengan email yang sudah terdaftar. |
+| **401 Unauthorized** | `Account locked. Please try again in 15 minutes.` | Akun terkunci sementara akibat 5x gagal memasukkan password berturut-turut. |
+| **401 Unauthorized** | `Invalid refresh token` | Refresh token cookie tidak valid, kedaluwarsa, atau sudah pernah digunakan/dicabut. |
+| **403 Forbidden** | `Forbidden resource` | Pengguna tidak memiliki peran (`Role`) yang sesuai dengan guard `@Roles()` endpoint. |
+| **404 Not Found** | `Report not found` / `Asset not found` | Data UUID yang diminta tidak ditemukan di database. |
+| **409 Conflict** | `Email already registered` | Mencoba membuat akun baru dengan email yang sudah terdaftar. |
 | **429 Too Many Requests** | `ThrottlerException: Too Many Requests` | Melebihi batas ambang rate limiter (default: 100 request/menit per IP). |
-| **500 Internal Server Error** | `Internal server error` | Terjadi kesalahan tidak terduga pada server/database (log *stack trace* dicatat di server). |
+| **500 Internal Server Error** | `Internal server error` | Terjadi kesalahan tidak terduga pada server/database. |
 
 ---
 
 ## WebSockets (Real-time Notification Events)
 
-Aplikasi FixMind menggunakan **Socket.IO** untuk mengirimkan pembaruan data secara langsung (*real-time*) kepada pengguna dan administrator.
+Server memancarkan event notifikasi real-time via Socket.io ke peramban pengguna:
 
 ### Sambungan & Autentikasi
-Koneksi WebSocket dilakukan ke URL server utama (`http://localhost:3000`) dengan menyertakan token akses JWT dalam objek autentikasi handshake:
-
 ```javascript
 import { io } from 'socket.io-client';
 
@@ -420,19 +349,6 @@ const socket = io('http://localhost:3000', {
 });
 ```
 
-### Rooms (Ruangan Socket)
-* **`admins`:** Semua socket milik pengguna dengan role `ADMIN` akan dimasukkan ke ruangan `admins` saat pertama kali berhasil terhubung. Hal ini memungkinkan pengiriman notifikasi terarah hanya untuk admin secara instan.
-
-### Katalog Event yang Dipancarkan (Emitted Events)
-
-Sisi server akan memancarkan event-event berikut ke client:
-
-#### 1. `report.created`
-Dipancarkan ketika pengguna berhasil membuat laporan baru.
-* **Penerima:** Seluruh socket di room `admins`.
-* **Payload:** Objek detail laporan baru yang dibuat (`ReportListRow`).
-
-#### 2. `report.updated`
-Dipancarkan ketika status laporan berubah (misal: dari `PENDING` menjadi `IN_PROGRESS` atau `COMPLETED`).
-* **Penerima:** Seluruh socket di room `admins` **DAN** semua socket milik pengguna pembuat laporan tersebut (`reporterId`).
-* **Payload:** Objek detail laporan ter-update (`ReportListRow`).
+### Event yang Dipancarkan (Emitted Events)
+- **`report.created`**: Dipancarkan ke room `admins` saat laporan baru dibuat.
+- **`report.updated`**: Dipancarkan ke room `admins` dan socket pelapor saat status laporan diperbarui.

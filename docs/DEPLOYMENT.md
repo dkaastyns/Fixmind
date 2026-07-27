@@ -1,90 +1,106 @@
-# FixMind — Deployment Documentation
+# FixMind — Dokumentasi Deployment & Penggelapan Sistem
 
-## Local Development (Windows + Laragon)
+Dokumen ini menjelaskan strategi dan langkah-langkah *deployment* aplikasi **E-Lapor DPRD (FixMind)** untuk lingkungan pengembangan lokal, pengujian (staging), maupun produksi (*production*).
 
-See [LOCAL-SETUP-LARAGON.md](./LOCAL-SETUP-LARAGON.md).
+---
 
-Quick start after DB is ready:
+## 1. Pengembangan Lokal (Windows + Laragon)
+
+Panduan detail dapat dibaca pada [LOCAL-SETUP-LARAGON.md](./LOCAL-SETUP-LARAGON.md).
+
+Langkah cepat setelah database PostgreSQL siap:
 
 ```powershell
-# Backend
+# Terminal 1: Backend API
 cd backend
-copy .env.example .env   # edit DATABASE_URL + JWT secrets
+copy .env.example .env   # Sesuaikan DATABASE_URL + JWT_ACCESS_SECRET
 bun install
 bun run migrate
 bun run seed
 bun run start:dev
 
-# Frontend (new terminal)
+# Terminal 2: Frontend Web
 cd frontend
 copy .env.example .env
 bun install
 bun run dev
 ```
 
-## Docker Compose (Production-like)
+---
+
+## 2. Deployment Docker Compose (Lingkungan Produksi / Staging)
+
+Seluruh kontainer dikonfigurasi menggunakan Docker Compose:
 
 ```bash
-cp .env.example .env   # fill secrets
+# 1. Salin file variabel lingkungan
+cp .env.example .env
+
+# 2. Build dan jalankan seluruh service di latar belakang
 docker compose up -d --build
 ```
 
-Services:
-| Service | Port | Role | Aksesibilitas |
-|---------|------|------|---------------|
-| nginx | 80, 443 | Reverse proxy | Publik (di-expose ke host) |
-| backend | 3000 | NestJS API | Internal Docker Network (Tertutup dari luar) |
-| frontend | 80 | Static SPA | Internal Docker Network (Tertutup dari luar) |
-| postgres | 5432 | Database `fixmind` | Internal Docker Network (Tertutup dari luar) |
+### Rincian Service Docker:
 
-> **Catatan Port Hardening:** Demi keamanan, port PostgreSQL (`5432`) dan NestJS API (`3000`) tidak di-expose ke publik. Nginx bertindak sebagai satu-satunya pintu masuk. Jika Anda memerlukan akses database langsung untuk melakukan debug atau migrasi manual dari mesin host, Anda dapat melakukan uncomment baris `ports` pada service `db` atau `backend` di dalam file [docker-compose.yml](../docker-compose.yml) untuk sementara waktu.
+| Service | Port | Peran Service | Aksesibilitas Publik |
+|---------|------|---------------|----------------------|
+| **nginx** | 80, 443 | Reverse Proxy & Web Server | Publik (Di-expose ke mesin host) |
+| **backend** | 3000 | NestJS API Gateway | Internal Docker Network (Tertutup dari luar) |
+| **frontend** | 80 | React PWA Static Build | Internal Docker Network (Tertutup dari luar) |
+| **postgres** | 5432 | Database `fixmind` + pgvector | Internal Docker Network (Tertutup dari luar) |
 
-## Nginx
+> **Catatan Pengetatan Keamanan (Port Hardening):** Demi keamanan tinggi, port PostgreSQL (`5432`) dan NestJS API (`3000`) sengaja tidak di-expose ke publik. Nginx bertindak sebagai satu-satunya pintu masuk aplikasi. Jika Anda memerlukan akses database langsung untuk pengujian lokal dari luar Docker, buka berkas [docker-compose.yml](../docker-compose.yml) lalu uncomment baris `ports` pada service `db` atau `backend` secara sementara.
 
-- `infra/nginx/conf.d/fixmind.conf` — routes `/api/` → backend, `/` → frontend
-- HTTPS block commented — enable after placing certs in `infra/nginx/certs/`
+---
 
-## Environment Strategy
+## 3. Konfigurasi Nginx Reverse Proxy
 
-| Environment | DATABASE_URL | CORS_ORIGIN | Cookies |
-|-------------|--------------|-------------|---------|
-| local | localhost:5432/fixmind | http://localhost:5173 | secure=false |
-| staging | managed Postgres | staging URL | secure=true |
-| production | managed Postgres | production URL | secure=true, sameSite=strict |
+- **Lokasi file:** `infra/nginx/conf.d/fixmind.conf`
+- **Aturan Routing:** Rute `/api/` diarahkan ke backend NestJS, sedangkan rute `/` diarahkan ke build frontend React.
+- **Dukungan SSL/HTTPS:** Disediakan blok HTTPS opsional yang dapat diaktifkan setelah meletakkan sertifikat SSL di `infra/nginx/certs/`.
 
-Never commit `.env` files.
+---
 
-## Backup Strategy
+## 4. Strategi Variabel Lingkungan (.env)
 
-**PostgreSQL:**
-- Daily `pg_dump` of database `fixmind`
-- Retain 7 daily + 4 weekly backups
-- Test restore monthly
+| Lingkungan | DATABASE_URL | CORS_ORIGIN | Konfigurasi Cookie Refresh |
+|------------|--------------|-------------|----------------------------|
+| **Local** | `localhost:5432/fixmind` | `http://localhost:5173` | `secure=false` |
+| **Staging** | Managed PostgreSQL Staging | URL Staging | `secure=true` |
+| **Production** | Managed PostgreSQL Production | URL Production | `secure=true, sameSite=strict` |
+
+> **PERINGATAN:** Dilarang keras meng-commit berkas `.env` berisikan kunci rahasia asli ke repositori Git.
+
+---
+
+## 5. Strategi Cadangan Data (Backup Strategy)
+
+### Database PostgreSQL:
+- Lakukan `pg_dump` otomatis setiap hari untuk database `fixmind`.
+- Simpan cadangan 7 harian + 4 mingguan.
+- Uji proses pemulihan (*restore*) secara berkala setiap bulan.
 
 ```bash
 pg_dump -U postgres -d fixmind -F c -f fixmind_$(date +%Y%m%d).dump
 ```
 
-**Cloudinary:** rely on Cloudinary backup/versioning for uploaded media.
+### Media Cloudinary:
+Manfaatkan fitur otomatis *backup & versioning* pada layanan Cloudinary untuk media gambar kerusakan dan perbaikan yang diunggah pengguna.
 
-## Logging Strategy
+---
 
-| Layer | Tool |
-|-------|------|
-| NestJS | Built-in Logger → stdout |
-| Nginx | `/var/log/nginx/access.log`, `error.log` |
-| Production | Ship to centralized logging (e.g. DO Monitoring, Azure Log Analytics) |
+## 6. Strategi Pemantauan & Log (Logging Strategy)
 
-Log levels: `error` in production, `debug` in development.
+| Lapisan Sistem | Perkakas Log |
+|----------------|--------------|
+| **NestJS Backend** | Standard Logger NestJS $\rightarrow$ stdout |
+| **Nginx Web Server** | `/var/log/nginx/access.log` & `error.log` |
+| **Production Server** | Pengiriman log terpusat (contoh: DigitalOcean Monitoring, Azure Log Analytics) |
 
-## Cloud Targets
+---
 
-- **DigitalOcean:** Droplet + Docker Compose + managed Postgres optional
-- **Azure:** Container Apps or VM + Azure Database for PostgreSQL
+## 7. Alur Otomatisasi CI/CD (Rekomendasi)
 
-## CI/CD (recommended)
-
-1. Lint + test on PR
-2. Build Docker images on merge to `main`
-3. Deploy via SSH or container registry webhook
-4. Run migrations before traffic switch
+1. Jalankan linter (`bun run lint`) dan unit test (`bun run test`) pada setiap Pull Request.
+2. Lakukan build image Docker otomatis saat ada penggabungan ke branch `main`.
+3. Jalankan migrasi database (`bun run migrate`) secara otomatis sebelum peralihan *traffic* produksi.

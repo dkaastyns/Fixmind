@@ -1,69 +1,69 @@
 # FixMind — Product Requirements Document (PRD)
 
-## 1. Overview
+Dokumen Persyaratan Produk (*Product Requirements Document*) ini mendefinisikan latar belakang, masalah, tujuan, peran pengguna, dan fitur utama aplikasi **E-Lapor DPRD (FixMind)**.
 
-**FixMind** is an AI-powered facility maintenance management system for organizations that need structured reporting, technician workflows, and administrator oversight.
+---
 
-AI acts as a **decision support system** — administrators always make final decisions on priority and assignment.
+## 1. Gambaran Umum (Overview)
 
-## 2. Problem Statement
+**FixMind** adalah sistem manajemen pelaporan dan pemeliharaan sarana prasarana gedung berbasis *Artificial Intelligence* (AI) dan *Progressive Web App* (PWA) yang dirancang khusus untuk Sekretariat DPRD Kota Semarang.
 
-Facility damage reports are often unstructured, delayed, and hard to prioritize. Administrators lack a single source of truth for rooms, assets, repair status, and performance metrics.
+AI berfungsi sebagai **Sistem Pendukung Keputusan (Decision Support System)** — administrator tetap memegang kendali penuh atas keputusan penugasan teknisi dan penentuan prioritas final.
 
-## 3. Goals
+---
 
-| Goal | Success Metric |
-|------|----------------|
-| Centralize maintenance requests | 100% reports created in-system |
-| Reduce response time | Median time-to-assign < 24h |
-| Improve transparency | Users can track status end-to-end |
-| Support prioritization | AI provides structured priority + recommendation |
-| Enterprise maintainability | Modular NestJS + raw SQL repositories |
+## 2. Pernyataan Masalah (Problem Statement)
 
-## 4. User Roles
+Pelaporan kerusakan fasilitas gedung sebelumnya sering kali tidak terstruktur, terhambat, dan sulit diprioritaskan. Administrator membutuhkan **Single Source of Truth** untuk mengelola data ruangan, aset inventaris Pemda, status perbaikan, dan metrik kinerja pemeliharaan dalam satu platform terpadu.
 
-### User
-Submit reports, upload damage photos, track status, rate completed work.
+---
 
-### Technician
-View assigned reports, update progress, upload repair photos, mark complete.
+## 3. Tujuan Produk & Metrik Keberhasilan (Goals & Metrics)
 
-### Administrator
-Manage users/technicians/rooms/assets, review reports, assign technicians, analytics, export.
+| Tujuan Utama | Metrik Keberhasilan |
+|--------------|---------------------|
+| **Sentralisasi Laporan** | 100% laporan kerusakan fasilitas dibuat & dilacak di dalam sistem |
+| **Respon Cepat** | Median waktu penugasan teknisi (*time-to-assign*) < 24 jam |
+| **Transparansi Sistem** | Pengguna dapat memantau linimasa status tiket dari awal hingga selesai |
+| **Dukungan Prioritas** | AI menyajikan skor prioritas terstruktur & rekomendasi teknis otomatis |
+| **Kemudahan Maintenance** | Arsitektur modular NestJS + kueri Raw SQL yang performan & bersih |
 
-## 5. Core Features (MVP → v1)
+---
 
-| Phase | Features |
-|-------|----------|
-| **Foundation** (current) | Auth, DB schema, dashboard shell, AI module skeleton |
-| **MVP** | Reports CRUD, room/asset management, technician assignment |
-| **v1** | AI priority on report create, ratings, attachments (Cloudinary), export |
-| **v1.1** | Analytics charts, Global Search Modal |
-| **v1.2** | Maintenance scheduling with vendors, Asset transfer approvals, Excel Import |
+## 4. Peran Pengguna (User Roles)
 
-## 6. Non-Goals (MVP)
+### 1. User (Pegawai Sekretariat / Pengguna)
+- Membuat tiket laporan kerusakan, mengunggah foto kerusakan, memantau status di linimasa, serta mengajukan permohonan pemindahan aset antar ruangan.
 
-- Native mobile apps
-- Separate Python/FastAPI AI service
-- External vector databases (Pinecone, etc.)
-- Multi-tenant organizations
+### 2. Administrator (Admin)
+- Kelola akun pengguna & teknisi, kelola ruangan & aset inventaris, impor data aset massal dari Excel, tinjau pengajuan transfer aset, buat agenda pemeliharaan rutin vendor, dan ekspor laporan (Excel/PDF).
 
-## 7. Design Principles
+---
 
-See [Design.md](./Design.md) — glassmorphism, gradient `#EECDA3 → #EF629F`, mobile-first, minimal motion.
+## 5. Fitur Utama & Fase Rilis (Core Features)
 
-## 8. Technical Constraints
+| Versi | Fitur yang Dirilis |
+|-------|--------------------|
+| **Foundation** | Autentikasi JWT, skema database, dasbor shell, & modul AI skeleton |
+| **MVP** | CRUD Laporan, CRUD Ruangan & Aset, & penugasan teknisi |
+| **v1.0** | Analisis AI prioritas otomatis saat laporan dibuat, lampiran foto Cloudinary, & ekspor dokumen |
+| **v1.1** | Dasbor Analitik & Instant Global Search Modal |
+| **v1.2** | Agenda Pemeliharaan Rutin Vendor, Persetujuan Transfer Aset, & Bulk Import Excel |
 
-- **Runtime:** Bun
-- **Backend:** NestJS, Clean Architecture per module
-- **Database:** PostgreSQL `fixmind`, raw SQL via `postgres.js`
-- **No ORM:** Prisma/TypeORM/Drizzle prohibited
-- **AI:** Internal `AiModule` calling Gemini 2.5 Flash
+---
 
-## 9. Risks & Mitigations
+## 6. Pembatasan Fitur (Non-Goals)
 
-| Risk | Mitigation |
-|------|------------|
-| AI downtime blocks reports | Async AI analysis; report creation succeeds without AI |
-| LLM cost | Usage logging, rate limiting, timeouts |
-| Schema drift | Numbered SQL migrations only |
+- Tidak membuat aplikasi native mobile terpisah (Cukup menggunakan standar PWA).
+- Tidak membuat microservice Python/FastAPI terpisah untuk AI pada tahap awal (Cukup internal NestJS `AiModule`).
+- Tidak menggunakan database vektor eksternal berbayar (Cukup menggunakan ekstensi native `pgvector` di PostgreSQL).
+
+---
+
+## 7. Aturan & Batasan Teknis (Technical Constraints)
+
+- **Runtime:** Bun 1.3+
+- **Backend:** NestJS 11 dengan *Clean Architecture* per modul
+- **Database:** PostgreSQL 16 `fixmind` dengan kueri Raw SQL via `postgres.js`
+- **Tanpa ORM:** Dilarang keras menggunakan Prisma, TypeORM, atau ORM berat lainnya
+- **AI Engine:** Google Gemini 2.5 Flash API via REST

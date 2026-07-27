@@ -77,11 +77,6 @@ Dokumen ini berisi panduan penyelesaian untuk masalah-masalah umum yang mungkin 
 
 ---
 
-  - **Syarat Wajib HTTPS:** Untuk keamanan, browser seluler membatasi instalasi PWA hanya melalui koneksi **HTTPS** yang aman (pengecualian diberikan untuk akses via `localhost` di mesin lokal).
-  - Jika Anda mendeploy aplikasi untuk diuji di perangkat seluler lain secara lokal, gunakan reverse proxy seperti **ngrok** atau **Localtunnel** untuk menyediakan sertifikat HTTPS secara gratis saat development.
-
----
-
 ## 6. Masalah Package Manager Bun
 
 ### Lockfile Rusak / Konflik Dependensi
