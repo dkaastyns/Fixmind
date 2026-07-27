@@ -990,7 +990,7 @@ function RoomFormModal({
                 <Button 
                   onClick={() => mutation.mutate()} 
                   disabled={!name || !code || mutation.isPending} 
-                  className="bg-[#F9D141] hover:bg-[#d9a416] text-white font-semibold rounded-xl"
+                  className="bg-[#d9a416] hover:bg-[#b88b12] text-white font-extrabold rounded-xl cursor-pointer"
                 >
                   {mutation.isPending ? 'Menyimpan...' : 'Simpan Ruangan'}
                 </Button>
@@ -1142,7 +1142,7 @@ function AssetFormModal({
                 <Button 
                   onClick={() => mutation.mutate()} 
                   disabled={!idpemda || !kodeBarang || !nomorRegister || !namaBarang || !merkType || mutation.isPending} 
-                  className="bg-[#F9D141] hover:bg-[#d9a416] text-white font-semibold rounded-xl"
+                  className="bg-[#d9a416] hover:bg-[#b88b12] text-white font-extrabold rounded-xl cursor-pointer"
                 >
                   {mutation.isPending ? 'Menyimpan...' : 'Simpan Aset'}
                 </Button>

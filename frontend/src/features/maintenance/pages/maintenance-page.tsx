@@ -970,7 +970,7 @@ export function MaintenancePage() {
                   <Button
                     type="submit"
                     disabled={isSubmitting}
-                    className="min-w-[120px] bg-[#F9D141] text-slate-900 font-bold hover:bg-[#d9a416] shadow-md shadow-amber-200 rounded-xl"
+                    className="min-w-[120px] bg-[#d9a416] hover:bg-[#b88b12] text-white font-extrabold shadow-md rounded-xl cursor-pointer"
                   >
                     {isSubmitting ? 'Menyimpan...' : 'Simpan Jadwal'}
                   </Button>
