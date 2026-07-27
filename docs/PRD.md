@@ -36,7 +36,7 @@ Pelaporan kerusakan fasilitas gedung sebelumnya sering kali tidak terstruktur, t
 - Membuat tiket laporan kerusakan, mengunggah foto kerusakan, memantau status di linimasa, serta mengajukan permohonan pemindahan aset antar ruangan.
 
 ### 2. Administrator (Admin)
-- Kelola akun pengguna & teknisi, kelola ruangan & aset inventaris, impor data aset massal dari Excel, tinjau pengajuan transfer aset, buat agenda pemeliharaan rutin vendor, dan ekspor laporan (Excel/PDF).
+- Kelola akun pengguna, kelola ruangan & aset inventaris, impor data aset massal dari Excel, tinjau pengajuan transfer aset, buat agenda pemeliharaan rutin vendor, dan ekspor laporan (Excel/PDF).
 
 ---
 

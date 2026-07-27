@@ -11,7 +11,7 @@
 
 ## Authorization (RBAC)
 
-Roles: `ADMIN`, `TECHNICIAN`, `USER`
+Roles: `ADMIN`, `USER`
 
 Enforced via:
 - `@Roles('ADMIN')` decorator

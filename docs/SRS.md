@@ -11,7 +11,7 @@ Spesifikasi Kebutuhan Perangkat Lunak (*Software Requirements Specification*) in
 |---------|------------------------|
 | `FR-AUTH-01` | Sistem wajib mengotentikasi pengguna menggunakan kredensial email dan password |
 | `FR-AUTH-02` | Sistem wajib menerbitkan JWT access token (15m) + refresh token rotation (httpOnly cookie) |
-| `FR-AUTH-03` | Sistem wajib menerapkan kontrol akses berbasis peran (RBAC): `ADMIN`, `TECHNICIAN`, `USER` |
+| `FR-AUTH-03` | Sistem wajib menerapkan kontrol akses berbasis peran (RBAC): `ADMIN`, `USER` |
 | `FR-AUTH-04` | Sistem wajib mendukung pencabutan sesi (*session revocation*) saat pengguna melakukan logout |
 | `FR-AUTH-05` | Sistem wajib mengunci akun pengguna selama 15 menit jika 5x berturut-turut gagal login |
 
@@ -19,10 +19,10 @@ Spesifikasi Kebutuhan Perangkat Lunak (*Software Requirements Specification*) in
 | Kode ID | Persyaratan Fungsional |
 |---------|------------------------|
 | `FR-REP-01` | `USER` dapat membuat laporan kerusakan dengan judul, deskripsi, ruangan, & aset opsional |
-| `FR-REP-02` | `USER` & `TECHNICIAN` dapat mengunggah foto bukti kerusakan & foto perbaikan ke Cloudinary |
+| `FR-REP-02` | `USER` & `ADMIN` dapat mengunggah foto bukti kerusakan & foto perbaikan ke Cloudinary |
 | `FR-REP-03` | `USER` dapat memantau status tiket laporan & linimasa pengerjaan secara real-time |
-| `FR-REP-04` | `ADMIN` dapat menugaskan teknisi internal atau eksternal untuk menangani laporan |
-| `FR-REP-05` | `ADMIN` & `TECHNICIAN` dapat memperbarui status pengerjaan laporan (`IN_PROGRESS`, `DONE`) |
+| `FR-REP-04` | `ADMIN` dapat menugaskan teknisi/vendor eksternal untuk menangani laporan |
+| `FR-REP-05` | `ADMIN` dapat memperbarui status pengerjaan laporan (`IN_PROGRESS`, `DONE`) |
 | `FR-REP-06` | `ADMIN` dapat mengunduh data laporan ke dalam format berkas Excel dan PDF |
 
 ### Analisis Kecerdasan Buatan (FR-AI)
@@ -36,7 +36,7 @@ Spesifikasi Kebutuhan Perangkat Lunak (*Software Requirements Specification*) in
 ### Administrasi & Fasilitas (FR-ADMIN)
 | Kode ID | Persyaratan Fungsional |
 |---------|------------------------|
-| `FR-ADM-01` | `ADMIN` dapat mengelola (CRUD) akun pengguna, teknisi, dan status aktif akun |
+| `FR-ADM-01` | `ADMIN` dapat mengelola (CRUD) akun pengguna dan status aktif akun |
 | `FR-ADM-02` | `ADMIN` dapat mengelola (CRUD) data ruangan & aset inventaris Pemda |
 | `FR-ADM-03` | `ADMIN` dapat mengimpor data aset inventaris massal dari file Excel (`.xlsx`/`.xls`) |
 | `FR-ADM-04` | `ADMIN` dapat meninjau (*Approve* / *Reject*) permohonan pemindahan aset antar ruangan |

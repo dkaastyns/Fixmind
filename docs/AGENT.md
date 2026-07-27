@@ -118,8 +118,8 @@ Error:
 ## 5. Autentikasi & RBAC
 
 - Auth pakai JWT: `access_token` (short-lived, 15 menit) + `refresh_token` (httpOnly cookie, 7 hari).
-- Role minimum: `ADMIN`, `TECHNICIAN`, `USER` (detail lengkap di `04-user-roles.md`).
-- RBAC diimplementasikan via **NestJS Guard + Decorator** (`@Roles('ADMIN')` + `RolesGuard`), bukan pengecekan `if (user.role === ...)` yang tersebar di service.
+- Role: `ADMIN`, `USER`.
+- RBAC diimplementasikan via **NestJS Guard + Decorator** (`@Roles('ADMIN')` + `RolesGuard`), bukan pengecekan `if (user.isAdmin === ...)` yang tersebar di service.
 - Setiap endpoint WAJIB eksplisit menyatakan role yang diizinkan lewat decorator — endpoint tanpa decorator dianggap **butuh review**, bukan otomatis publik.
 
 ---

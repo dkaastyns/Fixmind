@@ -265,9 +265,9 @@ sequenceDiagram
 | `GET` | `/reports` | Terautentikasi | Daftar laporan (`?status=<enum>&roomId=<uuid>&search=<query>`) |
 | `GET` | `/reports/:id` | Terautentikasi | Detail laporan beserta riwayat audit & lampiran foto |
 | `POST` | `/reports` | USER, ADMIN | Buat tiket laporan kerusakan baru |
-| `PATCH` | `/reports/:id/status` | TECHNICIAN, ADMIN | Update status pengerjaan laporan |
-| `POST` | `/reports/:id/assign` | ADMIN | Penugasan teknisi |
-| `POST` | `/reports/:id/attachments` | USER, TECHNICIAN | Upload foto kerusakan/perbaikan (multipart) |
+| `PATCH` | `/reports/:id/status` | ADMIN | Update status pengerjaan laporan |
+| `POST` | `/reports/:id/assign` | ADMIN | Penugasan vendor/teknisi |
+| `POST` | `/reports/:id/attachments` | USER, ADMIN | Upload foto kerusakan/perbaikan (multipart) |
 | `GET` | `/reports/:id/comments` | Terautentikasi | Ambil daftar komentar laporan |
 | `POST` | `/reports/:id/comments` | Terautentikasi | Tambah komentar baru |
 | `GET` | `/reports/export/excel` | ADMIN | Export data laporan ke Excel |

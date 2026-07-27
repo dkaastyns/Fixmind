@@ -62,7 +62,7 @@ erDiagram
 | `email` | VARCHAR(255) | Email login unik |
 | `password_hash` | VARCHAR(255) | Hash kata sandi bcrypt |
 | `full_name` | VARCHAR(150) | Nama lengkap pengguna |
-| `role` | user_role | Enum: `ADMIN`, `TECHNICIAN`, `USER` |
+| `is_admin` | BOOLEAN | Peran pengguna: `ADMIN` (true) atau `USER` (false) |
 | `phone` | VARCHAR(30) | Nomor telepon opsional |
 | `avatar_url` | TEXT | URL foto profil Cloudinary |
 | `is_active` | BOOLEAN | Status aktif akun |
