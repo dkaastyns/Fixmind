@@ -240,16 +240,20 @@ export function RoomsPage() {
         description="Daftar ruangan dan fasilitas yang tersedia untuk pelaporan dan inventarisasi."
         action={isAdmin ? (
           <div className="flex flex-wrap items-center gap-2">
-            <Button
-              variant="secondary"
-              onClick={() => downloadTemplateMut.mutate()}
-              disabled={downloadTemplateMut.isPending}
-              title="Download template Excel untuk import aset"
-              className="gap-1.5 h-10 px-3.5 border-slate-200 text-slate-700 bg-white/70 hover:bg-white hover:-translate-y-0.5 hover:shadow-md active:scale-95 transition-all duration-200 font-semibold rounded-xl text-xs"
-            >
-              <Download className="h-4 w-4 text-[#d9a416]" />
-              Download Template
-            </Button>
+            <motion.div whileHover={{ scale: 1.04, y: -2 }} whileTap={{ scale: 0.96 }}>
+              <Button
+                variant="secondary"
+                onClick={() => downloadTemplateMut.mutate()}
+                disabled={downloadTemplateMut.isPending}
+                title="Download template Excel untuk import aset"
+                className="gap-1.5 h-10 px-3.5 border-slate-200 text-slate-700 bg-white/70 hover:bg-white hover:shadow-md transition-all duration-200 font-semibold rounded-xl text-xs cursor-pointer"
+              >
+                <motion.div whileHover={{ y: 2 }} transition={{ repeat: Infinity, duration: 0.8, repeatType: "reverse" }}>
+                  <Download className="h-4 w-4 text-[#d9a416]" />
+                </motion.div>
+                Download Template
+              </Button>
+            </motion.div>
 
             <input
               ref={headerImportInputRef}
@@ -258,45 +262,56 @@ export function RoomsPage() {
               className="hidden"
               onChange={handleHeaderImportFileChange}
             />
-            <Button
-              variant="secondary"
-              onClick={() => headerImportInputRef.current?.click()}
-              disabled={importAssetsMut.isPending}
-              title="Import aset dari file Excel"
-              className="gap-1.5 h-10 px-3.5 border-slate-200 text-slate-700 bg-white/70 hover:bg-white hover:-translate-y-0.5 hover:shadow-md active:scale-95 transition-all duration-200 font-semibold rounded-xl text-xs"
-            >
-              <FileSpreadsheet className="h-4 w-4 text-emerald-600" />
-              {importAssetsMut.isPending ? 'Mengimport...' : 'Import Excel'}
-            </Button>
+            <motion.div whileHover={{ scale: 1.04, y: -2 }} whileTap={{ scale: 0.96 }}>
+              <Button
+                variant="secondary"
+                onClick={() => headerImportInputRef.current?.click()}
+                disabled={importAssetsMut.isPending}
+                title="Import aset dari file Excel"
+                className="gap-1.5 h-10 px-3.5 border-slate-200 text-slate-700 bg-white/70 hover:bg-white hover:shadow-md transition-all duration-200 font-semibold rounded-xl text-xs cursor-pointer"
+              >
+                <FileSpreadsheet className="h-4 w-4 text-emerald-600" />
+                {importAssetsMut.isPending ? 'Mengimport...' : 'Import Excel'}
+              </Button>
+            </motion.div>
 
             {/* Tombol Tambah Aset Manual */}
-            <Button
-              variant="secondary"
-              onClick={() => {
-                if (!selectedRoom) {
-                  toast.error('Pilih ruangan terlebih dahulu di daftar sebelah kiri untuk menambah aset.')
-                  return
-                }
-                setShowAssetForm(true)
-              }}
-              title="Tambah aset baru secara manual"
-              className="gap-1.5 h-10 px-3.5 border-slate-200 text-slate-700 bg-white/70 hover:bg-white hover:-translate-y-0.5 hover:shadow-md active:scale-95 transition-all duration-200 font-semibold rounded-xl text-xs"
-            >
-              <Plus className="h-4 w-4 text-amber-500" />
-              Tambah Aset
-            </Button>
+            <motion.div whileHover={{ scale: 1.04, y: -2 }} whileTap={{ scale: 0.96 }}>
+              <Button
+                variant="secondary"
+                onClick={() => {
+                  if (!selectedRoom) {
+                    toast.error('Pilih ruangan terlebih dahulu di daftar sebelah kiri untuk menambah aset.')
+                    return
+                  }
+                  setShowAssetForm(true)
+                }}
+                title="Tambah aset baru secara manual"
+                className="gap-1.5 h-10 px-3.5 border-slate-200 text-slate-700 bg-white/70 hover:bg-white hover:shadow-md transition-all duration-200 font-semibold rounded-xl text-xs cursor-pointer"
+              >
+                <Plus className="h-4 w-4 text-amber-500" />
+                Tambah Aset
+              </Button>
+            </motion.div>
 
-            <Button 
-              onClick={() => setShowRoomForm(true)} 
-              className="gap-1.5 h-10 px-4 bg-[#F9D141] hover:bg-[#e0bc38] text-white shadow-md hover:shadow-lg hover:-translate-y-0.5 active:scale-95 transition-all duration-200 font-semibold rounded-xl text-xs"
-            >
-              <Plus className="h-4 w-4" /> Tambah Ruangan
-            </Button>
+            <motion.div whileHover={{ scale: 1.04, y: -2 }} whileTap={{ scale: 0.96 }}>
+              <Button 
+                onClick={() => setShowRoomForm(true)} 
+                className="gap-1.5 h-10 px-4 bg-[#F9D141] hover:bg-[#e0bc38] text-white shadow-md hover:shadow-lg transition-all duration-200 font-semibold rounded-xl text-xs cursor-pointer"
+              >
+                <Plus className="h-4 w-4" /> Tambah Ruangan
+              </Button>
+            </motion.div>
           </div>
         ) : undefined}
       />
 
-      <div className="grid gap-6 lg:grid-cols-[1fr_1.2fr] items-start">
+      <motion.div 
+        initial={{ opacity: 0, y: 15 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+        className="grid gap-6 lg:grid-cols-[1fr_1.2fr] items-start"
+      >
         {/* Left Column: Ruangan */}
         <GlassCard className="p-0 overflow-hidden border border-white/40 bg-white/80 shadow-md backdrop-blur-xl">
           {/* Header Panel Ruangan */}
@@ -311,7 +326,7 @@ export function RoomsPage() {
                   size="sm" 
                   variant="ghost" 
                   onClick={() => setIsDeletingRooms(true)} 
-                  className="h-8 text-slate-500 hover:text-rose-600 hover:bg-rose-50/50 text-xs font-bold rounded-lg"
+                  className="h-8 text-slate-500 hover:text-rose-600 hover:bg-rose-50/50 text-xs font-bold rounded-lg cursor-pointer"
                 >
                   <Trash2 className="h-3.5 w-3.5 mr-1" /> Hapus
                 </Button>
@@ -322,7 +337,7 @@ export function RoomsPage() {
                     size="sm" 
                     variant="ghost" 
                     onClick={() => { setIsDeletingRooms(false); setSelectedRoomsToDelete([]); }} 
-                    className="h-8 text-xs font-bold rounded-lg"
+                    className="h-8 text-xs font-bold rounded-lg cursor-pointer"
                   >
                     Batal
                   </Button>
@@ -331,7 +346,7 @@ export function RoomsPage() {
                     variant="danger" 
                     onClick={() => setShowConfirmRoomDelete(true)} 
                     disabled={selectedRoomsToDelete.length === 0} 
-                    className="h-8 text-xs font-bold rounded-lg px-2.5"
+                    className="h-8 text-xs font-bold rounded-lg px-2.5 cursor-pointer"
                   >
                     Hapus Terpilih ({selectedRoomsToDelete.length})
                   </Button>
@@ -346,7 +361,7 @@ export function RoomsPage() {
               <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
               <Input
                 placeholder="Cari kode, nama ruangan, atau gedung..."
-                className="pl-9 h-9 text-xs rounded-lg border-slate-200 focus:border-[#F9D141]/50 bg-white"
+                className="pl-9 h-9 text-xs rounded-lg border-slate-200 focus:border-[#F9D141]/50 bg-white transition-all focus:ring-2 focus:ring-[#F9D141]/20"
                 value={roomSearch}
                 onChange={(e) => setRoomSearch(e.target.value)}
               />
@@ -359,73 +374,91 @@ export function RoomsPage() {
           ) : !roomsList.length ? (
             <div className="py-12"><EmptyState title="Tidak ada ruangan" description={roomSearch ? "Kriteria pencarian Anda tidak cocok" : undefined} /></div>
           ) : (
-            <ul className="divide-y divide-slate-100 max-h-[500px] overflow-y-auto">
-              {roomsList.map((r) => (
-                <li
-                  key={r.id}
-                  role="button"
-                  tabIndex={0}
-                  aria-selected={selectedRoom === r.id}
-                  className={cn(
-                    'group flex cursor-pointer items-center justify-between px-4 py-3.5 transition-all duration-200 focus:outline-none focus:bg-slate-50',
-                    selectedRoom === r.id && !isDeletingRooms
-                      ? 'bg-gradient-to-r from-[#F9D141]/10 to-[#F9D141]/5 border-l-4 border-l-[#d9a416] pl-3'
-                      : 'hover:bg-slate-50 border-l-4 border-l-transparent'
-                  )}
-                  onClick={() => {
-                    if (isDeletingRooms) {
-                      toggleRoomDelete(r.id)
-                    } else {
-                      setSelectedRoom(r.id)
-                      setAssetSearch('')
-                    }
-                  }}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                      e.preventDefault()
+            <ul className="divide-y divide-slate-100 max-h-[500px] overflow-y-auto relative">
+              {roomsList.map((r, index) => {
+                const isSelected = selectedRoom === r.id && !isDeletingRooms
+                return (
+                  <motion.li
+                    key={r.id}
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.25, delay: index * 0.03 }}
+                    whileHover={{ x: 4 }}
+                    whileTap={{ scale: 0.99 }}
+                    role="button"
+                    tabIndex={0}
+                    aria-selected={selectedRoom === r.id}
+                    className={cn(
+                      'group relative flex cursor-pointer items-center justify-between px-4 py-3.5 transition-colors duration-200 focus:outline-none',
+                      isSelected
+                        ? 'bg-gradient-to-r from-[#F9D141]/15 to-[#F9D141]/5 pl-4'
+                        : 'hover:bg-slate-50/80'
+                    )}
+                    onClick={() => {
                       if (isDeletingRooms) {
                         toggleRoomDelete(r.id)
                       } else {
                         setSelectedRoom(r.id)
                         setAssetSearch('')
                       }
-                    }
-                  }}
-                >
-                  <div className="flex items-center gap-3 min-w-0">
-                    {isAdmin && isDeletingRooms && (
-                      <input 
-                        type="checkbox" 
-                        checked={selectedRoomsToDelete.includes(r.id)} 
-                        onChange={() => toggleRoomDelete(r.id)}
-                        onClick={(e) => e.stopPropagation()}
-                        className="h-4 w-4 rounded border-slate-300 text-[#d9a416] focus:ring-[#F9D141] cursor-pointer"
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault()
+                        if (isDeletingRooms) {
+                          toggleRoomDelete(r.id)
+                        } else {
+                          setSelectedRoom(r.id)
+                          setAssetSearch('')
+                        }
+                      }
+                    }}
+                  >
+                    {isSelected && (
+                      <motion.div
+                        layoutId="activeRoomPill"
+                        className="absolute left-0 top-0 bottom-0 w-1 bg-[#d9a416] rounded-r-md shadow-sm"
+                        transition={{ type: 'spring', stiffness: 350, damping: 30 }}
                       />
                     )}
-                    <div className="p-2 bg-slate-100 text-slate-500 rounded-lg group-hover:bg-white group-hover:shadow-sm transition-all shrink-0">
-                      <Building2 className="w-4 h-4 text-[#d9a416]/75" />
+                    <div className="flex items-center gap-3 min-w-0">
+                      {isAdmin && isDeletingRooms && (
+                        <input 
+                          type="checkbox" 
+                          checked={selectedRoomsToDelete.includes(r.id)} 
+                          onChange={() => toggleRoomDelete(r.id)}
+                          onClick={(e) => e.stopPropagation()}
+                          className="h-4 w-4 rounded border-slate-300 text-[#d9a416] focus:ring-[#F9D141] cursor-pointer"
+                        />
+                      )}
+                      <motion.div 
+                        whileHover={{ scale: 1.12, rotate: 6 }} 
+                        className="p-2 bg-slate-100 text-slate-500 rounded-lg group-hover:bg-white group-hover:shadow-sm transition-all shrink-0"
+                      >
+                        <Building2 className="w-4 h-4 text-[#d9a416]" />
+                      </motion.div>
+                      <div className="min-w-0">
+                        <p className={cn('font-bold text-sm truncate', isSelected ? 'text-[#d9a416]' : 'text-slate-800')}>
+                          {r.code}
+                        </p>
+                        <p className="text-xs text-slate-500 truncate font-semibold">{r.name}</p>
+                      </div>
                     </div>
-                    <div className="min-w-0">
-                      <p className={cn('font-bold text-sm truncate', selectedRoom === r.id && !isDeletingRooms ? 'text-[#d9a416]' : 'text-slate-800')}>
-                        {r.code}
-                      </p>
-                      <p className="text-xs text-slate-500 truncate font-semibold">{r.name}</p>
+                    <div className="flex items-center gap-1.5 shrink-0 ml-2">
+                      {r.building && (
+                        <span className="bg-slate-100 border border-slate-200/60 text-slate-600 px-1.5 py-0.5 rounded text-[10px] font-bold max-w-[85px] truncate">
+                          {r.building}
+                        </span>
+                      )}
+                      {r.floor && (
+                        <span className="bg-amber-50 border border-amber-100 text-[#d9a416] px-1.5 py-0.5 rounded text-[10px] font-bold">
+                          Lt {r.floor}
+                        </span>
+                      )}
                     </div>
-                  </div>
-                  <div className="flex items-center gap-1.5 shrink-0 ml-2">
-                    {r.building && (
-                      <span className="bg-slate-100 border border-slate-200/60 text-slate-600 px-1.5 py-0.5 rounded text-[10px] font-bold max-w-[85px] truncate">
-                        {r.building}
-                      </span>
-                    )}
-                    {r.floor && (
-                      <span className="bg-amber-50 border border-amber-100 text-[#d9a416] px-1.5 py-0.5 rounded text-[10px] font-bold">
-                        Lt {r.floor}
-                      </span>
-                    )}
-                  </div>
-                </li>
-              ))}
+                  </motion.li>
+                )
+              })}
             </ul>
           )}
 
@@ -434,10 +467,10 @@ export function RoomsPage() {
                 Hal {roomPage} dari {Math.max(1, roomsTotalPages)}
               </span>
               <div className="flex items-center gap-1 w-full sm:w-auto justify-between sm:justify-end">
-                <Button variant="secondary" size="sm" className="px-1.5 h-8 border-slate-200" disabled={roomPage === 1} onClick={() => setRoomPage(1)}>
+                <Button variant="secondary" size="sm" className="px-1.5 h-8 border-slate-200 cursor-pointer" disabled={roomPage === 1} onClick={() => setRoomPage(1)}>
                   <ChevronsLeft className="h-3.5 w-3.5" />
                 </Button>
-                <Button variant="secondary" size="sm" className="px-1.5 h-8 border-slate-200" disabled={roomPage === 1} onClick={() => setRoomPage(p => Math.max(1, p - 1))}>
+                <Button variant="secondary" size="sm" className="px-1.5 h-8 border-slate-200 cursor-pointer" disabled={roomPage === 1} onClick={() => setRoomPage(p => Math.max(1, p - 1))}>
                   <ChevronLeft className="h-3.5 w-3.5" />
                 </Button>
                 
@@ -452,10 +485,10 @@ export function RoomsPage() {
                   ))}
                 </select>
 
-                <Button variant="secondary" size="sm" className="px-1.5 h-8 border-slate-200" disabled={roomPage >= roomsTotalPages} onClick={() => setRoomPage(p => Math.min(roomsTotalPages, p + 1))}>
+                <Button variant="secondary" size="sm" className="px-1.5 h-8 border-slate-200 cursor-pointer" disabled={roomPage >= roomsTotalPages} onClick={() => setRoomPage(p => Math.min(roomsTotalPages, p + 1))}>
                   <ChevronRight className="h-3.5 w-3.5" />
                 </Button>
-                <Button variant="secondary" size="sm" className="px-1.5 h-8 border-slate-200" disabled={roomPage >= roomsTotalPages} onClick={() => setRoomPage(Math.max(1, roomsTotalPages))}>
+                <Button variant="secondary" size="sm" className="px-1.5 h-8 border-slate-200 cursor-pointer" disabled={roomPage >= roomsTotalPages} onClick={() => setRoomPage(Math.max(1, roomsTotalPages))}>
                   <ChevronsRight className="h-3.5 w-3.5" />
                 </Button>
               </div>
@@ -478,7 +511,7 @@ export function RoomsPage() {
                   size="sm" 
                   variant="ghost" 
                   onClick={() => setIsDeletingAssets(true)} 
-                  className="h-8 text-rose-500 hover:bg-rose-50 hover:text-rose-600 text-xs font-bold rounded-lg"
+                  className="h-8 text-rose-500 hover:bg-rose-50 hover:text-rose-600 text-xs font-bold rounded-lg cursor-pointer"
                 >
                   <Trash2 className="h-3.5 w-3.5 mr-1" /> Hapus
                 </Button>
@@ -489,7 +522,7 @@ export function RoomsPage() {
                     size="sm" 
                     variant="ghost" 
                     onClick={() => { setIsDeletingAssets(false); setSelectedAssetsToDelete([]); }} 
-                    className="h-8 text-xs font-bold rounded-lg"
+                    className="h-8 text-xs font-bold rounded-lg cursor-pointer"
                   >
                     Batal
                   </Button>
@@ -498,7 +531,7 @@ export function RoomsPage() {
                     variant="danger" 
                     onClick={() => setShowConfirmAssetDelete(true)} 
                     disabled={selectedAssetsToDelete.length === 0} 
-                    className="h-8 text-xs font-bold rounded-lg px-2.5"
+                    className="h-8 text-xs font-bold rounded-lg px-2.5 cursor-pointer"
                   >
                     Hapus Terpilih ({selectedAssetsToDelete.length})
                   </Button>
@@ -510,9 +543,13 @@ export function RoomsPage() {
           {/* Search/View Aset */}
           {!selectedRoom ? (
             <div className="py-24 text-center">
-              <div className="mx-auto w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 mb-3.5">
-                <ArrowRight className="w-5 h-5 -rotate-45" />
-              </div>
+              <motion.div 
+                animate={{ y: [0, -8, 0] }}
+                transition={{ repeat: Infinity, duration: 2.8, ease: "easeInOut" }}
+                className="mx-auto w-14 h-14 rounded-2xl bg-amber-50 text-[#d9a416] border border-amber-100/80 shadow-md flex items-center justify-center mb-4"
+              >
+                <ArrowRight className="w-6 h-6 -rotate-45" />
+              </motion.div>
               <h4 className="text-sm font-bold text-slate-700">Pilih Ruangan Terlebih Dahulu</h4>
               <p className="text-xs text-slate-400 max-w-[280px] mx-auto mt-1 leading-relaxed">
                 Silakan pilih salah satu ruangan di daftar sebelah kiri untuk melihat, mengimport, atau menambahkan inventaris aset.
@@ -526,7 +563,7 @@ export function RoomsPage() {
                   <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
                   <Input
                     placeholder="Cari nama barang, kode, merk, atau nomor register..."
-                    className="pl-9 h-9 text-xs rounded-lg border-slate-200 focus:border-[#F9D141]/50 bg-white"
+                    className="pl-9 h-9 text-xs rounded-lg border-slate-200 focus:border-[#F9D141]/50 bg-white transition-all focus:ring-2 focus:ring-[#F9D141]/20"
                     value={assetSearch}
                     onChange={(e) => setAssetSearch(e.target.value)}
                   />
@@ -544,13 +581,31 @@ export function RoomsPage() {
                   />
                 </div>
               ) : (
-                <ul className="divide-y divide-slate-100 max-h-[500px] overflow-y-auto">
+                <motion.ul 
+                  key={selectedRoom ?? 'no-room'}
+                  initial="hidden"
+                  animate="show"
+                  variants={{
+                    hidden: { opacity: 0 },
+                    show: {
+                      opacity: 1,
+                      transition: { staggerChildren: 0.05 }
+                    }
+                  }}
+                  className="divide-y divide-slate-100 max-h-[500px] overflow-y-auto"
+                >
                   {assetsList.map((a) => (
-                    <li 
+                    <motion.li 
                       key={a.id} 
+                      variants={{
+                        hidden: { opacity: 0, y: 10 },
+                        show: { opacity: 1, y: 0 }
+                      }}
+                      whileHover={{ y: -2, backgroundColor: 'rgba(248, 250, 252, 0.9)' }}
+                      transition={{ duration: 0.2 }}
                       className={cn(
-                        "flex flex-col sm:flex-row sm:items-center justify-between px-4 py-3.5 transition-colors gap-3",
-                        isDeletingAssets ? "cursor-pointer hover:bg-rose-50/20" : "hover:bg-slate-50/50"
+                        "flex flex-col sm:flex-row sm:items-center justify-between px-4 py-3.5 transition-colors gap-3 rounded-lg mx-1 my-0.5",
+                        isDeletingAssets ? "cursor-pointer hover:bg-rose-50/20" : ""
                       )}
                       onClick={() => {
                         if (isDeletingAssets) {
@@ -568,9 +623,12 @@ export function RoomsPage() {
                             className="h-4 w-4 rounded border-slate-300 text-[#d9a416] focus:ring-[#F9D141] cursor-pointer mt-1"
                           />
                         )}
-                        <div className="p-2 bg-amber-500/10 text-amber-600 rounded-xl mt-0.5 shrink-0">
+                        <motion.div 
+                          whileHover={{ scale: 1.15, rotate: 10 }}
+                          className="p-2 bg-amber-500/10 text-amber-600 rounded-xl mt-0.5 shrink-0"
+                        >
                           <Package className="w-4 h-4" />
-                        </div>
+                        </motion.div>
                         <div className="min-w-0 space-y-1">
                           <p className="font-bold text-slate-800 text-sm truncate">{a.namaBarang}</p>
                           <div className="flex flex-wrap gap-1 text-[10px] text-slate-500 font-bold">
@@ -588,9 +646,9 @@ export function RoomsPage() {
                       <div className="flex items-center gap-2 self-end sm:self-center shrink-0">
                         <StatusBadge status={a.status} />
                       </div>
-                    </li>
+                    </motion.li>
                   ))}
-                </ul>
+                </motion.ul>
               )}
 
               <div className="flex items-center justify-between border-t border-slate-200/50 pt-3 mt-4 px-1">
@@ -598,10 +656,10 @@ export function RoomsPage() {
                   Hal {assetPage} dari {Math.max(1, assetsTotalPages)}
                 </span>
                 <div className="flex items-center gap-1 w-full sm:w-auto justify-between sm:justify-end">
-                  <Button variant="secondary" size="sm" className="px-1.5 h-8 border-slate-200" disabled={assetPage === 1} onClick={() => setAssetPage(1)}>
+                  <Button variant="secondary" size="sm" className="px-1.5 h-8 border-slate-200 cursor-pointer" disabled={assetPage === 1} onClick={() => setAssetPage(1)}>
                     <ChevronsLeft className="h-3.5 w-3.5" />
                   </Button>
-                  <Button variant="secondary" size="sm" className="px-1.5 h-8 border-slate-200" disabled={assetPage === 1} onClick={() => setAssetPage(p => Math.max(1, p - 1))}>
+                  <Button variant="secondary" size="sm" className="px-1.5 h-8 border-slate-200 cursor-pointer" disabled={assetPage === 1} onClick={() => setAssetPage(p => Math.max(1, p - 1))}>
                     <ChevronLeft className="h-3.5 w-3.5" />
                   </Button>
                   
@@ -616,10 +674,10 @@ export function RoomsPage() {
                     ))}
                   </select>
 
-                  <Button variant="secondary" size="sm" className="px-1.5 h-8 border-slate-200" disabled={assetPage >= assetsTotalPages} onClick={() => setAssetPage(p => Math.min(assetsTotalPages, p + 1))}>
+                  <Button variant="secondary" size="sm" className="px-1.5 h-8 border-slate-200 cursor-pointer" disabled={assetPage >= assetsTotalPages} onClick={() => setAssetPage(p => Math.min(assetsTotalPages, p + 1))}>
                     <ChevronRight className="h-3.5 w-3.5" />
                   </Button>
-                  <Button variant="secondary" size="sm" className="px-1.5 h-8 border-slate-200" disabled={assetPage >= assetsTotalPages} onClick={() => setAssetPage(Math.max(1, assetsTotalPages))}>
+                  <Button variant="secondary" size="sm" className="px-1.5 h-8 border-slate-200 cursor-pointer" disabled={assetPage >= assetsTotalPages} onClick={() => setAssetPage(Math.max(1, assetsTotalPages))}>
                     <ChevronsRight className="h-3.5 w-3.5" />
                   </Button>
                 </div>
@@ -627,7 +685,7 @@ export function RoomsPage() {
             </>
           )}
         </GlassCard>
-      </div>
+      </motion.div>
 
       {/* Room Creation Modal Form */}
       <RoomFormModal
