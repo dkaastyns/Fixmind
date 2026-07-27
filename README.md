@@ -13,40 +13,40 @@ Sistem ini mempermudah alur pengaduan dan pemeliharaan fasilitas secara digital,
 
 ---
 
-## 🌟 Fitur Utama Sistem
+## Fitur Utama Sistem
 
-### 1. 🤖 Pelaporan Kerusakan Cerdas Berbasis AI
+### 1. Pelaporan Kerusakan Cerdas Berbasis AI
 - **Analisis Prioritas Otomatis:** AI menganalisis deskripsi masalah dan kategori aset untuk menentukan prioritas (`LOW`, `MEDIUM`, `HIGH`, `CRITICAL`), estimasi jam pengerjaan, dan saran solusi teknis.
 - **Linimasa (Timeline) & Histori Audit:** Pelacakan transparan status tiket laporan dari pembuatan (`PENDING`), penugasan teknisi (`IN_PROGRESS`), hingga penyelesaian (`DONE`) beserta lampiran foto kerusakan dan perbaikan.
 - **Komentar & Diskusi Real-time:** Fitur kolom diskusi interaktif pada setiap laporan untuk komunikasi antara pelapor, admin, dan teknisi.
 
-### 2. 🗓️ Jadwal Pemeliharaan Rutin (Maintenance Schedule)
+### 2. Jadwal Pemeliharaan Rutin (Maintenance Schedule)
 - **Manajemen Agenda Pemeliharaan:** Penjadwalan perawatan preventif gedung dan aset berkala (Mingguan, Bulanan, Triwulan, Tahunan, atau Sekali Saja).
 - **Manajemen Vendor Eksternal & Biaya:** Pencatatan nama perusahaan vendor, nama *contact person*, nomor telepon vendor, serta estimasi dan realisasi biaya pemeliharaan.
 - **Status Siklus Kerja:** Pelacakan status pengerjaan (*Terjadwal*, *Sedang Dikerjakan*, *Selesai*, *Batal*, *Terlambat/Overdue*).
 
-### 3. 🔄 Pengajuan Pemindahan Aset (Asset Transfer Workflow)
+### 3. Pengajuan Pemindahan Aset (Asset Transfer Workflow)
 - **Alur Persetujuan Bertingkat:** Pegawai dapat mengajukan permohonan pemindahan aset antar ruangan beserta alasannya.
 - **Verifikasi Administrator:** Admin dapat meninjau (*Approve* / *Reject*) pengajuan transfer. Jika disetujui, lokasi `room_id` aset otomatis diperbarui secara otomatis di database.
 
-### 4. 🔍 Pencarian Global Terpadu (Global Instant Search)
+### 4. Pencarian Global Terpadu (Global Instant Search)
 - **Pencarian Melintas Entitas:** Satu kolom pencarian pintar untuk menemukan Aset, Laporan Kerusakan, Pengajuan Transfer, dan Jadwal Pemeliharaan secara instan dari seluruh sudut aplikasi.
 
-### 5. 📊 Dasbor Analitik & Ekspor Laporan
+### 5. Dasbor Analitik & Ekspor Laporan
 - **Visualisasi Kinerja:** Metrik statistik laporan aktif, performa teknisi, status ruangan, dan grafik distribusi laporan.
 - **Ekspor Dokumen:** Mendukung pengunduhan laporan dan agenda pemeliharaan ke format **Excel (.xlsx)** dan **PDF**.
 
-### 6. 📱 Progressive Web App (PWA) & Mode Offline
+### 6. Progressive Web App (PWA) & Mode Offline
 - **Instalasi Tanpa APK:** Dapat langsung di-install pada smartphone Android/iOS maupun desktop melalui peramban web (Chrome, Safari, Edge).
 - **Offline Sync:** Mampu menyimpan draf dan aksi saat jaringan terputus, lalu otomatis menyinkronkan data ketika online kembali.
 
-### 7. ⚡ Notifikasi Real-time & Keamanan Tinggi
+### 7. Notifikasi Real-time & Keamanan Tinggi
 - **WebSockets (Socket.io):** Pembaruan status laporan dan pengajuan transfer dipancarkan secara instan ke layar pengguna dan admin tanpa perlu refresh.
 - **Proteksi Brute-Force & Lockout:** Penguncian akun otomatis setelah 5x gagal login berturut-turut untuk melindungi akun admin dari serangan peretasan.
 
 ---
 
-## 🛠️ Tech Stack (Tumpukan Teknologi)
+## Tech Stack (Tumpukan Teknologi)
 
 | Komponen | Teknologi | Keterangan |
 |----------|-----------|------------|
@@ -63,28 +63,28 @@ Sistem ini mempermudah alur pengaduan dan pemeliharaan fasilitas secara digital,
 
 ---
 
-## 📂 Struktur Repositori & Dokumentasi Terkait
+## Struktur Repositori & Dokumentasi Terkait
 
 Struktur lengkap proyek dan panduan pengembang tersedia di folder `docs/`:
 
 | File Dokumentasi | Isi & Deskripsi |
 |------------------|-----------------|
-| 📘 [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | Arsitektur global, diagram alur siklus laporan, dan transfer aset |
-| 📘 [docs/API.md](docs/API.md) | Katalog lengkap REST API endpoints, DTO, contoh cURL & WebSockets |
-| 📘 [docs/DATABASE.md](docs/DATABASE.md) | ERD, kamus data (Data Dictionary), indeks, dan riwayat migrasi |
-| 📘 [docs/FRONTEND-ARCHITECTURE.md](docs/FRONTEND-ARCHITECTURE.md) | Arsitektur React 19, Zustand, router-guards, dan design system |
-| 📘 [docs/BACKEND-ARCHITECTURE.md](docs/BACKEND-ARCHITECTURE.md) | Modul NestJS, middleware security (Helmet/Throttler), dan kueri `postgres.js` |
-| 📘 [docs/AI.md](docs/AI.md) | Konfigurasi prompt Gemini 2.5 Flash, penentuan prioritas & RAG roadmap |
-| 📘 [docs/FOLDER-STRUCTURE.md](docs/FOLDER-STRUCTURE.md) | Struktur pohon folder backend & frontend secara menyeluruh |
-| 📘 [docs/ROADMAP.md](docs/ROADMAP.md) | Daftar status pengerjaan fitur proyek dan fase pengembangan |
-| 📘 [docs/SECURITY.md](docs/SECURITY.md) | Audit keamanan, JWT token rotation, rate limiting, & account lockout |
-| 📘 [docs/TESTING.md](docs/TESTING.md) | Panduan pengujian unit test dan verifikasi TypeScript |
-| 📘 [docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md) | Solusi masalah umum saat instalasi dan penanganan galat |
-| 📘 [CONTRIBUTING.md](CONTRIBUTING.md) | Standar Conventional Commits, git branching, dan PR workflow |
+| [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | Arsitektur global, diagram alur siklus laporan, dan transfer aset |
+| [docs/API.md](docs/API.md) | Katalog lengkap REST API endpoints, DTO, contoh cURL & WebSockets |
+| [docs/DATABASE.md](docs/DATABASE.md) | ERD, kamus data (Data Dictionary), indeks, dan riwayat migrasi |
+| [docs/FRONTEND-ARCHITECTURE.md](docs/FRONTEND-ARCHITECTURE.md) | Arsitektur React 19, Zustand, router-guards, dan design system |
+| [docs/BACKEND-ARCHITECTURE.md](docs/BACKEND-ARCHITECTURE.md) | Modul NestJS, middleware security (Helmet/Throttler), dan kueri `postgres.js` |
+| [docs/AI.md](docs/AI.md) | Konfigurasi prompt Gemini 2.5 Flash, penentuan prioritas & RAG roadmap |
+| [docs/FOLDER-STRUCTURE.md](docs/FOLDER-STRUCTURE.md) | Struktur pohon folder backend & frontend secara menyeluruh |
+| [docs/ROADMAP.md](docs/ROADMAP.md) | Daftar status pengerjaan fitur proyek dan fase pengembangan |
+| [docs/SECURITY.md](docs/SECURITY.md) | Audit keamanan, JWT token rotation, rate limiting, & account lockout |
+| [docs/TESTING.md](docs/TESTING.md) | Panduan pengujian unit test dan verifikasi TypeScript |
+| [docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md) | Solusi masalah umum saat instalasi dan penanganan galat |
+| [CONTRIBUTING.md](CONTRIBUTING.md) | Standar Conventional Commits, git branching, dan PR workflow |
 
 ---
 
-## 🚀 Panduan Memulai (Quick Start Guide)
+## Panduan Memulai (Quick Start Guide)
 
 ### Prasyarat Sistem
 1. Pasang **[Bun](https://bun.sh/) 1.3+** (pengganti Node.js/npm).
@@ -139,7 +139,7 @@ Frontend web akan berjalan di: `http://localhost:5173`
 
 ---
 
-## 🐳 Menjalankan dengan Docker Compose (Produksi / Staging)
+## Menjalankan dengan Docker Compose (Produksi / Staging)
 
 Seluruh sistem (Nginx, Backend NestJS, PostgreSQL 16) dapat dijalankan menggunakan Docker Compose:
 
@@ -156,7 +156,7 @@ docker compose up -d --build
 
 ---
 
-## 🔑 Kredensial Login Default (Development Seed)
+## Kredensial Login Default (Development Seed)
 
 Setelah menjalankan `bun run seed` di backend, Anda dapat menggunakan akun berikut untuk menguji aplikasi:
 
@@ -167,6 +167,6 @@ Setelah menjalankan `bun run seed` di backend, Anda dapat menggunakan akun berik
 
 ---
 
-## 📄 Lisensi
+## Lisensi
 
 Hak Cipta © 2026 Sekretariat DPRD Kota Semarang / Tim Pengembang FixMind. Berlisensi di bawah [MIT License](LICENSE).
