@@ -109,9 +109,14 @@ export function ReportsPage() {
         description="Lacak dan kelola laporan kerusakan fasilitas DPRD Kota Semarang"
         action={
           canCreate ? (
-            <Button onClick={() => setShowForm(true)}>
-              <Plus className="h-4 w-4" /> Buat Laporan Baru
-            </Button>
+            <motion.div whileHover={{ scale: 1.04, y: -2 }} whileTap={{ scale: 0.96 }}>
+              <Button onClick={() => setShowForm(true)} className="gap-1.5 cursor-pointer shadow-md hover:shadow-lg">
+                <motion.div whileHover={{ rotate: 90 }} transition={{ duration: 0.2 }}>
+                  <Plus className="h-4 w-4" />
+                </motion.div>
+                Buat Laporan Baru
+              </Button>
+            </motion.div>
           ) : undefined
         }
       />
@@ -130,23 +135,29 @@ export function ReportsPage() {
           />
         </div>
 
-        <button
+        <motion.button
+          whileHover={{ scale: 1.03 }}
+          whileTap={{ scale: 0.97 }}
           onClick={() => setShowAdvanced((v) => !v)}
-          className="ml-auto inline-flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-sm transition-colors glass text-muted hover:text-foreground"
+          className="ml-auto inline-flex items-center gap-1.5 rounded-xl px-3.5 py-2 text-sm font-semibold transition-colors glass text-slate-600 hover:text-slate-900 cursor-pointer shadow-sm"
         >
-          <Filter className="h-3.5 w-3.5" />
+          <Filter className="h-3.5 w-3.5 text-[#d9a416]" />
           Filter Lanjutan
           {showAdvanced ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
           {hasAdvancedFilter && (
-            <span className="ml-1 inline-flex h-4 w-4 items-center justify-center rounded-full bg-white/30 text-[10px] font-bold">
+            <motion.span 
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              className="ml-1 inline-flex h-4 w-4 items-center justify-center rounded-full bg-[#F9D141] text-slate-950 text-[10px] font-extrabold shadow-sm"
+            >
               {[advFilter.roomId, advFilter.dateFrom, advFilter.dateTo].filter(Boolean).length}
-            </span>
+            </motion.span>
           )}
-        </button>
+        </motion.button>
       </div>
 
-      {/* Status filter tabs */}
-      <div className="mb-3 flex flex-wrap gap-2">
+      {/* Status filter tabs with sliding active pill animation */}
+      <div className="mb-4 flex flex-wrap gap-2 relative">
         {(['', 'PENDING', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED'] as const).map((s) => {
           const labels: Record<string, string> = {
             '': 'Semua',
@@ -155,16 +166,26 @@ export function ReportsPage() {
             COMPLETED: 'SELESAI',
             CANCELLED: 'DIBATALKAN',
           }
+          const isActive = statusFilter === s
           return (
-            <button
+            <motion.button
               key={s || 'all'}
+              whileHover={{ scale: 1.04 }}
+              whileTap={{ scale: 0.96 }}
               onClick={() => setStatusFilter(s)}
-              className={`rounded-xl px-3 py-1.5 text-sm transition-colors ${
-                statusFilter === s ? 'gradient-primary text-white' : 'glass text-muted hover:text-foreground'
+              className={`relative rounded-xl px-4 py-2 text-xs md:text-sm font-bold transition-colors cursor-pointer ${
+                isActive ? 'text-white shadow-md' : 'glass text-slate-600 hover:text-slate-900 hover:bg-white/80'
               }`}
             >
-              {labels[s]}
-            </button>
+              {isActive && (
+                <motion.div
+                  layoutId="activeReportStatusPill"
+                  className="absolute inset-0 rounded-xl gradient-gold z-0 shadow-md"
+                  transition={{ type: 'spring', stiffness: 380, damping: 32 }}
+                />
+              )}
+              <span className="relative z-10">{labels[s]}</span>
+            </motion.button>
           )
         })}
       </div>
@@ -269,7 +290,7 @@ export function ReportsPage() {
         )}
       </AnimatePresence>
 
-      <GlassCard className="overflow-hidden p-0">
+      <GlassCard className="overflow-hidden p-0 border border-white/60 shadow-md">
         {isLoading ? (
           <TableSkeleton rows={5} cols={5} />
         ) : reports.length === 0 ? (
@@ -279,33 +300,53 @@ export function ReportsPage() {
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b border-white/40 text-left text-muted">
-                    <th className="px-4 py-3 font-medium">Judul Laporan</th>
-                    <th className="px-4 py-3 font-medium">Ruangan</th>
-                    <th className="px-4 py-3 font-medium">Status</th>
-                    <th className="px-4 py-3 font-medium">Prioritas</th>
-                    <th className="px-4 py-3 font-medium">Tanggal</th>
+                  <tr className="border-b border-slate-200/60 text-left text-slate-500 font-bold bg-slate-50/50">
+                    <th className="px-4 py-3 font-bold">Judul Laporan</th>
+                    <th className="px-4 py-3 font-bold">Ruangan</th>
+                    <th className="px-4 py-3 font-bold">Status</th>
+                    <th className="px-4 py-3 font-bold">Prioritas</th>
+                    <th className="px-4 py-3 font-bold">Tanggal</th>
                   </tr>
                 </thead>
-                <tbody>
+                <motion.tbody
+                  key={`${statusFilter}-${advFilter.roomId}-${page}-${debouncedSearch}`}
+                  initial="hidden"
+                  animate="show"
+                  variants={{
+                    hidden: { opacity: 0 },
+                    show: {
+                      opacity: 1,
+                      transition: { staggerChildren: 0.04 },
+                    },
+                  }}
+                >
                   {reports.map((r) => (
-                    <tr key={r.id} className="border-b border-white/20 hover:bg-white/30">
-                      <td className="px-4 py-3">
-                        <Link to={`/dashboard/reports/${r.id}`} className="font-medium hover:text-[#d9a416]">
+                    <motion.tr
+                      key={r.id}
+                      variants={{
+                        hidden: { opacity: 0, y: 10 },
+                        show: { opacity: 1, y: 0 },
+                      }}
+                      whileHover={{ backgroundColor: 'rgba(249, 209, 65, 0.06)', x: 2 }}
+                      transition={{ duration: 0.15 }}
+                      className="border-b border-slate-100 transition-colors"
+                    >
+                      <td className="px-4 py-3.5 font-bold text-slate-800">
+                        <Link to={`/dashboard/reports/${r.id}`} className="hover:text-[#d9a416] transition-colors inline-block">
                           {r.title}
                         </Link>
                       </td>
-                      <td className="px-4 py-3 text-muted">{r.roomName ?? r.roomCode}</td>
+                      <td className="px-4 py-3 text-slate-600 font-semibold">{r.roomName ?? r.roomCode}</td>
                       <td className="px-4 py-3"><StatusBadge status={r.status} /></td>
                       <td className="px-4 py-3">
                         {r.priority ? <StatusBadge status={r.priority} /> : '—'}
                       </td>
-                      <td className="px-4 py-3 text-muted">
+                      <td className="px-4 py-3 text-slate-500 font-semibold text-xs">
                         {new Date(r.createdAt).toLocaleDateString('id-ID')}
                       </td>
-                    </tr>
+                    </motion.tr>
                   ))}
-                </tbody>
+                </motion.tbody>
               </table>
             </div>
             {totalPages > 1 && (
@@ -480,14 +521,16 @@ function CreateReportForm({
             <p className="text-xs font-semibold text-foreground/60 uppercase tracking-wide">Template Cepat</p>
             <div className="flex flex-wrap gap-2">
               {REPORT_TEMPLATES.map((t) => (
-                <button
+                <motion.button
                   key={t.label}
                   type="button"
+                  whileHover={{ scale: 1.06, y: -1 }}
+                  whileTap={{ scale: 0.95 }}
                   onClick={() => applyTemplate(t)}
-                  className="inline-flex items-center rounded-full border border-[#F9D141]/30 bg-[#F9D141]/10 px-3 py-1 text-xs font-semibold text-[#d9a416] transition-all hover:bg-[#F9D141]/20 hover:scale-105 active:scale-95"
+                  className="inline-flex items-center rounded-full border border-[#F9D141]/40 bg-[#F9D141]/10 px-3.5 py-1 text-xs font-bold text-[#d9a416] transition-colors hover:bg-[#F9D141]/20 shadow-sm cursor-pointer"
                 >
                   {t.label}
-                </button>
+                </motion.button>
               ))}
             </div>
           </div>
