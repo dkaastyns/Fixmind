@@ -32,45 +32,126 @@ const features = [
   },
 ]
 
+const introData = [
+  { text: 'Cepat.', sub: 'Pelaporan Fasilitas Tanpa Hambatan' },
+  { text: 'Presisi.', sub: 'Prioritas Penanganan Berbasis AI Engine' },
+  { text: 'Cerdas.', sub: 'Integrasi Sarana Prasarana DPRD' },
+  { text: 'FixMind.', sub: 'Sistem Manajemen Sarana Prasarana DPRD Kota Semarang' },
+]
+
 const IntroScreen = ({ onComplete }: { onComplete: () => void }) => {
-  const [currentWord, setCurrentWord] = useState(0)
-  const words = ["Sederhana.", "Cerdas.", "FixMind."]
+  const [currentStep, setCurrentStep] = useState(0)
+  const isFinal = currentStep === introData.length - 1
 
   useEffect(() => {
-    if (currentWord < words.length - 1) {
+    if (currentStep < introData.length - 1) {
       const timer = setTimeout(() => {
-        setCurrentWord(prev => prev + 1)
-      }, 800)
+        setCurrentStep((prev) => prev + 1)
+      }, 900)
       return () => clearTimeout(timer)
     } else {
       const timer = setTimeout(() => {
         onComplete()
-      }, 1200)
+      }, 1500)
       return () => clearTimeout(timer)
     }
-  }, [currentWord, onComplete])
+  }, [currentStep, onComplete])
+
+  const current = introData[currentStep]
 
   return (
     <motion.div
       initial={{ opacity: 1 }}
-      exit={{ opacity: 0, y: -50 }}
-      transition={{ duration: 0.8, ease: "easeInOut" }}
-      className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950"
+      exit={{ opacity: 0, scale: 1.05, filter: 'blur(16px)' }}
+      transition={{ duration: 0.7, ease: [0.4, 0, 0.2, 1] }}
+      className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-slate-950 overflow-hidden select-none font-sans"
     >
-      <AnimatePresence mode="wait">
-        <motion.h1
-          key={currentWord}
-          initial={{ opacity: 0, scale: 0.9, filter: "blur(10px)" }}
-          animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
-          exit={{ opacity: 0, scale: 1.1, filter: "blur(10px)" }}
-          transition={{ duration: 0.4 }}
-          className={`text-4xl sm:text-6xl font-extrabold tracking-tight ${
-            currentWord === words.length - 1 ? "text-gradient-gold drop-shadow-[0_0_15px_rgba(255,214,65,0.3)]" : "text-white"
-          }`}
-        >
-          {words[currentWord]}
-        </motion.h1>
-      </AnimatePresence>
+      {/* Background Vignette Image & Ambient Glowing Orbs */}
+      <div className="absolute inset-0 pointer-events-none opacity-20">
+        <img
+          src="/new-bg_dprd.jpg"
+          alt="DPRD Background"
+          className="h-full w-full object-cover"
+        />
+        <div className="absolute inset-0 bg-slate-950/80 backdrop-blur-[3px]" />
+      </div>
+
+      <motion.div
+        animate={{ scale: [1, 1.2, 1], opacity: [0.25, 0.45, 0.25] }}
+        transition={{ repeat: Infinity, duration: 4, ease: 'easeInOut' }}
+        className="absolute top-1/3 left-1/3 w-[500px] h-[500px] bg-[#F9D141]/20 rounded-full filter blur-[140px] pointer-events-none"
+      />
+      <motion.div
+        animate={{ scale: [1.2, 1, 1.2], opacity: [0.25, 0.45, 0.25] }}
+        transition={{ repeat: Infinity, duration: 5, ease: 'easeInOut' }}
+        className="absolute bottom-1/3 right-1/3 w-[450px] h-[450px] bg-amber-400/20 rounded-full filter blur-[120px] pointer-events-none"
+      />
+
+      {/* Center Intro Container */}
+      <div className="relative z-10 flex flex-col items-center px-4 max-w-xl text-center">
+        
+        {/* Glowing Logo Container on Final Step */}
+        <AnimatePresence mode="wait">
+          {isFinal && (
+            <motion.div
+              initial={{ opacity: 0, y: -20, scale: 0.8 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              transition={{ duration: 0.5, ease: 'backOut' }}
+              className="mb-6 flex justify-center"
+            >
+              <div className="bg-white/95 border-2 border-amber-300/80 shadow-[0_0_30px_rgba(249,209,65,0.6)] backdrop-blur-xl px-6 py-3 rounded-2xl">
+                <img 
+                  src="/jdih-logo.png" 
+                  alt="JDIH Kota Semarang" 
+                  className="h-11 w-auto object-contain" 
+                />
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Word Animation */}
+        <AnimatePresence mode="wait">
+          <motion.h1
+            key={currentStep}
+            initial={{ opacity: 0, y: 25, scale: 0.9, filter: 'blur(12px)' }}
+            animate={{ opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' }}
+            exit={{ opacity: 0, y: -25, scale: 1.05, filter: 'blur(12px)' }}
+            transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+            className={`text-4xl sm:text-7xl font-black tracking-tight ${
+              isFinal
+                ? 'text-transparent bg-clip-text bg-gradient-to-r from-white via-[#F9D141] to-amber-300 drop-shadow-[0_0_25px_rgba(249,209,65,0.5)]'
+                : 'text-white'
+            }`}
+          >
+            {current.text}
+          </motion.h1>
+        </AnimatePresence>
+
+        {/* Subtitle Animation */}
+        <AnimatePresence mode="wait">
+          <motion.p
+            key={`sub-${currentStep}`}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.35, delay: 0.12 }}
+            className="mt-4 text-xs sm:text-base font-semibold text-slate-300 max-w-md leading-relaxed"
+          >
+            {current.sub}
+          </motion.p>
+        </AnimatePresence>
+
+        {/* Sleek Bottom Gold Progress Line */}
+        <div className="w-36 h-1 bg-white/10 rounded-full overflow-hidden mt-8 border border-white/10 relative">
+          <motion.div
+            initial={{ width: '0%' }}
+            animate={{ width: `${((currentStep + 1) / introData.length) * 100}%` }}
+            transition={{ duration: 0.4, ease: 'easeOut' }}
+            className="h-full rounded-full gradient-gold shadow-xs"
+          />
+        </div>
+      </div>
     </motion.div>
   )
 }
