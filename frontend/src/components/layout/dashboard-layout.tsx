@@ -226,8 +226,8 @@ function SidebarContent({
                       Tidak
                     </Button>
                   </motion.div>
-                  <motion.div whileHover={{ scale: 1.05, boxShadow: '0 10px 15px -3px rgba(249, 209, 65, 0.4)' }} whileTap={{ scale: 0.98 }} className="flex-1">
-                    <Button className="w-full rounded-xl bg-[#F9D141] text-slate-900 font-bold hover:bg-[#F9D141]/90" onClick={confirmLogout}>
+                  <motion.div whileHover={{ scale: 1.05, boxShadow: '0 10px 15px -3px rgba(217, 164, 22, 0.4)' }} whileTap={{ scale: 0.98 }} className="flex-1">
+                    <Button className="w-full rounded-xl bg-[#d9a416] hover:bg-[#b88b12] text-white font-extrabold cursor-pointer" onClick={confirmLogout}>
                       Ya, Keluar
                     </Button>
                   </motion.div>
