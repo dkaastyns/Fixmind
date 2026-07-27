@@ -102,11 +102,15 @@ export function UserDashboard() {
 
           {/* Search Bar pill - Light Glassmorphism Style */}
           <div className="mt-6 w-full max-w-lg mx-auto">
-            <div 
+            <motion.div 
+              whileHover={{ scale: 1.025, y: -2 }}
+              whileTap={{ scale: 0.975 }}
               onClick={() => window.dispatchEvent(new CustomEvent('open-global-search'))}
-              className="cursor-pointer flex items-center gap-4 bg-[#f4f4f4]/15 hover:bg-[#f4f4f4]/20 border border-[#f4f4f4]/15 rounded-2xl px-5 py-3.5 shadow-md transition-all group duration-200 text-left"
+              className="cursor-pointer flex items-center gap-4 bg-[#f4f4f4]/15 hover:bg-[#f4f4f4]/25 border border-[#f4f4f4]/25 rounded-2xl px-5 py-3.5 shadow-md transition-all group duration-200 text-left backdrop-blur-md"
             >
-              <Search className="w-5.5 h-5.5 text-[#ffd043] shrink-0" />
+              <motion.div whileHover={{ rotate: 15, scale: 1.15 }} transition={{ duration: 0.2 }}>
+                <Search className="w-5.5 h-5.5 text-[#ffd043] shrink-0" />
+              </motion.div>
               <div className="flex-grow min-w-0">
                 <p className="text-sm font-bold text-white leading-tight">
                   Cari aset yang seperti apa?
@@ -115,7 +119,7 @@ export function UserDashboard() {
                   Apapun • Kapanpun • Dimanapun
                 </p>
               </div>
-            </div>
+            </motion.div>
           </div>
         </div>
       </div>
@@ -127,18 +131,25 @@ export function UserDashboard() {
         <div className="grid gap-4 grid-cols-1 sm:grid-cols-2">
           {/* Action 1: Laporkan Masalah */}
           <motion.div
-            whileHover={{ scale: 1.015, y: -2 }}
-            whileTap={{ scale: 0.985 }}
+            whileHover={{ scale: 1.02, y: -3 }}
+            whileTap={{ scale: 0.98 }}
             onClick={() => navigate('/dashboard/reports')}
-            className="cursor-pointer rounded-2xl bg-gradient-to-br from-[#d94a26] via-[#e25329] to-[#b32b0f] p-6 flex flex-col justify-between text-white shadow-md hover:shadow-lg transition-all relative overflow-hidden group min-h-[140px]"
+            className="cursor-pointer rounded-2xl bg-gradient-to-br from-[#d94a26] via-[#e25329] to-[#b32b0f] p-6 flex flex-col justify-between text-white shadow-md hover:shadow-[0_12px_24px_rgba(217,74,38,0.3)] transition-all relative overflow-hidden group min-h-[140px]"
           >
-            <div className="absolute right-0 bottom-0 translate-x-3 translate-y-3 opacity-10 group-hover:scale-110 group-hover:rotate-6 group-hover:opacity-15 transition-all duration-500 pointer-events-none">
+            <motion.div 
+              animate={{ scale: [1, 1.06, 1], rotate: [0, 5, 0] }}
+              transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
+              className="absolute right-0 bottom-0 translate-x-3 translate-y-3 opacity-10 group-hover:scale-110 group-hover:rotate-6 group-hover:opacity-20 transition-all duration-500 pointer-events-none"
+            >
               <AlertCircle className="w-36 h-36" />
-            </div>
+            </motion.div>
             
-            <div className="p-2 rounded-xl bg-white/20 border border-white/30 backdrop-blur-md w-fit">
-              <AlertCircle className="w-6 h-6 text-white group-hover:scale-115 group-hover:rotate-[15deg] transition-all duration-300" />
-            </div>
+            <motion.div 
+              whileHover={{ rotate: 15, scale: 1.15 }}
+              className="p-2 rounded-xl bg-white/20 border border-white/30 backdrop-blur-md w-fit"
+            >
+              <AlertCircle className="w-6 h-6 text-white group-hover:scale-110 transition-all duration-300" />
+            </motion.div>
 
             <div className="mt-4 relative z-10">
               <h3 className="text-lg font-bold leading-tight">Laporkan Masalah Baru</h3>
@@ -150,18 +161,25 @@ export function UserDashboard() {
 
           {/* Action 2: Ajukan Transfer Aset */}
           <motion.div
-            whileHover={{ scale: 1.015, y: -2 }}
-            whileTap={{ scale: 0.985 }}
+            whileHover={{ scale: 1.02, y: -3 }}
+            whileTap={{ scale: 0.98 }}
             onClick={() => navigate('/dashboard/asset-transfers')}
-            className="cursor-pointer rounded-2xl bg-gradient-to-br from-[#dbb633] to-[#937b26] p-6 flex flex-col justify-between text-white shadow-md hover:shadow-lg transition-all relative overflow-hidden group min-h-[140px]"
+            className="cursor-pointer rounded-2xl bg-gradient-to-br from-[#dbb633] to-[#937b26] p-6 flex flex-col justify-between text-white shadow-md hover:shadow-[0_12px_24px_rgba(219,182,51,0.3)] transition-all relative overflow-hidden group min-h-[140px]"
           >
-            <div className="absolute right-0 bottom-0 translate-x-3 translate-y-3 opacity-10 group-hover:scale-110 group-hover:-rotate-6 group-hover:opacity-15 transition-all duration-500 pointer-events-none">
+            <motion.div 
+              animate={{ scale: [1, 1.06, 1], rotate: [0, -5, 0] }}
+              transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
+              className="absolute right-0 bottom-0 translate-x-3 translate-y-3 opacity-10 group-hover:scale-110 group-hover:-rotate-6 group-hover:opacity-20 transition-all duration-500 pointer-events-none"
+            >
               <ArrowRightLeft className="w-36 h-36" />
-            </div>
+            </motion.div>
             
-            <div className="p-2 rounded-xl bg-white/20 border border-white/30 backdrop-blur-md w-fit">
-              <ArrowRightLeft className="w-6 h-6 text-white group-hover:scale-115 group-hover:rotate-[-15deg] transition-all duration-300" />
-            </div>
+            <motion.div 
+              whileHover={{ rotate: -15, scale: 1.15 }}
+              className="p-2 rounded-xl bg-white/20 border border-white/30 backdrop-blur-md w-fit"
+            >
+              <ArrowRightLeft className="w-6 h-6 text-white group-hover:scale-110 transition-all duration-300" />
+            </motion.div>
 
             <div className="mt-4 relative z-10">
               <h3 className="text-lg font-bold leading-tight">Ajukan Perpindahan Aset</h3>
@@ -173,53 +191,73 @@ export function UserDashboard() {
         </div>
 
         {/* Stats Counter Grid */}
-        <div className="grid gap-3 grid-cols-3">
+        <motion.div 
+          variants={containerVariants}
+          initial="hidden"
+          animate="show"
+          className="grid gap-3 grid-cols-3"
+        >
           {/* Stat 1 */}
           <motion.div 
-            whileHover={{ y: -3, boxShadow: "0 8px 16px -6px rgba(0,0,0,0.1)" }}
+            variants={itemVariants}
+            whileHover={{ y: -4, scale: 1.025, boxShadow: "0 12px 20px -6px rgba(0,0,0,0.12)" }}
             transition={{ type: "spring", stiffness: 350, damping: 25 }}
-            className="bg-slate-100/95 border border-slate-200/50 rounded-2xl p-3 flex flex-col justify-between min-h-[105px] shadow-sm cursor-default"
+            className="bg-white/95 border border-slate-200/60 rounded-2xl p-3 flex flex-col justify-between min-h-[105px] shadow-sm cursor-default"
           >
             <span className="text-[11px] md:text-xs font-bold text-slate-700 leading-tight">
               Total Laporan Saya
             </span>
-            <span className="text-3xl md:text-4xl font-extrabold text-slate-800 text-center mt-auto block">
+            <motion.span 
+              initial={{ scale: 0.8 }}
+              animate={{ scale: 1 }}
+              className="text-3xl md:text-4xl font-extrabold text-slate-800 text-center mt-auto block"
+            >
               {loadingStats ? <Skeleton className="h-8 w-12 mx-auto" /> : (stats?.total ?? '0')}
-            </span>
+            </motion.span>
           </motion.div>
 
           {/* Stat 2 */}
           <motion.div 
-            whileHover={{ y: -3, boxShadow: "0 8px 16px -6px rgba(0,0,0,0.1)" }}
+            variants={itemVariants}
+            whileHover={{ y: -4, scale: 1.025, boxShadow: "0 12px 20px -6px rgba(0,0,0,0.12)" }}
             transition={{ type: "spring", stiffness: 350, damping: 25 }}
-            className="bg-slate-100/95 border border-slate-200/50 rounded-2xl p-3 flex flex-col justify-between min-h-[105px] shadow-sm cursor-default"
+            className="bg-white/95 border border-slate-200/60 rounded-2xl p-3 flex flex-col justify-between min-h-[105px] shadow-sm cursor-default"
           >
             <span className="text-[11px] md:text-xs font-bold text-slate-700 leading-tight">
               Laporan Selesai
             </span>
-            <span className="text-3xl md:text-4xl font-extrabold text-slate-800 text-center mt-auto block">
+            <motion.span 
+              initial={{ scale: 0.8 }}
+              animate={{ scale: 1 }}
+              className="text-3xl md:text-4xl font-extrabold text-slate-800 text-center mt-auto block"
+            >
               {loadingStats ? <Skeleton className="h-8 w-12 mx-auto" /> : (stats?.completedLast30Days ?? '0')}
-            </span>
+            </motion.span>
           </motion.div>
 
           {/* Stat 3 */}
           <motion.div 
-            whileHover={{ y: -3, boxShadow: "0 8px 16px -6px rgba(0,0,0,0.1)" }}
+            variants={itemVariants}
+            whileHover={{ y: -4, scale: 1.025, boxShadow: "0 12px 20px -6px rgba(0,0,0,0.12)" }}
             transition={{ type: "spring", stiffness: 350, damping: 25 }}
-            className="bg-slate-100/95 border border-slate-200/50 rounded-2xl p-3 flex flex-col justify-between min-h-[105px] shadow-sm cursor-default"
+            className="bg-white/95 border border-slate-200/60 rounded-2xl p-3 flex flex-col justify-between min-h-[105px] shadow-sm cursor-default"
           >
             <span className="text-[11px] md:text-xs font-bold text-slate-700 leading-tight">
               Transfer Menunggu
             </span>
-            <span className="text-3xl md:text-4xl font-extrabold text-slate-800 text-center mt-auto block">
+            <motion.span 
+              initial={{ scale: 0.8 }}
+              animate={{ scale: 1 }}
+              className="text-3xl md:text-4xl font-extrabold text-slate-800 text-center mt-auto block"
+            >
               {loadingTransfers ? (
                 <Skeleton className="h-8 w-12 mx-auto" />
               ) : (
                 pendingTransfersCount
               )}
-            </span>
+            </motion.span>
           </motion.div>
-        </div>
+        </motion.div>
 
         {/* Split Lists: Reports & Transfers */}
         <div className="grid gap-8 grid-cols-1 lg:grid-cols-2 pt-2">
@@ -228,12 +266,13 @@ export function UserDashboard() {
           <div className="flex flex-col">
             <div className="flex justify-between items-center pb-2 px-1">
               <h2 className="text-base lg:text-lg font-extrabold text-slate-800">Laporan Masalah Terbaru</h2>
-              <button 
+              <motion.button 
+                whileHover={{ x: 3 }}
                 onClick={() => navigate('/dashboard/reports')} 
                 className="text-sm font-bold text-slate-400 hover:text-slate-600 cursor-pointer transition-colors"
               >
                 Lihat Semua
-              </button>
+              </motion.button>
             </div>
             
             <div className="mt-2 bg-white rounded-3xl p-5 shadow-sm border border-slate-100/50">
@@ -252,7 +291,8 @@ export function UserDashboard() {
                     <motion.li 
                       key={report.id} 
                       variants={itemVariants} 
-                      className="py-3 flex items-center justify-between gap-4 cursor-pointer hover:bg-white/50 hover:translate-x-1.5 px-3.5 -mx-3.5 rounded-2xl transition-all duration-200 first:pt-1 last:pb-1"
+                      whileHover={{ x: 6, backgroundColor: 'rgba(249, 209, 65, 0.08)' }}
+                      className="py-3 flex items-center justify-between gap-4 cursor-pointer px-3.5 -mx-3.5 rounded-2xl transition-colors duration-200 first:pt-1 last:pb-1"
                       onClick={() => navigate(`/dashboard/reports/${report.id}`)}
                     >
                       <div className="min-w-0 flex-1">
@@ -277,12 +317,13 @@ export function UserDashboard() {
           <div className="flex flex-col">
             <div className="flex justify-between items-center pb-2 px-1">
               <h2 className="text-base lg:text-lg font-extrabold text-slate-800">Pengajuan Transfer Terbaru</h2>
-              <button 
+              <motion.button 
+                whileHover={{ x: 3 }}
                 onClick={() => navigate('/dashboard/asset-transfers')} 
                 className="text-sm font-bold text-slate-400 hover:text-slate-600 cursor-pointer transition-colors"
               >
                 Lihat Semua
-              </button>
+              </motion.button>
             </div>
             
             <div className="mt-2 bg-white rounded-3xl p-5 shadow-sm border border-slate-100/50">
@@ -301,7 +342,8 @@ export function UserDashboard() {
                     <motion.li 
                       key={transfer.id} 
                       variants={itemVariants} 
-                      className="py-3 flex items-center justify-between gap-4 cursor-pointer hover:bg-white/50 hover:translate-x-1.5 px-3.5 -mx-3.5 rounded-2xl transition-all duration-200 first:pt-1 last:pb-1"
+                      whileHover={{ x: 6, backgroundColor: 'rgba(249, 209, 65, 0.08)' }}
+                      className="py-3 flex items-center justify-between gap-4 cursor-pointer px-3.5 -mx-3.5 rounded-2xl transition-colors duration-200 first:pt-1 last:pb-1"
                       onClick={() => navigate('/dashboard/asset-transfers')}
                     >
                       <div className="min-w-0 flex-1">
