@@ -10,6 +10,6 @@ export function createSqlConnection(databaseUrl: string): Sql {
     idle_timeout: 30,
     connect_timeout: 15,
     max_lifetime: 1800,
-    prepare: true,
+    prepare: false,
   });
 }

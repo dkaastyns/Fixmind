@@ -315,14 +315,19 @@ export function ProfilePage() {
                 <div className="space-y-4">
                   <div className="space-y-1.5">
                     <label className="text-xs font-semibold text-slate-700">Nama Lengkap</label>
-                    <Input
-                      type="text"
-                      value={fullName}
-                      onChange={(e) => setFullName(e.target.value)}
-                      placeholder="Masukkan nama lengkap"
-                      required
-                      className="h-11 rounded-xl bg-white shadow-sm hover:bg-slate-50 focus:bg-white focus:ring-4 focus:ring-[#F9D141]/10 transition-all duration-300 border-slate-200 focus:border-[#F9D141]/50 font-medium"
-                    />
+                    <div className="relative">
+                      <div className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
+                        <UserIcon className="w-4 h-4" />
+                      </div>
+                      <Input
+                        type="text"
+                        value={fullName}
+                        onChange={(e) => setFullName(e.target.value)}
+                        placeholder="Masukkan nama lengkap"
+                        required
+                        className="h-11 pl-9 rounded-xl bg-white shadow-sm hover:bg-slate-50 focus:bg-white focus:ring-4 focus:ring-[#F9D141]/10 transition-all duration-300 border-slate-200 focus:border-[#F9D141]/50 font-medium"
+                      />
+                    </div>
                   </div>
                   
                   <div className="space-y-1.5">
@@ -504,24 +509,34 @@ export function ProfilePage() {
           <form onSubmit={handleUpdateProfile} className="space-y-4 pt-2">
             <div>
               <label className="text-xs font-bold text-gray-700 mb-1.5 block">Nama Lengkap</label>
-              <Input
-                type="text"
-                value={fullName}
-                onChange={(e) => setFullName(e.target.value)}
-                placeholder="Masukkan nama lengkap"
-                required
-                className="h-12 rounded-xl bg-white shadow-md font-bold text-gray-800 border-none"
-              />
+              <div className="relative">
+                <div className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
+                  <UserIcon className="w-4 h-4" />
+                </div>
+                <Input
+                  type="text"
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
+                  placeholder="Masukkan nama lengkap"
+                  required
+                  className="h-12 pl-9 rounded-xl bg-white shadow-md font-bold text-gray-800 border-none"
+                />
+              </div>
             </div>
             <div>
               <label className="text-xs font-bold text-gray-700 mb-1.5 block">Nomor Telepon (Opsional)</label>
-              <Input
-                type="tel"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                placeholder="Contoh: 08123456789"
-                className="h-12 rounded-xl bg-white shadow-md font-bold text-gray-800 border-none"
-              />
+              <div className="relative">
+                <div className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
+                  <Phone className="w-4 h-4" />
+                </div>
+                <Input
+                  type="tel"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  placeholder="Contoh: 08123456789"
+                  className="h-12 pl-9 rounded-xl bg-white shadow-md font-bold text-gray-800 border-none"
+                />
+              </div>
             </div>
             <div className="flex justify-end pt-2">
               <Button
