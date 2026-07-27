@@ -122,55 +122,55 @@ export function PrivacyPage() {
   }
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-slate-950 py-8 md:py-12 px-4 font-sans selection:bg-[#F9D141]/30">
-      {/* Background Image with slow zoom animation & dark overlay */}
-      <motion.div
-        initial={{ scale: 1.08, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        transition={{ duration: 2.5, ease: 'easeOut' }}
-        className="fixed inset-0 z-0 pointer-events-none"
-      >
+    <div className="relative min-h-screen py-8 md:py-12 px-4 font-sans selection:bg-[#F9D141]/30 overflow-hidden bg-slate-950">
+      {/* Rich Background Image with ambient glowing highlights */}
+      <div className="fixed inset-0 z-0 pointer-events-none">
         <img
           src="/new-bg_dprd.jpg"
           alt="Latar Belakang DPRD"
           className="h-full w-full object-cover"
         />
-        <div className="absolute inset-0 bg-slate-950/70 backdrop-blur-[2px]" />
+        {/* Soft vignette overlay */}
+        <div className="absolute inset-0 bg-slate-950/40 backdrop-blur-[3px]" />
         
-        {/* Ambient AI Glowing Orbs */}
+        {/* Glowing Orbs */}
         <motion.div 
           animate={{ x: [0, -30, 0], y: [0, -40, 0] }} 
           transition={{ repeat: Infinity, duration: 10, ease: "easeInOut" }}
-          className="absolute top-1/4 left-1/3 w-[500px] h-[500px] bg-[#F9D141]/15 rounded-full filter blur-[130px] pointer-events-none" 
+          className="absolute top-1/4 left-1/3 w-[500px] h-[500px] bg-[#F9D141]/20 rounded-full filter blur-[120px] pointer-events-none" 
         />
         <motion.div 
           animate={{ x: [0, 40, 0], y: [0, 30, 0] }} 
           transition={{ repeat: Infinity, duration: 8, ease: "easeInOut" }}
-          className="absolute top-1/3 right-1/4 w-[450px] h-[450px] bg-amber-500/12 rounded-full filter blur-[110px] pointer-events-none" 
+          className="absolute top-1/3 right-1/4 w-[450px] h-[450px] bg-amber-400/20 rounded-full filter blur-[110px] pointer-events-none" 
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-slate-950/30 via-transparent to-slate-950" />
-      </motion.div>
+        <div className="absolute inset-0 bg-gradient-to-b from-slate-950/20 via-transparent to-slate-950/90" />
+      </div>
 
-      {/* Main Container */}
+      {/* Main Content Container */}
       <div className="relative z-10 mx-auto max-w-4xl">
         {/* Header Navigation Toolbar */}
         <header className="mb-6 flex flex-col sm:flex-row gap-4 items-center justify-between">
+          {/* Logo container in crisp white glass so black text inside logo is 100% visible */}
           <Link to="/" className="inline-block">
-            <div className="bg-slate-950/80 border border-[#ffd043]/35 backdrop-blur-md shadow-[0_0_20px_rgba(249,209,65,0.25)] rounded-2xl px-4 py-2 flex items-center transition-all hover:scale-[1.02] hover:border-[#ffd043]/60">
+            <motion.div 
+              whileHover={{ scale: 1.03 }}
+              className="bg-white/95 border-2 border-amber-300/80 shadow-[0_0_25px_rgba(249,209,65,0.5)] backdrop-blur-xl px-5 py-2.5 rounded-2xl flex items-center gap-2 transition-all cursor-pointer"
+            >
               <img 
                 src="/jdih-logo.png" 
                 alt="JDIH Kota Semarang" 
-                className="h-9 w-auto object-contain [filter:drop-shadow(0_0_10px_rgba(249,209,65,0.5))]" 
+                className="h-9 w-auto object-contain" 
               />
-            </div>
+            </motion.div>
           </Link>
 
           <motion.div whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }}>
             <Button 
-              variant="ghost" 
+              variant="outline" 
               size="sm" 
               onClick={handleBack}
-              className="gap-2 bg-white/10 hover:bg-white/20 text-white border border-white/20 backdrop-blur-md rounded-xl transition-all cursor-pointer shadow-sm"
+              className="gap-2 bg-white/90 hover:bg-white text-slate-900 border border-slate-200/80 shadow-md backdrop-blur-md rounded-xl font-bold transition-all cursor-pointer"
             >
               <ArrowLeft className="h-4 w-4" /> Kembali
             </Button>
@@ -183,13 +183,13 @@ export function PrivacyPage() {
           transition={{ duration: 0.35 }}
           className="space-y-6"
         >
-          {/* Main Dark Glass Card */}
-          <div className="p-6 md:p-10 shadow-[0_20px_50px_rgba(0,0,0,0.6)] border border-white/15 bg-slate-950/45 backdrop-blur-2xl rounded-3xl relative overflow-hidden">
+          {/* Frosted White Glass Card Container - Super Legible & Aesthetic */}
+          <div className="p-6 md:p-10 shadow-[0_25px_60px_rgba(0,0,0,0.35)] border border-white/60 bg-white/92 backdrop-blur-2xl rounded-3xl relative overflow-hidden text-slate-900">
             
             {/* Unified Document Tab Switcher */}
             <div className="mb-8 flex justify-center">
-              <div className="inline-flex p-1.5 rounded-2xl bg-slate-950/90 border border-white/15 backdrop-blur-xl shadow-inner">
-                <Link to="/terms" className="relative px-5 py-2.5 text-xs md:text-sm font-bold transition-colors cursor-pointer text-slate-300 hover:text-white">
+              <div className="inline-flex p-1.5 rounded-2xl bg-slate-100/90 border border-slate-200/80 shadow-inner backdrop-blur-md">
+                <Link to="/terms" className="relative px-5 py-2.5 text-xs md:text-sm font-bold transition-colors cursor-pointer text-slate-600 hover:text-slate-900">
                   {location.pathname === '/terms' && (
                     <motion.div
                       layoutId="activeLegalTabPill"
@@ -221,20 +221,20 @@ export function PrivacyPage() {
               <motion.div 
                 whileHover={{ scale: 1.08, rotate: -6 }}
                 transition={{ type: 'spring', stiffness: 300 }}
-                className="mx-auto mb-4 inline-flex h-16 w-16 items-center justify-center rounded-2xl gradient-gold shadow-[0_0_25px_rgba(249,209,65,0.4)] border border-amber-300/50"
+                className="mx-auto mb-4 inline-flex h-16 w-16 items-center justify-center rounded-2xl gradient-gold shadow-md border border-amber-300/50"
               >
                 <ShieldCheck className="h-8 w-8 text-slate-950" />
               </motion.div>
-              <h1 className="text-3xl font-extrabold tracking-tight text-white md:text-4xl">
+              <h1 className="text-3xl font-extrabold tracking-tight text-slate-900 md:text-4xl">
                 Kebijakan Pengguna
               </h1>
-              <p className="mt-2 text-xs md:text-sm text-slate-200 font-medium max-w-lg mx-auto leading-relaxed">
+              <p className="mt-2 text-xs md:text-sm text-slate-600 font-semibold max-w-lg mx-auto leading-relaxed">
                 Komitmen perlindungan kerahasiaan dan privasi data akun Anda di FixMind DPRD Kota Semarang
               </p>
-              <div className="mt-3 inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white/10 border border-white/20 text-[11px] font-bold text-[#ffd043] shadow-xs">
+              <div className="mt-3 inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-amber-50 border border-amber-200 text-[11px] font-bold text-amber-800 shadow-xs">
                 <span>Terakhir Diperbarui: Juli 2026</span>
               </div>
-              <div className="mx-auto mt-4 h-1 w-24 rounded-full gradient-gold" />
+              <div className="mx-auto mt-4 h-1.5 w-24 rounded-full gradient-gold" />
             </div>
 
             {/* Quick Takeaways Highlights */}
@@ -243,9 +243,9 @@ export function PrivacyPage() {
                 <motion.div
                   key={i}
                   whileHover={{ scale: 1.02, y: -2 }}
-                  className="flex items-center gap-2.5 rounded-xl bg-slate-900/70 border border-white/10 p-3 text-xs font-bold text-slate-100 shadow-sm hover:border-[#ffd043]/60 hover:bg-slate-900 transition-all"
+                  className="flex items-center gap-2.5 rounded-xl bg-white/80 border border-amber-200/80 p-3 text-xs font-bold text-slate-800 shadow-xs hover:border-amber-400 hover:bg-white transition-all"
                 >
-                  <h.icon className="h-4 w-4 text-[#ffd043] shrink-0" />
+                  <h.icon className="h-4 w-4 text-[#d9a416] shrink-0" />
                   <span className="truncate">{h.text}</span>
                 </motion.div>
               ))}
@@ -260,44 +260,44 @@ export function PrivacyPage() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, margin: '-20px' }}
                   transition={{ delay: idx * 0.06, duration: 0.35 }}
-                  whileHover={{ y: -3, borderColor: 'rgba(249, 209, 65, 0.5)', backgroundColor: 'rgba(15, 23, 42, 0.85)' }}
-                  className="group rounded-3xl border border-white/10 bg-slate-900/70 backdrop-blur-md p-6 transition-all duration-300 shadow-lg"
+                  whileHover={{ y: -3, borderColor: 'rgba(249, 209, 65, 0.8)' }}
+                  className="group rounded-3xl border border-slate-200/80 bg-white/90 p-6 transition-all duration-300 shadow-md hover:shadow-xl"
                 >
                   <div className="flex items-start gap-4 mb-4">
                     <motion.div 
                       whileHover={{ rotate: -12, scale: 1.1 }}
-                      className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[#ffd043]/15 text-[#ffd043] border border-[#ffd043]/30 group-hover:bg-[#ffd043] group-hover:text-slate-950 transition-all duration-300 shadow-xs"
+                      className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-amber-50 text-amber-800 border border-amber-200 group-hover:bg-[#F9D141] group-hover:text-slate-950 transition-all duration-300 shadow-xs"
                     >
                       <section.icon className="h-5.5 w-5.5" />
                     </motion.div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between gap-2 flex-wrap mb-1">
-                        <h2 className="text-lg md:text-xl font-bold text-white tracking-tight">
+                        <h2 className="text-lg md:text-xl font-bold text-slate-900 tracking-tight">
                           {section.title}
                         </h2>
-                        <span className="text-[10px] font-extrabold uppercase px-2.5 py-0.5 rounded-md bg-white/10 text-[#ffd043] border border-[#ffd043]/30">
+                        <span className="text-[10px] font-extrabold uppercase px-2.5 py-0.5 rounded-md bg-amber-50 text-amber-800 border border-amber-200">
                           {section.badge}
                         </span>
                       </div>
-                      <p className="text-xs text-slate-300 font-medium">
+                      <p className="text-xs text-slate-500 font-semibold">
                         {section.summary}
                       </p>
                     </div>
                   </div>
 
                   {/* Bullet Sub-Items */}
-                  <div className="grid gap-2.5 pt-3 border-t border-white/10">
+                  <div className="grid gap-2.5 pt-3 border-t border-slate-100">
                     {section.details.map((detail, dIdx) => (
                       <div 
                         key={dIdx}
-                        className="flex items-start gap-3.5 rounded-2xl bg-slate-950/60 p-4 border border-white/10 group-hover:border-white/20 transition-colors"
+                        className="flex items-start gap-3.5 rounded-2xl bg-amber-50/50 p-4 border border-amber-200/60 group-hover:bg-amber-50/80 transition-colors"
                       >
-                        <div className="p-1 rounded-full bg-[#ffd043]/20 text-[#ffd043] border border-[#ffd043]/30 shrink-0 mt-0.5">
+                        <div className="p-1 rounded-full bg-amber-500/10 text-amber-800 shrink-0 mt-0.5">
                           <CheckCircle2 className="h-3.5 w-3.5" />
                         </div>
                         <div className="text-xs md:text-sm leading-relaxed">
-                          <span className="font-bold text-amber-300 mr-1.5">{detail.head}:</span>
-                          <span className="text-slate-200 font-medium">{detail.desc}</span>
+                          <span className="font-bold text-amber-950 mr-1.5">{detail.head}:</span>
+                          <span className="text-slate-700 font-medium">{detail.desc}</span>
                         </div>
                       </div>
                     ))}
@@ -307,15 +307,15 @@ export function PrivacyPage() {
             </div>
 
             {/* Footer CTA & Acceptance Notice */}
-            <div className="mt-10 border-t border-white/15 pt-8 text-center">
-              <p className="text-xs md:text-sm text-slate-300 mb-6 max-w-xl mx-auto leading-relaxed font-semibold">
+            <div className="mt-10 border-t border-slate-200/80 pt-8 text-center">
+              <p className="text-xs md:text-sm text-slate-600 mb-6 max-w-xl mx-auto leading-relaxed font-semibold">
                 Dengan mencentang persetujuan saat mendaftar, Anda menyatakan telah membaca, memahami, dan menyetujui seluruh kebijakan di atas.
               </p>
               <Link to="/signup">
                 <motion.button 
                   whileHover={{ scale: 1.03, y: -2 }}
                   whileTap={{ scale: 0.97 }}
-                  className="px-9 py-3.5 text-sm md:text-base font-extrabold text-slate-950 gradient-gold shadow-[0_4px_20px_rgba(249,209,65,0.35)] hover:brightness-110 transition-all duration-300 rounded-xl cursor-pointer"
+                  className="px-9 py-3.5 text-sm md:text-base font-extrabold text-slate-950 gradient-gold shadow-lg hover:shadow-xl transition-all duration-300 rounded-xl cursor-pointer"
                 >
                   Saya Setuju & Daftar Sekarang
                 </motion.button>
@@ -324,7 +324,7 @@ export function PrivacyPage() {
           </div>
         </motion.div>
 
-        <footer className="mt-8 text-center text-xs text-slate-400 font-bold">
+        <footer className="mt-8 text-center text-xs text-white/80 font-bold drop-shadow-sm">
           © {new Date().getFullYear()} FixMind DPRD Kota Semarang. Hak Cipta Dilindungi Undang-Undang.
         </footer>
       </div>
