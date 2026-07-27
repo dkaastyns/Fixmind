@@ -273,19 +273,19 @@ export function PrivacyPage() {
                     {section.summary}
                   </p>
 
-                  {/* Crisp White Sub-Item Cards (styled like inputs in signup-page) */}
+                  {/* Dark Glass Sub-Item Cards */}
                   <div className="grid gap-3 pt-1">
                     {section.details.map((detail, dIdx) => (
                       <div 
                         key={dIdx}
-                        className="flex items-start gap-3.5 rounded-[16px] bg-white/95 text-slate-800 p-4 sm:p-5 shadow-md border-none transition-transform hover:scale-[1.005]"
+                        className="flex items-start gap-3.5 rounded-[16px] bg-slate-900/60 backdrop-blur-md border border-white/10 p-4 sm:p-5 shadow-sm text-white transition-all hover:bg-slate-900/80 hover:border-[#F9D141]/40"
                       >
-                        <div className="p-1 rounded-full bg-[#F9D141] text-slate-950 shrink-0 mt-0.5 shadow-sm">
+                        <div className="p-1.5 rounded-full bg-[#F9D141]/20 text-[#F9D141] border border-[#F9D141]/30 shrink-0 mt-0.5 shadow-sm">
                           <CheckCircle2 className="h-4 w-4" />
                         </div>
                         <div className="text-xs sm:text-sm leading-relaxed">
-                          <span className="font-extrabold text-slate-950 mr-1.5">{detail.num} {detail.head}:</span>
-                          <span className="text-slate-700 font-medium">{detail.desc}</span>
+                          <span className="font-extrabold text-[#FFEBA1] mr-1.5">{detail.num} {detail.head}:</span>
+                          <span className="text-slate-200 font-medium">{detail.desc}</span>
                         </div>
                       </div>
                     ))}
