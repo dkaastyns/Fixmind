@@ -1,7 +1,7 @@
 import { useRef, useState, useEffect } from 'react'
 import { useMutation } from '@tanstack/react-query'
 import { toast } from 'sonner'
-import { KeyRound, User as UserIcon, Camera, Loader2, Phone, UserCircle, X, Trash2, Mail, Menu, Crop } from 'lucide-react'
+import { KeyRound, User as UserIcon, Camera, Loader2, UserCircle, X, Trash2, Mail, Menu, Crop } from 'lucide-react'
 import Cropper from 'react-easy-crop'
 import { getCroppedImg } from '@/utils/cropImage'
 import { Button } from '@/components/ui/button'
