@@ -690,14 +690,14 @@ function UserForm({ token, onClose, onSuccess }: { token: string; onClose: () =>
           <label className="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
             <User className="w-3.5 h-3.5" /> Nama Lengkap
           </label>
-          <Input placeholder="Contoh: Budi Santoso" value={fullName} onChange={(e) => setFullName(e.target.value)} />
+          <Input placeholder="Contoh: Goat Satoru" value={fullName} onChange={(e) => setFullName(e.target.value)} />
         </div>
 
         <div className="space-y-1.5">
           <label className="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
             <Mail className="w-3.5 h-3.5" /> Alamat Email
           </label>
-          <Input placeholder="Contoh: budi@dprd.semarangkota.go.id" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+          <Input placeholder="Contoh: goat.satoru@dprd.semarangkota.go.id" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
         </div>
 
         <div className="space-y-1.5">
