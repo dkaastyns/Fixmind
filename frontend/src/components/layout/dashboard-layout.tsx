@@ -383,7 +383,7 @@ export function DashboardLayout() {
           </div>
         )}
 
-        <main className={cn("flex-1 p-4 md:p-6 overflow-x-hidden", (isUserDashboard || isProfilePage) && "p-0 md:p-6")}>
+        <main className={cn("flex-1 p-4 md:p-6 overflow-x-hidden", (isDashboardPage || isProfilePage) && "p-0 md:p-6")}>
           <AnimatePresence mode="wait">
             <motion.div
               key={location.pathname}
