@@ -126,8 +126,8 @@ export function UsersPage() {
         description="Kelola akun administrator dan pengguna aplikasi E-Lapor DPRD Kota Semarang."
         action={
           <div className="w-fit">
-            <Button onClick={() => setShowForm(true)} className="gap-2 shadow-sm">
-              <Plus className="h-4 w-4" /> Tambah Pengguna
+            <Button onClick={() => setShowForm(true)} className="gap-2 shadow-sm text-white font-extrabold bg-[#d9a416] hover:bg-[#b88b12] cursor-pointer">
+              <Plus className="h-4 w-4 text-white stroke-[3]" /> Tambah Pengguna
             </Button>
           </div>
         }
@@ -172,25 +172,34 @@ export function UsersPage() {
         </GlassCard>
       </div>
 
-      {/* Add User Form Section */}
+      {/* Add User Modal Dialog */}
       <AnimatePresence>
         {showForm && (
-          <motion.div
-            initial={{ opacity: 0, height: 0, y: -15 }}
-            animate={{ opacity: 1, height: 'auto', y: 0 }}
-            exit={{ opacity: 0, height: 0, y: -15 }}
-            className="overflow-hidden"
-          >
-            <UserForm
-              token={token}
-              onClose={() => setShowForm(false)}
-              onSuccess={() => { 
-                qc.invalidateQueries({ queryKey: ['users'] })
-                setShowForm(false)
-                toast.success('Pengguna baru berhasil ditambahkan') 
-              }}
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 bg-slate-950/40 backdrop-blur-md"
+              onClick={() => setShowForm(false)}
             />
-          </motion.div>
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 15 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 15 }}
+              className="w-full max-w-xl relative z-10"
+            >
+              <UserForm
+                token={token}
+                onClose={() => setShowForm(false)}
+                onSuccess={() => { 
+                  qc.invalidateQueries({ queryKey: ['users'] })
+                  setShowForm(false)
+                  toast.success('Pengguna baru berhasil ditambahkan') 
+                }}
+              />
+            </motion.div>
+          </div>
         )}
       </AnimatePresence>
 
@@ -522,10 +531,10 @@ function UserForm({ token, onClose, onSuccess }: { token: string; onClose: () =>
   })
 
   return (
-    <GlassCard className="mb-6 border border-white/50 relative">
+    <GlassCard className="bg-white shadow-2xl border-white/80 p-6 relative">
       <button 
         onClick={onClose}
-        className="absolute top-4 right-4 p-1.5 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-black/5 transition-colors"
+        className="absolute top-4 right-4 p-1.5 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-black/5 transition-colors cursor-pointer"
       >
         <X className="w-4 h-4" />
       </button>
@@ -574,10 +583,16 @@ function UserForm({ token, onClose, onSuccess }: { token: string; onClose: () =>
       </div>
 
       <div className="mt-5 flex gap-3">
-        <Button onClick={() => mutation.mutate()} disabled={!fullName || !email || password.length < 8}>
+        <Button 
+          onClick={() => mutation.mutate()} 
+          disabled={!fullName || !email || password.length < 8 || mutation.isPending}
+          className="text-white font-extrabold bg-[#d9a416] hover:bg-[#b88b12] shadow-md rounded-xl cursor-pointer px-5"
+        >
           {mutation.isPending ? 'Menyimpan...' : 'Simpan Akun'}
         </Button>
-        <Button variant="secondary" onClick={onClose}>Batal</Button>
+        <Button variant="secondary" onClick={onClose} className="rounded-xl border-slate-200 bg-slate-100 hover:bg-slate-200 text-slate-700 cursor-pointer">
+          Batal
+        </Button>
       </div>
     </GlassCard>
   )
