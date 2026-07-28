@@ -1,17 +1,18 @@
 import { useState, useMemo, useEffect } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { Plus, Users, UserCheck, Shield, Trash2, KeyRound, X, Lock, Mail, User, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react'
+import { Plus, Users, UserCheck, Shield, Trash2, KeyRound, X, Lock, Mail, User, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Menu } from 'lucide-react'
 import { toast } from 'sonner'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { PasswordInput } from '@/components/ui/password-input'
 import { GlassCard } from '@/components/ui/glass-card'
-import { EmptyState, PageHeader } from '@/components/ui/feedback'
+import { EmptyState } from '@/components/ui/feedback'
 import { TableSkeleton } from '@/components/ui/skeleton'
 import { createUser, deleteUser, fetchUsers, updateUser } from '@/lib/api-client'
 import { useAuthStore } from '@/stores/auth-store'
 import { DeleteConfirmationModal } from '@/components/ui/delete-confirmation-modal'
+import { NotificationBell } from '@/components/ui/notification-bell'
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -120,96 +121,430 @@ export function UsersPage() {
   const paginatedUsers = useMemo(() => filteredUsers.slice((page - 1) * limit, page * limit), [filteredUsers, page, limit])
 
   return (
-    <div className="space-y-6">
-      {/* Hero Banner Header Card (Matching Profile Page Aesthetic) */}
-      <motion.div 
-        initial={{ opacity: 0, y: -15 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="relative overflow-hidden w-full bg-cover bg-center rounded-[2rem] sm:rounded-[2.5rem] shadow-xl text-white p-6 sm:p-8 md:p-10 min-h-[180px] md:min-h-[220px] flex flex-col justify-between group"
-        style={{ backgroundImage: 'url("/new-bg_dprd.jpg")' }}
-      >
-        {/* Ambient Glow & Dark Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-r from-black/75 via-black/55 to-black/65 z-0" />
-        <div className="absolute -top-24 -right-24 w-96 h-96 bg-[#F9D141]/10 rounded-full blur-3xl pointer-events-none group-hover:bg-[#F9D141]/20 transition-all duration-700" />
+    <div className="w-full">
+      {/* === DESKTOP VIEW === */}
+      <div className="hidden lg:block space-y-6">
+        {/* Hero Banner Header Card (Matching Profile Page Aesthetic) */}
+        <motion.div 
+          initial={{ opacity: 0, y: -15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="relative overflow-hidden w-full bg-cover bg-center rounded-[2.5rem] shadow-xl text-white p-8 md:p-10 min-h-[220px] flex flex-col justify-between group"
+          style={{ backgroundImage: 'url("/new-bg_dprd.jpg")' }}
+        >
+          {/* Ambient Glow & Dark Overlay */}
+          <div className="absolute inset-0 bg-gradient-to-r from-black/75 via-black/55 to-black/65 z-0" />
+          <div className="absolute -top-24 -right-24 w-96 h-96 bg-[#F9D141]/10 rounded-full blur-3xl pointer-events-none group-hover:bg-[#F9D141]/20 transition-all duration-700" />
 
-        {/* Hero Content */}
-        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <div className="flex items-center gap-5 sm:gap-6">
-            {/* Avatar / Icon Badge in Hero with Gold Ring Glow */}
-            <div className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 rounded-full p-1 bg-gradient-to-br from-[#F9D141] via-[#FFF099] to-[#D9A416] shadow-xl shadow-yellow-500/20 shrink-0 flex items-center justify-center">
-              <div className="w-full h-full rounded-full bg-slate-900/90 backdrop-blur-md flex items-center justify-center text-[#F9D141]">
-                <Users className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12" />
+          {/* Hero Content */}
+          <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div className="flex items-center gap-6">
+              {/* Icon Badge in Hero with Gold Ring Glow */}
+              <div className="w-20 h-20 md:w-24 md:h-24 rounded-full p-1 bg-gradient-to-br from-[#F9D141] via-[#FFF099] to-[#D9A416] shadow-xl shadow-yellow-500/20 shrink-0 flex items-center justify-center">
+                <div className="w-full h-full rounded-full bg-slate-900/90 backdrop-blur-md flex items-center justify-center text-[#F9D141]">
+                  <Users className="w-10 h-10 md:w-12 md:h-12" />
+                </div>
+              </div>
+
+              {/* Title & Description */}
+              <div className="space-y-2">
+                <div className="flex items-center gap-3 flex-wrap">
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-extrabold uppercase tracking-wider bg-[#F9D141]/20 text-[#F9D141] border border-[#F9D141]/40 backdrop-blur-md">
+                    <Shield className="w-3.5 h-3.5" /> MANAJEMEN AKUN & HAK AKSES
+                  </span>
+                </div>
+
+                <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight text-white leading-tight drop-shadow-md">
+                  Manajemen Pengguna
+                </h1>
+                <p className="text-sm text-slate-200 max-w-xl font-medium leading-relaxed opacity-95 drop-shadow-sm">
+                  Daftar dan kelola akun administrator serta pengguna aplikasi E-Lapor DPRD Kota Semarang.
+                </p>
               </div>
             </div>
 
-            {/* Title & Description */}
-            <div className="space-y-1.5 sm:space-y-2">
-              <div className="flex items-center gap-3 flex-wrap">
-                <span className="inline-flex items-center gap-1.5 px-3 py-0.5 sm:py-1 rounded-full text-[10px] sm:text-xs font-extrabold uppercase tracking-wider bg-[#F9D141]/20 text-[#F9D141] border border-[#F9D141]/40 backdrop-blur-md">
-                  <Shield className="w-3 h-3 sm:w-3.5 sm:h-3.5" /> MANAJEMEN AKUN & HAK AKSES
-                </span>
-              </div>
+            {/* Action Button inside Hero Header */}
+            <div className="pt-2 md:pt-0 self-start md:self-center shrink-0">
+              <Button 
+                onClick={() => setShowForm(true)} 
+                className="gap-2 shadow-xl text-white font-extrabold bg-[#d9a416] hover:bg-[#b88b12] cursor-pointer rounded-2xl px-6 py-6 text-sm border border-white/20 active:scale-95 transition-all"
+              >
+                <Plus className="h-5 w-5 text-white stroke-[3]" /> Tambah Pengguna
+              </Button>
+            </div>
+          </div>
+        </motion.div>
 
-              <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight text-white leading-tight drop-shadow-md">
-                Manajemen Pengguna
-              </h1>
-              <p className="text-xs sm:text-sm text-slate-200 max-w-xl font-medium leading-relaxed opacity-95 drop-shadow-sm">
-                Daftar dan kelola akun administrator serta pengguna aplikasi E-Lapor DPRD Kota Semarang.
+        {/* Overview Statistics Cards Desktop */}
+        <div className="grid gap-4 grid-cols-1 sm:grid-cols-3">
+          <GlassCard className="p-5 flex items-center gap-4 border border-white/40">
+            <div className="p-3.5 rounded-xl bg-blue-500/10 text-blue-500 shadow-inner">
+              <Users className="w-6 h-6" />
+            </div>
+            <div>
+              <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">Total Akun</p>
+              <p className="text-2xl font-extrabold text-slate-800 mt-0.5">
+                {isLoading ? '...' : stats.total}
               </p>
+            </div>
+          </GlassCard>
+
+          <GlassCard className="p-5 flex items-center gap-4 border border-white/40">
+            <div className="p-3.5 rounded-xl bg-purple-500/10 text-purple-500 shadow-inner">
+              <Shield className="w-6 h-6" />
+            </div>
+            <div>
+              <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">Administrator</p>
+              <p className="text-2xl font-extrabold text-slate-800 mt-0.5">
+                {isLoading ? '...' : stats.admins}
+              </p>
+            </div>
+          </GlassCard>
+
+          <GlassCard className="p-5 flex items-center gap-4 border border-white/40">
+            <div className="p-3.5 rounded-xl bg-green-500/10 text-green-500 shadow-inner">
+              <UserCheck className="w-6 h-6" />
+            </div>
+            <div>
+              <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">Pengguna Aktif</p>
+              <p className="text-2xl font-extrabold text-slate-800 mt-0.5">
+                {isLoading ? '...' : stats.active}
+              </p>
+            </div>
+          </GlassCard>
+        </div>
+
+        {/* User Table list Desktop */}
+        <GlassCard className="space-y-4 border border-white/40 overflow-hidden">
+          {/* Filters */}
+          <div className="flex flex-col sm:flex-row justify-end gap-4 p-4 border-b border-white/20">
+            <div className="flex gap-1 bg-slate-200/50 p-1 rounded-xl border border-slate-200/40 text-xs overflow-x-auto self-start">
+              {(['', true, false] as const).map((r) => {
+                const labels: Record<string, string> = { '': 'Semua', true: 'ADMIN', false: 'USER' }
+                return (
+                  <button
+                    key={r === '' ? 'all' : String(r)}
+                    onClick={() => setIsAdminFilter(r)}
+                    className={`px-4 py-1.5 rounded-lg font-bold transition-all whitespace-nowrap ${
+                      isAdminFilter === r ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-500 hover:text-slate-800'
+                    }`}
+                  >
+                    {labels[String(r)]}
+                  </button>
+                )
+              })}
             </div>
           </div>
 
-          {/* Action Button inside Hero Header */}
-          <div className="pt-2 md:pt-0 self-start md:self-center shrink-0">
-            <Button 
-              onClick={() => setShowForm(true)} 
-              className="gap-2 shadow-xl text-white font-extrabold bg-[#d9a416] hover:bg-[#b88b12] cursor-pointer rounded-2xl px-5 py-5 sm:px-6 sm:py-6 text-xs sm:text-sm border border-white/20 active:scale-95 transition-all"
+          {isLoading ? (
+            <div className="p-4">
+              <TableSkeleton rows={5} cols={4} />
+            </div>
+          ) : filteredUsers.length === 0 ? (
+            <EmptyState 
+              title="Tidak ada pengguna ditemukan" 
+              description="Belum ada pengguna dalam kategori filter ini."
+            />
+          ) : (
+            <>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm border-collapse">
+                  <thead>
+                    <tr className="border-b border-white/20 text-left text-xs font-bold text-slate-400 uppercase tracking-wider bg-white/10">
+                      <th className="px-5 py-3.5">Nama Lengkap</th>
+                      <th className="px-5 py-3.5">Email</th>
+                      <th className="px-5 py-3.5">Peran</th>
+                      <th className="px-5 py-3.5">Status</th>
+                      <th className="px-5 py-3.5 text-right">Aksi</th>
+                    </tr>
+                  </thead>
+                  <motion.tbody
+                    variants={containerVariants}
+                    initial="hidden"
+                    animate="show"
+                    className="divide-y divide-white/15"
+                  >
+                    {paginatedUsers.map((u) => (
+                      <motion.tr 
+                        key={u.id} 
+                        variants={itemVariants}
+                        className="hover:bg-white/30 transition-colors"
+                      >
+                        <td className="px-5 py-3.5 font-semibold text-slate-800">
+                          <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 rounded-full gradient-primary flex items-center justify-center text-white text-xs font-extrabold shadow-sm">
+                              {u.fullName?.charAt(0).toUpperCase() ?? 'U'}
+                            </div>
+                            <span className="truncate max-w-[180px]">{u.fullName}</span>
+                          </div>
+                        </td>
+                        <td className="px-5 py-3.5 text-slate-500 font-medium">{u.email}</td>
+                        <td className="px-5 py-3.5">
+                          {u.isAdmin ? (
+                            <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-purple-500/10 text-purple-700 border border-purple-200/50">
+                              <Shield className="w-3 h-3" /> Admin
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-700 border border-blue-200/50">
+                              <User className="w-3 h-3" /> Pengguna
+                            </span>
+                          )}
+                        </td>
+                        <td className="px-5 py-3.5">
+                          <div className="flex items-center gap-2">
+                            <button
+                              onClick={() => updateMut.mutate({ id: u.id, isActive: !u.isActive })}
+                              className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors focus:outline-none shadow-inner border border-slate-200/50 ${
+                                u.isActive ? 'bg-green-500' : 'bg-slate-300'
+                              }`}
+                            >
+                              <span
+                                className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white transition-transform shadow-sm ${
+                                  u.isActive ? 'translate-x-4' : 'translate-x-0.5'
+                                }`}
+                              />
+                            </button>
+                            <span className={`text-xs font-bold ${u.isActive ? 'text-green-600' : 'text-slate-400'}`}>
+                              {u.isActive ? 'Aktif' : 'Nonaktif'}
+                            </span>
+                          </div>
+                        </td>
+                        <td className="px-5 py-3.5 text-right">
+                          <div className="flex items-center justify-end gap-1.5">
+                            <Button 
+                              variant="secondary" 
+                              size="sm" 
+                              className="h-8 text-xs rounded-xl flex items-center gap-1" 
+                              onClick={() => triggerResetPassword(u.id, u.fullName)}
+                            >
+                              <KeyRound className="w-3.5 h-3.5 text-slate-500" /> Reset Sandi
+                            </Button>
+                            <Button 
+                              variant="ghost" 
+                              size="sm" 
+                              className="h-8 text-xs rounded-xl text-danger hover:text-danger hover:bg-danger/5 border border-transparent hover:border-danger/20 gap-1" 
+                              onClick={() => triggerDeleteUser(u.id, u.fullName)}
+                            >
+                              <Trash2 className="w-3.5 h-3.5" /> Hapus
+                            </Button>
+                          </div>
+                        </td>
+                      </motion.tr>
+                    ))}
+                  </motion.tbody>
+                </table>
+              </div>
+
+              {totalPages > 1 && (
+                <div className="flex items-center justify-between border-t border-white/20 pt-4 mt-4 px-4 pb-4">
+                  <span className="text-xs text-slate-500 font-medium hidden sm:inline">
+                    Menampilkan halaman {page} dari {totalPages}
+                  </span>
+                  <div className="flex items-center gap-1 w-full sm:w-auto justify-between sm:justify-end">
+                    <Button variant="secondary" size="sm" className="px-2 border-slate-200 bg-white hover:bg-slate-50" disabled={page === 1} onClick={() => setPage(1)} title="Halaman Pertama">
+                      <ChevronsLeft className="h-4 w-4" />
+                    </Button>
+                    <Button variant="secondary" size="sm" className="px-2 border-slate-200 bg-white hover:bg-slate-50" disabled={page === 1} onClick={() => setPage(p => Math.max(1, p - 1))} title="Sebelumnya">
+                      <ChevronLeft className="h-4 w-4" />
+                    </Button>
+                    
+                    <select 
+                      value={page}
+                      onChange={(e) => setPage(Number(e.target.value))}
+                      className="mx-1 h-9 px-2 bg-white border border-slate-200 rounded-xl text-sm font-medium outline-none focus:border-[#F9D141] focus:ring-2 focus:ring-[#F9D141]/20 cursor-pointer"
+                    >
+                      {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
+                        <option key={p} value={p}>Hal {p}</option>
+                      ))}
+                    </select>
+
+                    <Button variant="secondary" size="sm" className="px-2 border-slate-200 bg-white hover:bg-slate-50" disabled={page === totalPages} onClick={() => setPage(p => Math.min(totalPages, p + 1))} title="Selanjutnya">
+                      <ChevronRight className="h-4 w-4" />
+                    </Button>
+                    <Button variant="secondary" size="sm" className="px-2 border-slate-200 bg-white hover:bg-slate-50" disabled={page === totalPages} onClick={() => setPage(totalPages)} title="Halaman Terakhir">
+                      <ChevronsRight className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </>
+          )}
+        </GlassCard>
+      </div>
+
+      {/* === MOBILE VIEW (Matching Profile Page Mobile Aesthetic) === */}
+      <motion.div 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5 }}
+        className="block lg:hidden min-h-screen bg-[#F5F5F5] pb-24 -mt-4 -mx-4 overflow-x-hidden relative"
+      >
+        {/* Header Cover Banner with background image */}
+        <div className="relative h-[280px] w-full rounded-b-[40px] overflow-hidden shadow-md">
+          <div 
+            className="absolute inset-0 bg-cover bg-center" 
+            style={{ backgroundImage: 'url(/new-bg_dprd.jpg)' }}
+          />
+          <div className="absolute inset-0 bg-black/60" />
+
+          {/* Top Nav */}
+          <div className="relative z-10 flex items-center justify-between p-4 pt-6">
+            <button onClick={() => window.dispatchEvent(new CustomEvent('open-mobile-menu'))} className="text-[#F9D141] hover:text-yellow-300">
+              <Menu className="w-7 h-7" />
+            </button>
+            <h1 className="text-2xl font-light text-white tracking-wide">Pengguna</h1>
+            <NotificationBell align="right" className="text-[#F9D141] bg-transparent border-none shadow-none hover:bg-white/10 p-1" />
+          </div>
+
+          {/* User Info overlay */}
+          <div className="relative z-10 px-6 pt-2">
+            <p className="text-white/80 text-xs font-bold uppercase tracking-wider mb-1">Manajemen Akun & Akses</p>
+            <h2 className="text-3xl font-light text-white mb-1.5 leading-tight">Manajemen Pengguna</h2>
+            <div className="flex items-center text-white/80 gap-2 text-xs">
+              <Users className="w-4 h-4 text-[#F9D141]" />
+              <span>Kelola akun administrator & user sistem</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Circular Icon Badge with Action Plus Button */}
+        <div className="relative z-20 flex justify-center -mt-[65px]">
+          <div className="relative">
+            <div className="w-[130px] h-[130px] rounded-full overflow-hidden border-4 border-[#F5F5F5] bg-slate-900 shadow-lg flex items-center justify-center text-[#F9D141]">
+              <Users className="w-14 h-14" />
+            </div>
+            <button 
+              onClick={() => setShowForm(true)}
+              className="absolute bottom-1 right-1 bg-[#F9D141] hover:bg-[#e0bc38] text-slate-950 p-2.5 rounded-full shadow-md transition-colors cursor-pointer border-2 border-[#F5F5F5]"
+              title="Tambah Pengguna"
             >
-              <Plus className="h-4 w-4 sm:h-5 sm:w-5 text-white stroke-[3]" /> Tambah Pengguna
-            </Button>
+              <Plus className="w-5 h-5 stroke-[3]" />
+            </button>
+          </div>
+        </div>
+
+        {/* Mobile Stats & Content Section */}
+        <div className="px-5 pt-8 space-y-6">
+          {/* Mobile Overview Statistics Cards */}
+          <div className="grid gap-3 grid-cols-3">
+            <div className="p-3.5 rounded-2xl bg-white shadow-md border border-slate-100 flex flex-col items-center text-center">
+              <div className="p-2 rounded-xl bg-blue-500/10 text-blue-500 mb-1.5">
+                <Users className="w-5 h-5" />
+              </div>
+              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Total</p>
+              <p className="text-lg font-extrabold text-slate-800 mt-0.5">{isLoading ? '...' : stats.total}</p>
+            </div>
+
+            <div className="p-3.5 rounded-2xl bg-white shadow-md border border-slate-100 flex flex-col items-center text-center">
+              <div className="p-2 rounded-xl bg-purple-500/10 text-purple-500 mb-1.5">
+                <Shield className="w-5 h-5" />
+              </div>
+              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Admin</p>
+              <p className="text-lg font-extrabold text-slate-800 mt-0.5">{isLoading ? '...' : stats.admins}</p>
+            </div>
+
+            <div className="p-3.5 rounded-2xl bg-white shadow-md border border-slate-100 flex flex-col items-center text-center">
+              <div className="p-2 rounded-xl bg-green-500/10 text-green-500 mb-1.5">
+                <UserCheck className="w-5 h-5" />
+              </div>
+              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Aktif</p>
+              <p className="text-lg font-extrabold text-slate-800 mt-0.5">{isLoading ? '...' : stats.active}</p>
+            </div>
+          </div>
+
+          {/* Filter Status Tabs Mobile */}
+          <div className="flex justify-between items-center bg-white p-1.5 rounded-2xl shadow-sm border border-slate-200/60">
+            {(['', true, false] as const).map((r) => {
+              const labels: Record<string, string> = { '': 'Semua', true: 'ADMIN', false: 'USER' }
+              return (
+                <button
+                  key={r === '' ? 'all-m' : String(r)}
+                  onClick={() => setIsAdminFilter(r)}
+                  className={`flex-1 py-2 text-center rounded-xl text-xs font-extrabold transition-all ${
+                    isAdminFilter === r ? 'bg-[#F9D141] text-slate-950 shadow-sm' : 'text-slate-500 hover:text-slate-800'
+                  }`}
+                >
+                  {labels[String(r)]}
+                </button>
+              )
+            })}
+          </div>
+
+          {/* Mobile User List Cards */}
+          <div className="space-y-4">
+            {isLoading ? (
+              <TableSkeleton rows={4} cols={1} />
+            ) : filteredUsers.length === 0 ? (
+              <EmptyState title="Tidak ada pengguna" description="Belum ada pengguna dalam kategori filter ini." />
+            ) : (
+              paginatedUsers.map((u) => (
+                <div key={`m-${u.id}`} className="p-4 rounded-2xl border border-slate-200/80 bg-white shadow-md space-y-3">
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-slate-900 flex items-center justify-center text-[#F9D141] text-sm font-extrabold shadow-sm border border-slate-700">
+                        {u.fullName?.charAt(0).toUpperCase() ?? 'U'}
+                      </div>
+                      <div className="min-w-0">
+                        <p className="font-extrabold text-slate-800 text-sm truncate">{u.fullName}</p>
+                        <p className="text-xs text-slate-500 truncate">{u.email}</p>
+                      </div>
+                    </div>
+                    {u.isAdmin ? (
+                      <span className="inline-flex items-center gap-1 text-[10px] font-extrabold px-2.5 py-1 rounded-full bg-purple-500/10 text-purple-700 border border-purple-200/60">
+                        <Shield className="w-3 h-3" /> Admin
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center gap-1 text-[10px] font-extrabold px-2.5 py-1 rounded-full bg-blue-500/10 text-blue-700 border border-blue-200/60">
+                        <User className="w-3 h-3" /> User
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="flex items-center justify-between border-t border-slate-100 pt-2.5">
+                    <span className="text-[11px] text-slate-400 font-bold uppercase tracking-wider">Status Akun</span>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => updateMut.mutate({ id: u.id, isActive: !u.isActive })}
+                        className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors focus:outline-none shadow-inner border border-slate-200/50 ${
+                          u.isActive ? 'bg-green-500' : 'bg-slate-300'
+                        }`}
+                      >
+                        <span
+                          className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white transition-transform shadow-sm ${
+                            u.isActive ? 'translate-x-4' : 'translate-x-0.5'
+                          }`}
+                        />
+                      </button>
+                      <span className={`text-xs font-extrabold ${u.isActive ? 'text-green-600' : 'text-slate-400'}`}>
+                        {u.isActive ? 'Aktif' : 'Nonaktif'}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-2 border-t border-slate-100 pt-2.5">
+                    <Button 
+                      variant="secondary" 
+                      size="sm" 
+                      className="flex-1 h-9 text-xs rounded-xl flex items-center justify-center gap-1 font-bold border-slate-200" 
+                      onClick={() => triggerResetPassword(u.id, u.fullName)}
+                    >
+                      <KeyRound className="w-3.5 h-3.5 text-slate-500" /> Reset Sandi
+                    </Button>
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      className="flex-1 h-9 text-xs rounded-xl text-danger hover:text-danger hover:bg-danger/5 border border-transparent hover:border-danger/20 gap-1 flex items-center justify-center font-bold" 
+                      onClick={() => triggerDeleteUser(u.id, u.fullName)}
+                    >
+                      <Trash2 className="w-3.5 h-3.5" /> Hapus
+                    </Button>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         </div>
       </motion.div>
-
-      {/* Overview Statistics Cards */}
-      <div className="grid gap-4 grid-cols-1 sm:grid-cols-3">
-        <GlassCard className="p-5 flex items-center gap-4 border border-white/40">
-          <div className="p-3.5 rounded-xl bg-blue-500/10 text-blue-500 shadow-inner">
-            <Users className="w-6 h-6" />
-          </div>
-          <div>
-            <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">Total Akun</p>
-            <p className="text-2xl font-extrabold text-slate-800 mt-0.5">
-              {isLoading ? '...' : stats.total}
-            </p>
-          </div>
-        </GlassCard>
-
-        <GlassCard className="p-5 flex items-center gap-4 border border-white/40">
-          <div className="p-3.5 rounded-xl bg-purple-500/10 text-purple-500 shadow-inner">
-            <Shield className="w-6 h-6" />
-          </div>
-          <div>
-            <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">Administrator</p>
-            <p className="text-2xl font-extrabold text-slate-800 mt-0.5">
-              {isLoading ? '...' : stats.admins}
-            </p>
-          </div>
-        </GlassCard>
-
-        <GlassCard className="p-5 flex items-center gap-4 border border-white/40">
-          <div className="p-3.5 rounded-xl bg-green-500/10 text-green-500 shadow-inner">
-            <UserCheck className="w-6 h-6" />
-          </div>
-          <div>
-            <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">Pengguna Aktif</p>
-            <p className="text-2xl font-extrabold text-slate-800 mt-0.5">
-              {isLoading ? '...' : stats.active}
-            </p>
-          </div>
-        </GlassCard>
-      </div>
 
       {/* Add User Modal Dialog */}
       <AnimatePresence>
@@ -241,240 +576,6 @@ export function UsersPage() {
           </div>
         )}
       </AnimatePresence>
-
-      <GlassCard className="space-y-4 border border-white/40 overflow-hidden">
-        {/* Filters */}
-        <div className="flex flex-col sm:flex-row justify-end gap-4 p-4 border-b border-white/20">
-          {/* Filter Status Tabs */}
-          <div className="flex gap-1 bg-slate-200/50 p-1 rounded-xl border border-slate-200/40 text-xs overflow-x-auto self-start">
-            {(['', true, false] as const).map((r) => {
-              const labels: Record<string, string> = { '': 'Semua', true: 'ADMIN', false: 'USER' }
-              return (
-                <button
-                  key={r === '' ? 'all' : String(r)}
-                  onClick={() => setIsAdminFilter(r)}
-                  className={`px-4 py-1.5 rounded-lg font-bold transition-all whitespace-nowrap ${
-                    isAdminFilter === r ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-500 hover:text-slate-800'
-                  }`}
-                >
-                  {labels[String(r)]}
-                </button>
-              )
-            })}
-          </div>
-        </div>
-
-        {/* User Table list */}
-        {isLoading ? (
-          <div className="p-4">
-            <TableSkeleton rows={5} cols={4} />
-          </div>
-        ) : filteredUsers.length === 0 ? (
-          <EmptyState 
-            title="Tidak ada pengguna ditemukan" 
-            description="Belum ada pengguna dalam kategori filter ini."
-          />
-        ) : (
-          <>
-            {/* Mobile View: Cards */}
-            <div className="grid gap-4 p-4 md:hidden">
-              {paginatedUsers.map((u) => (
-                <div key={u.id} className="p-4 rounded-xl border border-white/50 bg-white/70 shadow-sm space-y-3">
-                  <div className="flex items-center justify-between gap-3">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full gradient-primary flex items-center justify-center text-white text-xs font-extrabold shadow-sm">
-                        {u.fullName?.charAt(0).toUpperCase() ?? 'U'}
-                      </div>
-                      <div className="min-w-0">
-                        <p className="font-bold text-slate-800 text-sm truncate">{u.fullName}</p>
-                        <p className="text-xs text-slate-500 truncate">{u.email}</p>
-                      </div>
-                    </div>
-                    {u.isAdmin ? (
-                      <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-purple-500/10 text-purple-700 border border-purple-200/50">
-                        <Shield className="w-3 h-3" /> Admin
-                      </span>
-                    ) : (
-                      <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-700 border border-blue-200/50">
-                        <User className="w-3 h-3" /> Pengguna
-                      </span>
-                    )}
-                  </div>
-
-                  <div className="flex items-center justify-between border-t border-slate-100 pt-2.5">
-                    <span className="text-xs text-slate-400 font-bold uppercase tracking-wider">Status Akun</span>
-                    <div className="flex items-center gap-2">
-                      <button
-                        onClick={() => updateMut.mutate({ id: u.id, isActive: !u.isActive })}
-                        className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors focus:outline-none shadow-inner border border-slate-200/50 ${
-                          u.isActive ? 'bg-green-500' : 'bg-slate-300'
-                        }`}
-                      >
-                        <span
-                          className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white transition-transform shadow-sm ${
-                            u.isActive ? 'translate-x-4' : 'translate-x-0.5'
-                          }`}
-                        />
-                      </button>
-                      <span className={`text-xs font-bold ${u.isActive ? 'text-green-600' : 'text-slate-400'}`}>
-                        {u.isActive ? 'Aktif' : 'Nonaktif'}
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="flex gap-2 border-t border-slate-100 pt-2.5">
-                    <Button 
-                      variant="secondary" 
-                      size="sm" 
-                      className="flex-1 h-9 text-xs rounded-xl flex items-center justify-center gap-1" 
-                      onClick={() => triggerResetPassword(u.id, u.fullName)}
-                    >
-                      <KeyRound className="w-3.5 h-3.5 text-slate-500" /> Reset Sandi
-                    </Button>
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
-                      className="flex-1 h-9 text-xs rounded-xl text-danger hover:text-danger hover:bg-danger/5 border border-transparent hover:border-danger/20 gap-1 flex items-center justify-center" 
-                      onClick={() => triggerDeleteUser(u.id, u.fullName)}
-                    >
-                      <Trash2 className="w-3.5 h-3.5" /> Hapus
-                    </Button>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {/* Desktop View: Table */}
-            <div className="hidden md:block overflow-x-auto">
-              <table className="w-full text-sm border-collapse">
-                <thead>
-                  <tr className="border-b border-white/20 text-left text-xs font-bold text-slate-400 uppercase tracking-wider bg-white/10">
-                    <th className="px-5 py-3.5">Nama Lengkap</th>
-                    <th className="px-5 py-3.5">Email</th>
-                    <th className="px-5 py-3.5">Peran</th>
-                    <th className="px-5 py-3.5">Status</th>
-                    <th className="px-5 py-3.5 text-right">Aksi</th>
-                  </tr>
-                </thead>
-                <motion.tbody
-                  variants={containerVariants}
-                  initial="hidden"
-                  animate="show"
-                  className="divide-y divide-white/15"
-                >
-                  {paginatedUsers.map((u) => (
-                    <motion.tr 
-                      key={u.id} 
-                      variants={itemVariants}
-                      className="hover:bg-white/30 transition-colors"
-                    >
-                      {/* User profile avatar initials & name */}
-                      <td className="px-5 py-3.5 font-semibold text-slate-800">
-                        <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-full gradient-primary flex items-center justify-center text-white text-xs font-extrabold shadow-sm">
-                            {u.fullName?.charAt(0).toUpperCase() ?? 'U'}
-                          </div>
-                          <span className="truncate max-w-[180px]">{u.fullName}</span>
-                        </div>
-                      </td>
-                      <td className="px-5 py-3.5 text-slate-500 font-medium">{u.email}</td>
-                      
-                      {/* Role badge tag */}
-                      <td className="px-5 py-3.5">
-                        {u.isAdmin ? (
-                          <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-purple-500/10 text-purple-700 border border-purple-200/50">
-                            <Shield className="w-3 h-3" /> Admin
-                          </span>
-                        ) : (
-                          <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-700 border border-blue-200/50">
-                            <User className="w-3 h-3" /> Pengguna
-                          </span>
-                        )}
-                      </td>
-
-                      {/* Active toggle button */}
-                      <td className="px-5 py-3.5">
-                        <div className="flex items-center gap-2">
-                          <button
-                            onClick={() => updateMut.mutate({ id: u.id, isActive: !u.isActive })}
-                            className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors focus:outline-none shadow-inner border border-slate-200/50 ${
-                              u.isActive ? 'bg-green-500' : 'bg-slate-300'
-                            }`}
-                          >
-                            <span
-                              className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white transition-transform shadow-sm ${
-                                u.isActive ? 'translate-x-4' : 'translate-x-0.5'
-                              }`}
-                            />
-                          </button>
-                          <span className={`text-xs font-bold ${u.isActive ? 'text-green-600' : 'text-slate-400'}`}>
-                            {u.isActive ? 'Aktif' : 'Nonaktif'}
-                          </span>
-                        </div>
-                      </td>
-
-                      {/* Actions panel */}
-                      <td className="px-5 py-3.5 text-right">
-                        <div className="flex items-center justify-end gap-1.5">
-                          <Button 
-                            variant="secondary" 
-                            size="sm" 
-                            className="h-8 text-xs rounded-xl flex items-center gap-1" 
-                            onClick={() => triggerResetPassword(u.id, u.fullName)}
-                          >
-                            <KeyRound className="w-3.5 h-3.5 text-slate-500" /> Reset Sandi
-                          </Button>
-                          <Button 
-                            variant="ghost" 
-                            size="sm" 
-                            className="h-8 text-xs rounded-xl text-danger hover:text-danger hover:bg-danger/5 border border-transparent hover:border-danger/20 gap-1" 
-                            onClick={() => triggerDeleteUser(u.id, u.fullName)}
-                          >
-                            <Trash2 className="w-3.5 h-3.5" /> Hapus
-                          </Button>
-                        </div>
-                      </td>
-                    </motion.tr>
-                  ))}
-                </motion.tbody>
-              </table>
-            </div>
-
-            {totalPages > 1 && (
-              <div className="flex items-center justify-between border-t border-white/20 pt-4 mt-4 px-4 pb-4">
-                <span className="text-xs text-slate-500 font-medium hidden sm:inline">
-                  Menampilkan halaman {page} dari {totalPages}
-                </span>
-                <div className="flex items-center gap-1 w-full sm:w-auto justify-between sm:justify-end">
-                  <Button variant="secondary" size="sm" className="px-2 border-slate-200 bg-white hover:bg-slate-50" disabled={page === 1} onClick={() => setPage(1)} title="Halaman Pertama">
-                    <ChevronsLeft className="h-4 w-4" />
-                  </Button>
-                  <Button variant="secondary" size="sm" className="px-2 border-slate-200 bg-white hover:bg-slate-50" disabled={page === 1} onClick={() => setPage(p => Math.max(1, p - 1))} title="Sebelumnya">
-                    <ChevronLeft className="h-4 w-4" />
-                  </Button>
-                  
-                  <select 
-                    value={page}
-                    onChange={(e) => setPage(Number(e.target.value))}
-                    className="mx-1 h-9 px-2 bg-white border border-slate-200 rounded-xl text-sm font-medium outline-none focus:border-[#F9D141] focus:ring-2 focus:ring-[#F9D141]/20 cursor-pointer"
-                  >
-                    {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
-                      <option key={p} value={p}>Hal {p}</option>
-                    ))}
-                  </select>
-
-                  <Button variant="secondary" size="sm" className="px-2 border-slate-200 bg-white hover:bg-slate-50" disabled={page === totalPages} onClick={() => setPage(p => Math.min(totalPages, p + 1))} title="Selanjutnya">
-                    <ChevronRight className="h-4 w-4" />
-                  </Button>
-                  <Button variant="secondary" size="sm" className="px-2 border-slate-200 bg-white hover:bg-slate-50" disabled={page === totalPages} onClick={() => setPage(totalPages)} title="Halaman Terakhir">
-                    <ChevronsRight className="h-4 w-4" />
-                  </Button>
-                </div>
-              </div>
-            )}
-          </>
-        )}
-      </GlassCard>
 
       {/* Reset Password Modal */}
       <AnimatePresence>
