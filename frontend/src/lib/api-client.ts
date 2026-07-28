@@ -865,6 +865,8 @@ export const exportRoomsExcel = async (token: string) => {
 
   const { utils, writeFile } = await import('xlsx')
 
+  const roomsMap = new Map(rooms.map((r) => [r.id, r]))
+
   // Sheet 1: Daftar Ruangan
   const roomsRows = rooms.map((r, i) => ({
     No: i + 1,
@@ -878,17 +880,20 @@ export const exportRoomsExcel = async (token: string) => {
   const wsRooms = utils.json_to_sheet(roomsRows)
 
   // Sheet 2: Daftar Aset per Ruangan
-  const assetsRows = assets.map((a, i) => ({
-    No: i + 1,
-    'Kode Ruangan': a.roomCode ?? '-',
-    'Nama Ruangan': a.roomName ?? '-',
-    'ID Pemda': a.idpemda ?? '-',
-    'Kode Barang': a.kodeBarang ?? '-',
-    'Nomor Register': a.nomorRegister ?? '-',
-    'Nama Barang': a.namaBarang ?? '-',
-    'Merk / Tipe': a.merkType ?? '-',
-    Status: a.status === 'OPERATIONAL' ? 'Operasional' : a.status === 'NEEDS_MAINTENANCE' ? 'Perlu Pemeliharaan' : 'Tidak Beroperasi',
-  }))
+  const assetsRows = assets.map((a, i) => {
+    const r = roomsMap.get(a.roomId)
+    return {
+      No: i + 1,
+      'Kode Ruangan': r?.code ?? '-',
+      'Nama Ruangan': r?.name ?? '-',
+      'ID Pemda': a.idpemda ?? '-',
+      'Kode Barang': a.kodeBarang ?? '-',
+      'Nomor Register': a.nomorRegister ?? '-',
+      'Nama Barang': a.namaBarang ?? '-',
+      'Merk / Tipe': a.merkType ?? '-',
+      Status: a.status === 'OPERATIONAL' ? 'Operasional' : a.status === 'NEEDS_MAINTENANCE' ? 'Perlu Pemeliharaan' : 'Tidak Beroperasi',
+    }
+  })
   const wsAssets = utils.json_to_sheet(assetsRows)
 
   const wb = utils.book_new()
@@ -906,6 +911,8 @@ export const exportRoomsPdf = async (token: string) => {
 
   const { default: jsPDF } = await import('jspdf')
   const { default: autoTable } = await import('jspdf-autotable')
+
+  const roomsMap = new Map(rooms.map((r) => [r.id, r]))
 
   const doc = new jsPDF({ orientation: 'landscape' })
 
@@ -952,17 +959,20 @@ export const exportRoomsPdf = async (token: string) => {
   autoTable(doc, {
     startY: 35,
     head: [['No', 'Kode Rng', 'Nama Ruangan', 'ID Pemda', 'Kode Barang', 'No Reg', 'Nama Barang', 'Merk/Tipe', 'Status']],
-    body: assets.map((a, i) => [
-      i + 1,
-      a.roomCode ?? '-',
-      a.roomName ?? '-',
-      a.idpemda ?? '-',
-      a.kodeBarang ?? '-',
-      a.nomorRegister ?? '-',
-      a.namaBarang ?? '-',
-      a.merkType ?? '-',
-      a.status === 'OPERATIONAL' ? 'Operasional' : a.status === 'NEEDS_MAINTENANCE' ? 'Perlu Pemeliharaan' : 'Tidak Beroperasi',
-    ]),
+    body: assets.map((a, i) => {
+      const r = roomsMap.get(a.roomId)
+      return [
+        i + 1,
+        r?.code ?? '-',
+        r?.name ?? '-',
+        a.idpemda ?? '-',
+        a.kodeBarang ?? '-',
+        a.nomorRegister ?? '-',
+        a.namaBarang ?? '-',
+        a.merkType ?? '-',
+        a.status === 'OPERATIONAL' ? 'Operasional' : a.status === 'NEEDS_MAINTENANCE' ? 'Perlu Pemeliharaan' : 'Tidak Beroperasi',
+      ]
+    }),
     styles: { fontSize: 8, cellPadding: 2.5 },
     headStyles: { fillColor: [217, 164, 22], textColor: 255, fontStyle: 'bold' },
     alternateRowStyles: { fillColor: [255, 251, 235] },
