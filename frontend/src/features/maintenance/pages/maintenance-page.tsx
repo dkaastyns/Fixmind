@@ -24,7 +24,9 @@ import {
   ChevronsLeft,
   ChevronsRight,
   Loader2,
+  Download,
 } from 'lucide-react'
+import { createPortal } from 'react-dom'
 import { Button } from '@/components/ui/button'
 import { GlassCard } from '@/components/ui/glass-card'
 import { AnimatedGlassCard } from '@/components/ui/animated-glass-card'
@@ -107,6 +109,7 @@ export function MaintenancePage() {
   const [startingId, setStartingId] = useState<string | null>(null)
   const [completingId, setCompletingId] = useState<string | null>(null)
   const [isExporting, setIsExporting] = useState<'excel' | 'pdf' | null>(null)
+  const [showExportModal, setShowExportModal] = useState(false)
 
   // Form fields
   const [form, setForm] = useState(EMPTY_FORM)
@@ -341,21 +344,12 @@ export function MaintenancePage() {
           <div className="flex flex-wrap gap-2 items-center">
             <Button
               variant="secondary"
-              onClick={handleExportExcel}
+              onClick={() => setShowExportModal(true)}
               disabled={isExporting !== null}
-              className="rounded-xl border border-gray-200 bg-white text-slate-700 hover:bg-white hover:-translate-y-0.5 hover:shadow-md active:scale-95 transition-all duration-200 text-sm"
+              className="rounded-xl border border-gray-200 bg-white/70 text-slate-700 hover:bg-white hover:-translate-y-0.5 hover:shadow-md active:scale-95 transition-all duration-200 text-sm cursor-pointer"
             >
-              <FileSpreadsheet className="h-4 w-4 text-green-500" />
-              {isExporting === 'excel' ? 'Mengunduh...' : 'Export Excel'}
-            </Button>
-            <Button
-              variant="secondary"
-              onClick={handleExportPdf}
-              disabled={isExporting !== null}
-              className="rounded-xl border border-gray-200 bg-white text-slate-700 hover:bg-white hover:-translate-y-0.5 hover:shadow-md active:scale-95 transition-all duration-200 text-sm"
-            >
-              <FileText className="h-4 w-4 text-danger" />
-              {isExporting === 'pdf' ? 'Mengunduh...' : 'Export PDF'}
+              <Download className="h-4 w-4 text-emerald-600" />
+              Export Data
             </Button>
             <Button
               onClick={openCreate}
@@ -980,7 +974,126 @@ export function MaintenancePage() {
           </div>
         )}
       </AnimatePresence>
+
+      {/* Export Format Picker Modal */}
+      <ExportMaintenancePickerModal
+        isOpen={showExportModal}
+        onClose={() => setShowExportModal(false)}
+        onExportExcel={handleExportExcel}
+        onExportPdf={handleExportPdf}
+        isExportingExcel={isExporting === 'excel'}
+        isExportingPdf={isExporting === 'pdf'}
+      />
     </div>
+  )
+}
+
+function ExportMaintenancePickerModal({
+  isOpen,
+  onExportExcel,
+  onExportPdf,
+  onClose,
+  isExportingExcel,
+  isExportingPdf,
+}: {
+  isOpen: boolean
+  onExportExcel: () => void
+  onExportPdf: () => void
+  onClose: () => void
+  isExportingExcel: boolean
+  isExportingPdf: boolean
+}) {
+  if (typeof document === 'undefined') return null
+  return createPortal(
+    <AnimatePresence>
+      {isOpen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="absolute inset-0 bg-slate-950/40 backdrop-blur-md"
+            onClick={onClose}
+          />
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95, y: 15 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: 15 }}
+            className="relative w-full max-w-sm overflow-hidden rounded-2xl bg-white p-6 shadow-2xl border border-slate-100"
+          >
+            {/* Header */}
+            <div className="flex items-center justify-between mb-6 pb-2 border-b border-slate-100">
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-50 text-[#d9a416]">
+                  <Download className="h-5 w-5" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold text-slate-800">Export Jadwal Pemeliharaan</h3>
+                  <p className="text-[11px] text-slate-400">Pilih format dokumen untuk diunduh</p>
+                </div>
+              </div>
+              <button
+                onClick={onClose}
+                className="rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+
+            {/* Selection Grid */}
+            <div className="grid grid-cols-2 gap-4 mb-6">
+              <motion.button
+                whileHover={{ scale: 1.03, y: -2 }}
+                whileTap={{ scale: 0.97 }}
+                onClick={() => {
+                  onExportExcel()
+                  onClose()
+                }}
+                disabled={isExportingExcel || isExportingPdf}
+                className="flex flex-col items-center gap-3 p-4 rounded-xl border border-slate-100 hover:border-emerald-200 hover:bg-emerald-50/50 transition-all text-center cursor-pointer group"
+              >
+                <div className="p-3 rounded-xl bg-emerald-50 text-emerald-600 group-hover:scale-110 transition-transform">
+                  <FileSpreadsheet className="w-6 h-6" />
+                </div>
+                <div>
+                  <p className="text-xs font-bold text-slate-800">Format Excel</p>
+                  <p className="text-[9px] text-slate-400 mt-0.5">Spreadsheet lengkap</p>
+                </div>
+              </motion.button>
+
+              <motion.button
+                whileHover={{ scale: 1.03, y: -2 }}
+                whileTap={{ scale: 0.97 }}
+                onClick={() => {
+                  onExportPdf()
+                  onClose()
+                }}
+                disabled={isExportingExcel || isExportingPdf}
+                className="flex flex-col items-center gap-3 p-4 rounded-xl border border-slate-100 hover:border-rose-200 hover:bg-rose-50/50 transition-all text-center cursor-pointer group"
+              >
+                <div className="p-3 rounded-xl bg-rose-50 text-rose-600 group-hover:scale-110 transition-transform">
+                  <FileText className="w-6 h-6" />
+                </div>
+                <div>
+                  <p className="text-xs font-bold text-slate-800">Format PDF</p>
+                  <p className="text-[9px] text-slate-400 mt-0.5">Siap cetak & rapi</p>
+                </div>
+              </motion.button>
+            </div>
+
+            {/* Footer */}
+            <Button
+              variant="secondary"
+              onClick={onClose}
+              className="w-full rounded-xl text-slate-500 hover:bg-slate-50 border-slate-200 font-semibold"
+            >
+              Batal
+            </Button>
+          </motion.div>
+        </div>
+      )}
+    </AnimatePresence>,
+    document.body
   )
 }
 
