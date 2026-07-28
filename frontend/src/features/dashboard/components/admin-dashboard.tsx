@@ -636,19 +636,8 @@ export function AdminDashboard() {
               <GlassCard className="cursor-pointer hover:shadow-lg transition-shadow hover:border-[#F9D141]/50" onClick={() => navigate('/dashboard/rooms')}>
                 <h2 className="text-base font-semibold mb-4">Ruangan dengan Laporan Terbanyak</h2>
                 <div className="space-y-3">
-                  {stats!.byRoom!.map((r) => {
+                  {stats?.byRoom?.map((r) => {
                     const max = stats?.byRoom?.[0]?.count ?? 1
-                    const pct = (r.count / max) * 100
-                    return (
-                      <div key={r.room}>
-                        <div className="mb-1 flex justify-between text-sm">
-                          <span className="font-medium truncate max-w-[60%]">{r.room}</span>
-                          <span className="text-muted">{r.count} laporan</span>
-                        </div>
-                        <div className="h-2 overflow-hidden rounded-full bg-white/50">
-                          <motion.div
-                            className="h-full gradient-admin rounded-full"
-                            initial={{ width: 0 }}
                     const pct = (r.count / max) * 100
                     return (
                       <div key={r.room}>
