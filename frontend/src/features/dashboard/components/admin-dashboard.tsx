@@ -497,14 +497,14 @@ export function AdminDashboard() {
         {/* ── Charts Row 1: Report Status + Priority Donut ────────────────── */}
         <div className="grid gap-6 lg:grid-cols-2">
           {/* Laporan berdasarkan Status */}
-          {stats?.byStatus && (
+          {Boolean(stats?.byStatus) && (
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
               <AnimatedGlassCard className="h-full flex flex-col">
                 <h2 className="text-base font-semibold mb-4">Laporan Masalah — Status</h2>
                 <div className="flex-1 min-h-[220px]">
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart
-                      data={Object.entries(stats.byStatus).map(([name, value]) => {
+                      data={Object.entries(stats?.byStatus ?? {}).map(([name, value]) => {
                         const m: Record<string, string> = {
                           PENDING: 'Menunggu', AI_ANALYSIS: 'AI', REVIEWED: 'Ditinjau',
                           ASSIGNED: 'Ditugaskan', IN_PROGRESS: 'Proses',
@@ -533,7 +533,7 @@ export function AdminDashboard() {
           )}
 
           {/* Laporan berdasarkan Prioritas — Donut */}
-          {stats?.byPriority && Object.keys(stats.byPriority).length > 0 && (
+          {Boolean(stats?.byPriority) && Object.keys(stats?.byPriority ?? {}).length > 0 && (
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
               <AnimatedGlassCard className="h-full flex flex-col">
                 <h2 className="text-base font-semibold mb-4">Laporan Masalah — Prioritas</h2>
@@ -541,7 +541,7 @@ export function AdminDashboard() {
                   <ResponsiveContainer width="100%" height="100%">
                     <PieChart>
                       <Pie
-                        data={Object.entries(stats.byPriority).map(([name, value]) => ({
+                        data={Object.entries(stats?.byPriority ?? {}).map(([name, value]) => ({
                           name: PRIORITY_LABEL[name] ?? name,
                           value,
                           key: name,
@@ -553,7 +553,7 @@ export function AdminDashboard() {
                         paddingAngle={4}
                         dataKey="value"
                       >
-                        {Object.keys(stats.byPriority).map((key) => (
+                        {Object.keys(stats?.byPriority ?? {}).map((key) => (
                           <Cell key={key} fill={PRIORITY_COLORS[key] ?? '#8B5CF6'} stroke="rgba(255,255,255,0.6)" strokeWidth={2} />
                         ))}
                       </Pie>
@@ -596,13 +596,14 @@ export function AdminDashboard() {
         {/* ── Bottom Row: Priority Bars + Top Rooms ──────────────────────── */}
         <div className="grid gap-6 lg:grid-cols-2">
           {/* Progress bars — Prioritas */}
-          {stats?.byPriority && (
+          {Boolean(stats?.byPriority) && (
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }}>
               <GlassCard className="cursor-pointer hover:shadow-lg transition-shadow hover:border-[#F9D141]/50" onClick={() => navigate('/dashboard/reports')}>
                 <h2 className="text-base font-semibold mb-4">Detail Prioritas Laporan</h2>
                 <div className="space-y-3">
-                  {Object.entries(stats.byPriority).map(([priority, count]) => {
-                    const max = Math.max(...Object.values(stats.byPriority!), 1)
+                  {Object.entries(stats?.byPriority ?? {}).map(([priority, count]) => {
+                    const priorityValues = Object.values(stats?.byPriority ?? {}) as number[]
+                    const max = Math.max(...(priorityValues.length ? priorityValues : [1]), 1)
                     const pct = (count / max) * 100
                     return (
                       <div key={priority}>
@@ -630,13 +631,24 @@ export function AdminDashboard() {
           )}
 
           {/* Progress bars — Ruangan Terbanyak */}
-          {stats?.byRoom && stats.byRoom.length > 0 && (
+          {Boolean(stats?.byRoom && stats.byRoom.length > 0) && (
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.7 }}>
               <GlassCard className="cursor-pointer hover:shadow-lg transition-shadow hover:border-[#F9D141]/50" onClick={() => navigate('/dashboard/rooms')}>
                 <h2 className="text-base font-semibold mb-4">Ruangan dengan Laporan Terbanyak</h2>
                 <div className="space-y-3">
-                  {stats.byRoom.map((r) => {
-                    const max = stats.byRoom![0].count
+                  {stats!.byRoom!.map((r) => {
+                    const max = stats?.byRoom?.[0]?.count ?? 1
+                    const pct = (r.count / max) * 100
+                    return (
+                      <div key={r.room}>
+                        <div className="mb-1 flex justify-between text-sm">
+                          <span className="font-medium truncate max-w-[60%]">{r.room}</span>
+                          <span className="text-muted">{r.count} laporan</span>
+                        </div>
+                        <div className="h-2 overflow-hidden rounded-full bg-white/50">
+                          <motion.div
+                            className="h-full gradient-admin rounded-full"
+                            initial={{ width: 0 }}
                     const pct = (r.count / max) * 100
                     return (
                       <div key={r.room}>
