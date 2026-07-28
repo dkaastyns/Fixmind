@@ -46,7 +46,7 @@ Sistem ini mempermudah alur pengaduan dan pemeliharaan fasilitas secara digital,
 
 ---
 
-## Tech Stack (Tumpukan Teknologi)
+## Tech Stack
 
 | Komponen | Teknologi | Keterangan |
 |----------|-----------|------------|
