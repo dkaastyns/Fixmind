@@ -311,10 +311,10 @@ export function DashboardLayout() {
             <div className="flex items-center gap-2">
               <button
                 onClick={() => window.dispatchEvent(new CustomEvent('open-global-search'))}
-                className="flex h-8 w-8 items-center justify-center rounded-xl bg-white hover:bg-white/80 text-slate-500 hover:text-slate-800 shadow-sm border border-slate-200 transition-colors"
+                className="flex h-8 w-8 items-center justify-center rounded-xl bg-transparent hover:bg-slate-100 text-[#ffd043] hover:text-[#e6bc3a] border-transparent shadow-none transition-colors"
                 title="Cari Aset"
               >
-                <Search className="h-4 w-4" />
+                <Search className="h-5 w-5 stroke-[2.5]" />
               </button>
               <NotificationBell 
                 align="right" 

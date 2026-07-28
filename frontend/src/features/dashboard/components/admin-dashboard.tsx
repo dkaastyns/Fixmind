@@ -369,7 +369,7 @@ export function AdminDashboard() {
           initial={{ opacity: 0, y: -15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="relative overflow-hidden w-full bg-cover bg-center rounded-b-[2.5rem] md:rounded-[2.5rem] shadow-xl pt-6 pb-8 px-5 md:py-8 md:px-8 text-white min-h-[300px] md:min-h-[260px] flex flex-col justify-between group -mt-4 -mx-4 md:mt-0 md:mx-0"
+          className="relative overflow-hidden w-full bg-cover bg-center rounded-b-[2.5rem] md:rounded-[2.5rem] shadow-xl pt-6 pb-8 px-5 md:py-8 md:px-8 text-white min-h-[300px] md:min-h-[260px] flex flex-col justify-between group"
           style={{ backgroundImage: 'url("/new-bg_dprd.jpg")' }}
         >
           {/* Ambient Glow & Dark Overlay */}
