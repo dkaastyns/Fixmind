@@ -19,6 +19,7 @@ import {
   PanelLeftClose,
   PanelLeftOpen,
   AlertTriangle,
+  Loader2,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { logoutRequest } from '@/lib/api-client'
@@ -65,8 +66,11 @@ function SidebarContent({
   const { user, accessToken, clearSession } = useAuthStore()
 
   const [showLogoutModal, setShowLogoutModal] = useState(false)
+  const [isLoggingOut, setIsLoggingOut] = useState(false)
 
   const confirmLogout = async () => {
+    setIsLoggingOut(true)
+    await new Promise((resolve) => setTimeout(resolve, 1200))
     if (accessToken) {
       try { await logoutRequest(accessToken) } catch { /* ignore */ }
     }
@@ -207,7 +211,7 @@ function SidebarContent({
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 className="absolute inset-0 bg-black/20 backdrop-blur-[2px]"
-                onClick={() => setShowLogoutModal(false)}
+                onClick={() => !isLoggingOut && setShowLogoutModal(false)}
               />
               <motion.div
                 initial={{ opacity: 0, scale: 0.95, y: 10 }}
@@ -215,23 +219,48 @@ function SidebarContent({
                 exit={{ opacity: 0, scale: 0.95, y: 10 }}
                 className="relative w-full max-w-sm overflow-hidden rounded-2xl bg-white p-6 text-center shadow-2xl border border-gray-100"
               >
-                <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-[#F9D141]/10">
-                  <LogOut className="h-6 w-6 text-[#d9a416]" />
-                </div>
-                <h3 className="mb-2 text-lg font-semibold text-gray-900">Keluar dari Akun</h3>
-                <p className="mb-6 text-sm text-gray-500">Apakah Anda yakin ingin keluar dari akun ini?</p>
-                <div className="flex gap-3">
-                  <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.98 }} className="flex-1">
-                    <Button variant="secondary" className="w-full rounded-xl text-gray-700 bg-gray-100 hover:bg-gray-200" onClick={() => setShowLogoutModal(false)}>
-                      Tidak
-                    </Button>
-                  </motion.div>
-                  <motion.div whileHover={{ scale: 1.05, boxShadow: '0 10px 15px -3px rgba(217, 164, 22, 0.4)' }} whileTap={{ scale: 0.98 }} className="flex-1">
-                    <Button className="w-full rounded-xl bg-[#d9a416] hover:bg-[#b88b12] text-white font-extrabold cursor-pointer" onClick={confirmLogout}>
-                      Ya, Keluar
-                    </Button>
-                  </motion.div>
-                </div>
+                <AnimatePresence mode="wait">
+                  {isLoggingOut ? (
+                    <motion.div
+                      key="loading"
+                      initial={{ opacity: 0, y: 5 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -5 }}
+                      className="flex flex-col items-center py-4"
+                    >
+                      <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-[#F9D141]/10">
+                        <Loader2 className="h-7 w-7 text-[#d9a416] animate-spin" />
+                      </div>
+                      <h3 className="mb-2 text-lg font-bold text-slate-800">Sedang Keluar...</h3>
+                      <p className="text-sm text-slate-500">Mengamankan sesi Anda. Harap tunggu sebentar.</p>
+                    </motion.div>
+                  ) : (
+                    <motion.div
+                      key="confirm"
+                      initial={{ opacity: 0, y: 5 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -5 }}
+                    >
+                      <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-[#F9D141]/10">
+                        <LogOut className="h-6 w-6 text-[#d9a416]" />
+                      </div>
+                      <h3 className="mb-2 text-lg font-semibold text-gray-900">Keluar dari Akun</h3>
+                      <p className="mb-6 text-sm text-gray-500">Apakah Anda yakin ingin keluar dari akun ini?</p>
+                      <div className="flex gap-3">
+                        <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.98 }} className="flex-1">
+                          <Button variant="secondary" className="w-full rounded-xl text-gray-700 bg-gray-100 hover:bg-gray-200" onClick={() => setShowLogoutModal(false)}>
+                            Tidak
+                          </Button>
+                        </motion.div>
+                        <motion.div whileHover={{ scale: 1.05, boxShadow: '0 10px 15px -3px rgba(217, 164, 22, 0.4)' }} whileTap={{ scale: 0.98 }} className="flex-1">
+                          <Button className="w-full rounded-xl bg-[#d9a416] hover:bg-[#b88b12] text-white font-extrabold cursor-pointer" onClick={confirmLogout}>
+                            Ya, Keluar
+                          </Button>
+                        </motion.div>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </motion.div>
             </div>
           )}
