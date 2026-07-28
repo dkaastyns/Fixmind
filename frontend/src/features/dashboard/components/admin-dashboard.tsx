@@ -427,20 +427,26 @@ export function AdminDashboard() {
             </div>
           </div>
 
-          {/* Quick Search Action Bar Pill */}
-          <div className="relative z-10 w-full max-w-2xl mx-auto mt-6">
-            <div 
+          {/* Quick Search Action Bar Pill (Matching User Dashboard Style) */}
+          <div className="relative z-10 w-full max-w-lg mx-auto mt-6">
+            <motion.div 
+              whileHover={{ scale: 1.025, y: -2 }}
+              whileTap={{ scale: 0.975 }}
               onClick={() => window.dispatchEvent(new CustomEvent('open-global-search'))}
-              className="flex items-center gap-4 bg-white/10 hover:bg-white/20 border border-white/25 backdrop-blur-md px-5 py-3.5 rounded-2xl cursor-pointer transition-all hover:scale-[1.01] shadow-xl group"
+              className="cursor-pointer flex items-center gap-4 bg-[#f4f4f4]/15 hover:bg-[#f4f4f4]/25 border border-[#f4f4f4]/25 rounded-2xl px-5 py-3.5 shadow-md transition-all group duration-200 text-left backdrop-blur-md"
             >
-              <div className="p-2.5 rounded-xl bg-[#F9D141] text-slate-950 shadow-md group-hover:scale-110 transition-transform">
-                <Search className="w-5 h-5 stroke-[2.5]" />
+              <motion.div whileHover={{ rotate: 15, scale: 1.15 }} transition={{ duration: 0.2 }}>
+                <Search className="w-5.5 h-5.5 text-[#ffd043] shrink-0" />
+              </motion.div>
+              <div className="flex-grow min-w-0">
+                <p className="text-sm font-bold text-white leading-tight">
+                  Cari aset, laporan, atau pemeliharaan?
+                </p>
+                <p className="text-[10px] text-white/85 font-semibold mt-1 tracking-wide">
+                  Apapun • Kapanpun • Dimanapun
+                </p>
               </div>
-              <div className="text-left">
-                <p className="text-sm font-extrabold text-white">Cari aset, laporan, atau pemeliharaan?</p>
-                <p className="text-[11px] text-slate-300 font-medium">Pencarian serbaguna • Kapanpun • Dimanapun</p>
-              </div>
-            </div>
+            </motion.div>
           </div>
         </motion.div>
 
