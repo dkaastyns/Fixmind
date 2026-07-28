@@ -33,7 +33,10 @@ import {
   Timer,
   Wrench,
   X,
+  Menu,
+  Search,
 } from 'lucide-react'
+import { NotificationBell } from '@/components/ui/notification-bell'
 import {
   BarChart,
   Bar,
@@ -340,6 +343,13 @@ export function AdminDashboard() {
     { label: 'Transfer Disetujui', value: transferStats.approved, icon: CheckCircle2, color: 'text-green-500', bg: 'bg-green-50' },
   ]
 
+  const todayStr = new Date().toLocaleDateString('id-ID', { 
+    weekday: 'long', 
+    year: 'numeric', 
+    month: 'long', 
+    day: 'numeric' 
+  })
+
   return (
     <>
       <ExportModal
@@ -349,34 +359,90 @@ export function AdminDashboard() {
       />
 
       <motion.div
-        className="space-y-6"
+        className="space-y-6 pb-8"
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
       >
-        {/* ── Header ─────────────────────────────────────────────────────── */}
-        <PageHeader
-          title={`Selamat datang kembali, ${user?.fullName?.split(' ')[0] ?? 'Admin'}`}
-          description="Ringkasan global aktivitas pemeliharaan fasilitas & transfer aset"
-          action={
-            <div className="flex flex-wrap gap-3">
+        {/* Hero Cover Banner Card (Matching User Dashboard & Profile Aesthetic) */}
+        <motion.div 
+          initial={{ opacity: 0, y: -15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="relative overflow-hidden w-full bg-cover bg-center rounded-b-[2.5rem] md:rounded-[2.5rem] shadow-xl pt-6 pb-8 px-5 md:py-8 md:px-8 text-white min-h-[300px] md:min-h-[260px] flex flex-col justify-between group -mt-4 -mx-4 md:mt-0 md:mx-0"
+          style={{ backgroundImage: 'url("/new-bg_dprd.jpg")' }}
+        >
+          {/* Ambient Glow & Dark Overlay */}
+          <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/60 to-black/75 z-0" />
+          <div className="absolute -top-24 -right-24 w-96 h-96 bg-[#F9D141]/10 rounded-full blur-3xl pointer-events-none group-hover:bg-[#F9D141]/20 transition-all duration-700" />
+
+          {/* Mobile Header Toolbar */}
+          <div className="relative z-10 flex items-center justify-between md:hidden w-full mb-4">
+            <button 
+              onClick={() => window.dispatchEvent(new CustomEvent('open-mobile-menu'))}
+              className="p-1 text-[#ffd043] hover:text-yellow-300 transition-colors cursor-pointer"
+              aria-label="Menu"
+            >
+              <Menu className="w-6 h-6" />
+            </button>
+            <span className="font-extrabold text-xl tracking-tight text-white">FixMind</span>
+            <div>
+              <NotificationBell 
+                align="right" 
+                className="bg-transparent border-transparent text-[#ffd043] hover:bg-white/10 hover:text-[#ffd043] p-1 shadow-none" 
+              />
+            </div>
+          </div>
+
+          {/* Hero Main Info & Actions */}
+          <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div className="space-y-2 text-center md:text-left">
+              <p className="text-xs md:text-sm font-semibold opacity-90 tracking-wide text-slate-300">
+                {todayStr}
+              </p>
+              <h1 className="text-2xl md:text-4xl font-extrabold tracking-tight text-white leading-tight drop-shadow-md">
+                Halo, {user?.fullName ?? 'Administrator'}
+              </h1>
+              <p className="text-xs md:text-sm text-slate-200 max-w-xl font-medium leading-relaxed opacity-95 drop-shadow-sm">
+                Ringkasan global aktivitas pemeliharaan fasilitas & pemindahan aset DPRD Kota Semarang.
+              </p>
+            </div>
+
+            {/* Export Buttons Desktop & Tablet */}
+            <div className="flex items-center justify-center md:justify-end gap-3 shrink-0">
               <Button 
                 variant="secondary" 
                 onClick={() => triggerExport('excel')}
-                className="hover:-translate-y-0.5 hover:shadow-md hover:ring-2 hover:ring-green-500/30 transition-all duration-200 bg-white"
+                className="hover:-translate-y-0.5 hover:shadow-lg hover:ring-2 hover:ring-green-500/30 transition-all duration-200 bg-white/90 backdrop-blur-md text-slate-800 font-extrabold rounded-2xl px-4 py-5 text-xs sm:text-sm border border-white/40"
               >
-                <FileSpreadsheet className="h-4 w-4 text-green-600" /> Export Excel
+                <FileSpreadsheet className="h-4 w-4 text-green-600 stroke-[2.5]" /> Export Excel
               </Button>
               <Button 
                 variant="secondary" 
                 onClick={() => triggerExport('pdf')}
-                className="hover:-translate-y-0.5 hover:shadow-md hover:ring-2 hover:ring-danger/30 transition-all duration-200 bg-white"
+                className="hover:-translate-y-0.5 hover:shadow-lg hover:ring-2 hover:ring-danger/30 transition-all duration-200 bg-white/90 backdrop-blur-md text-slate-800 font-extrabold rounded-2xl px-4 py-5 text-xs sm:text-sm border border-white/40"
               >
-                <FileText className="h-4 w-4 text-danger" /> Export PDF
+                <FileText className="h-4 w-4 text-danger stroke-[2.5]" /> Export PDF
               </Button>
             </div>
-          }
-        />
+          </div>
+
+          {/* Quick Search Action Bar Pill */}
+          <div className="relative z-10 w-full max-w-2xl mx-auto mt-6">
+            <div 
+              onClick={() => window.dispatchEvent(new CustomEvent('open-global-search'))}
+              className="flex items-center gap-4 bg-white/10 hover:bg-white/20 border border-white/25 backdrop-blur-md px-5 py-3.5 rounded-2xl cursor-pointer transition-all hover:scale-[1.01] shadow-xl group"
+            >
+              <div className="p-2.5 rounded-xl bg-[#F9D141] text-slate-950 shadow-md group-hover:scale-110 transition-transform">
+                <Search className="w-5 h-5 stroke-[2.5]" />
+              </div>
+              <div className="text-left">
+                <p className="text-sm font-extrabold text-white">Cari aset, laporan, atau pemeliharaan?</p>
+                <p className="text-[11px] text-slate-300 font-medium">Pencarian serbaguna • Kapanpun • Dimanapun</p>
+              </div>
+            </div>
+          </div>
+        </motion.div>
 
         {/* ── Report Stats ────────────────────────────────────────────────── */}
         <div>

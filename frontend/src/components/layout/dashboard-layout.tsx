@@ -251,7 +251,7 @@ export function DashboardLayout() {
   const token = useAuthStore((s) => s.accessToken)!
   const user = useAuthStore((s) => s.user)
 
-  const isUserDashboard = location.pathname === '/dashboard' && !user?.isAdmin
+  const isDashboardPage = location.pathname === '/dashboard'
   const isProfilePage = location.pathname === '/dashboard/profile'
   const isUsersPage = location.pathname === '/dashboard/users'
 
@@ -293,7 +293,7 @@ export function DashboardLayout() {
       </aside>
 
       <div className="flex flex-1 flex-col min-w-0">
-        {!isUserDashboard && !isProfilePage && !isUsersPage && (
+        {!isDashboardPage && !isProfilePage && !isUsersPage && (
           <header className="glass relative z-40 mx-4 mt-4 flex items-center justify-between px-4 py-3 md:hidden">
             {/* Left: Hamburger menu */}
             <button 
