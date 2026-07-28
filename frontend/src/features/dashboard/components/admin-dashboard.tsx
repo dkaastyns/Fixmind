@@ -638,7 +638,7 @@ export function AdminDashboard() {
           {/* Progress bars — Ruangan Terbanyak */}
           {Boolean(stats?.byRoom && stats.byRoom.length > 0) && (
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.7 }}>
-              <GlassCard className="cursor-pointer hover:shadow-lg transition-shadow hover:border-[#F9D141]/50" onClick={() => navigate('/dashboard/rooms')}>
+              <GlassCard className="cursor-pointer hover:shadow-lg transition-shadow hover:border-[#F9D141]/50" onClick={() => navigate('/dashboard/reports')}>
                 <h2 className="text-base font-semibold mb-4">Ruangan dengan Laporan Terbanyak</h2>
                 <div className="space-y-3">
                   {stats?.byRoom?.map((r) => {
