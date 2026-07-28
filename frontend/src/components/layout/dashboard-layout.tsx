@@ -253,6 +253,7 @@ export function DashboardLayout() {
 
   const isUserDashboard = location.pathname === '/dashboard' && !user?.isAdmin
   const isProfilePage = location.pathname === '/dashboard/profile'
+  const isUsersPage = location.pathname === '/dashboard/users'
 
   const [isCollapsed, setIsCollapsed] = useState(() => {
     const saved = localStorage.getItem('sidebar-collapsed')
@@ -292,7 +293,7 @@ export function DashboardLayout() {
       </aside>
 
       <div className="flex flex-1 flex-col min-w-0">
-        {!isUserDashboard && !isProfilePage && (
+        {!isUserDashboard && !isProfilePage && !isUsersPage && (
           <header className="glass relative z-40 mx-4 mt-4 flex items-center justify-between px-4 py-3 md:hidden">
             {/* Left: Hamburger menu */}
             <button 
