@@ -121,17 +121,56 @@ export function UsersPage() {
 
   return (
     <div className="space-y-6">
-      <PageHeader
-        title="Manajemen Pengguna"
-        description="Kelola akun administrator dan pengguna aplikasi E-Lapor DPRD Kota Semarang."
-        action={
-          <div className="w-fit">
-            <Button onClick={() => setShowForm(true)} className="gap-2 shadow-sm text-white font-extrabold bg-[#d9a416] hover:bg-[#b88b12] cursor-pointer">
-              <Plus className="h-4 w-4 text-white stroke-[3]" /> Tambah Pengguna
+      {/* Hero Banner Header Card (Matching Profile Page Aesthetic) */}
+      <motion.div 
+        initial={{ opacity: 0, y: -15 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="relative overflow-hidden w-full bg-cover bg-center rounded-[2rem] sm:rounded-[2.5rem] shadow-xl text-white p-6 sm:p-8 md:p-10 min-h-[180px] md:min-h-[220px] flex flex-col justify-between group"
+        style={{ backgroundImage: 'url("/new-bg_dprd.jpg")' }}
+      >
+        {/* Ambient Glow & Dark Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-r from-black/75 via-black/55 to-black/65 z-0" />
+        <div className="absolute -top-24 -right-24 w-96 h-96 bg-[#F9D141]/10 rounded-full blur-3xl pointer-events-none group-hover:bg-[#F9D141]/20 transition-all duration-700" />
+
+        {/* Hero Content */}
+        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+          <div className="flex items-center gap-5 sm:gap-6">
+            {/* Avatar / Icon Badge in Hero with Gold Ring Glow */}
+            <div className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 rounded-full p-1 bg-gradient-to-br from-[#F9D141] via-[#FFF099] to-[#D9A416] shadow-xl shadow-yellow-500/20 shrink-0 flex items-center justify-center">
+              <div className="w-full h-full rounded-full bg-slate-900/90 backdrop-blur-md flex items-center justify-center text-[#F9D141]">
+                <Users className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12" />
+              </div>
+            </div>
+
+            {/* Title & Description */}
+            <div className="space-y-1.5 sm:space-y-2">
+              <div className="flex items-center gap-3 flex-wrap">
+                <span className="inline-flex items-center gap-1.5 px-3 py-0.5 sm:py-1 rounded-full text-[10px] sm:text-xs font-extrabold uppercase tracking-wider bg-[#F9D141]/20 text-[#F9D141] border border-[#F9D141]/40 backdrop-blur-md">
+                  <Shield className="w-3 h-3 sm:w-3.5 sm:h-3.5" /> MANAJEMEN AKUN & HAK AKSES
+                </span>
+              </div>
+
+              <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight text-white leading-tight drop-shadow-md">
+                Manajemen Pengguna
+              </h1>
+              <p className="text-xs sm:text-sm text-slate-200 max-w-xl font-medium leading-relaxed opacity-95 drop-shadow-sm">
+                Daftar dan kelola akun administrator serta pengguna aplikasi E-Lapor DPRD Kota Semarang.
+              </p>
+            </div>
+          </div>
+
+          {/* Action Button inside Hero Header */}
+          <div className="pt-2 md:pt-0 self-start md:self-center shrink-0">
+            <Button 
+              onClick={() => setShowForm(true)} 
+              className="gap-2 shadow-xl text-white font-extrabold bg-[#d9a416] hover:bg-[#b88b12] cursor-pointer rounded-2xl px-5 py-5 sm:px-6 sm:py-6 text-xs sm:text-sm border border-white/20 active:scale-95 transition-all"
+            >
+              <Plus className="h-4 w-4 sm:h-5 sm:w-5 text-white stroke-[3]" /> Tambah Pengguna
             </Button>
           </div>
-        }
-      />
+        </div>
+      </motion.div>
 
       {/* Overview Statistics Cards */}
       <div className="grid gap-4 grid-cols-1 sm:grid-cols-3">
