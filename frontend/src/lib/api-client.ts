@@ -854,6 +854,123 @@ export const exportMaintenancePdf = async (
   doc.save('fixmind-jadwal-pemeliharaan.pdf')
 }
 
+// ─── Room & Asset Exports (client-side generation) ───────────────────────
+
+export const exportRoomsExcel = async (token: string) => {
+  const roomsRes = await fetchRooms(token, { limit: 10000 })
+  const rooms = roomsRes.data ?? []
+
+  const assetsRes = await fetchAssets(token, { limit: 10000 })
+  const assets = assetsRes.data ?? []
+
+  const { utils, writeFile } = await import('xlsx')
+
+  // Sheet 1: Daftar Ruangan
+  const roomsRows = rooms.map((r, i) => ({
+    No: i + 1,
+    'Kode Ruangan': r.code ?? '-',
+    'Nama Ruangan': r.name ?? '-',
+    Gedung: r.building ?? '-',
+    Lantai: r.floor ?? '-',
+    Deskripsi: r.description ?? '-',
+    Status: r.isActive ? 'Aktif' : 'Nonaktif',
+  }))
+  const wsRooms = utils.json_to_sheet(roomsRows)
+
+  // Sheet 2: Daftar Aset per Ruangan
+  const assetsRows = assets.map((a, i) => ({
+    No: i + 1,
+    'Kode Ruangan': a.roomCode ?? '-',
+    'Nama Ruangan': a.roomName ?? '-',
+    'ID Pemda': a.idpemda ?? '-',
+    'Kode Barang': a.kodeBarang ?? '-',
+    'Nomor Register': a.nomorRegister ?? '-',
+    'Nama Barang': a.namaBarang ?? '-',
+    'Merk / Tipe': a.merkType ?? '-',
+    Status: a.status === 'OPERATIONAL' ? 'Operasional' : a.status === 'NEEDS_MAINTENANCE' ? 'Perlu Pemeliharaan' : 'Tidak Beroperasi',
+  }))
+  const wsAssets = utils.json_to_sheet(assetsRows)
+
+  const wb = utils.book_new()
+  utils.book_append_sheet(wb, wsRooms, 'Daftar Ruangan')
+  utils.book_append_sheet(wb, wsAssets, 'Inventaris Aset')
+  writeFile(wb, 'fixmind-fasilitas-ruangan.xlsx')
+}
+
+export const exportRoomsPdf = async (token: string) => {
+  const roomsRes = await fetchRooms(token, { limit: 10000 })
+  const rooms = roomsRes.data ?? []
+
+  const assetsRes = await fetchAssets(token, { limit: 10000 })
+  const assets = assetsRes.data ?? []
+
+  const { default: jsPDF } = await import('jspdf')
+  const { default: autoTable } = await import('jspdf-autotable')
+
+  const doc = new jsPDF({ orientation: 'landscape' })
+
+  // Title
+  doc.setFontSize(16)
+  doc.setTextColor(217, 164, 22) // Gold color
+  doc.text('Laporan Fasilitas & Ruangan DPRD — FixMind', 14, 16)
+
+  doc.setFontSize(10)
+  doc.setTextColor(80)
+  doc.text('Daftar Ruangan Aktif dan Nonaktif', 14, 23)
+  doc.text(`Dicetak: ${new Date().toLocaleString('id-ID')}`, 14, 29)
+
+  // Table 1: Rooms
+  autoTable(doc, {
+    startY: 35,
+    head: [['No', 'Kode Ruangan', 'Nama Ruangan', 'Gedung', 'Lantai', 'Deskripsi', 'Status']],
+    body: rooms.map((r, i) => [
+      i + 1,
+      r.code ?? '-',
+      r.name ?? '-',
+      r.building ?? '-',
+      r.floor ?? '-',
+      r.description ?? '-',
+      r.isActive ? 'Aktif' : 'Nonaktif',
+    ]),
+    styles: { fontSize: 8, cellPadding: 3 },
+    headStyles: { fillColor: [217, 164, 22], textColor: 255, fontStyle: 'bold' },
+    alternateRowStyles: { fillColor: [255, 251, 235] },
+  })
+
+  // Add Page for Assets
+  doc.addPage()
+  doc.setFontSize(16)
+  doc.setTextColor(217, 164, 22)
+  doc.text('Laporan Inventaris Aset — FixMind', 14, 16)
+
+  doc.setFontSize(10)
+  doc.setTextColor(80)
+  doc.text('Daftar Aset per Ruangan', 14, 23)
+  doc.text(`Dicetak: ${new Date().toLocaleString('id-ID')}`, 14, 29)
+
+  // Table 2: Assets
+  autoTable(doc, {
+    startY: 35,
+    head: [['No', 'Kode Rng', 'Nama Ruangan', 'ID Pemda', 'Kode Barang', 'No Reg', 'Nama Barang', 'Merk/Tipe', 'Status']],
+    body: assets.map((a, i) => [
+      i + 1,
+      a.roomCode ?? '-',
+      a.roomName ?? '-',
+      a.idpemda ?? '-',
+      a.kodeBarang ?? '-',
+      a.nomorRegister ?? '-',
+      a.namaBarang ?? '-',
+      a.merkType ?? '-',
+      a.status === 'OPERATIONAL' ? 'Operasional' : a.status === 'NEEDS_MAINTENANCE' ? 'Perlu Pemeliharaan' : 'Tidak Beroperasi',
+    ]),
+    styles: { fontSize: 8, cellPadding: 2.5 },
+    headStyles: { fillColor: [217, 164, 22], textColor: 255, fontStyle: 'bold' },
+    alternateRowStyles: { fillColor: [255, 251, 235] },
+  })
+
+  doc.save('fixmind-fasilitas-ruangan.pdf')
+}
+
 export async function syncOfflineQueue(token: string) {
   const queue = JSON.parse(localStorage.getItem('offline-sync-queue') || '[]')
   if (queue.length === 0) return

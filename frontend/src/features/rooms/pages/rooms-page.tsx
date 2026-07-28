@@ -18,6 +18,7 @@ import {
   ChevronRight,
   ChevronsLeft,
   ChevronsRight,
+  FileText,
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
@@ -34,6 +35,8 @@ import {
   fetchAssets,
   fetchRooms,
   importAssets,
+  exportRoomsExcel,
+  exportRoomsPdf,
 } from '@/lib/api-client'
 import { useAuthStore } from '@/stores/auth-store'
 import { cn, handleApiError } from '@/lib/utils'
@@ -224,6 +227,39 @@ export function RoomsPage() {
 
 
 
+  const [isExportingExcel, setIsExportingExcel] = useState(false)
+  const [isExportingPdf, setIsExportingPdf] = useState(false)
+
+  const handleExportExcel = async () => {
+    setIsExportingExcel(true)
+    try {
+      await toast.promise(exportRoomsExcel(token), {
+        loading: 'Sedang mengekspor data ruangan ke Excel...',
+        success: 'File Excel berhasil diunduh!',
+        error: 'Gagal mengekspor data ke Excel.',
+      })
+    } catch (err) {
+      console.error(err)
+    } finally {
+      setIsExportingExcel(false)
+    }
+  }
+
+  const handleExportPdf = async () => {
+    setIsExportingPdf(true)
+    try {
+      await toast.promise(exportRoomsPdf(token), {
+        loading: 'Sedang mengekspor data ruangan ke PDF...',
+        success: 'File PDF berhasil diunduh!',
+        error: 'Gagal mengekspor data ke PDF.',
+      })
+    } catch (err) {
+      console.error(err)
+    } finally {
+      setIsExportingPdf(false)
+    }
+  }
+
   const handleConfirmImport = () => {
     if (!pendingImportFile || !importRoomId) {
       toast.error('Pilih ruangan terlebih dahulu')
@@ -240,6 +276,32 @@ export function RoomsPage() {
         description="Daftar ruangan dan fasilitas yang tersedia untuk pelaporan dan inventarisasi."
         action={isAdmin ? (
           <div className="flex flex-wrap items-center gap-2">
+            <motion.div whileHover={{ scale: 1.04, y: -2 }} whileTap={{ scale: 0.96 }}>
+              <Button
+                variant="secondary"
+                onClick={handleExportExcel}
+                disabled={isExportingExcel}
+                title="Export seluruh data ruangan & aset ke Excel"
+                className="gap-1.5 h-10 px-3.5 border-slate-200 text-slate-700 bg-white/70 hover:bg-white hover:shadow-md transition-all duration-200 font-semibold rounded-xl text-xs cursor-pointer"
+              >
+                <FileSpreadsheet className="h-4 w-4 text-emerald-600" />
+                Export Excel
+              </Button>
+            </motion.div>
+
+            <motion.div whileHover={{ scale: 1.04, y: -2 }} whileTap={{ scale: 0.96 }}>
+              <Button
+                variant="secondary"
+                onClick={handleExportPdf}
+                disabled={isExportingPdf}
+                title="Export seluruh data ruangan & aset ke PDF"
+                className="gap-1.5 h-10 px-3.5 border-slate-200 text-slate-700 bg-white/70 hover:bg-white hover:shadow-md transition-all duration-200 font-semibold rounded-xl text-xs cursor-pointer"
+              >
+                <FileText className="h-4 w-4 text-red-500" />
+                Export PDF
+              </Button>
+            </motion.div>
+
             <motion.div whileHover={{ scale: 1.04, y: -2 }} whileTap={{ scale: 0.96 }}>
               <Button
                 variant="secondary"
