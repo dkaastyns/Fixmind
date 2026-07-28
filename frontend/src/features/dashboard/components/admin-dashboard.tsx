@@ -484,7 +484,7 @@ export function AdminDashboard() {
             animate="show"
           >
             {transferCards.map((c) => (
-              <AnimatedGlassCard key={c.label} className="p-5 flex items-center justify-between cursor-pointer hover:ring-2 hover:ring-[#F9D141]/50 transition-all hover:-translate-y-1" variants={itemVariants} onClick={() => navigate('/dashboard/asset-transfers')}>
+              <AnimatedGlassCard key={c.label} className="p-5 flex items-center justify-between cursor-pointer hover:ring-2 hover:ring-[#F9D141]/50 transition-all hover:-translate-y-1" variants={itemVariants} onClick={() => navigate('/dashboard/asset-transfers/review')}>
                 <div>
                   <p className="text-sm text-muted">{c.label}</p>
                   <p className="mt-2 text-3xl font-semibold text-gradient-admin">
