@@ -249,7 +249,6 @@ export function DashboardLayout() {
   const location = useLocation()
   const { isOnline, queueLength } = useOfflineSync()
   const token = useAuthStore((s) => s.accessToken)!
-  const user = useAuthStore((s) => s.user)
 
   const isDashboardPage = location.pathname === '/dashboard'
   const isProfilePage = location.pathname === '/dashboard/profile'
