@@ -34,6 +34,7 @@ import {
   X,
   Menu,
   Search,
+  Download,
 } from 'lucide-react'
 import { NotificationBell } from '@/components/ui/notification-bell'
 import {
@@ -87,18 +88,17 @@ type ReportKind = 'masalah' | 'transfer' | 'maintenance'
 
 interface ExportModalProps {
   open: boolean
-  format: ExportFormat | null
   onClose: () => void
 }
 
-function ExportModal({ open, format, onClose }: ExportModalProps) {
+function ExportModal({ open, onClose }: ExportModalProps) {
   const token = useAuthStore((s) => s.accessToken)!
   const [kind, setKind] = useState<ReportKind>('masalah')
   const [isAllTime, setIsAllTime] = useState(true)
   const [startDate, setStartDate] = useState('')
   const [endDate, setEndDate] = useState('')
 
-  const handleExport = async () => {
+  const handleExport = async (format: ExportFormat) => {
     const sDate = isAllTime ? undefined : (startDate ? new Date(startDate).toISOString() : undefined)
     const eDate = isAllTime ? undefined : (endDate ? new Date(endDate).toISOString() : undefined)
     onClose()
@@ -158,11 +158,9 @@ function ExportModal({ open, format, onClose }: ExportModalProps) {
                 {/* Header */}
                 <div className="flex items-center justify-between px-6 pt-5 pb-4 border-b border-gray-100">
                   <div className="flex items-center gap-2">
-                    {format === 'excel'
-                      ? <FileSpreadsheet className="h-5 w-5 text-green-500" />
-                      : <FileText className="h-5 w-5 text-danger" />}
-                    <h3 className="text-base font-semibold text-gray-900">
-                      Export {format === 'excel' ? 'Excel' : 'PDF'}
+                    <Download className="h-5 w-5 text-[#d9a416]" />
+                    <h3 className="text-base font-semibold text-gray-900 font-bold">
+                      Export Data Aplikasi
                     </h3>
                   </div>
                   <button onClick={onClose} className="text-gray-400 hover:text-gray-600 transition-colors">
@@ -244,19 +242,25 @@ function ExportModal({ open, format, onClose }: ExportModalProps) {
                 </div>
 
                 {/* Footer Buttons */}
-                <div className="flex gap-3 px-6 pb-5">
+                <div className="flex gap-2.5 px-6 pb-5">
                   <Button
                     variant="secondary"
-                    className="flex-1 rounded-xl text-gray-700 bg-gray-100 hover:bg-gray-200"
+                    className="flex-1 rounded-xl text-gray-700 bg-gray-100 hover:bg-gray-200 h-11"
                     onClick={onClose}
                   >
                     Batal
                   </Button>
                   <Button
-                    className="flex-1 rounded-xl bg-gradient-to-r from-[#F9D141] to-[#1A1A1A] text-slate-900 font-bold hover:opacity-90 transition-all shadow-sm"
-                    onClick={handleExport}
+                    className="flex-1 rounded-xl bg-emerald-600 text-white font-bold hover:bg-emerald-700 transition-all shadow-sm flex items-center gap-1.5 justify-center h-11 cursor-pointer"
+                    onClick={() => handleExport('excel')}
                   >
-                    Unduh {format === 'excel' ? 'Excel' : 'PDF'}
+                    <FileSpreadsheet className="h-4 w-4" /> Excel
+                  </Button>
+                  <Button
+                    className="flex-1 rounded-xl bg-rose-600 text-white font-bold hover:bg-rose-700 transition-all shadow-sm flex items-center gap-1.5 justify-center h-11 cursor-pointer"
+                    onClick={() => handleExport('pdf')}
+                  >
+                    <FileText className="h-4 w-4" /> PDF
                   </Button>
                 </div>
               </motion.div>
@@ -275,7 +279,6 @@ export function AdminDashboard() {
   const navigate = useNavigate()
 
   const [showExportModal, setShowExportModal] = useState(false)
-  const [exportFormat, setExportFormat] = useState<ExportFormat | null>(null)
   const { data: maintenanceData, isLoading: maintenanceLoading } = useQuery({
     queryKey: ['admin-dashboard-maintenance'],
     queryFn: () => fetchMaintenanceSchedules(token, { limit: 10 }),
@@ -287,11 +290,6 @@ export function AdminDashboard() {
         .sort((a, b) => new Date(a.scheduledDate).getTime() - new Date(b.scheduledDate).getTime())
         .slice(0, 4)
     : []
-
-  const triggerExport = (fmt: ExportFormat) => {
-    setExportFormat(fmt)
-    setShowExportModal(true)
-  }
 
   // ── Queries ────────────────────────────────────────────────────────────────
   const { data: analyticsData, isLoading: analyticsLoading } = useQuery({
@@ -353,7 +351,6 @@ export function AdminDashboard() {
     <>
       <ExportModal
         open={showExportModal}
-        format={exportFormat}
         onClose={() => setShowExportModal(false)}
       />
 
@@ -407,21 +404,14 @@ export function AdminDashboard() {
               </p>
             </div>
 
-            {/* Export Buttons Desktop & Tablet */}
+            {/* Export Button Desktop & Tablet */}
             <div className="flex items-center justify-center md:justify-end gap-3 shrink-0">
               <Button 
                 variant="secondary" 
-                onClick={() => triggerExport('excel')}
-                className="hover:-translate-y-0.5 hover:shadow-lg hover:ring-2 hover:ring-green-500/30 transition-all duration-200 bg-white/90 backdrop-blur-md text-slate-800 font-extrabold rounded-2xl px-4 py-5 text-xs sm:text-sm border border-white/40"
+                onClick={() => setShowExportModal(true)}
+                className="hover:-translate-y-0.5 hover:shadow-lg hover:ring-2 hover:ring-[#F9D141]/30 transition-all duration-200 bg-white/90 backdrop-blur-md text-slate-800 font-extrabold rounded-2xl px-4 py-5 text-xs sm:text-sm border border-white/40 cursor-pointer"
               >
-                <FileSpreadsheet className="h-4 w-4 text-green-600 stroke-[2.5]" /> Export Excel
-              </Button>
-              <Button 
-                variant="secondary" 
-                onClick={() => triggerExport('pdf')}
-                className="hover:-translate-y-0.5 hover:shadow-lg hover:ring-2 hover:ring-danger/30 transition-all duration-200 bg-white/90 backdrop-blur-md text-slate-800 font-extrabold rounded-2xl px-4 py-5 text-xs sm:text-sm border border-white/40"
-              >
-                <FileText className="h-4 w-4 text-danger stroke-[2.5]" /> Export PDF
+                <Download className="h-4 w-4 text-[#d9a416] stroke-[2.5]" /> Export Data
               </Button>
             </div>
           </div>
