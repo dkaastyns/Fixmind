@@ -287,11 +287,11 @@ export function MaintenancePage() {
 
   const isSubmitting = createMutation.isPending || updateMutation.isPending
 
-  const handleExportExcel = async () => {
+  const handleExportExcel = async (sDate?: string, eDate?: string) => {
     setIsExporting('excel')
     try {
       const activeStatus = statusFilter !== 'ALL' ? statusFilter : undefined
-      await exportMaintenanceExcel(token, undefined, undefined, activeStatus)
+      await exportMaintenanceExcel(token, sDate, eDate, activeStatus)
       toast.success('File Excel Jadwal Pemeliharaan berhasil diunduh')
     } catch {
       toast.error('Gagal mengekspor data. Coba lagi.')
@@ -300,11 +300,11 @@ export function MaintenancePage() {
     }
   }
 
-  const handleExportPdf = async () => {
+  const handleExportPdf = async (sDate?: string, eDate?: string) => {
     setIsExporting('pdf')
     try {
       const activeStatus = statusFilter !== 'ALL' ? statusFilter : undefined
-      await exportMaintenancePdf(token, undefined, undefined, activeStatus)
+      await exportMaintenancePdf(token, sDate, eDate, activeStatus)
       toast.success('File PDF Jadwal Pemeliharaan berhasil diunduh')
     } catch {
       toast.error('Gagal mengekspor data. Coba lagi.')
@@ -997,12 +997,35 @@ function ExportMaintenancePickerModal({
   isExportingPdf,
 }: {
   isOpen: boolean
-  onExportExcel: () => void
-  onExportPdf: () => void
+  onExportExcel: (startDate?: string, endDate?: string) => void
+  onExportPdf: (startDate?: string, endDate?: string) => void
   onClose: () => void
   isExportingExcel: boolean
   isExportingPdf: boolean
 }) {
+  const [isAllTime, setIsAllTime] = useState(true)
+  const [startDate, setStartDate] = useState('')
+  const [endDate, setEndDate] = useState('')
+
+  // Reset inputs when opened/closed
+  useEffect(() => {
+    if (!isOpen) {
+      setIsAllTime(true)
+      setStartDate('')
+      setEndDate('')
+    }
+  }, [isOpen])
+
+  const handleExport = (type: 'excel' | 'pdf') => {
+    const s = isAllTime ? undefined : (startDate ? new Date(startDate).toISOString() : undefined)
+    const e = isAllTime ? undefined : (endDate ? new Date(endDate).toISOString() : undefined)
+    if (type === 'excel') {
+      onExportExcel(s, e)
+    } else {
+      onExportPdf(s, e)
+    }
+  }
+
   if (typeof document === 'undefined') return null
   return createPortal(
     <AnimatePresence>
@@ -1019,10 +1042,10 @@ function ExportMaintenancePickerModal({
             initial={{ opacity: 0, scale: 0.95, y: 15 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 15 }}
-            className="relative w-full max-w-sm overflow-hidden rounded-2xl bg-white p-6 shadow-2xl border border-slate-100"
+            className="relative w-full max-w-sm overflow-hidden rounded-2xl bg-white p-6 shadow-2xl border border-slate-100 animate-fadeIn"
           >
             {/* Header */}
-            <div className="flex items-center justify-between mb-6 pb-2 border-b border-slate-100">
+            <div className="flex items-center justify-between mb-5 pb-2 border-b border-slate-100">
               <div className="flex items-center gap-3">
                 <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-50 text-[#d9a416]">
                   <Download className="h-5 w-5" />
@@ -1040,13 +1063,63 @@ function ExportMaintenancePickerModal({
               </button>
             </div>
 
+            {/* Rentang Waktu Section */}
+            <div className="mb-5 bg-slate-50/70 p-3 rounded-xl border border-slate-100">
+              <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-2">
+                Rentang Waktu Agenda
+              </label>
+              <div className="flex gap-2 mb-3">
+                <button
+                  type="button"
+                  onClick={() => setIsAllTime(true)}
+                  className={`flex-1 py-1.5 text-xs font-semibold rounded-lg border transition-all cursor-pointer ${
+                    isAllTime ? 'bg-amber-50 border-amber-300 text-[#d9a416] shadow-sm' : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'
+                  }`}
+                >
+                  Semua Waktu
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setIsAllTime(false)}
+                  className={`flex-1 py-1.5 text-xs font-semibold rounded-lg border transition-all cursor-pointer ${
+                    !isAllTime ? 'bg-amber-50 border-amber-300 text-[#d9a416] shadow-sm' : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'
+                  }`}
+                >
+                  Pilih Tanggal
+                </button>
+              </div>
+
+              {!isAllTime && (
+                <div className="grid grid-cols-2 gap-2 animate-fadeIn">
+                  <div>
+                    <label className="text-[9px] font-bold text-slate-400 block mb-0.5">Tanggal Mulai</label>
+                    <input
+                      type="date"
+                      value={startDate}
+                      onChange={(e) => setStartDate(e.target.value)}
+                      className="w-full text-xs px-2 py-1.5 rounded-lg border border-slate-200 bg-white focus:border-[#d9a416] focus:outline-none text-slate-700 font-medium"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-[9px] font-bold text-slate-400 block mb-0.5">Tanggal Selesai</label>
+                    <input
+                      type="date"
+                      value={endDate}
+                      onChange={(e) => setEndDate(e.target.value)}
+                      className="w-full text-xs px-2 py-1.5 rounded-lg border border-slate-200 bg-white focus:border-[#d9a416] focus:outline-none text-slate-700 font-medium"
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+
             {/* Selection Grid */}
             <div className="grid grid-cols-2 gap-4 mb-6">
               <motion.button
                 whileHover={{ scale: 1.03, y: -2 }}
                 whileTap={{ scale: 0.97 }}
                 onClick={() => {
-                  onExportExcel()
+                  handleExport('excel')
                   onClose()
                 }}
                 disabled={isExportingExcel || isExportingPdf}
@@ -1065,7 +1138,7 @@ function ExportMaintenancePickerModal({
                 whileHover={{ scale: 1.03, y: -2 }}
                 whileTap={{ scale: 0.97 }}
                 onClick={() => {
-                  onExportPdf()
+                  handleExport('pdf')
                   onClose()
                 }}
                 disabled={isExportingExcel || isExportingPdf}
