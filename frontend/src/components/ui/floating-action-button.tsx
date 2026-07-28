@@ -128,7 +128,7 @@ export function FloatingActionButton() {
           whileHover={{ scale: 1.04 }}
           whileTap={{ scale: 0.96 }}
           onClick={() => setIsOpen(!isOpen)}
-          className="flex items-center gap-2 px-3.5 py-2 rounded-full bg-white/40 hover:bg-white/60 text-slate-800 font-extrabold text-xs tracking-wide shadow-lg hover:shadow-xl border border-white/60 backdrop-blur-xl cursor-pointer pointer-events-auto transition-all duration-300 group shadow-slate-900/5"
+          className="flex items-center justify-center h-10 w-10 rounded-full bg-white/40 hover:bg-white/60 text-slate-800 font-extrabold text-xs tracking-wide shadow-lg hover:shadow-xl border border-white/60 backdrop-blur-xl cursor-pointer pointer-events-auto transition-all duration-300 group shadow-slate-900/5"
           aria-label="Aksi Cepat"
           title="Menu Aksi Cepat"
         >
@@ -139,9 +139,6 @@ export function FloatingActionButton() {
           >
             {isOpen ? <X className="h-3 w-3 stroke-[3]" /> : <Plus className="h-3.5 w-3.5 stroke-[3]" />}
           </motion.div>
-          <span className="text-slate-800 group-hover:text-slate-950 transition-colors font-extrabold">
-            {isOpen ? 'Tutup Menu' : 'Aksi Cepat'}
-          </span>
         </motion.button>
       </div>
     </>
