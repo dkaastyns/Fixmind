@@ -4,7 +4,7 @@ import { createPortal } from 'react-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
-import { ChevronDown, ChevronUp, Filter, Plus, X, Loader2, Bot, Building2, Calendar, Search, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react'
+import { ChevronDown, ChevronUp, Filter, Plus, X, Loader2, Bot, Building2, Calendar, Search, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Snowflake, Projector, Sparkles, Armchair } from 'lucide-react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { GlassCard } from '@/components/ui/glass-card'
@@ -391,30 +391,50 @@ export function ReportsPage() {
 // ── Quick templates ──────────────────────────────────────────
 const REPORT_TEMPLATES = [
   {
-    label: '❄️ AC Tidak Dingin',
-    title: 'AC Tidak Dingin',
+    iconName: 'Snowflake',
+    label: 'AC Tidak Dingin',
+    title: 'AC Tidak Dingin / Mati',
     description:
-      'Unit AC di ruangan ini tidak berfungsi dengan baik. AC menyala namun tidak menghasilkan udara dingin. Kondisi ini mengganggu kenyamanan dan produktivitas kerja.',
+      'Pendingin ruangan (AC) di dalam ruangan tidak berfungsi dengan baik, udara terasa panas, atau AC mati total sehingga mengganggu kenyamanan pengguna ruangan.',
   },
   {
-    label: '📽️ Proyektor Rusak',
-    title: 'Proyektor Rusak / Tidak Bisa Menyala',
+    iconName: 'Projector',
+    label: 'Proyektor Rusak',
+    title: 'Proyektor Rusak / Tidak Menyala',
     description:
-      'Proyektor di ruangan ini mengalami kerusakan dan tidak dapat digunakan. Proyektor tidak merespons saat dinyalakan atau gambar yang ditampilkan tidak jelas.',
+      'Proyektor di dalam ruangan tidak dapat menyala, tidak memancarkan gambar, atau tampilan buram/berkedip-kedip saat digunakan untuk presentasi.',
   },
   {
-    label: '🧹 Kebersihan Ruangan',
-    title: 'Masalah Kebersihan Ruangan',
+    iconName: 'Sparkles',
+    label: 'Kebersihan Ruangan',
+    title: 'Kebersihan Ruangan Kurang Menjaga',
     description:
-      'Ruangan dalam kondisi kurang bersih dan memerlukan perhatian segera. Terdapat sampah yang menumpuk atau noda yang perlu dibersihkan untuk menjaga kenyamanan.',
+      'Kondisi ruangan kotor, banyak sampah berserakan, atau lantai berdebu/lengket yang memerlukan tindakan pembersihan segera oleh petugas kebersihan.',
   },
   {
-    label: '🪑 Kerusakan Furnitur',
+    iconName: 'Armchair',
+    label: 'Kerusakan Furnitur',
     title: 'Furnitur Rusak / Tidak Layak Pakai',
     description:
       'Terdapat furnitur (kursi/meja/lemari) yang rusak dan tidak layak digunakan. Kerusakan dapat membahayakan pengguna dan perlu segera diperbaiki atau diganti.',
   },
 ]
+
+const TemplateIcon = ({ name }: { name: string }) => {
+  const props = { className: 'h-3.5 w-3.5 mr-1.5 text-[#d9a416] flex-shrink-0' }
+  switch (name) {
+    case 'Snowflake':
+      return <Snowflake {...props} />
+    case 'Projector':
+      return <Projector {...props} />
+    case 'Sparkles':
+      return <Sparkles {...props} />
+    case 'Armchair':
+      return <Armchair {...props} />
+    default:
+      return null
+  }
+}
 
 function CreateReportForm({
   token,
@@ -527,8 +547,9 @@ function CreateReportForm({
                   whileHover={{ scale: 1.06, y: -1 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={() => applyTemplate(t)}
-                  className="inline-flex items-center rounded-full border border-[#F9D141]/40 bg-[#F9D141]/10 px-3.5 py-1 text-xs font-bold text-[#d9a416] transition-colors hover:bg-[#F9D141]/20 shadow-sm cursor-pointer"
+                  className="inline-flex items-center rounded-full border border-[#F9D141]/40 bg-[#F9D141]/5 px-3 py-1.5 text-xs font-semibold text-[#d9a416] transition-colors hover:bg-[#F9D141]/10 shadow-sm cursor-pointer"
                 >
+                  <TemplateIcon name={t.iconName} />
                   {t.label}
                 </motion.button>
               ))}
