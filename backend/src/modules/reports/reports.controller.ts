@@ -24,6 +24,7 @@ import type { ReportStatus } from '../../common/types/database-rows';
 import { CreateReportDto, UpdateReportStatusDto } from './dto/report.dto';
 import { CreateCommentDto } from './dto/comment.dto';
 import { ReportsService } from './services/reports.service';
+import { Throttle } from '@nestjs/throttler';
 import ExcelJS from 'exceljs';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
@@ -191,6 +192,7 @@ export class ReportsController {
     return { message: 'Report retrieved', data };
   }
 
+  @Throttle({ default: { limit: 10, ttl: 60000 } })
   @Roles('USER', 'ADMIN')
   @Post()
   async create(@CurrentUser() user: AuthUser, @Body() dto: CreateReportDto) {
@@ -209,6 +211,7 @@ export class ReportsController {
     return { message: 'Report status updated', data };
   }
 
+  @Throttle({ default: { limit: 5, ttl: 60000 } })
   @Post(':id/attachments')
   @UseInterceptors(FileInterceptor('file'))
   async uploadAttachment(
@@ -234,6 +237,7 @@ export class ReportsController {
     return { message: 'Attachment uploaded', data };
   }
 
+  @Throttle({ default: { limit: 15, ttl: 60000 } })
   @Post(':id/comments')
   async addComment(
     @CurrentUser() user: AuthUser,

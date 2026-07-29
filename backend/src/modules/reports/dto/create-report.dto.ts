@@ -26,6 +26,7 @@ export class CreateReportDto {
 
   @IsNotEmpty()
   @IsString()
+  @MaxLength(1000, { message: 'Deskripsi laporan maksimal 1000 karakter' })
   description: string;
 
   @IsNotEmpty()

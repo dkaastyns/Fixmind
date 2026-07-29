@@ -18,6 +18,8 @@ import { CreateReportDto, UpdateReportStatusDto } from '../dto/report.dto';
 import { CloudinaryService } from '../../cloudinary/services/cloudinary.service';
 import { NotificationsGateway } from '../../notifications/notifications.gateway';
 import { ReportsRepository } from '../repositories/reports.repository';
+import { VirusScannerService } from '../../cloudinary/services/virus-scanner.service';
+import { getImageDimensions } from '../../../common/utils/image-helper';
 
 @Injectable()
 export class ReportsService {
@@ -30,6 +32,7 @@ export class ReportsService {
     private readonly priorityEngine: PriorityEngineService,
     private readonly cloudinaryService: CloudinaryService,
     private readonly notificationsGateway: NotificationsGateway,
+    private readonly virusScanner: VirusScannerService,
   ) {}
 
   toPublic(
@@ -226,6 +229,20 @@ export class ReportsService {
     if (currentAttachments.length >= 3) {
       throw new BadRequestException('Maximum 3 photos allowed per report');
     }
+
+    // 1. Validate image dimensions to prevent decompression bombs
+    const dims = getImageDimensions(file.buffer);
+    if (dims) {
+      const maxDim = 4096;
+      if (dims.width > maxDim || dims.height > maxDim) {
+        throw new BadRequestException(
+          `Dimensi gambar (${dims.width}x${dims.height}) melebihi batas maksimum aman ${maxDim}x${maxDim}px.`,
+        );
+      }
+    }
+
+    // 2. Perform virus scanning
+    await this.virusScanner.scanFile(file.buffer, file.originalname);
 
     let uploadResult: { public_id: string; secure_url: string };
     try {
