@@ -1215,6 +1215,8 @@ function AssetFormModal({
                 </div>
               </div>
 
+              </div>
+
               <div className="flex justify-end gap-3 pt-3.5 border-t border-slate-100">
                 <Button variant="secondary" onClick={onClose} disabled={mutation.isPending}>
                   Batal
