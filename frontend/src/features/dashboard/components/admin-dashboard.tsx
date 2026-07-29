@@ -283,8 +283,8 @@ function ExportModal({ open, onClose }: ExportModalProps) {
 
                 <div className="mt-2">
                   <Button
-                    variant="outline"
-                    className="w-full text-slate-500 hover:bg-slate-50 hover:text-slate-700 border-slate-200 shadow-none font-bold"
+                    variant="secondary"
+                    className="w-full text-slate-500 hover:bg-slate-50 hover:text-slate-700 border-slate-200 shadow-none font-bold bg-white"
                     onClick={onClose}
                   >
                     Batal

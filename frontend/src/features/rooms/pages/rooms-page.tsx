@@ -1070,7 +1070,7 @@ function AssetFormModal({
   isOpen: boolean
   token: string
   initialRoomId: string
-  rooms: { id: string; code: string; name: string; building?: string }[]
+  rooms: any[]
   onClose: () => void
   onSuccess: () => void
 }) {
