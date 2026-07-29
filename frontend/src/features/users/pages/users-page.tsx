@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { Plus, Users, UserCheck, Shield, Trash2, KeyRound, X, Lock, Mail, User, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Menu } from 'lucide-react'
+import { Plus, Users, UserCheck, UserX, Shield, Trash2, KeyRound, X, Lock, Mail, User, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Menu } from 'lucide-react'
 import { toast } from 'sonner'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Button } from '@/components/ui/button'
@@ -49,6 +49,19 @@ export function UsersPage() {
   const [deleteUserId, setDeleteUserId] = useState<string | null>(null)
   const [deleteUserName, setDeleteUserName] = useState('')
   const [showDeleteModal, setShowDeleteModal] = useState(false)
+
+  // User status toggle states
+  const [statusUserId, setStatusUserId] = useState<string | null>(null)
+  const [statusUserName, setStatusUserName] = useState('')
+  const [statusUserTargetState, setStatusUserTargetState] = useState(false)
+  const [showStatusModal, setShowStatusModal] = useState(false)
+
+  const triggerToggleStatus = (id: string, name: string, targetState: boolean) => {
+    setStatusUserId(id)
+    setStatusUserName(name)
+    setStatusUserTargetState(targetState)
+    setShowStatusModal(true)
+  }
 
   const { data, isLoading } = useQuery({
     queryKey: ['users', isAdminFilter],
@@ -293,7 +306,7 @@ export function UsersPage() {
                         <td className="px-5 py-3.5">
                           <div className="flex items-center gap-2">
                             <button
-                              onClick={() => updateMut.mutate({ id: u.id, isActive: !u.isActive })}
+                              onClick={() => triggerToggleStatus(u.id, u.fullName, !u.isActive)}
                               className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors focus:outline-none shadow-inner border border-slate-200/50 ${
                                 u.isActive ? 'bg-green-500' : 'bg-slate-300'
                               }`}
@@ -504,7 +517,7 @@ export function UsersPage() {
                     <span className="text-[11px] text-slate-400 font-bold uppercase tracking-wider">Status Akun</span>
                     <div className="flex items-center gap-2">
                       <button
-                        onClick={() => updateMut.mutate({ id: u.id, isActive: !u.isActive })}
+                        onClick={() => triggerToggleStatus(u.id, u.fullName, !u.isActive)}
                         className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors focus:outline-none shadow-inner border border-slate-200/50 ${
                           u.isActive ? 'bg-green-500' : 'bg-slate-300'
                         }`}
@@ -653,6 +666,28 @@ export function UsersPage() {
         title="Hapus Pengguna"
         description={`Apakah Anda yakin ingin menghapus pengguna ${deleteUserName}? Tindakan ini tidak dapat dibatalkan.`}
         isLoading={deleteMut.isPending}
+      />
+
+      {/* Status Toggle Confirmation Modal */}
+      <DeleteConfirmationModal
+        isOpen={showStatusModal}
+        onClose={() => setShowStatusModal(false)}
+        onConfirm={() => {
+          if (statusUserId) {
+            updateMut.mutate({ id: statusUserId, isActive: statusUserTargetState })
+            setShowStatusModal(false)
+          }
+        }}
+        title={statusUserTargetState ? "Aktifkan Pengguna" : "Nonaktifkan Pengguna"}
+        description={statusUserTargetState 
+          ? `Apakah Anda yakin ingin mengaktifkan akun ${statusUserName}? Akun ini akan dapat login kembali ke sistem.`
+          : `Apakah Anda yakin ingin menonaktifkan akun ${statusUserName}? Akun ini tidak akan dapat login ke sistem.`
+        }
+        isLoading={updateMut.isPending}
+        confirmText={statusUserTargetState ? "Ya, Aktifkan" : "Ya, Nonaktifkan"}
+        confirmClass={statusUserTargetState ? "flex-grow bg-green-600 hover:bg-green-700 text-white font-extrabold" : "flex-grow bg-rose-600 hover:bg-rose-700 text-white font-extrabold"}
+        icon={statusUserTargetState ? <UserCheck className="h-6 w-6 text-green-600" /> : <UserX className="h-6 w-6 text-rose-600" />}
+        iconBgClass={statusUserTargetState ? "bg-green-50" : "bg-rose-50"}
       />
     </div>
   )
