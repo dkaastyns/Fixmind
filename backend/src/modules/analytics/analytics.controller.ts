@@ -55,7 +55,7 @@ export class AnalyticsController {
     @Res() res: Response
   ) {
     const csv = await this.analyticsService.exportCsv(startDate, endDate);
-    res.setHeader('Content-Disposition', 'attachment; filename="fixmind-reports.csv"');
+    res.setHeader('Content-Disposition', 'attachment; filename="asetkita-semarang-reports.csv"');
     res.send(csv);
   }
 

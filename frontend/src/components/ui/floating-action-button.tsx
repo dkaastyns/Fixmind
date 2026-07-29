@@ -60,7 +60,7 @@ export function FloatingActionButton() {
                   Menu Aksi Cepat
                 </span>
                 <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-amber-100/80 text-[#d9a416] border border-amber-200/60">
-                  FixMind
+                  ASETKITA Semarang
                 </span>
               </div>
 

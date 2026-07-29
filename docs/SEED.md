@@ -1,12 +1,12 @@
-# FixMind — Dokumentasi Strategi Seeding Data
+# ASETKITA Semarang — Dokumentasi Strategi Seeding Data
 
-Untuk mempermudah proses pengembangan lokal dan pengujian aplikasi, FixMind menyediakan mekanisme seeding data awal untuk mengisi database dengan data pengguna (*users*), fasilitas/ruangan (*rooms*), aset (*assets*), dan laporan sampel (*reports*).
+Untuk mempermudah proses pengembangan lokal dan pengujian aplikasi, ASETKITA Semarang menyediakan mekanisme seeding data awal untuk mengisi database dengan data pengguna (*users*), fasilitas/ruangan (*rooms*), aset (*assets*), dan laporan sampel (*reports*).
 
 ---
 
 ## Cara Kerja Script Seed
 
-Proses seeding dikelola oleh script [seed.ts](file:///d:/FixMind/backend/scripts/seed.ts) di dalam direktori `backend/scripts/`.
+Proses seeding dikelola oleh script [seed.ts](file:///d:/ASETKITA Semarang/backend/scripts/seed.ts) di dalam direktori `backend/scripts/`.
 
 Ketika script dijalankan, sistem akan melakukan langkah-langkah berikut secara berurutan:
 
@@ -18,8 +18,8 @@ Ketika script dijalankan, sistem akan melakukan langkah-langkah berikut secara b
 
 2. **Seeding Akun Pengguna (Users):**
    Menambahkan dua akun default jika belum terdaftar (berdasarkan email):
-   - **Admin:** `admin@fixmind.local` (Password: `Admin123!@#`)
-   - **User Biasa:** `user@fixmind.local` (Password: `User123!@#`)
+   - **Admin:** `admin@asetkita-semarang.local` (Password: `Admin123!@#`)
+   - **User Biasa:** `user@asetkita-semarang.local` (Password: `User123!@#`)
    Password dienkripsi menggunakan *bcrypt* dengan tingkat keamanan 12 rounds.
 
 3. **Seeding Ruangan (Rooms):**
@@ -49,8 +49,8 @@ bun run seed
 
 ### Output Log yang Diharapkan:
 ```text
-skip user admin@fixmind.local
-skip user user@fixmind.local
+skip user admin@asetkita-semarang.local
+skip user user@asetkita-semarang.local
 seeded room RSG-1
 seeded room KEU-2
 ...
@@ -60,8 +60,8 @@ seeded asset AC-PRP-1
 seeded sample reports
 
 Seed complete. Login credentials:
-  ADMIN admin@fixmind.local / Admin123!@#
-  USER user@fixmind.local / User123!@#
+  ADMIN admin@asetkita-semarang.local / Admin123!@#
+  USER user@asetkita-semarang.local / User123!@#
 ```
 
 ---
@@ -70,7 +70,7 @@ Seed complete. Login credentials:
 
 Jika Anda ingin menambahkan data tiruan baru untuk tujuan pengujian:
 
-1. Buka file [seed.ts](file:///d:/FixMind/backend/scripts/seed.ts).
+1. Buka file [seed.ts](file:///d:/ASETKITA Semarang/backend/scripts/seed.ts).
 2. Temukan konstanta data yang sesuai:
    - Untuk pengguna baru: Tambahkan objek ke array `USERS`.
    - Untuk ruangan baru: Tambahkan objek ke array `rooms` di dalam fungsi `seedFacilities()`.

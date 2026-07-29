@@ -1,6 +1,6 @@
-# FixMind — Frontend Web Client (React + Vite)
+# ASETKITA Semarang — Frontend Web Client (React + Vite)
 
-Aplikasi klien web untuk E-Lapor DPRD (FixMind) dibangun menggunakan React 19, TypeScript, Tailwind CSS v4, dan terkonfigurasi penuh sebagai **Progressive Web App (PWA)** untuk pengalaman mobile yang native.
+Aplikasi klien web untuk E-Lapor DPRD (ASETKITA Semarang) dibangun menggunakan React 19, TypeScript, Tailwind CSS v4, dan terkonfigurasi penuh sebagai **Progressive Web App (PWA)** untuk pengalaman mobile yang native.
 
 ## Fitur Utama Frontend
 - **PWA & Offline Capability:** Dapat di-install pada Android/iOS langsung dari peramban. Mendukung penyimpanan cache aset untuk memuat aplikasi secara instan.

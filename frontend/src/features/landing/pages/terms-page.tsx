@@ -21,12 +21,12 @@ const sections = [
     icon: BookOpen,
     title: '1. Pendahuluan',
     badge: 'UMUM',
-    summary: 'Ketentuan dasar penggunaan platform FixMind di DPRD Kota Semarang.',
+    summary: 'Ketentuan dasar penggunaan platform ASETKITA Semarang di DPRD Kota Semarang.',
     details: [
       {
         num: '1.1',
         head: 'Persetujuan Layanan',
-        desc: 'Dengan mengakses dan menggunakan platform FixMind, Anda secara otomatis menyatakan setuju untuk mematuhi dan terikat oleh seluruh Ketentuan Layanan ini.',
+        desc: 'Dengan mengakses dan menggunakan platform ASETKITA Semarang, Anda secara otomatis menyatakan setuju untuk mematuhi dan terikat oleh seluruh Ketentuan Layanan ini.',
       },
       {
         num: '1.2',
@@ -82,7 +82,7 @@ const sections = [
       {
         num: '3.3',
         head: 'Jaminan Privasi Pelapor',
-        desc: 'FixMind menjamin kerahasiaan identitas pelapor dalam pelaporan isu internal tertentu demi menjaga kenyamanan bekerja.',
+        desc: 'ASETKITA Semarang menjamin kerahasiaan identitas pelapor dalam pelaporan isu internal tertentu demi menjaga kenyamanan bekerja.',
       },
     ],
   },
@@ -118,7 +118,7 @@ const sections = [
       {
         num: '5.1',
         head: 'Ketersediaan Layanan',
-        desc: 'Layanan FixMind disediakan "sebagaimana adanya". Pengelola platform berusaha sebaik mungkin untuk meminimalkan downtime dan memperbaiki kendala teknis dengan cepat.',
+        desc: 'Layanan ASETKITA Semarang disediakan "sebagaimana adanya". Pengelola platform berusaha sebaik mungkin untuk meminimalkan downtime dan memperbaiki kendala teknis dengan cepat.',
       },
       {
         num: '5.2',
@@ -329,7 +329,7 @@ export function TermsPage() {
         </motion.div>
 
         <footer className="mt-8 text-center text-xs text-slate-400 font-medium">
-          © {new Date().getFullYear()} FixMind DPRD Kota Semarang. Hak Cipta Dilindungi Undang-Undang.
+          © {new Date().getFullYear()} ASETKITA Semarang DPRD Kota Semarang. Hak Cipta Dilindungi Undang-Undang.
         </footer>
       </div>
     </div>

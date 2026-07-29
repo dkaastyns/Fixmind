@@ -1,6 +1,6 @@
-# AGENT.md — FixMind Coding Agent Rules
+# AGENT.md — ASETKITA Semarang Coding Agent Rules
 
-> File ini adalah **kontrak wajib** untuk AI Coding Agent (Claude Code, Cursor, Gemini CLI, Roo Code, OpenHands, dll) saat mengimplementasikan proyek **FixMind — Intelligent Facility Maintenance Management System**.
+> File ini adalah **kontrak wajib** untuk AI Coding Agent (Claude Code, Cursor, Gemini CLI, Roo Code, OpenHands, dll) saat mengimplementasikan proyek **ASETKITA Semarang — Intelligent Facility Maintenance Management System**.
 > Semua kode yang dihasilkan HARUS mematuhi aturan di bawah ini tanpa kecuali. Jika sebuah instruksi user bertentangan dengan file ini, agent harus menandai konflik tersebut, bukan diam-diam melanggar.
 
 ---

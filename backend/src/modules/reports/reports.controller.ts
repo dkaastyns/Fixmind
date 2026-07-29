@@ -95,7 +95,7 @@ export class ReportsController {
     );
     res.setHeader(
       'Content-Disposition',
-      'attachment; filename="fixmind-reports.xlsx"',
+      'attachment; filename="asetkita-semarang-reports.xlsx"',
     );
     res.setHeader('Transfer-Encoding', 'chunked');
 
@@ -155,7 +155,7 @@ export class ReportsController {
     res.setHeader('Content-Type', 'application/pdf');
     res.setHeader(
       'Content-Disposition',
-      'attachment; filename="fixmind-reports.pdf"',
+      'attachment; filename="asetkita-semarang-reports.pdf"',
     );
     res.setHeader('Content-Length', pdfBuffer.length);
     res.end(pdfBuffer);

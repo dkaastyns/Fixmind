@@ -1,6 +1,6 @@
-# FixMind — Dokumentasi Deployment & Penggelapan Sistem
+# ASETKITA Semarang — Dokumentasi Deployment & Penggelapan Sistem
 
-Dokumen ini menjelaskan strategi dan langkah-langkah *deployment* aplikasi **E-Lapor DPRD (FixMind)** untuk lingkungan pengembangan lokal, pengujian (staging), maupun produksi (*production*).
+Dokumen ini menjelaskan strategi dan langkah-langkah *deployment* aplikasi **E-Lapor DPRD (ASETKITA Semarang)** untuk lingkungan pengembangan lokal, pengujian (staging), maupun produksi (*production*).
 
 ---
 
@@ -47,7 +47,7 @@ docker compose up -d --build
 | **nginx** | 80, 443 | Reverse Proxy & Web Server | Publik (Di-expose ke mesin host) |
 | **backend** | 3000 | NestJS API Gateway | Internal Docker Network (Tertutup dari luar) |
 | **frontend** | 80 | React PWA Static Build | Internal Docker Network (Tertutup dari luar) |
-| **postgres** | 5432 | Database `fixmind` + pgvector | Internal Docker Network (Tertutup dari luar) |
+| **postgres** | 5432 | Database `asetkita-semarang` + pgvector | Internal Docker Network (Tertutup dari luar) |
 
 > **Catatan Pengetatan Keamanan (Port Hardening):** Demi keamanan tinggi, port PostgreSQL (`5432`) dan NestJS API (`3000`) sengaja tidak di-expose ke publik. Nginx bertindak sebagai satu-satunya pintu masuk aplikasi. Jika Anda memerlukan akses database langsung untuk pengujian lokal dari luar Docker, buka berkas [docker-compose.yml](../docker-compose.yml) lalu uncomment baris `ports` pada service `db` atau `backend` secara sementara.
 
@@ -55,7 +55,7 @@ docker compose up -d --build
 
 ## 3. Konfigurasi Nginx Reverse Proxy
 
-- **Lokasi file:** `infra/nginx/conf.d/fixmind.conf`
+- **Lokasi file:** `infra/nginx/conf.d/asetkita-semarang.conf`
 - **Aturan Routing:** Rute `/api/` diarahkan ke backend NestJS, sedangkan rute `/` diarahkan ke build frontend React.
 - **Dukungan SSL/HTTPS:** Disediakan blok HTTPS opsional yang dapat diaktifkan setelah meletakkan sertifikat SSL di `infra/nginx/certs/`.
 
@@ -65,7 +65,7 @@ docker compose up -d --build
 
 | Lingkungan | DATABASE_URL | CORS_ORIGIN | Konfigurasi Cookie Refresh |
 |------------|--------------|-------------|----------------------------|
-| **Local** | `localhost:5432/fixmind` | `http://localhost:5173` | `secure=false` |
+| **Local** | `localhost:5432/asetkita-semarang` | `http://localhost:5173` | `secure=false` |
 | **Staging** | Managed PostgreSQL Staging | URL Staging | `secure=true` |
 | **Production** | Managed PostgreSQL Production | URL Production | `secure=true, sameSite=strict` |
 
@@ -76,12 +76,12 @@ docker compose up -d --build
 ## 5. Strategi Cadangan Data (Backup Strategy)
 
 ### Database PostgreSQL:
-- Lakukan `pg_dump` otomatis setiap hari untuk database `fixmind`.
+- Lakukan `pg_dump` otomatis setiap hari untuk database `asetkita-semarang`.
 - Simpan cadangan 7 harian + 4 mingguan.
 - Uji proses pemulihan (*restore*) secara berkala setiap bulan.
 
 ```bash
-pg_dump -U postgres -d fixmind -F c -f fixmind_$(date +%Y%m%d).dump
+pg_dump -U postgres -d asetkita-semarang -F c -f asetkita_semarang_$(date +%Y%m%d).dump
 ```
 
 ### Media Cloudinary:

@@ -1,6 +1,6 @@
-# FixMind — Development Roadmap & Feature Status
+# ASETKITA Semarang — Development Roadmap & Feature Status
 
-Dokumen ini mencatat status penyelesaian fitur dan fase pengembangan sistem **E-Lapor DPRD (FixMind)**.
+Dokumen ini mencatat status penyelesaian fitur dan fase pengembangan sistem **E-Lapor DPRD (ASETKITA Semarang)**.
 
 ---
 
@@ -47,7 +47,7 @@ Dokumen ini mencatat status penyelesaian fitur dan fase pengembangan sistem **E-
 - [x] Provider Offline Sync untuk penyimpanan sementara saat jaringan terputus
 - [x] Halaman Kebijakan Privasi (*Privacy Policy*) & Ketentuan Layanan (*Terms of Service*) berarsitektur Dark Glassmorphism
 - [x] Layar Pemuatan (*Full Page Loading Screen*) terang bermerek JDIH Kota Semarang & Emas
-- [x] Animasi Opening Intro Screen sinematik pertama kali buka web (`Cepat.` ➔ `Presisi.` ➔ `Cerdas.` ➔ `FixMind.`)
+- [x] Animasi Opening Intro Screen sinematik pertama kali buka web (`Cepat.` ➔ `Presisi.` ➔ `Cerdas.` ➔ `ASETKITA Semarang.`)
 
 ### Phase 5 — Pengerasan Produksi & Pemeliharaan ✅
 - [x] Verifikasi tipe strict TypeScript (`npx tsc --noEmit` 0 Error)

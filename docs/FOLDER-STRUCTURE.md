@@ -1,13 +1,13 @@
-# FixMind — Structure Directory & Folder Tree
+# ASETKITA Semarang — Structure Directory & Folder Tree
 
-Dokumen ini menyajikan peta struktur pohon direktori proyek **E-Lapor DPRD (FixMind)** untuk memudahkan pengembang memahami letak berkas backend dan frontend.
+Dokumen ini menyajikan peta struktur pohon direktori proyek **E-Lapor DPRD (ASETKITA Semarang)** untuk memudahkan pengembang memahami letak berkas backend dan frontend.
 
 ---
 
 ## 🌳 Root Directory Overview
 
 ```text
-FixMind/
+ASETKITA Semarang/
 ├── backend/                  # NestJS 11 Server (API, DB Migrations, WebSockets, AI)
 ├── frontend/                 # React 19 + Vite Client (PWA, Tailwind v4, Components)
 ├── docs/                     # Berkas Dokumentasi Lengkap Proyek

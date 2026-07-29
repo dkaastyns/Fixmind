@@ -36,7 +36,7 @@ const introData = [
   { text: 'Cepat.', sub: 'Pelaporan Fasilitas Tanpa Hambatan' },
   { text: 'Presisi.', sub: 'Prioritas Penanganan Berbasis AI Engine' },
   { text: 'Cerdas.', sub: 'Integrasi Sarana Prasarana DPRD' },
-  { text: 'FixMind.', sub: 'Sistem Manajemen Sarana Prasarana DPRD Kota Semarang' },
+  { text: 'ASETKITA Semarang.', sub: 'Sistem Manajemen Sarana Prasarana DPRD Kota Semarang' },
 ]
 
 const IntroScreen = ({ onComplete }: { onComplete: () => void }) => {
@@ -230,7 +230,7 @@ export function LandingPage() {
               variants={{ hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0 } }}
               className="text-xl sm:text-2xl font-extrabold text-white tracking-wider mb-2 drop-shadow-sm font-sans"
             >
-              FixMind
+              ASETKITA Semarang
             </motion.h2>
             
             <motion.h1 
@@ -247,7 +247,7 @@ export function LandingPage() {
               variants={{ hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0 } }}
               className="mt-6 max-w-2xl mx-auto text-sm sm:text-base text-slate-200 font-medium leading-relaxed"
             >
-              FixMind membantu mengelola laporan kerusakan, meprioritaskan perbaikan dan menyederhanakan alur kerja melalui dukungan keputusan berbasis AI.
+              ASETKITA Semarang membantu mengelola laporan kerusakan, meprioritaskan perbaikan dan menyederhanakan alur kerja melalui dukungan keputusan berbasis AI.
             </motion.p>
 
             {/* Buttons stacked on mobile, inline on desktop */}
@@ -278,12 +278,12 @@ export function LandingPage() {
         </div>
       </div>
 
-      {/* "Mengapa FixMind???" Section */}
+      {/* "Mengapa ASETKITA Semarang???" Section */}
       <section className="relative z-10 bg-[#f8fafc] px-4 sm:px-6 lg:px-8 py-16 sm:py-24 max-w-7xl mx-auto w-full">
         <div className="text-center mb-12">
           <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight">
             <span className="text-gradient-orange-red mr-2">Mengapa</span>
-            <span className="text-slate-900">FixMind???</span>
+            <span className="text-slate-900">ASETKITA Semarang???</span>
           </h2>
         </div>
 
@@ -323,7 +323,7 @@ export function LandingPage() {
 
       {/* Footer Section */}
       <footer className="w-full border-t border-slate-200/60 py-6 text-center text-xs text-slate-500 bg-white">
-        © 2026 FixMind. Pemeliharaan Fasilitas Cerdas.
+        © 2026 ASETKITA Semarang. Pemeliharaan Fasilitas Cerdas.
       </footer>
     </div>
   )

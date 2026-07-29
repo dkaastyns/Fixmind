@@ -332,8 +332,8 @@ export function DashboardLayout() {
               <Menu className="h-6 w-6" />
             </button>
             
-            {/* Center: FixMind title */}
-            <span className="font-extrabold text-xl tracking-tight text-slate-800 dark:text-white">FixMind</span>
+            {/* Center: ASETKITA Semarang title */}
+            <span className="font-extrabold text-xl tracking-tight text-slate-800 dark:text-white">ASETKITA Semarang</span>
             
             {/* Right: Search and Notification Bell */}
             <div className="flex items-center gap-2">

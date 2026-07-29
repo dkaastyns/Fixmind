@@ -1,12 +1,12 @@
-# FixMind — Dokumentasi Kecerdasan Buatan (AI)
+# ASETKITA Semarang — Dokumentasi Kecerdasan Buatan (AI)
 
-Dokumen ini menjelaskan filosofi, ruang lingkup, integrasi, dan konfigurasi modul Kecerdasan Buatan (*Artificial Intelligence*) pada aplikasi **E-Lapor DPRD (FixMind)**.
+Dokumen ini menjelaskan filosofi, ruang lingkup, integrasi, dan konfigurasi modul Kecerdasan Buatan (*Artificial Intelligence*) pada aplikasi **E-Lapor DPRD (ASETKITA Semarang)**.
 
 ---
 
 ## Filosofi Penggunaan AI
 
-Kecerdasan Buatan dalam FixMind bersifat **penasihat (advisory only)**. Administrator tetap memegang kendali penuh untuk menugaskan teknisi dan menentukan prioritas final laporan. Sistem tidak pernah menutup laporan (*auto-close*) atau menugaskan teknisi secara otomatis (*auto-assign*) hanya berdasarkan keluaran AI semata.
+Kecerdasan Buatan dalam ASETKITA Semarang bersifat **penasihat (advisory only)**. Administrator tetap memegang kendali penuh untuk menugaskan teknisi dan menentukan prioritas final laporan. Sistem tidak pernah menutup laporan (*auto-close*) atau menugaskan teknisi secara otomatis (*auto-assign*) hanya berdasarkan keluaran AI semata.
 
 ---
 

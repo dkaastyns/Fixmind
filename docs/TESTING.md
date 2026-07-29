@@ -1,6 +1,6 @@
-# FixMind — Panduan & Strategi Pengujian (Testing)
+# ASETKITA Semarang — Panduan & Strategi Pengujian (Testing)
 
-Dokumen ini menjelaskan strategi, arsitektur, dan pola pengujian yang digunakan dalam proyek FixMind baik untuk Backend maupun Frontend.
+Dokumen ini menjelaskan strategi, arsitektur, dan pola pengujian yang digunakan dalam proyek ASETKITA Semarang baik untuk Backend maupun Frontend.
 
 ---
 
@@ -36,7 +36,7 @@ Unit test ditulis berdampingan dengan kode yang diuji, menggunakan ekstensi `.sp
 #### Contoh Mocking Database Kustom (`postgres.js`)
 Karena backend menggunakan `postgres.js` (raw SQL) alih-alih ORM, kita menguji repository dengan melakukan mocking pada fungsi tagged template literal dari database client.
 
-Berikut adalah pola yang digunakan pada [reports.repository.spec.ts](file:///d:/FixMind/backend/src/modules/reports/repositories/reports.repository.spec.ts):
+Berikut adalah pola yang digunakan pada [reports.repository.spec.ts](file:///d:/ASETKITA Semarang/backend/src/modules/reports/repositories/reports.repository.spec.ts):
 
 ```typescript
 import { Sql } from '../../../database/sql';
@@ -80,7 +80,7 @@ describe('ReportsRepository', () => {
 
 Pengujian E2E diletakkan di direktori `backend/test/` dengan ekstensi `.e2e-spec.ts`. E2E menguji aliran aplikasi dari ujung ke ujung melalui HTTP request ke server NestJS yang berjalan di memory.
 
-Berikut pola pengujian E2E pada [app.e2e-spec.ts](file:///d:/FixMind/backend/test/app.e2e-spec.ts):
+Berikut pola pengujian E2E pada [app.e2e-spec.ts](file:///d:/ASETKITA Semarang/backend/test/app.e2e-spec.ts):
 
 ```typescript
 import { Test, TestingModule } from '@nestjs/testing';
@@ -138,10 +138,10 @@ Jalankan perintah berikut dari folder `frontend/`:
 
 ### 2. Pola Unit & Component Testing
 
-Unit/component test ditulis berdampingan dengan kode yang diuji menggunakan ekstensi `.spec.tsx`. File konfigurasi utama berada di [vitest.config.ts](file:///d:/FixMind/frontend/vitest.config.ts) dan file inisialisasi lingkungan pengujian berada di [src/test/setup.ts](file:///d:/FixMind/frontend/src/test/setup.ts).
+Unit/component test ditulis berdampingan dengan kode yang diuji menggunakan ekstensi `.spec.tsx`. File konfigurasi utama berada di [vitest.config.ts](file:///d:/ASETKITA Semarang/frontend/vitest.config.ts) dan file inisialisasi lingkungan pengujian berada di [src/test/setup.ts](file:///d:/ASETKITA Semarang/frontend/src/test/setup.ts).
 
 #### Contoh Menguji Komponen UI (`Button`)
-Berikut adalah pola pengujian komponen React 19 menggunakan React Testing Library yang diimplementasikan pada [button.spec.tsx](file:///d:/FixMind/frontend/src/components/ui/button.spec.tsx):
+Berikut adalah pola pengujian komponen React 19 menggunakan React Testing Library yang diimplementasikan pada [button.spec.tsx](file:///d:/ASETKITA Semarang/frontend/src/components/ui/button.spec.tsx):
 
 ```typescript
 import { render, screen } from '@testing-library/react'

@@ -1,6 +1,6 @@
-# FixMind — Panduan Kontribusi (Contribution Guidelines)
+# ASETKITA Semarang — Panduan Kontribusi (Contribution Guidelines)
 
-Terima kasih atas minat Anda untuk berkontribusi pada pengembangan FixMind! Dokumen ini memandu Anda mengenai proses kontribusi, standar kode, dan gaya penulisan Git commit yang digunakan dalam proyek ini.
+Terima kasih atas minat Anda untuk berkontribusi pada pengembangan ASETKITA Semarang! Dokumen ini memandu Anda mengenai proses kontribusi, standar kode, dan gaya penulisan Git commit yang digunakan dalam proyek ini.
 
 ---
 

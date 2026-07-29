@@ -1,6 +1,6 @@
-# FixMind — Dokumentasi Database & Skema Relasional
+# ASETKITA Semarang — Dokumentasi Database & Skema Relasional
 
-Dokumen ini menjelaskan keputusan desain arsitektur database, Diagram Relasi Entitas (ERD), kamus data (*Data Dictionary*), indeks performa, serta daftar migrasi SQL pada aplikasi **E-Lapor DPRD (FixMind)**.
+Dokumen ini menjelaskan keputusan desain arsitektur database, Diagram Relasi Entitas (ERD), kamus data (*Data Dictionary*), indeks performa, serta daftar migrasi SQL pada aplikasi **E-Lapor DPRD (ASETKITA Semarang)**.
 
 ---
 

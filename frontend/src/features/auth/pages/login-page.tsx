@@ -69,7 +69,7 @@ export function LoginPage() {
           
           <h1 className="text-2xl font-semibold text-white drop-shadow-sm">
             <span className="text-[#FFEBA1]">Masuk ke </span>
-            <span className="font-extrabold">FixMind</span>
+            <span className="font-extrabold">ASETKITA Semarang</span>
           </h1>
           <p className="mt-2 text-xs sm:text-sm text-slate-300 font-medium">
             Kelola dan pantau perbaikan fasilitas Anda

@@ -1,6 +1,6 @@
-# FixMind — Software Requirements Specification (SRS)
+# ASETKITA Semarang — Software Requirements Specification (SRS)
 
-Spesifikasi Kebutuhan Perangkat Lunak (*Software Requirements Specification*) ini mendokumentasikan kebutuhan fungsional dan non-fungsional dari aplikasi **E-Lapor DPRD (FixMind)**.
+Spesifikasi Kebutuhan Perangkat Lunak (*Software Requirements Specification*) ini mendokumentasikan kebutuhan fungsional dan non-fungsional dari aplikasi **E-Lapor DPRD (ASETKITA Semarang)**.
 
 ---
 

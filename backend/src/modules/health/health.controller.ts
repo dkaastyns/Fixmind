@@ -7,7 +7,7 @@ export class HealthController {
   @Get()
   check() {
     return {
-      message: 'FixMind API is healthy',
+      message: 'ASETKITA Semarang API is healthy',
       data: {
         status: 'ok',
         timestamp: new Date().toISOString(),

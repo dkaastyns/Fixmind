@@ -11,14 +11,14 @@ const sql = postgres(DATABASE_URL, { max: 1 });
 
 const USERS = [
   {
-    email: 'admin@fixmind.local',
+    email: 'admin@asetkita-semarang.local',
     password: 'Admin123!@#',
     fullName: 'System Administrator',
     isAdmin: true,
     phone: '081234567890',
   },
   {
-    email: 'user@fixmind.local',
+    email: 'user@asetkita-semarang.local',
     password: 'User123!@#',
     fullName: 'Ani Wijaya',
     isAdmin: false,
@@ -100,7 +100,7 @@ async function seedReports(roomIds: string[]) {
   if (!roomIds.length) return;
 
   const [user] = await sql<{ id: string }[]>`
-    SELECT id FROM users WHERE email = 'user@fixmind.local' LIMIT 1
+    SELECT id FROM users WHERE email = 'user@asetkita-semarang.local' LIMIT 1
   `;
   const [asset1] = await sql<{ id: string }[]>`
     SELECT id FROM assets WHERE kode_barang = 'AC-PRP-1' LIMIT 1

@@ -1,4 +1,4 @@
-# E-Lapor DPRD (FixMind) — Sistem Manajemen Pelaporan & Pemeliharaan Fasilitas Berbasis AI
+# E-Lapor DPRD (ASETKITA Semarang) — Sistem Manajemen Pelaporan & Pemeliharaan Fasilitas Berbasis AI
 
 [![Tech Stack: Bun](https://img.shields.io/badge/Runtime-Bun%201.3%2B-black?logo=bun)](https://bun.sh/)
 [![Backend: NestJS 11](https://img.shields.io/badge/Backend-NestJS%2011-e0234e?logo=nestjs)](https://nestjs.com/)
@@ -7,7 +7,7 @@
 [![AI Engine: Gemini 2.5](https://img.shields.io/badge/AI-Gemini%202.5%20Flash-4285f4?logo=google)](https://ai.google.dev/)
 [![PWA Ready](https://img.shields.io/badge/PWA-Vite%20PWA-purple?logo=pwa)](https://vite-pwa-org.netlify.app/)
 
-**E-Lapor DPRD (FixMind)** adalah sistem manajemen pelaporan kerusakan, pengajuan perpindahan aset, dan penjadwalan pemeliharaan fasilitas modern berbasis *Artificial Intelligence* (AI) dan *Progressive Web App* (PWA) yang dirancang khusus untuk Sekretariat DPRD Kota Semarang.
+**E-Lapor DPRD (ASETKITA Semarang)** adalah sistem manajemen pelaporan kerusakan, pengajuan perpindahan aset, dan penjadwalan pemeliharaan fasilitas modern berbasis *Artificial Intelligence* (AI) dan *Progressive Web App* (PWA) yang dirancang khusus untuk Sekretariat DPRD Kota Semarang.
 
 Sistem ini mempermudah alur pengaduan dan pemeliharaan fasilitas secara digital, terintegrasi, dan transparan. AI (Google Gemini 2.5 Flash & Groq) secara otomatis menganalisis isi laporan, mengkalkulasi skor prioritas, memberikan estimasi durasi pengerjaan, serta memberikan rekomendasi langkah penanganan teknis bagi administrator dan teknisi.
 
@@ -91,7 +91,7 @@ Struktur lengkap proyek dan panduan pengembang tersedia di folder `docs/`:
    - Windows PowerShell: `powershell -c "irm bun.sh/install.ps1 | iex"`
    - Linux/macOS: `curl -fsSL https://bun.sh/install | bash`
 2. Pasang **PostgreSQL 16+** (dengan ekstensi `pgvector`).
-3. Buat database baru bernama `fixmind` di PostgreSQL lokal Anda.
+3. Buat database baru bernama `asetkita-semarang` di PostgreSQL lokal Anda.
 
 ---
 
@@ -162,11 +162,11 @@ Setelah menjalankan `bun run seed` di backend, Anda dapat menggunakan akun berik
 
 | Peran (Role) | Email Kredensial | Kata Sandi (Password) | Akses |
 |--------------|------------------|-----------------------|-------|
-| **ADMIN** | `admin@fixmind.local` | `AdminPassword123!` | Akses Penuh (Kelola Ruangan, Aset, User, Maintenance, Transfer Review, Analitik) |
-| **USER** | `user@fixmind.local` | `UserPassword123!` | Akses Pegawai (Pelaporan Kerusakan, Pengajuan Transfer Aset, Profil) |
+| **ADMIN** | `admin@asetkita-semarang.local` | `AdminPassword123!` | Akses Penuh (Kelola Ruangan, Aset, User, Maintenance, Transfer Review, Analitik) |
+| **USER** | `user@asetkita-semarang.local` | `UserPassword123!` | Akses Pegawai (Pelaporan Kerusakan, Pengajuan Transfer Aset, Profil) |
 
 ---
 
 ## Lisensi
 
-Hak Cipta © 2026 Sekretariat DPRD Kota Semarang / Tim Pengembang FixMind. Berlisensi di bawah [MIT License](LICENSE).
+Hak Cipta © 2026 Sekretariat DPRD Kota Semarang / Tim Pengembang ASETKITA Semarang. Berlisensi di bawah [MIT License](LICENSE).

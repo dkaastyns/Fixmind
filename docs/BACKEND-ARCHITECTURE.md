@@ -1,6 +1,6 @@
-# FixMind — Backend Architecture
+# ASETKITA Semarang — Backend Architecture
 
-Dokumen ini menjelaskan arsitektur teknis server backend NestJS 11 pada sistem **E-Lapor DPRD (FixMind)**.
+Dokumen ini menjelaskan arsitektur teknis server backend NestJS 11 pada sistem **E-Lapor DPRD (ASETKITA Semarang)**.
 
 ---
 

@@ -1,6 +1,6 @@
-# FixMind — Backend Service (NestJS)
+# ASETKITA Semarang — Backend Service (NestJS)
 
-Layanan backend untuk E-Lapor DPRD (FixMind) menggunakan framework NestJS 11 yang dirancang dengan performa optimal dan arsitektur modular yang aman.
+Layanan backend untuk E-Lapor DPRD (ASETKITA Semarang) menggunakan framework NestJS 11 yang dirancang dengan performa optimal dan arsitektur modular yang aman.
 
 ## Fitur Utama Backend
 - **Query Raw SQL Berkecepatan Tinggi:** Menggunakan library `postgres.js` untuk interaksi database langsung tanpa ORM berat, menjamin eksekusi query super cepat dan kontrol penuh.
@@ -45,7 +45,7 @@ backend/
 2. **Setup File `.env`:**
    Salin `.env.example` ke `.env` dan lengkapi variabel berikut:
    ```bash
-   DATABASE_URL=postgresql://postgres:password@localhost:5432/fixmind
+   DATABASE_URL=postgresql://postgres:password@localhost:5432/asetkita-semarang
    JWT_ACCESS_SECRET=your-super-long-secret-key-at-least-32-chars
    JWT_REFRESH_SECRET=your-other-super-long-secret-key-at-least-32-chars
    GEMINI_API_KEY=your-google-gemini-key

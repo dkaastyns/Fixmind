@@ -1,4 +1,4 @@
-# FixMind — Security Documentation
+# ASETKITA Semarang — Security Documentation
 
 ## Authentication
 
@@ -125,7 +125,7 @@ git config core.hooksPath .githooks
 ```
 
 ### Cara Kerja Hook
-Setiap kali Anda menjalankan perintah `git commit`, skrip [.githooks/pre-commit](file:///d:/FixMind/.githooks/pre-commit) akan otomatis:
+Setiap kali Anda menjalankan perintah `git commit`, skrip [.githooks/pre-commit](file:///d:/ASETKITA Semarang/.githooks/pre-commit) akan otomatis:
 1. Memindai semua baris kode baru (*staged changes*).
 2. Memeriksa keberadaan file kunci rahasia (*private key*).
 3. Mendeteksi jika ada variabel sensitif seperti `GEMINI_API_KEY`, `DATABASE_URL`, atau token rahasia lainnya yang berisi nilai riil (bukan *placeholder* seperti `your-key`).

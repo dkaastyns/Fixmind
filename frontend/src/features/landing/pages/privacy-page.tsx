@@ -84,7 +84,7 @@ const sections = [
       {
         num: '4.1',
         head: 'Tanpa Komersialisasi Data',
-        desc: 'FixMind tidak akan pernah menjual, menyewakan, atau membagikan data pribadi Anda kepada pihak ketiga untuk tujuan komersial apapun.',
+        desc: 'ASETKITA Semarang tidak akan pernah menjual, menyewakan, atau membagikan data pribadi Anda kepada pihak ketiga untuk tujuan komersial apapun.',
       },
       {
         num: '4.2',
@@ -222,7 +222,7 @@ export function PrivacyPage() {
                 <span className="font-extrabold">Pengguna</span>
               </h1>
               <p className="mt-2 text-xs sm:text-sm text-slate-300 font-medium max-w-lg mx-auto leading-relaxed">
-                Komitmen perlindungan kerahasiaan dan privasi data akun Anda di FixMind DPRD Kota Semarang
+                Komitmen perlindungan kerahasiaan dan privasi data akun Anda di ASETKITA Semarang DPRD Kota Semarang
               </p>
               <div className="mt-3 inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white/10 border border-white/10 text-[11px] font-bold text-[#F9D141]">
                 <span>Terakhir Diperbarui: Juli 2026</span>
@@ -313,7 +313,7 @@ export function PrivacyPage() {
         </motion.div>
 
         <footer className="mt-8 text-center text-xs text-slate-400 font-medium">
-          © {new Date().getFullYear()} FixMind DPRD Kota Semarang. Hak Cipta Dilindungi Undang-Undang.
+          © {new Date().getFullYear()} ASETKITA Semarang DPRD Kota Semarang. Hak Cipta Dilindungi Undang-Undang.
         </footer>
       </div>
     </div>

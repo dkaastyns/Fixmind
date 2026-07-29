@@ -1,12 +1,12 @@
-# FixMind — Arsitektur Sistem & Alur Diagram (Flowchart)
+# ASETKITA Semarang — Arsitektur Sistem & Alur Diagram (Flowchart)
 
-Dokumen ini menyajikan gambaran arsitektur sistem FixMind serta diagram alur (flowchart) untuk proses-proses utama di dalam aplikasi.
+Dokumen ini menyajikan gambaran arsitektur sistem ASETKITA Semarang serta diagram alur (flowchart) untuk proses-proses utama di dalam aplikasi.
 
 ---
 
 ## 1. Arsitektur Sistem Global
 
-FixMind menggunakan arsitektur Client-Server terpisah dengan rincian komponen berikut:
+ASETKITA Semarang menggunakan arsitektur Client-Server terpisah dengan rincian komponen berikut:
 
 ```mermaid
 graph TD

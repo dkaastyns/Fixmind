@@ -77,7 +77,7 @@ export function UserDashboard() {
           >
             <Menu className="w-6 h-6" />
           </button>
-          <span className="font-extrabold text-xl tracking-tight text-white">FixMind</span>
+          <span className="font-extrabold text-xl tracking-tight text-white">ASETKITA Semarang</span>
           <div>
             <NotificationBell 
               align="right" 

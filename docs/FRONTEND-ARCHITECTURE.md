@@ -1,6 +1,6 @@
-# FixMind — Frontend Architecture
+# ASETKITA Semarang — Frontend Architecture
 
-Dokumen ini menjelaskan arsitektur teknis, teknologi pendukung, manajemen state, serta pola komponen pada frontend peramban **E-Lapor DPRD (FixMind)**.
+Dokumen ini menjelaskan arsitektur teknis, teknologi pendukung, manajemen state, serta pola komponen pada frontend peramban **E-Lapor DPRD (ASETKITA Semarang)**.
 
 ---
 
@@ -55,7 +55,7 @@ frontend/src/
 |-------------|-----------------|-----------------------------|
 | **Server Data** | TanStack Query | Menangani pengambil data API, pembaruan otomatis, & pembersihan *cache* query |
 | **Auth Session** | Zustand | Menyimpan `accessToken` dan objek `user` **hanya di memori RAM** (tidak pernah di `localStorage`) |
-| **Refresh Token** | HttpOnly Cookie | Disimpan oleh browser dalam cookie aman `fixmind_refresh`, kebal dari serangan XSS |
+| **Refresh Token** | HttpOnly Cookie | Disimpan oleh browser dalam cookie aman `asetkita_semarang_refresh`, kebal dari serangan XSS |
 | **PWA Offline State** | OfflineSyncProvider | Menyimpan antrean transaksi lokal saat offline & menyinkronkan saat koneksi pulih |
 | **Form State** | Native Controlled State | Validasi real-time pada formulir modal & input |
 

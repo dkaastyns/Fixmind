@@ -33,7 +33,7 @@ import { UsersService } from '../users/services/users.service';
 import { CloudinaryService } from '../cloudinary/services/cloudinary.service';
 import { Throttle } from '@nestjs/throttler';
 
-const REFRESH_COOKIE = 'fixmind_refresh';
+const REFRESH_COOKIE = 'asetkita_semarang_refresh';
 
 @Controller('auth')
 export class AuthController {
@@ -186,7 +186,7 @@ export class AuthController {
     file: Express.Multer.File,
   ) {
     // 1. Upload to cloudinary
-    const result = await this.cloudinaryService.uploadImage(file, 'fixmind/avatars');
+    const result = await this.cloudinaryService.uploadImage(file, 'asetkita-semarang/avatars');
 
     // 2. Update user database
     const updated = await this.usersService.update(user.id, {

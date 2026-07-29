@@ -1,6 +1,6 @@
-# FixMind — Panduan Pemecahan Masalah (Troubleshooting)
+# ASETKITA Semarang — Panduan Pemecahan Masalah (Troubleshooting)
 
-Dokumen ini berisi panduan penyelesaian untuk masalah-masalah umum yang mungkin Anda temui saat mengonfigurasi, menjalankan, atau mengembangkan aplikasi FixMind.
+Dokumen ini berisi panduan penyelesaian untuk masalah-masalah umum yang mungkin Anda temui saat mengonfigurasi, menjalankan, atau mengembangkan aplikasi ASETKITA Semarang.
 
 ---
 
@@ -12,7 +12,7 @@ Dokumen ini berisi panduan penyelesaian untuk masalah-masalah umum yang mungkin 
   1. Pastikan Anda telah menduplikat `.env.example` menjadi `.env` di folder `backend/`.
   2. Buka `.env` dan pastikan format `DATABASE_URL` sudah benar:
      ```env
-     DATABASE_URL=postgres://username:password@localhost:5432/fixmind
+     DATABASE_URL=postgres://username:password@localhost:5432/asetkita-semarang
      ```
   3. Pastikan server PostgreSQL lokal Anda sudah berjalan (baik melalui instalasi lokal, Docker, maupun Laragon).
   4. Coba lakukan ping ke database port `5432`.

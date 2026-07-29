@@ -227,7 +227,7 @@ export class ReportsService {
     try {
       uploadResult = (await this.cloudinaryService.uploadImage(
         file,
-        'fixmind/reports',
+        'asetkita-semarang/reports',
       )) as { public_id: string; secure_url: string };
     } catch (error) {
       this.logger.error('Cloudinary upload failed', error);

@@ -638,7 +638,7 @@ export const exportTransfersExcel = async (
   const ws = utils.json_to_sheet(rows)
   const wb = utils.book_new()
   utils.book_append_sheet(wb, ws, 'Transfer Aset')
-  writeFile(wb, 'fixmind-transfer-aset.xlsx')
+  writeFile(wb, 'asetkita-semarang-transfer-aset.xlsx')
 }
 
 export const exportTransfersPdf = async (
@@ -665,7 +665,7 @@ export const exportTransfersPdf = async (
 
   doc.setFontSize(16)
   doc.setTextColor(239, 98, 159)
-  doc.text('Laporan Transfer Aset — FixMind', 14, 16)
+  doc.text('Laporan Transfer Aset — ASETKITA Semarang', 14, 16)
 
   doc.setFontSize(9)
   doc.setTextColor(100)
@@ -694,7 +694,7 @@ export const exportTransfersPdf = async (
     alternateRowStyles: { fillColor: [255, 240, 248] },
   })
 
-  doc.save('fixmind-transfer-aset.pdf')
+  doc.save('asetkita-semarang-transfer-aset.pdf')
 }
 
 // ─── Maintenance Schedule Exports (client-side generation) ──────────────────
@@ -772,7 +772,7 @@ export const exportMaintenanceExcel = async (
   }
   const wb = utils.book_new()
   utils.book_append_sheet(wb, ws, 'Jadwal Pemeliharaan')
-  writeFile(wb, 'fixmind-jadwal-pemeliharaan.xlsx')
+  writeFile(wb, 'asetkita-semarang-jadwal-pemeliharaan.xlsx')
 }
 
 export const exportMaintenancePdf = async (
@@ -803,7 +803,7 @@ export const exportMaintenancePdf = async (
 
   doc.setFontSize(16)
   doc.setTextColor(22, 101, 52) // green-800
-  doc.text('Jadwal Pemeliharaan — FixMind', 14, 16)
+  doc.text('Jadwal Pemeliharaan — ASETKITA Semarang', 14, 16)
 
   doc.setFontSize(9)
   doc.setTextColor(100)
@@ -851,7 +851,7 @@ export const exportMaintenancePdf = async (
     },
   })
 
-  doc.save('fixmind-jadwal-pemeliharaan.pdf')
+  doc.save('asetkita-semarang-jadwal-pemeliharaan.pdf')
 }
 
 // ─── Room & Asset Exports (client-side generation) ───────────────────────
@@ -899,7 +899,7 @@ export const exportRoomsExcel = async (token: string) => {
   const wb = utils.book_new()
   utils.book_append_sheet(wb, wsRooms, 'Daftar Ruangan')
   utils.book_append_sheet(wb, wsAssets, 'Inventaris Aset')
-  writeFile(wb, 'fixmind-fasilitas-ruangan.xlsx')
+  writeFile(wb, 'asetkita-semarang-fasilitas-ruangan.xlsx')
 }
 
 export const exportRoomsPdf = async (token: string) => {
@@ -919,7 +919,7 @@ export const exportRoomsPdf = async (token: string) => {
   // Title
   doc.setFontSize(16)
   doc.setTextColor(217, 164, 22) // Gold color
-  doc.text('Laporan Fasilitas & Ruangan DPRD — FixMind', 14, 16)
+  doc.text('Laporan Fasilitas & Ruangan DPRD — ASETKITA Semarang', 14, 16)
 
   doc.setFontSize(10)
   doc.setTextColor(80)
@@ -948,7 +948,7 @@ export const exportRoomsPdf = async (token: string) => {
   doc.addPage()
   doc.setFontSize(16)
   doc.setTextColor(217, 164, 22)
-  doc.text('Laporan Inventaris Aset — FixMind', 14, 16)
+  doc.text('Laporan Inventaris Aset — ASETKITA Semarang', 14, 16)
 
   doc.setFontSize(10)
   doc.setTextColor(80)
@@ -978,7 +978,7 @@ export const exportRoomsPdf = async (token: string) => {
     alternateRowStyles: { fillColor: [255, 251, 235] },
   })
 
-  doc.save('fixmind-fasilitas-ruangan.pdf')
+  doc.save('asetkita-semarang-fasilitas-ruangan.pdf')
 }
 
 export async function syncOfflineQueue(token: string) {

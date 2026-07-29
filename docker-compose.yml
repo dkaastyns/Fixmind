@@ -52,7 +52,7 @@ services:
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
       # SECURITY: Password database WAJIB diisi di file .env
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD must be set in .env}
-      POSTGRES_DB: ${POSTGRES_DB:-fixmind}
+      POSTGRES_DB: ${POSTGRES_DB:-asetkita-semarang}
     # SECURITY: Port PostgreSQL TIDAK di-expose ke host di produksi.
     # Database hanya bisa diakses oleh backend dalam internal Docker network.
     # Uncomment HANYA untuk debugging/migrasi lokal:
@@ -62,7 +62,7 @@ services:
       - pgdata:/var/lib/postgresql/data
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-fixmind}"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-asetkita-semarang}"]
       interval: 10s
       timeout: 5s
       retries: 5

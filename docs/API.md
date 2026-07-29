@@ -1,4 +1,4 @@
-# FixMind — Dokumentasi API & Integrasi Endpoint
+# ASETKITA Semarang — Dokumentasi API & Integrasi Endpoint
 
 URL Utama (Base URL): `http://localhost:3000/api/v1`
 
@@ -14,7 +14,7 @@ Authorization: Bearer <accessToken>
 Berikut adalah contoh lengkap alur autentikasi menggunakan `cURL` (dapat disalin untuk dicoba langsung di terminal atau di-import ke Postman):
 
 ### 1. Login Pertama Kali (Mendapatkan Access Token & Set Cookie)
-Kirim request `POST` ke `/auth/login` dengan email dan password. Server akan memvalidasi kredensial, mengembalikan access token dalam JSON, serta menyetel HttpOnly cookie `fixmind_refresh`.
+Kirim request `POST` ke `/auth/login` dengan email dan password. Server akan memvalidasi kredensial, mengembalikan access token dalam JSON, serta menyetel HttpOnly cookie `asetkita_semarang_refresh`.
 
 **Request cURL:**
 ```bash
@@ -22,7 +22,7 @@ curl -X POST http://localhost:3000/api/v1/auth/login \
   -H "Content-Type: application/json" \
   -c cookies.txt \
   -d '{
-    "email": "admin@fixmind.local",
+    "email": "admin@asetkita-semarang.local",
     "password": "AdminPassword123!"
   }'
 ```
@@ -36,7 +36,7 @@ curl -X POST http://localhost:3000/api/v1/auth/login \
   "data": {
     "user": {
       "id": "8a83dc53-c9cf-41c6-99b8-3e478eb079c6",
-      "email": "admin@fixmind.local",
+      "email": "admin@asetkita-semarang.local",
       "fullName": "Administrator",
       "role": "ADMIN"
     },
@@ -69,7 +69,7 @@ curl -X POST http://localhost:3000/api/v1/reports \
 ```
 
 ### 3. Menyinkronkan Ulang Token (Refresh Token Rotation)
-Jika access token kedaluwarsa (HTTP status 401), panggil endpoint `/auth/refresh` dengan menyertakan cookie `fixmind_refresh` yang disimpan sebelumnya.
+Jika access token kedaluwarsa (HTTP status 401), panggil endpoint `/auth/refresh` dengan menyertakan cookie `asetkita_semarang_refresh` yang disimpan sebelumnya.
 
 **Request cURL:**
 ```bash
@@ -127,7 +127,7 @@ curl -X POST http://localhost:3000/api/v1/auth/logout \
 
 ## Modul Otentikasi (Auth)
 
-Refresh token disimpan di **httpOnly cookie** `fixmind_refresh` pada path `/api/v1/auth`. Access token dikembalikan dalam format JSON dan dikirim via `Authorization: Bearer <token>`.
+Refresh token disimpan di **httpOnly cookie** `asetkita_semarang_refresh` pada path `/api/v1/auth`. Access token dikembalikan dalam format JSON dan dikirim via `Authorization: Bearer <token>`.
 
 ### Diagram Alur Token Authentication
 
@@ -144,7 +144,7 @@ sequenceDiagram
     API->>API: Buat Access Token (JWT, 15m expire)
     API->>API: Buat Refresh Token (96-byte random hex)
     API->>DB: Simpan hash Refresh Token ke tabel sessions
-    API-->>Client: Set httpOnly cookie `fixmind_refresh` & return Access Token (JSON)
+    API-->>Client: Set httpOnly cookie `asetkita_semarang_refresh` & return Access Token (JSON)
 
     Note over Client, API: Skenario 2: Request API Terautentikasi
     Client->>API: GET /reports (Header: Authorization: Bearer <accessToken>)
@@ -154,7 +154,7 @@ sequenceDiagram
     Note over Client, API: Skenario 3: Access Token Expired (401) & Refresh Token
     Client->>API: GET /reports (Header: Authorization: Bearer <expiredToken>)
     API-->>Client: Return 401 Unauthorized (Expired Token)
-    Client->>API: POST /auth/refresh (Cookie: fixmind_refresh)
+    Client->>API: POST /auth/refresh (Cookie: asetkita_semarang_refresh)
     API->>DB: Cari & verifikasi hash session valid
     DB-->>API: Sesi valid
     API->>DB: Cabut/Revoke sesi lama (Refresh Token Rotation)

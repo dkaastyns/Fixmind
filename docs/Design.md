@@ -1,6 +1,6 @@
-# FixMind — Filosofi & Sistem Desain UI/UX (Design System)
+# ASETKITA Semarang — Filosofi & Sistem Desain UI/UX (Design System)
 
-Dokumen ini berisi panduan gaya visual, sistem warna, tipografi, serta aturan UX pada aplikasi **E-Lapor DPRD (FixMind)**. Aplikasi ini dirancang agar memberikan pengalaman dasbor enterprise modern yang cepat, elegan, dan intuitif.
+Dokumen ini berisi panduan gaya visual, sistem warna, tipografi, serta aturan UX pada aplikasi **E-Lapor DPRD (ASETKITA Semarang)**. Aplikasi ini dirancang agar memberikan pengalaman dasbor enterprise modern yang cepat, elegan, dan intuitif.
 
 ---
 

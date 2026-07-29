@@ -1,6 +1,6 @@
-# Panduan Kontribusi FixMind (Contributing Guidelines)
+# Panduan Kontribusi ASETKITA Semarang (Contributing Guidelines)
 
-Terima kasih telah berkontribusi pada pengembangan E-Lapor DPRD (FixMind)! Dokumen ini menjelaskan standar kode, alur kerja Git, strategi branching, dan konvensi commit yang wajib diikuti oleh semua developer.
+Terima kasih telah berkontribusi pada pengembangan E-Lapor DPRD (ASETKITA Semarang)! Dokumen ini menjelaskan standar kode, alur kerja Git, strategi branching, dan konvensi commit yang wajib diikuti oleh semua developer.
 
 ---
 
@@ -37,7 +37,7 @@ Nama cabang (*branch name*) wajib menggunakan format: `<kategori>/<deskripsi-sin
 
 ## 2. Konvensi Pesan Commit (Conventional Commits)
 
-FixMind menggunakan standar **Conventional Commits** untuk memudahkan pembuatan riwayat perubahan (*changelog*) otomatis dan menjaga kerapian repositori Git.
+ASETKITA Semarang menggunakan standar **Conventional Commits** untuk memudahkan pembuatan riwayat perubahan (*changelog*) otomatis dan menjaga kerapian repositori Git.
 
 ### Format Struktur Commit
 ```text
@@ -81,7 +81,7 @@ Untuk menjaga stabilitas branch `main`, semua penggabungan kode wajib melalui pr
    git push origin feature/nama-fitur-anda
    ```
 3. **Buka Pull Request (PR):**
-   - Buka repositori FixMind di GitHub dan klik **Compare & pull request**.
+   - Buka repositori ASETKITA Semarang di GitHub dan klik **Compare & pull request**.
    - Berikan judul PR yang deskriptif (menggunakan Conventional Commits format).
    - Tulis deskripsi singkat tentang apa saja perubahan yang Anda lakukan, bagaimana cara mengujinya, dan lampirkan screenshot jika ada perubahan visual UI.
 4. **Proses Review:**

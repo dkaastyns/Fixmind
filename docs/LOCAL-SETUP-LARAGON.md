@@ -1,11 +1,11 @@
-# Local Development Rules — Laragon (FixMind)
+# Local Development Rules — Laragon (ASETKITA Semarang)
 
-Laragon dipakai sebagai environment lokal sementara sebelum deploy ke cloud (Vercel/Railway/dsb). Karena Laragon secara default fokus ke stack PHP + MySQL + Apache/Nginx, sedangkan FixMind pakai Node.js + PostgreSQL, ada beberapa penyesuaian wajib.
+Laragon dipakai sebagai environment lokal sementara sebelum deploy ke cloud (Vercel/Railway/dsb). Karena Laragon secara default fokus ke stack PHP + MySQL + Apache/Nginx, sedangkan ASETKITA Semarang pakai Node.js + PostgreSQL, ada beberapa penyesuaian wajib.
 
 ## 1. Komponen yang dipakai dari Laragon
-- **Nginx/Apache**: opsional, hanya kalau butuh reverse proxy lokal (mis. akses via `fixmind.test`). Untuk dev sehari-hari, frontend & backend cukup jalan langsung via `bun run dev` di port masing-masing.
+- **Nginx/Apache**: opsional, hanya kalau butuh reverse proxy lokal (mis. akses via `asetkita-semarang.test`). Untuk dev sehari-hari, frontend & backend cukup jalan langsung via `bun run dev` di port masing-masing.
 - **Git Bash / Terminal bawaan Laragon**: dipakai untuk semua command git & npm.
-- **Auto Virtual Host**: bisa dipakai untuk mapping `fixmind.test` → `localhost:5173` (frontend) kalau mau URL rapi.
+- **Auto Virtual Host**: bisa dipakai untuk mapping `asetkita-semarang.test` → `localhost:5173` (frontend) kalau mau URL rapi.
 
 ## 2. Komponen yang TIDAK disediakan default oleh Laragon (harus ditambahkan manual)
 - **PostgreSQL** — Laragon default menyediakan MySQL, bukan Postgres. Opsi:
@@ -13,7 +13,7 @@ Laragon dipakai sebagai environment lokal sementara sebelum deploy ke cloud (Ver
   2. Aktifkan module PostgreSQL lewat Laragon "Menu → Preferences → Services & Ports" jika versi Laragon yang dipakai sudah menyediakan opsi ini (cek versi terbaru).
 - **pgvector extension** — dibutuhkan untuk RAG chatbot support. Setelah PostgreSQL terinstall:
   ```sql
-  -- dijalankan sekali di database fixmind_dev
+  -- dijalankan sekali di database asetkita_semarang_dev
   CREATE EXTENSION IF NOT EXISTS vector;
   ```
   Kalau extension belum tersedia di instalasi Postgres Windows-mu, install lewat [pgvector releases untuk Windows](https://github.com/pgvector/pgvector) atau pakai Postgres versi yang sudah bundle pgvector (mis. lewat Docker image `pgvector/pgvector` kalau nanti pindah ke Docker).
@@ -23,7 +23,7 @@ Laragon dipakai sebagai environment lokal sementara sebelum deploy ke cloud (Ver
 ## 3. Struktur Folder Project di Laragon
 Taruh project di luar folder `www` bawaan Laragon supaya tidak tercampur dengan aturan auto-vhost PHP:
 ```
-C:\laragon\www\fixmind\
+C:\laragon\www\asetkita-semarang\
 ├── frontend/     # React + Vite
 ├── backend/      # NestJS
 └── docs/         # PRD & dokumentasi (folder ini)
@@ -34,7 +34,7 @@ Buat `.env` terpisah untuk tiap service, JANGAN commit ke git:
 
 `backend/.env`
 ```
-DATABASE_URL="postgresql://postgres:password@localhost:5432/fixmind_dev"
+DATABASE_URL="postgresql://postgres:password@localhost:5432/asetkita_semarang_dev"
 JWT_ACCESS_SECRET=changeme
 JWT_REFRESH_SECRET=changeme
 JWT_ACCESS_EXPIRES=15m

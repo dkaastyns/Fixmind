@@ -1,14 +1,14 @@
-# FixMind — Dokumentasi Sistem Migrasi Database
+# ASETKITA Semarang — Dokumentasi Sistem Migrasi Database
 
-Aplikasi FixMind menggunakan sistem migrasi database berbasis raw-SQL kustom yang sederhana dan performan. Sistem ini tidak menggunakan ORM (seperti Prisma atau TypeORM) demi menjaga performa optimal dan memberikan kontrol penuh atas query database.
+Aplikasi ASETKITA Semarang menggunakan sistem migrasi database berbasis raw-SQL kustom yang sederhana dan performan. Sistem ini tidak menggunakan ORM (seperti Prisma atau TypeORM) demi menjaga performa optimal dan memberikan kontrol penuh atas query database.
 
 ---
 
 ## Cara Kerja Sistem Migrasi
 
-Sistem migrasi diatur oleh script [migrate.ts](file:///d:/FixMind/backend/scripts/migrate.ts) di dalam direktori `backend/scripts/`.
+Sistem migrasi diatur oleh script [migrate.ts](file:///d:/ASETKITA Semarang/backend/scripts/migrate.ts) di dalam direktori `backend/scripts/`.
 
-1. **Direktori Migrasi:** Semua file migrasi disimpan dalam format `.sql` di folder [backend/migrations/](file:///d:/FixMind/backend/migrations).
+1. **Direktori Migrasi:** Semua file migrasi disimpan dalam format `.sql` di folder [backend/migrations/](file:///d:/ASETKITA Semarang/backend/migrations).
 2. **Tracking Migrasi:** Sistem membuat tabel pelacak bernama `schema_migrations` di database untuk menyimpan daftar file migrasi yang telah sukses dijalankan.
 3. **Penerapan Sekuensial:** File migrasi dibaca dari direktori, diurutkan secara alfabetis/numerik (berdasarkan prefix angka seperti `0001`, `0002`), dan dijalankan satu per satu di dalam transaksi database (`BEGIN ... COMMIT`).
 4. **Idempotensi:** Jika sebuah file migrasi sudah tercatat di tabel `schema_migrations`, migrasi tersebut akan dilewati (*skipped*).
@@ -49,7 +49,7 @@ bun run migrate
 Ikuti langkah-langkah berikut jika Anda perlu mengubah skema database (menambah tabel, kolom, indeks, dll):
 
 1. **Tentukan Urutan File:**
-   Lihat file terakhir di folder [backend/migrations/](file:///d:/FixMind/backend/migrations). Cari prefix angka terakhirnya (misalnya `0012_create_maintenance_schedules.sql`).
+   Lihat file terakhir di folder [backend/migrations/](file:///d:/ASETKITA Semarang/backend/migrations). Cari prefix angka terakhirnya (misalnya `0012_create_maintenance_schedules.sql`).
    
 2. **Buat File SQL Baru:**
    Buat file baru dengan nomor urut berikutnya. Gunakan format nama `XXXX_deskripsi_singkat.sql`.

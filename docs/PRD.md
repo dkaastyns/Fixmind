@@ -1,12 +1,12 @@
-# FixMind — Product Requirements Document (PRD)
+# ASETKITA Semarang — Product Requirements Document (PRD)
 
-Dokumen Persyaratan Produk (*Product Requirements Document*) ini mendefinisikan latar belakang, masalah, tujuan, peran pengguna, dan fitur utama aplikasi **E-Lapor DPRD (FixMind)**.
+Dokumen Persyaratan Produk (*Product Requirements Document*) ini mendefinisikan latar belakang, masalah, tujuan, peran pengguna, dan fitur utama aplikasi **E-Lapor DPRD (ASETKITA Semarang)**.
 
 ---
 
 ## 1. Gambaran Umum (Overview)
 
-**FixMind** adalah sistem manajemen pelaporan dan pemeliharaan sarana prasarana gedung berbasis *Artificial Intelligence* (AI) dan *Progressive Web App* (PWA) yang dirancang khusus untuk Sekretariat DPRD Kota Semarang.
+**ASETKITA Semarang** adalah sistem manajemen pelaporan dan pemeliharaan sarana prasarana gedung berbasis *Artificial Intelligence* (AI) dan *Progressive Web App* (PWA) yang dirancang khusus untuk Sekretariat DPRD Kota Semarang.
 
 AI berfungsi sebagai **Sistem Pendukung Keputusan (Decision Support System)** — administrator tetap memegang kendali penuh atas keputusan penugasan teknisi dan penentuan prioritas final.
 
@@ -64,6 +64,6 @@ Pelaporan kerusakan fasilitas gedung sebelumnya sering kali tidak terstruktur, t
 
 - **Runtime:** Bun 1.3+
 - **Backend:** NestJS 11 dengan *Clean Architecture* per modul
-- **Database:** PostgreSQL 16 `fixmind` dengan kueri Raw SQL via `postgres.js`
+- **Database:** PostgreSQL 16 `asetkita-semarang` dengan kueri Raw SQL via `postgres.js`
 - **Tanpa ORM:** Dilarang keras menggunakan Prisma, TypeORM, atau ORM berat lainnya
 - **AI Engine:** Google Gemini 2.5 Flash API via REST
