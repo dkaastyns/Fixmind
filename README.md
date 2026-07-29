@@ -1,11 +1,24 @@
-# E-Lapor DPRD (ASETKITA Semarang) — Sistem Manajemen Pelaporan & Pemeliharaan Fasilitas Berbasis AI
+<p align="center">
+  <a href="https://github.com/dkaastyns/Fixmind" target="_blank">
+    <img src="frontend/public/jdih-logo.png" width="180" alt="JDIH Logo" />
+  </a>
+</p>
 
-[![Tech Stack: Bun](https://img.shields.io/badge/Runtime-Bun%201.3%2B-black?logo=bun)](https://bun.sh/)
-[![Backend: NestJS 11](https://img.shields.io/badge/Backend-NestJS%2011-e0234e?logo=nestjs)](https://nestjs.com/)
-[![Frontend: React 19](https://img.shields.io/badge/Frontend-React%2019-61dafb?logo=react)](https://react.dev/)
-[![Database: PostgreSQL](https://img.shields.io/badge/Database-PostgreSQL%2016-336791?logo=postgresql)](https://www.postgresql.org/)
-[![AI Engine: Gemini 2.5](https://img.shields.io/badge/AI-Gemini%202.5%20Flash-4285f4?logo=google)](https://ai.google.dev/)
-[![PWA Ready](https://img.shields.io/badge/PWA-Vite%20PWA-purple?logo=pwa)](https://vite-pwa-org.netlify.app/)
+<p align="center">
+  <strong>E-Lapor DPRD (ASETKITA Semarang)</strong><br>
+  Sistem Manajemen Pelaporan & Pemeliharaan Fasilitas Berbasis AI & PWA untuk Sekretariat DPRD Kota Semarang
+</p>
+
+<p align="center">
+  <a href="https://bun.sh/" target="_blank"><img src="https://img.shields.io/badge/Runtime-Bun%201.3%2B-black?logo=bun" alt="Tech Stack: Bun" /></a>
+  <a href="https://nestjs.com/" target="_blank"><img src="https://img.shields.io/badge/Backend-NestJS%2011-e0234e?logo=nestjs" alt="Backend: NestJS 11" /></a>
+  <a href="https://react.dev/" target="_blank"><img src="https://img.shields.io/badge/Frontend-React%2019-61dafb?logo=react" alt="Frontend: React 19" /></a>
+  <a href="https://www.postgresql.org/" target="_blank"><img src="https://img.shields.io/badge/Database-PostgreSQL%2016-336791?logo=postgresql" alt="Database: PostgreSQL" /></a>
+  <a href="https://ai.google.dev/" target="_blank"><img src="https://img.shields.io/badge/AI-Gemini%202.5%20Flash-4285f4?logo=google" alt="AI Engine: Gemini 2.5" /></a>
+  <a href="https://vite-pwa-org.netlify.app/" target="_blank"><img src="https://img.shields.io/badge/PWA-Vite%20PWA-purple?logo=pwa" alt="PWA Ready" /></a>
+</p>
+
+---
 
 **E-Lapor DPRD (ASETKITA Semarang)** adalah sistem manajemen pelaporan kerusakan, pengajuan perpindahan aset, dan penjadwalan pemeliharaan fasilitas modern berbasis *Artificial Intelligence* (AI) dan *Progressive Web App* (PWA) yang dirancang khusus untuk Sekretariat DPRD Kota Semarang.
 
