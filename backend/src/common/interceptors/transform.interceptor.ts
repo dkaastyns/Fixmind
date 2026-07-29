@@ -9,7 +9,10 @@ import { successResponse } from '../types/api-response';
 
 @Injectable()
 export class TransformInterceptor implements NestInterceptor {
-  intercept(_context: ExecutionContext, next: CallHandler): Observable<unknown> {
+  intercept(
+    _context: ExecutionContext,
+    next: CallHandler,
+  ): Observable<unknown> {
     return next.handle().pipe(
       map((data) => {
         if (

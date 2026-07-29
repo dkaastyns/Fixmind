@@ -116,7 +116,7 @@ export class UsersRepository {
           RETURNING *,
             CASE WHEN is_admin THEN 'ADMIN' ELSE 'USER' END AS role
         `
-        : await this.sql<UserRow[]>`
+      : await this.sql<UserRow[]>`
           UPDATE users SET
             full_name = ${data.fullName ?? existing.full_name},
             role = ${(data.isAdmin ?? existing.is_admin) ? 'ADMIN' : 'USER'},
@@ -150,31 +150,32 @@ export class UsersRepository {
     const offset = (params.page - 1) * params.limit;
     const hasIsAdmin = await this.hasIsAdminColumn();
 
-    const rows = params.isAdmin !== undefined
-      ? hasIsAdmin
-        ? await this.sql<UserRow[]>`
+    const rows =
+      params.isAdmin !== undefined
+        ? hasIsAdmin
+          ? await this.sql<UserRow[]>`
             SELECT
               *,
               CASE WHEN is_admin THEN 'ADMIN' ELSE 'USER' END AS role
             FROM users WHERE deleted_at IS NULL AND is_admin = ${params.isAdmin}
             ORDER BY created_at DESC LIMIT ${params.limit} OFFSET ${offset}
           `
-        : await this.sql<UserRow[]>`
+          : await this.sql<UserRow[]>`
             SELECT
               *,
               CASE WHEN role = 'ADMIN' THEN TRUE ELSE FALSE END AS is_admin
             FROM users WHERE deleted_at IS NULL AND role = ${params.isAdmin ? 'ADMIN' : 'USER'}
             ORDER BY created_at DESC LIMIT ${params.limit} OFFSET ${offset}
           `
-      : hasIsAdmin
-        ? await this.sql<UserRow[]>`
+        : hasIsAdmin
+          ? await this.sql<UserRow[]>`
             SELECT
               *,
               CASE WHEN is_admin THEN 'ADMIN' ELSE 'USER' END AS role
             FROM users WHERE deleted_at IS NULL
             ORDER BY created_at DESC LIMIT ${params.limit} OFFSET ${offset}
           `
-        : await this.sql<UserRow[]>`
+          : await this.sql<UserRow[]>`
             SELECT
               *,
               CASE WHEN role = 'ADMIN' THEN TRUE ELSE FALSE END AS is_admin
@@ -182,17 +183,18 @@ export class UsersRepository {
             ORDER BY created_at DESC LIMIT ${params.limit} OFFSET ${offset}
           `;
 
-    const [{ count }] = params.isAdmin !== undefined
-      ? hasIsAdmin
-        ? await this.sql<{ count: string }[]>`
+    const [{ count }] =
+      params.isAdmin !== undefined
+        ? hasIsAdmin
+          ? await this.sql<{ count: string }[]>`
             SELECT COUNT(*)::text AS count FROM users
             WHERE deleted_at IS NULL AND is_admin = ${params.isAdmin}
           `
-        : await this.sql<{ count: string }[]>`
+          : await this.sql<{ count: string }[]>`
             SELECT COUNT(*)::text AS count FROM users
             WHERE deleted_at IS NULL AND role = ${params.isAdmin ? 'ADMIN' : 'USER'}
           `
-      : await this.sql<{ count: string }[]>`
+        : await this.sql<{ count: string }[]>`
           SELECT COUNT(*)::text AS count FROM users WHERE deleted_at IS NULL
         `;
 

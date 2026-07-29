@@ -122,7 +122,9 @@ export class ReportsRepository {
     `;
 
     const total = result.length > 0 ? Number(result[0].total_count) : 0;
-    const rows: ReportListRow[] = result.map(({ total_count: _tc, ...rest }) => rest as ReportListRow);
+    const rows: ReportListRow[] = result.map(
+      ({ total_count: _tc, ...rest }) => rest,
+    );
     return { rows, total };
   }
 
@@ -157,7 +159,8 @@ export class ReportsRepository {
       priority?: ReportPriority;
     },
   ): Promise<ReportListRow | null> {
-    if (!current) throw new Error('Report must be fetched before calling updateStatus');
+    if (!current)
+      throw new Error('Report must be fetched before calling updateStatus');
     const [row] = await this.sql<ReportListRow[]>`
       WITH updated AS (
         UPDATE reports SET
@@ -224,7 +227,9 @@ export class ReportsRepository {
     try {
       metadataJson = JSON.stringify(data.metadata ?? {});
     } catch {
-      this.logger.warn('Failed to serialize history metadata, falling back to empty object');
+      this.logger.warn(
+        'Failed to serialize history metadata, falling back to empty object',
+      );
       metadataJson = '{}';
     }
     await this.sql`

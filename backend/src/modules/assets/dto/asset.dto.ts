@@ -1,4 +1,10 @@
-﻿import { IsIn, IsNotEmpty, IsOptional, IsString, IsUUID } from 'class-validator';
+﻿import {
+  IsIn,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  IsUUID,
+} from 'class-validator';
 import type { AssetStatus } from '../../../common/types/database-rows';
 
 export class CreateAssetDto {

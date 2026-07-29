@@ -1,5 +1,16 @@
-import { IsIn, IsNumber, IsOptional, IsString, IsUUID, Min } from 'class-validator';
-import type { MaintenanceAssigneeType, MaintenanceFrequency, MaintenanceScheduleStatus } from '../../../common/types/database-rows';
+import {
+  IsIn,
+  IsNumber,
+  IsOptional,
+  IsString,
+  IsUUID,
+  Min,
+} from 'class-validator';
+import type {
+  MaintenanceAssigneeType,
+  MaintenanceFrequency,
+  MaintenanceScheduleStatus,
+} from '../../../common/types/database-rows';
 
 export class CreateMaintenanceScheduleDto {
   @IsOptional()

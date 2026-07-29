@@ -16,9 +16,18 @@ import {
 } from '@nestjs/common';
 import type { Response } from 'express';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { CurrentUser, type AuthUser } from '../../common/decorators/current-user.decorator';
+import {
+  CurrentUser,
+  type AuthUser,
+} from '../../common/decorators/current-user.decorator';
 import { Roles } from '../../common/decorators/roles.decorator';
-import { CreateAssetDto, CreateAssetTransferDto, ImportAssetsQueryDto, ReviewAssetTransferDto, UpdateAssetDto } from './dto/asset.dto';
+import {
+  CreateAssetDto,
+  CreateAssetTransferDto,
+  ImportAssetsQueryDto,
+  ReviewAssetTransferDto,
+  UpdateAssetDto,
+} from './dto/asset.dto';
 import { AssetsService } from './services/assets.service';
 import type { AssetTransferStatus } from '../../common/types/database-rows';
 
@@ -33,7 +42,12 @@ export class AssetsController {
     @Query('roomId') roomId?: string,
     @Query('search') search?: string,
   ) {
-    const result = await this.assetsService.list(Number(page), Number(limit), roomId, search);
+    const result = await this.assetsService.list(
+      Number(page),
+      Number(limit),
+      roomId,
+      search,
+    );
     return { message: 'Assets retrieved', ...result };
   }
 
@@ -84,7 +98,8 @@ export class AssetsController {
   async downloadTemplate(@Res() res: Response) {
     const buffer = await this.assetsService.generateImportTemplate();
     res.set({
-      'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      'Content-Type':
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
       'Content-Disposition': 'attachment; filename="template_import_aset.xlsx"',
       'Content-Length': buffer.length,
     });
@@ -117,7 +132,8 @@ export class AssetsController {
         validators: [
           new MaxFileSizeValidator({ maxSize: 10 * 1024 * 1024 }), // 10MB
           new FileTypeValidator({
-            fileType: /application\/vnd\.openxmlformats-officedocument\.spreadsheetml\.sheet|application\/vnd\.ms-excel/,
+            fileType:
+              /application\/vnd\.openxmlformats-officedocument\.spreadsheetml\.sheet|application\/vnd\.ms-excel/,
           }),
         ],
       }),
@@ -129,7 +145,10 @@ export class AssetsController {
   }
 
   @Post('transfers')
-  async createTransfer(@CurrentUser() user: AuthUser, @Body() dto: CreateAssetTransferDto) {
+  async createTransfer(
+    @CurrentUser() user: AuthUser,
+    @Body() dto: CreateAssetTransferDto,
+  ) {
     const data = await this.assetsService.createTransfer(user, dto);
     return { message: 'Asset transfer requested', data };
   }

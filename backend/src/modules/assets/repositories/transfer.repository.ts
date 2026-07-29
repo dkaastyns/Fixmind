@@ -1,6 +1,9 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { SQL_TOKEN, type Sql } from '../../../database/sql';
-import type { AssetTransferRow, AssetTransferStatus } from '../../../common/types/database-rows';
+import type {
+  AssetTransferRow,
+  AssetTransferStatus,
+} from '../../../common/types/database-rows';
 
 @Injectable()
 export class TransferRepository {
@@ -36,7 +39,10 @@ export class TransferRepository {
     return row;
   }
 
-  async findById(id: string, sql: Sql = this.sql): Promise<AssetTransferRow | null> {
+  async findById(
+    id: string,
+    sql: Sql = this.sql,
+  ): Promise<AssetTransferRow | null> {
     const [row] = await sql<AssetTransferRow[]>`
       SELECT
         t.*,
@@ -60,13 +66,16 @@ export class TransferRepository {
     return row ?? null;
   }
 
-  async list(params: {
-    status?: AssetTransferStatus;
-    requesterId?: string;
-    page: number;
-    limit: number;
-    search?: string;
-  }, sql: Sql = this.sql) {
+  async list(
+    params: {
+      status?: AssetTransferStatus;
+      requesterId?: string;
+      page: number;
+      limit: number;
+      search?: string;
+    },
+    sql: Sql = this.sql,
+  ) {
     const offset = (params.page - 1) * params.limit;
     const q = params.search?.trim() ? `%${params.search.trim()}%` : null;
 
@@ -90,7 +99,9 @@ export class TransferRepository {
       WHERE 1 = 1
         ${params.status ? sql`AND t.status = ${params.status}::asset_transfer_status` : sql``}
         ${params.requesterId ? sql`AND t.requester_id = ${params.requesterId}` : sql``}
-        ${q ? sql`
+        ${
+          q
+            ? sql`
           AND (
             a.nama_barang ILIKE ${q}
             OR a.kode_barang ILIKE ${q}
@@ -104,7 +115,9 @@ export class TransferRepository {
             OR t.status::text ILIKE ${q}
             OR to_char(t.created_at, 'YYYY-MM-DD') ILIKE ${q}
           )
-        ` : sql``}
+        `
+            : sql``
+        }
       ORDER BY t.created_at DESC
       LIMIT ${params.limit}
       OFFSET ${offset}
@@ -120,7 +133,9 @@ export class TransferRepository {
       WHERE 1 = 1
         ${params.status ? sql`AND t.status = ${params.status}::asset_transfer_status` : sql``}
         ${params.requesterId ? sql`AND t.requester_id = ${params.requesterId}` : sql``}
-        ${q ? sql`
+        ${
+          q
+            ? sql`
           AND (
             a.nama_barang ILIKE ${q}
             OR a.kode_barang ILIKE ${q}
@@ -134,7 +149,9 @@ export class TransferRepository {
             OR t.status::text ILIKE ${q}
             OR to_char(t.created_at, 'YYYY-MM-DD') ILIKE ${q}
           )
-        ` : sql``}
+        `
+            : sql``
+        }
     `;
 
     return { rows, total: Number(count) };

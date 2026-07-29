@@ -74,7 +74,9 @@ Deskripsi: ${input.description}`;
 
       return JSON.parse(text) as PriorityAnalysisResult;
     } catch (error) {
-      this.logger.warn(`Gemini analysis failed: ${error instanceof Error ? error.message : error}. Attempting Groq fallback...`);
+      this.logger.warn(
+        `Gemini analysis failed: ${error instanceof Error ? error.message : error}. Attempting Groq fallback...`,
+      );
       const fallbackText = await this.fallbackToGroq(prompt, true);
       if (!fallbackText) return null;
       try {
@@ -86,31 +88,39 @@ Deskripsi: ${input.description}`;
     }
   }
 
-
-  private async fallbackToGroq(prompt: string, expectJson: boolean): Promise<string | null> {
+  private async fallbackToGroq(
+    prompt: string,
+    expectJson: boolean,
+  ): Promise<string | null> {
     const groqKey = this.config.get<string>('GROQ_API_KEY');
     if (!groqKey) {
       this.logger.warn('GROQ_API_KEY not set — fallback failed');
       return null;
     }
 
-    const groqModel = this.config.get<string>('GROQ_MODEL', 'llama-3.1-8b-instant');
+    const groqModel = this.config.get<string>(
+      'GROQ_MODEL',
+      'llama-3.1-8b-instant',
+    );
     this.logger.log(`Falling back to Groq AI using model ${groqModel}`);
 
     try {
-      const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${groqKey}`
+      const response = await fetch(
+        'https://api.groq.com/openai/v1/chat/completions',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${groqKey}`,
+          },
+          body: JSON.stringify({
+            model: groqModel,
+            messages: [{ role: 'user', content: prompt }],
+            response_format: expectJson ? { type: 'json_object' } : undefined,
+          }),
+          signal: AbortSignal.timeout(15_000),
         },
-        body: JSON.stringify({
-          model: groqModel,
-          messages: [{ role: 'user', content: prompt }],
-          response_format: expectJson ? { type: 'json_object' } : undefined,
-        }),
-        signal: AbortSignal.timeout(15_000),
-      });
+      );
 
       if (!response.ok) {
         this.logger.error(`Groq API error: ${response.status}`);

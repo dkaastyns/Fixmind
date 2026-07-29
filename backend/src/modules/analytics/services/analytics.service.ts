@@ -11,7 +11,8 @@ export class AnalyticsService {
 
   async exportCsv(startDate?: string, endDate?: string): Promise<string> {
     const rows = await this.analyticsRepository.exportRows(startDate, endDate);
-    const header = 'ID,Judul Laporan,Status,Prioritas,Ruangan,Pelapor,Dibuat Pada,Selesai Pada\n';
+    const header =
+      'ID,Judul Laporan,Status,Prioritas,Ruangan,Pelapor,Dibuat Pada,Selesai Pada\n';
     const body = rows
       .map((r) =>
         [

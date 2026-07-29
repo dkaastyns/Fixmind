@@ -22,7 +22,10 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import type { Request, Response } from 'express';
 import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcrypt';
-import { CurrentUser, type AuthUser } from '../../common/decorators/current-user.decorator';
+import {
+  CurrentUser,
+  type AuthUser,
+} from '../../common/decorators/current-user.decorator';
 import { Public } from '../../common/decorators/roles.decorator';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from '../users/dto/user.dto';
@@ -130,10 +133,7 @@ export class AuthController {
 
   @Post('logout')
   @HttpCode(HttpStatus.OK)
-  async logout(
-    @Req() req: Request,
-    @Res({ passthrough: true }) res: Response,
-  ) {
+  async logout(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
     const token = req.cookies?.[REFRESH_COOKIE];
     if (token) {
       await this.authService.logout(token);
@@ -186,7 +186,10 @@ export class AuthController {
     file: Express.Multer.File,
   ) {
     // 1. Upload to cloudinary
-    const result = await this.cloudinaryService.uploadImage(file, 'asetkita-semarang/avatars');
+    const result = await this.cloudinaryService.uploadImage(
+      file,
+      'asetkita-semarang/avatars',
+    );
 
     // 2. Update user database
     const updated = await this.usersService.update(user.id, {

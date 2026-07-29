@@ -68,7 +68,10 @@ describe('AuthService - Account Lockout', () => {
     usersRepository.findByEmail.mockResolvedValue(userWithAttempts);
     (bcrypt.compare as jest.Mock).mockResolvedValue(true);
 
-    const result = await service.login('user@asetkita-semarang.local', 'password');
+    const result = await service.login(
+      'user@asetkita-semarang.local',
+      'password',
+    );
 
     expect(result.user.email).toBe('user@asetkita-semarang.local');
     expect(usersRepository.update).toHaveBeenCalledWith('user-1', {
@@ -81,9 +84,9 @@ describe('AuthService - Account Lockout', () => {
     usersRepository.findByEmail.mockResolvedValue(mockUser);
     (bcrypt.compare as jest.Mock).mockResolvedValue(false);
 
-    await expect(service.login('user@asetkita-semarang.local', 'wrong_password')).rejects.toThrow(
-      UnauthorizedException,
-    );
+    await expect(
+      service.login('user@asetkita-semarang.local', 'wrong_password'),
+    ).rejects.toThrow(UnauthorizedException);
 
     expect(usersRepository.update).toHaveBeenCalledWith('user-1', {
       failedLoginAttempts: 1,
@@ -99,8 +102,12 @@ describe('AuthService - Account Lockout', () => {
     usersRepository.findByEmail.mockResolvedValue(userWith4Attempts);
     (bcrypt.compare as jest.Mock).mockResolvedValue(false);
 
-    await expect(service.login('user@asetkita-semarang.local', 'wrong_password')).rejects.toThrow(
-      new UnauthorizedException('Too many failed attempts. Account locked for 15 minutes.'),
+    await expect(
+      service.login('user@asetkita-semarang.local', 'wrong_password'),
+    ).rejects.toThrow(
+      new UnauthorizedException(
+        'Too many failed attempts. Account locked for 15 minutes.',
+      ),
     );
 
     expect(usersRepository.update).toHaveBeenCalledWith('user-1', {
@@ -116,9 +123,9 @@ describe('AuthService - Account Lockout', () => {
     };
     usersRepository.findByEmail.mockResolvedValue(lockedUser);
 
-    await expect(service.login('user@asetkita-semarang.local', 'password')).rejects.toThrow(
-      /Account locked. Please try again in 10 minutes./,
-    );
+    await expect(
+      service.login('user@asetkita-semarang.local', 'password'),
+    ).rejects.toThrow(/Account locked. Please try again in 10 minutes./);
 
     expect(usersRepository.update).not.toHaveBeenCalled();
   });

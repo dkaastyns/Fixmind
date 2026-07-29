@@ -28,7 +28,8 @@ export interface SessionRow {
   created_at: Date;
 }
 
-export type AssetStatus = 'OPERATIONAL' | 'NEEDS_MAINTENANCE' | 'OUT_OF_SERVICE';
+export type AssetStatus =
+  'OPERATIONAL' | 'NEEDS_MAINTENANCE' | 'OUT_OF_SERVICE';
 
 export interface RoomRow {
   id: string;
@@ -107,9 +108,11 @@ export interface ReportRow {
 
 export type AssetTransferStatus = 'PENDING' | 'APPROVED' | 'REJECTED';
 
-export type MaintenanceFrequency = 'WEEKLY' | 'MONTHLY' | 'QUARTERLY' | 'ANNUALLY' | 'ONE_TIME';
+export type MaintenanceFrequency =
+  'WEEKLY' | 'MONTHLY' | 'QUARTERLY' | 'ANNUALLY' | 'ONE_TIME';
 
-export type MaintenanceScheduleStatus = 'SCHEDULED' | 'IN_PROGRESS' | 'DONE' | 'CANCELLED' | 'OVERDUE';
+export type MaintenanceScheduleStatus =
+  'SCHEDULED' | 'IN_PROGRESS' | 'DONE' | 'CANCELLED' | 'OVERDUE';
 
 export type MaintenanceAssigneeType = 'INTERNAL' | 'EXTERNAL_VENDOR';
 

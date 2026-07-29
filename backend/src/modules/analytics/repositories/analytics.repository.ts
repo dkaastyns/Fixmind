@@ -11,10 +11,20 @@ export class AnalyticsRepository {
 
   async summary() {
     const byStatus = await this.reportsRepository.countByStatus();
-    const completedLast30 = await this.reportsRepository.countCompletedLast30Days();
+    const completedLast30 =
+      await this.reportsRepository.countCompletedLast30Days();
 
-    const openStatuses = ['PENDING', 'AI_ANALYSIS', 'REVIEWED', 'ASSIGNED', 'IN_PROGRESS'];
-    const openReports = openStatuses.reduce((sum, s) => sum + (byStatus[s] ?? 0), 0);
+    const openStatuses = [
+      'PENDING',
+      'AI_ANALYSIS',
+      'REVIEWED',
+      'ASSIGNED',
+      'IN_PROGRESS',
+    ];
+    const openReports = openStatuses.reduce(
+      (sum, s) => sum + (byStatus[s] ?? 0),
+      0,
+    );
 
     const byPriority = await this.sql<{ priority: string; count: string }[]>`
       SELECT COALESCE(priority::text, 'UNSET') AS priority, COUNT(*)::text AS count
@@ -38,8 +48,13 @@ export class AnalyticsRepository {
       completedLast30Days: completedLast30,
       avgRating: null,
       byStatus,
-      byPriority: Object.fromEntries(byPriority.map((r) => [r.priority, Number(r.count)])),
-      byRoom: byRoom.map((r) => ({ room: r.room_name, count: Number(r.count) })),
+      byPriority: Object.fromEntries(
+        byPriority.map((r) => [r.priority, Number(r.count)]),
+      ),
+      byRoom: byRoom.map((r) => ({
+        room: r.room_name,
+        count: Number(r.count),
+      })),
     };
   }
 

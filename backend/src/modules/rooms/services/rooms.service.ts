@@ -21,7 +21,11 @@ export class RoomsService {
   }
 
   async list(page = 1, limit = 50, activeOnly = false) {
-    const { rows, total } = await this.roomsRepository.list({ page, limit, activeOnly });
+    const { rows, total } = await this.roomsRepository.list({
+      page,
+      limit,
+      activeOnly,
+    });
     return {
       data: rows.map((r) => this.toPublic(r)),
       meta: { page, limit, total },

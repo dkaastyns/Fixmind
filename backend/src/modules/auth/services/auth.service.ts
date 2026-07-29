@@ -9,9 +9,7 @@ import * as bcrypt from 'bcrypt';
 import { createHash, randomBytes } from 'node:crypto';
 import type { AuthUser } from '../../../common/decorators/current-user.decorator';
 import type { UserRow } from '../../../common/types/database-rows';
-import {
-  SessionsRepository,
-} from '../repositories/auth.repository';
+import { SessionsRepository } from '../repositories/auth.repository';
 import { UsersRepository } from '../../users/repositories/users.repository';
 
 export interface TokenPair {
@@ -75,7 +73,7 @@ export class AuthService {
     if (!valid) {
       const newAttempts = user.failed_login_attempts + 1;
       let lockoutUntil: Date | null = null;
-      
+
       if (newAttempts >= 5) {
         lockoutUntil = new Date(Date.now() + 15 * 60 * 1000); // Kunci selama 15 menit
       }
@@ -138,7 +136,9 @@ export class AuthService {
     fullName: string;
     phone?: string;
   }) {
-    const existing = await this.usersRepository.findByEmail(data.email.toLowerCase());
+    const existing = await this.usersRepository.findByEmail(
+      data.email.toLowerCase(),
+    );
     if (existing) {
       throw new ConflictException('Email already registered');
     }

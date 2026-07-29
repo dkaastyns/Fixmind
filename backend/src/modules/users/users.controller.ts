@@ -24,7 +24,11 @@ export class UsersController {
     @Query('isAdmin') isAdmin?: string,
   ) {
     const parsed = isAdmin === undefined ? undefined : isAdmin === 'true';
-    const result = await this.usersService.list(Number(page), Number(limit), parsed);
+    const result = await this.usersService.list(
+      Number(page),
+      Number(limit),
+      parsed,
+    );
     return { message: 'Users retrieved', ...result };
   }
 

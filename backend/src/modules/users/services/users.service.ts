@@ -37,7 +37,11 @@ export class UsersService {
   }
 
   async list(page = 1, limit = 20, isAdmin?: boolean) {
-    const { rows, total } = await this.usersRepository.list({ page, limit, isAdmin });
+    const { rows, total } = await this.usersRepository.list({
+      page,
+      limit,
+      isAdmin,
+    });
     return {
       data: rows.map((r) => this.toPublic(r)),
       meta: { page, limit, total },
@@ -51,7 +55,9 @@ export class UsersService {
   }
 
   async create(dto: CreateUserDto) {
-    const existing = await this.usersRepository.findByEmail(dto.email.toLowerCase());
+    const existing = await this.usersRepository.findByEmail(
+      dto.email.toLowerCase(),
+    );
     if (existing) throw new ConflictException('Email already registered');
 
     const passwordHash = await bcrypt.hash(dto.password, 12);
@@ -65,7 +71,12 @@ export class UsersService {
     return this.toPublic(user);
   }
 
-  async register(dto: { email: string; password: string; fullName: string; phone?: string }) {
+  async register(dto: {
+    email: string;
+    password: string;
+    fullName: string;
+    phone?: string;
+  }) {
     return this.create({
       ...dto,
       isAdmin: false,

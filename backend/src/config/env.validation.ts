@@ -37,12 +37,16 @@ class EnvironmentVariables {
   // Generate dengan: openssl rand -base64 48
   @IsString()
   @IsNotEmpty()
-  @MinLength(32, { message: 'JWT_ACCESS_SECRET must be at least 32 characters long' })
+  @MinLength(32, {
+    message: 'JWT_ACCESS_SECRET must be at least 32 characters long',
+  })
   JWT_ACCESS_SECRET!: string;
 
   @IsString()
   @IsNotEmpty()
-  @MinLength(32, { message: 'JWT_REFRESH_SECRET must be at least 32 characters long' })
+  @MinLength(32, {
+    message: 'JWT_REFRESH_SECRET must be at least 32 characters long',
+  })
   JWT_REFRESH_SECRET!: string;
 
   @IsString()

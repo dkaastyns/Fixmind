@@ -1,6 +1,9 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { SQL_TOKEN, type Sql } from '../../../database/sql';
-import type { MaintenanceScheduleRow, MaintenanceScheduleStatus } from '../../../common/types/database-rows';
+import type {
+  MaintenanceScheduleRow,
+  MaintenanceScheduleStatus,
+} from '../../../common/types/database-rows';
 
 export interface MaintenanceListRow extends MaintenanceScheduleRow {
   room_name: string | null;
@@ -14,7 +17,10 @@ export interface MaintenanceListRow extends MaintenanceScheduleRow {
 export class MaintenanceRepository {
   constructor(@Inject(SQL_TOKEN) private readonly sql: Sql) {}
 
-  async findById(id: string, sql: Sql = this.sql): Promise<MaintenanceListRow | null> {
+  async findById(
+    id: string,
+    sql: Sql = this.sql,
+  ): Promise<MaintenanceListRow | null> {
     const [row] = await sql<MaintenanceListRow[]>`
       SELECT
         m.*,
@@ -56,7 +62,9 @@ export class MaintenanceRepository {
       LEFT JOIN users u ON u.id = m.created_by
       WHERE 1 = 1
         ${params.status ? this.sql`AND m.status = ${params.status}::maintenance_schedule_status` : this.sql``}
-        ${q ? this.sql`
+        ${
+          q
+            ? this.sql`
           AND (
             m.title ILIKE ${q}
             OR COALESCE(m.description, '') ILIKE ${q}
@@ -72,7 +80,9 @@ export class MaintenanceRepository {
             OR m.status::text ILIKE ${q}
             OR to_char(m.scheduled_date, 'YYYY-MM-DD') ILIKE ${q}
           )
-        ` : this.sql``}
+        `
+            : this.sql``
+        }
       ORDER BY m.scheduled_date ASC, m.created_at DESC
       LIMIT ${params.limit}
       OFFSET ${offset}
@@ -85,7 +95,9 @@ export class MaintenanceRepository {
       LEFT JOIN assets a ON a.id = m.asset_id
       WHERE 1 = 1
         ${params.status ? this.sql`AND m.status = ${params.status}::maintenance_schedule_status` : this.sql``}
-        ${q ? this.sql`
+        ${
+          q
+            ? this.sql`
           AND (
             m.title ILIKE ${q}
             OR COALESCE(m.description, '') ILIKE ${q}
@@ -101,7 +113,9 @@ export class MaintenanceRepository {
             OR m.status::text ILIKE ${q}
             OR to_char(m.scheduled_date, 'YYYY-MM-DD') ILIKE ${q}
           )
-        ` : this.sql``}
+        `
+            : this.sql``
+        }
     `;
 
     return { rows, total: Number(count) };
@@ -150,22 +164,25 @@ export class MaintenanceRepository {
     return row;
   }
 
-  async update(id: string, data: Partial<{
-    roomId: string | null;
-    assetId: string | null;
-    title: string;
-    description: string | null;
-    frequency: MaintenanceScheduleRow['frequency'];
-    scheduledDate: string;
-    status: MaintenanceScheduleStatus;
-    assigneeType: MaintenanceScheduleRow['assignee_type'];
-    assigneeName: string;
-    vendorContactName: string | null;
-    vendorPhone: string | null;
-    estimatedCost: number;
-    notes: string | null;
-    completedAt: Date | null;
-  }>): Promise<MaintenanceScheduleRow | null> {
+  async update(
+    id: string,
+    data: Partial<{
+      roomId: string | null;
+      assetId: string | null;
+      title: string;
+      description: string | null;
+      frequency: MaintenanceScheduleRow['frequency'];
+      scheduledDate: string;
+      status: MaintenanceScheduleStatus;
+      assigneeType: MaintenanceScheduleRow['assignee_type'];
+      assigneeName: string;
+      vendorContactName: string | null;
+      vendorPhone: string | null;
+      estimatedCost: number;
+      notes: string | null;
+      completedAt: Date | null;
+    }>,
+  ): Promise<MaintenanceScheduleRow | null> {
     const existing = await this.findById(id);
     if (!existing) return null;
 
@@ -192,7 +209,12 @@ export class MaintenanceRepository {
     return row ?? null;
   }
 
-  async updateStatus(id: string, status: MaintenanceScheduleStatus, notes?: string, completedAt?: Date | null) {
+  async updateStatus(
+    id: string,
+    status: MaintenanceScheduleStatus,
+    notes?: string,
+    completedAt?: Date | null,
+  ) {
     const [row] = await this.sql<MaintenanceScheduleRow[]>`
       UPDATE maintenance_schedules SET
         status = ${status}::maintenance_schedule_status,

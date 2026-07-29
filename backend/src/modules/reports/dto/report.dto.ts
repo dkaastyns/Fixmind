@@ -42,6 +42,3 @@ export class UpdateReportStatusDto {
   @IsString()
   note?: string;
 }
-
-
-

@@ -1,0 +1,68 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  backend:
+    name: Backend CI
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install Dependencies
+        run: bun install --frozen-lockfile
+        working-directory: ./backend
+
+      - name: Lint Code
+        run: bun run lint
+        working-directory: ./backend
+        continue-on-error: true
+
+      - name: Build Backend
+        run: bun run build
+        working-directory: ./backend
+
+      - name: Run Tests
+        run: bun run test
+        working-directory: ./backend
+
+  frontend:
+    name: Frontend CI
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install Dependencies
+        run: bun install --frozen-lockfile
+        working-directory: ./frontend
+
+      - name: Lint Code
+        run: bun run lint
+        working-directory: ./frontend
+        continue-on-error: true
+
+      - name: Build Frontend
+        run: bun run build
+        working-directory: ./frontend
+
+      - name: Run Tests
+        run: bun run test
+        working-directory: ./frontend

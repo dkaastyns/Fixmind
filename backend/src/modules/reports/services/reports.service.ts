@@ -151,8 +151,12 @@ export class ReportsService {
       newStatus: 'PENDING',
     });
 
-    this.runAiAnalysis(report.id, room.name, dto.assetId, dto.description)
-      .catch((err) => this.logger.error('Background AI analysis failed', err));
+    this.runAiAnalysis(
+      report.id,
+      room.name,
+      dto.assetId,
+      dto.description,
+    ).catch((err) => this.logger.error('Background AI analysis failed', err));
 
     const detail = await this.reportsRepository.findDetail(report.id);
     const result = this.toPublic(detail ?? report);

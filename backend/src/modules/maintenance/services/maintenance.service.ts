@@ -1,12 +1,24 @@
-import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import type { AuthUser } from '../../../common/decorators/current-user.decorator';
 import type { MaintenanceListRow } from '../repositories/maintenance.repository';
-import type { MaintenanceScheduleRow, MaintenanceScheduleStatus } from '../../../common/types/database-rows';
+import type {
+  MaintenanceScheduleRow,
+  MaintenanceScheduleStatus,
+} from '../../../common/types/database-rows';
 import { AssetsRepository } from '../../assets/repositories/assets.repository';
 import { RoomsRepository } from '../../rooms/repositories/rooms.repository';
 import { UsersRepository } from '../../users/repositories/users.repository';
 import { MaintenanceRepository } from '../repositories/maintenance.repository';
-import { CreateMaintenanceScheduleDto, UpdateMaintenanceScheduleDto, UpdateMaintenanceScheduleStatusDto } from '../dto/maintenance.dto';
+import {
+  CreateMaintenanceScheduleDto,
+  UpdateMaintenanceScheduleDto,
+  UpdateMaintenanceScheduleStatusDto,
+} from '../dto/maintenance.dto';
 
 @Injectable()
 export class MaintenanceService {
@@ -46,7 +58,13 @@ export class MaintenanceService {
     };
   }
 
-  async list(user: AuthUser, page = 1, limit = 20, status?: MaintenanceScheduleStatus, search?: string) {
+  async list(
+    user: AuthUser,
+    page = 1,
+    limit = 20,
+    status?: MaintenanceScheduleStatus,
+    search?: string,
+  ) {
     const { rows, total } = await this.maintenanceRepository.list({
       page,
       limit,
@@ -90,7 +108,8 @@ export class MaintenanceService {
 
   async update(user: AuthUser, id: string, dto: UpdateMaintenanceScheduleDto) {
     const existing = await this.maintenanceRepository.findById(id);
-    if (!existing) throw new NotFoundException('Maintenance schedule not found');
+    if (!existing)
+      throw new NotFoundException('Maintenance schedule not found');
     this.assertCanManage(user);
 
     await this.ensureRoomAndAsset(dto.roomId, dto.assetId);
@@ -116,13 +135,28 @@ export class MaintenanceService {
     return this.toPublic(detail ?? row);
   }
 
-  async updateStatus(user: AuthUser, id: string, dto: UpdateMaintenanceScheduleStatusDto) {
+  async updateStatus(
+    user: AuthUser,
+    id: string,
+    dto: UpdateMaintenanceScheduleStatusDto,
+  ) {
     const existing = await this.maintenanceRepository.findById(id);
-    if (!existing) throw new NotFoundException('Maintenance schedule not found');
+    if (!existing)
+      throw new NotFoundException('Maintenance schedule not found');
     this.assertCanManage(user);
 
-    const completedAt = dto.status === 'DONE' ? new Date() : dto.status === 'CANCELLED' ? existing.completed_at : existing.completed_at;
-    const row = await this.maintenanceRepository.updateStatus(id, dto.status, dto.notes, completedAt);
+    const completedAt =
+      dto.status === 'DONE'
+        ? new Date()
+        : dto.status === 'CANCELLED'
+          ? existing.completed_at
+          : existing.completed_at;
+    const row = await this.maintenanceRepository.updateStatus(
+      id,
+      dto.status,
+      dto.notes,
+      completedAt,
+    );
     if (!row) throw new NotFoundException('Maintenance schedule not found');
     const detail = await this.maintenanceRepository.findById(id);
     return this.toPublic(detail ?? row);

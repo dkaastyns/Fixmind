@@ -10,7 +10,14 @@ import { CloudinaryModule } from '../cloudinary/cloudinary.module';
 import { NotificationsModule } from '../notifications/notifications.module';
 
 @Module({
-  imports: [RoomsModule, AssetsModule, UsersModule, AiModule, CloudinaryModule, NotificationsModule],
+  imports: [
+    RoomsModule,
+    AssetsModule,
+    UsersModule,
+    AiModule,
+    CloudinaryModule,
+    NotificationsModule,
+  ],
   controllers: [ReportsController],
   providers: [ReportsService, ReportsRepository],
   exports: [ReportsService, ReportsRepository],

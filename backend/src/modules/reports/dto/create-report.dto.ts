@@ -1,4 +1,11 @@
-import { IsNotEmpty, IsOptional, IsString, IsUUID, MaxLength, IsIn } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  IsUUID,
+  MaxLength,
+  IsIn,
+} from 'class-validator';
 
 export const REPORT_STATUSES = [
   'PENDING',
@@ -8,7 +15,7 @@ export const REPORT_STATUSES = [
   'IN_PROGRESS',
   'COMPLETED',
   'CANCELLED',
-  'REJECTED'
+  'REJECTED',
 ] as const;
 
 export class CreateReportDto {
@@ -34,5 +41,5 @@ export class UpdateReportStatusDto {
   @IsNotEmpty()
   @IsString()
   @IsIn(REPORT_STATUSES)
-  status: typeof REPORT_STATUSES[number];
+  status: (typeof REPORT_STATUSES)[number];
 }

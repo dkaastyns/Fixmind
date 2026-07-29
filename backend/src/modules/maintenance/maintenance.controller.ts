@@ -1,7 +1,23 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
-import { CurrentUser, type AuthUser } from '../../common/decorators/current-user.decorator';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Query,
+} from '@nestjs/common';
+import {
+  CurrentUser,
+  type AuthUser,
+} from '../../common/decorators/current-user.decorator';
 import { Roles } from '../../common/decorators/roles.decorator';
-import { CreateMaintenanceScheduleDto, UpdateMaintenanceScheduleDto, UpdateMaintenanceScheduleStatusDto } from './dto/maintenance.dto';
+import {
+  CreateMaintenanceScheduleDto,
+  UpdateMaintenanceScheduleDto,
+  UpdateMaintenanceScheduleStatusDto,
+} from './dto/maintenance.dto';
 import { MaintenanceService } from './services/maintenance.service';
 import type { MaintenanceScheduleStatus } from '../../common/types/database-rows';
 
@@ -17,7 +33,13 @@ export class MaintenanceController {
     @Query('status') status?: MaintenanceScheduleStatus,
     @Query('search') search?: string,
   ) {
-    const result = await this.maintenanceService.list(user, Number(page), Number(limit), status, search);
+    const result = await this.maintenanceService.list(
+      user,
+      Number(page),
+      Number(limit),
+      status,
+      search,
+    );
     return { message: 'Maintenance schedules retrieved', ...result };
   }
 
@@ -29,7 +51,10 @@ export class MaintenanceController {
 
   @Roles('ADMIN')
   @Post()
-  async create(@CurrentUser() user: AuthUser, @Body() dto: CreateMaintenanceScheduleDto) {
+  async create(
+    @CurrentUser() user: AuthUser,
+    @Body() dto: CreateMaintenanceScheduleDto,
+  ) {
     const data = await this.maintenanceService.create(user, dto);
     return { message: 'Maintenance schedule created', data };
   }
