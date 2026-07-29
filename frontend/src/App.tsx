@@ -8,7 +8,19 @@ import { OfflineSyncProvider } from './components/providers/offline-sync-provide
 
 const queryClient = new QueryClient({
   defaultOptions: {
-    queries: { retry: 1, refetchOnWindowFocus: false },
+    queries: {
+      retry: (failureCount, error: any) => {
+        const status = error?.response?.status || error?.status
+        if (status && [400, 401, 403, 404].includes(status)) {
+          return false
+        }
+        return failureCount < 3
+      },
+      retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+      staleTime: 1000 * 60 * 5, // 5 menit default stale time
+      gcTime: 1000 * 60 * 10,   // 10 menit garbage collection time
+      refetchOnWindowFocus: false,
+    },
   },
 })
 

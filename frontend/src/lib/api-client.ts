@@ -87,6 +87,8 @@ export async function apiFetch<T>(
       ),
       description,
       timestamp: Date.now(),
+      attempts: 0,
+      nextAttemptTime: 0,
     }
 
     queue.push(queueItem)
@@ -985,15 +987,24 @@ export async function syncOfflineQueue(token: string) {
   const queue = JSON.parse(localStorage.getItem('offline-sync-queue') || '[]')
   if (queue.length === 0) return
 
-  toast.info(`Menyinkronkan ${queue.length} tindakan offline...`, {
+  const now = Date.now()
+  const itemsToProcess = queue.filter((item: any) => now >= (item.nextAttemptTime || 0))
+  const itemsDeferred = queue.filter((item: any) => now < (item.nextAttemptTime || 0))
+
+  if (itemsToProcess.length === 0) {
+    scheduleNextSyncAttempt(token, itemsDeferred)
+    return
+  }
+
+  toast.info(`Menyinkronkan ${itemsToProcess.length} tindakan offline...`, {
     id: 'offline-sync',
     duration: 10000,
   })
 
   let successCount = 0
-  const remainingQueue = []
+  const remainingQueue = [...itemsDeferred]
 
-  for (const item of queue) {
+  for (const item of itemsToProcess) {
     try {
       const response = await fetch(`${API_BASE}${item.path}`, {
         method: item.method,
@@ -1009,10 +1020,28 @@ export async function syncOfflineQueue(token: string) {
       if (response.ok) {
         successCount++
       } else {
-        remainingQueue.push(item)
+        const attempts = (item.attempts || 0) + 1
+        if (attempts < 5) {
+          const backoff = Math.min(2000 * Math.pow(2, attempts), 60000)
+          remainingQueue.push({
+            ...item,
+            attempts,
+            nextAttemptTime: Date.now() + backoff,
+          })
+        } else {
+          console.error(`Tindakan offline "${item.description}" gagal disinkronkan setelah 5 percobaan.`, item)
+        }
       }
     } catch (err) {
-      remainingQueue.push(item)
+      const attempts = (item.attempts || 0) + 1
+      if (attempts < 5) {
+        const backoff = Math.min(2000 * Math.pow(2, attempts), 60000)
+        remainingQueue.push({
+          ...item,
+          attempts,
+          nextAttemptTime: Date.now() + backoff,
+        })
+      }
     }
   }
 
@@ -1024,10 +1053,35 @@ export async function syncOfflineQueue(token: string) {
       id: 'offline-sync',
       duration: 5000,
     })
-  } else {
-    toast.error('Gagal menyinkronkan tindakan offline. Akan dicoba kembali nanti.', {
+  } else if (remainingQueue.length > itemsDeferred.length) {
+    toast.error('Beberapa tindakan offline gagal disinkronkan. Akan dicoba kembali otomatis dengan backoff.', {
       id: 'offline-sync',
       duration: 5000,
     })
   }
+
+  scheduleNextSyncAttempt(token, remainingQueue)
+}
+
+let syncTimeoutId: any = null
+
+function scheduleNextSyncAttempt(token: string, queue: any[]) {
+  if (syncTimeoutId) {
+    clearTimeout(syncTimeoutId)
+    syncTimeoutId = null
+  }
+
+  const now = Date.now()
+  const nextTimes = queue
+    .map((item) => item.nextAttemptTime || 0)
+    .filter((time) => time > now)
+
+  if (nextTimes.length === 0) return
+
+  const earliestNextTime = Math.min(...nextTimes)
+  const delay = Math.max(1000, earliestNextTime - now)
+
+  syncTimeoutId = setTimeout(() => {
+    syncOfflineQueue(token)
+  }, delay)
 }

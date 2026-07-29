@@ -3,9 +3,14 @@ import { refreshRequest, meRequest } from '@/lib/api-client'
 import { useAuthStore } from '@/stores/auth-store'
 
 export function AuthBootstrap({ children }: { children: React.ReactNode }) {
-  const { setSession, setHydrated, clearSession } = useAuthStore()
+  const { accessToken, setSession, setHydrated, clearSession } = useAuthStore()
 
   useEffect(() => {
+    if (accessToken) {
+      setHydrated()
+      return
+    }
+
     let cancelled = false
 
     async function hydrate() {
@@ -26,7 +31,7 @@ export function AuthBootstrap({ children }: { children: React.ReactNode }) {
     return () => {
       cancelled = true
     }
-  }, [setSession, setHydrated, clearSession])
+  }, [accessToken, setSession, setHydrated, clearSession])
 
   return <>{children}</>
 }

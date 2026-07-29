@@ -352,14 +352,48 @@ function CommentSection({ token, reportId }: { token: string; reportId: string }
   // Extract all unique participant names for highlighting
   const participantNames = Array.from(new Set(comments.map((c) => c.authorName)))
 
+  const user = useAuthStore((s) => s.user)
+
   const sendMutation = useMutation({
-    mutationFn: () => addComment(token, reportId, newComment.trim()),
+    mutationFn: (content: string) => addComment(token, reportId, content),
+    onMutate: async (content: string) => {
+      await qc.cancelQueries({ queryKey: ['comments', reportId] })
+
+      const previousCommentsData = qc.getQueryData<any>(['comments', reportId])
+
+      const optimisticComment = {
+        id: `opt-${Math.random().toString(36).substring(2, 9)}`,
+        reportId,
+        authorId: user?.id ?? 'me',
+        authorName: user?.fullName ?? 'Saya',
+        authorRole: user?.role ?? 'USER',
+        content,
+        createdAt: new Date().toISOString(),
+      }
+
+      qc.setQueryData<any>(['comments', reportId], (old: any) => {
+        const oldData = old?.data ?? []
+        return {
+          ...old,
+          data: [...oldData, optimisticComment],
+        }
+      })
+
+      return { previousCommentsData }
+    },
+    onError: (err: any, _content, context) => {
+      if (context?.previousCommentsData) {
+        qc.setQueryData(['comments', reportId], context.previousCommentsData)
+      }
+      toast.error(err.message || 'Gagal mengirim komentar')
+    },
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ['comments', reportId] })
       setNewComment('')
       toast.success('Komentar berhasil dikirim')
     },
-    onError: (e: Error) => toast.error(e.message),
+    onSettled: () => {
+      qc.invalidateQueries({ queryKey: ['comments', reportId] })
+    },
   })
 
   const handleReply = (authorName: string) => {
@@ -483,13 +517,13 @@ function CommentSection({ token, reportId }: { token: string; reportId: string }
           onChange={(e) => setNewComment(e.target.value)}
           onKeyDown={(e) => {
             if (e.key === 'Enter' && e.ctrlKey && newComment.trim()) {
-              sendMutation.mutate()
+              sendMutation.mutate(newComment.trim())
             }
           }}
         />
         <Button
           className="self-end"
-          onClick={() => sendMutation.mutate()}
+          onClick={() => sendMutation.mutate(newComment.trim())}
           disabled={!newComment.trim() || sendMutation.isPending}
         >
           <Send className="h-4 w-4" /> Kirim
