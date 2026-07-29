@@ -61,7 +61,7 @@ docker compose up -d --build
 
 ---
 
-## 4. Strategi Variabel Lingkungan (.env)
+## 4. Strategi Variabel Lingkungan (.env) & Pengelolaan Rahasia (Secrets)
 
 | Lingkungan | DATABASE_URL | CORS_ORIGIN | Konfigurasi Cookie Refresh |
 |------------|--------------|-------------|----------------------------|
@@ -69,7 +69,59 @@ docker compose up -d --build
 | **Staging** | Managed PostgreSQL Staging | URL Staging | `secure=true` |
 | **Production** | Managed PostgreSQL Production | URL Production | `secure=true, sameSite=strict` |
 
-> **PERINGATAN:** Dilarang keras meng-commit berkas `.env` berisikan kunci rahasia asli ke repositori Git.
+> [!WARNING]
+> **Dilarang keras meng-commit berkas `.env` yang berisi kredensial asli ke Git.** Berkas `.gitignore` telah diatur untuk mengecualikan berkas `.env` di seluruh folder.
+
+### A. Pengelolaan Secrets di Env Manager
+
+Untuk deployment ke staging atau produksi, kredensial sensitif tidak boleh ditulis langsung ke dalam file `.env` di server. Gunakan manajer rahasia berikut:
+
+1. **GitHub Secrets (untuk CI/CD)**:
+   - Simpan kredensial pengujian atau deployment di **Settings > Secrets and variables > Actions** di repositori GitHub Anda.
+   - Panggil rahasia tersebut di dalam berkas workflow YAML menggunakan sintaks `${{ secrets.NAMA_SECRET }}`.
+2. **Environment Variables bawaan Platform (PaaS / Serverless)**:
+   - Jika menggunakan layanan PaaS (seperti DigitalOcean App Platform, Render, AWS Elastic Beanstalk), masukkan variabel lingkungan secara langsung melalui dasbor platform mereka di bagian **Environment / Variables**. Kontainer NestJS/Vite akan membacanya secara otomatis dari memori saat runtime.
+3. **Vault Server (Enterprise)**:
+   - Untuk infrastruktur mandiri (VM/VPS), gunakan **HashiCorp Vault** atau AWS/GCP Secrets Manager untuk menyimpan, memutar, dan mengambil rahasia secara aman saat container di-deploy.
+
+### B. Konfigurasi `.env` Minimal untuk Deployment
+
+Berikut adalah variabel minimal yang **wajib** dikonfigurasi saat deploy:
+
+**Backend (`backend/.env`):**
+```env
+# Koneksi Database
+DATABASE_URL=postgresql://username:password@host:5432/database_name
+
+# Port & Node Env
+PORT=3000
+NODE_ENV=production
+CORS_ORIGIN=https://app.dprd.semarangkota.go.id
+
+# JWT Security Secrets (Gunakan string acak minimal 32 karakter)
+JWT_ACCESS_SECRET=kunci-rahasia-jwt-access-token-produksi-anda
+JWT_REFRESH_SECRET=kunci-rahasia-jwt-refresh-token-produksi-anda
+
+# Provider AI & Media Uploads
+LLM_PROVIDER=gemini
+GEMINI_API_KEY=kunci-api-gemini-produksi-anda
+CLOUDINARY_CLOUD_NAME=nama-cloudinary-anda
+CLOUDINARY_API_KEY=key-cloudinary-anda
+CLOUDINARY_API_SECRET=secret-cloudinary-anda
+```
+
+**Frontend (`frontend/.env`):**
+```env
+VITE_API_BASE_URL=https://app.dprd.semarangkota.go.id/api/v1
+```
+
+### C. Mencegah Kebocoran Rahasia (Secret Scanning)
+
+1. **Lokal (Pre-commit Hook)**:
+   - Direkomendasikan untuk memasang perkakas **Gitleaks** secara lokal untuk memindai commit sebelum dikirim ke remote.
+   - Pasang lewat Homebrew (`brew install gitleaks`) atau Scoop (`scoop install gitleaks`) lalu jalankan `gitleaks detect --verbose` untuk memindai repositori Anda secara berkasional.
+2. **Otomatis di CI Pipeline**:
+   - Pipeline CI kita dilengkapi dengan job **Secret Scanning** otomatis menggunakan **TruffleHog OSS**. Setiap push atau Pull Request akan dipindai dari potensi kebocoran API Key (Gemini, Cloudinary, AWS) maupun JWT secrets. Jika terdeteksi kunci sensitif asli, sistem akan segera memberikan peringatan di log Actions.
 
 ---
 
