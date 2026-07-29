@@ -69,7 +69,7 @@ export function NotificationBell({ align = 'right', className }: { align?: 'left
   }, [socket, user, addNotification])
 
   return (
-    <div className="relative">
+    <div className="relative inline-block">
       <button
         onClick={() => setIsOpen((prev) => !prev)}
         className={cn(
@@ -96,7 +96,7 @@ export function NotificationBell({ align = 'right', className }: { align?: 'left
               transition={{ duration: 0.15 }}
               className={cn(
                 "absolute mt-3 z-50 w-80 max-w-[calc(100vw-2rem)] sm:w-96 rounded-2xl border border-slate-200/60 bg-white shadow-[0_8px_30px_rgb(0,0,0,0.12)] overflow-hidden",
-                align === 'right' ? 'right-0' : 'left-0'
+                align === 'right' ? 'right-0 left-auto' : 'left-0 right-auto'
               )}
             >
               <div className="flex items-center justify-between border-b border-slate-100 p-4 bg-slate-50/50">
