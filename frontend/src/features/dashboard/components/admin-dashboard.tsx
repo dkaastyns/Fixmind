@@ -149,118 +149,145 @@ function ExportModal({ open, onClose }: ExportModalProps) {
 
               {/* Modal */}
               <motion.div
-                initial={{ opacity: 0, scale: 0.95, y: 12 }}
+                initial={{ opacity: 0, scale: 0.95, y: 15 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.95, y: 12 }}
-                transition={{ type: 'spring', stiffness: 300, damping: 25 }}
-                className="relative w-full max-w-md rounded-2xl bg-white shadow-2xl border border-gray-100 overflow-hidden"
+                exit={{ opacity: 0, scale: 0.95, y: 15 }}
+                className="relative w-full max-w-sm overflow-hidden rounded-2xl bg-white p-6 shadow-2xl border border-slate-100"
               >
                 {/* Header */}
-                <div className="flex items-center justify-between px-6 pt-5 pb-4 border-b border-gray-100">
-                  <div className="flex items-center gap-2">
-                    <Download className="h-5 w-5 text-[#d9a416]" />
-                    <h3 className="text-base font-semibold text-gray-900 font-bold">
-                      Export Data Aplikasi
-                    </h3>
+                <div className="flex items-center justify-between mb-5 pb-2 border-b border-slate-100">
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-50 text-[#d9a416]">
+                      <Download className="h-5 w-5" />
+                    </div>
+                    <div>
+                      <h3 className="text-sm font-bold text-slate-800">Export Data Aplikasi</h3>
+                      <p className="text-[11px] text-slate-400">Pilih jenis dan format dokumen</p>
+                    </div>
                   </div>
-                  <button onClick={onClose} className="text-gray-400 hover:text-gray-600 transition-colors">
-                    <X className="h-5 w-5" />
+                  <button
+                    onClick={onClose}
+                    className="rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors"
+                  >
+                    <X className="h-4 w-4" />
                   </button>
                 </div>
 
-                <div className="px-6 py-5 space-y-5">
-                  {/* Step 1 — Pilih Jenis Laporan */}
-                  <div>
-                    <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">
-                      Jenis Laporan
-                    </p>
-                    <div className="grid grid-cols-3 gap-2">
-                      {([
-                        { val: 'masalah' as ReportKind, label: 'Laporan Masalah', icon: ClipboardList, color: 'text-blue-500 bg-blue-50 border-blue-200' },
-                        { val: 'transfer' as ReportKind, label: 'Transfer Aset', icon: ArrowRightLeft, color: 'text-amber-600 bg-amber-50 border-amber-200' },
-                        { val: 'maintenance' as ReportKind, label: 'Jadwal Pemeliharaan', icon: Wrench, color: 'text-green-600 bg-green-50 border-green-200' },
-                      ] as const).map(({ val, label, icon: Icon, color }) => (
-                        <button
-                          key={val}
-                          onClick={() => setKind(val)}
-                          className={`group flex flex-col items-center gap-2 p-3 rounded-xl border-2 transition-all duration-200 hover:-translate-y-1 hover:shadow-md active:scale-95 ${
-                            kind === val ? color + ' shadow-sm ring-2 ring-offset-1 ' + color.split(' ')[0].replace('text-', 'ring-') : 'border-gray-100 hover:border-gray-300 hover:bg-gray-50'
-                          }`}
-                        >
-                          <Icon className={`h-5 w-5 transition-colors ${kind === val ? '' : 'text-gray-400 group-hover:text-gray-600'}`} />
-                          <span className={`text-xs font-medium text-center leading-tight transition-colors ${kind === val ? '' : 'text-gray-500 group-hover:text-gray-700'}`}>{label}</span>
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Step 2 — Pilih Rentang Waktu */}
-                  <div>
-                    <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">
-                      Rentang Waktu
-                    </p>
-                    <label className="flex items-center gap-2 cursor-pointer mb-3">
-                      <input
-                        type="checkbox"
-                        className="rounded border-gray-300 text-[#F9D141] focus:ring-[#F9D141]"
-                        checked={isAllTime}
-                        onChange={(e) => setIsAllTime(e.target.checked)}
-                      />
-                      <span className="text-sm font-medium text-gray-700">Semua Waktu (Tanpa Filter)</span>
-                    </label>
-
-                    <AnimatePresence>
-                      {!isAllTime && (
-                        <motion.div
-                          initial={{ opacity: 0, height: 0 }}
-                          animate={{ opacity: 1, height: 'auto' }}
-                          exit={{ opacity: 0, height: 0 }}
-                          className="grid grid-cols-2 gap-3 overflow-hidden"
-                        >
-                          <div>
-                            <label className="block text-xs font-medium text-gray-500 mb-1">Dari Tanggal</label>
-                            <input
-                              type="date"
-                              className="flex h-10 w-full rounded-xl border border-gray-200 bg-gray-50 px-3 text-sm focus:border-[#F9D141] focus:ring-[#F9D141] focus:outline-none"
-                              value={startDate}
-                              onChange={(e) => setStartDate(e.target.value)}
-                            />
-                          </div>
-                          <div>
-                            <label className="block text-xs font-medium text-gray-500 mb-1">Sampai Tanggal</label>
-                            <input
-                              type="date"
-                              className="flex h-10 w-full rounded-xl border border-gray-200 bg-gray-50 px-3 text-sm focus:border-[#F9D141] focus:ring-[#F9D141] focus:outline-none"
-                              value={endDate}
-                              onChange={(e) => setEndDate(e.target.value)}
-                            />
-                          </div>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
+                {/* Bagian Jenis Laporan */}
+                <div className="mb-4 bg-slate-50/70 p-3 rounded-xl border border-slate-100">
+                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-2">
+                    Jenis Laporan
+                  </label>
+                  <div className="grid grid-cols-3 gap-2">
+                    {([
+                      { val: 'masalah' as ReportKind, label: 'Laporan Masalah', icon: ClipboardList, color: 'text-blue-500 bg-blue-50 border-blue-200' },
+                      { val: 'transfer' as ReportKind, label: 'Transfer Aset', icon: ArrowRightLeft, color: 'text-amber-600 bg-amber-50 border-amber-200' },
+                      { val: 'maintenance' as ReportKind, label: 'Jadwal Pemeliharaan', icon: Wrench, color: 'text-green-600 bg-green-50 border-green-200' },
+                    ] as const).map(({ val, label, icon: Icon, color }) => (
+                      <button
+                        key={val}
+                        onClick={() => setKind(val)}
+                        className={`group flex flex-col items-center gap-1.5 p-2.5 rounded-xl border-2 transition-all duration-200 hover:-translate-y-1 hover:shadow-md active:scale-95 ${
+                          kind === val ? color + ' shadow-sm ring-2 ring-offset-1 ' + color.split(' ')[0].replace('text-', 'ring-') : 'bg-white border-slate-200 text-slate-600 hover:border-slate-300'
+                        }`}
+                      >
+                        <Icon className={`h-4 w-4 transition-colors ${kind === val ? '' : 'text-slate-400 group-hover:text-slate-600'}`} />
+                        <span className={`text-[9px] font-bold text-center leading-tight transition-colors ${kind === val ? '' : 'text-slate-500 group-hover:text-slate-700'}`}>{label}</span>
+                      </button>
+                    ))}
                   </div>
                 </div>
 
-                {/* Footer Buttons */}
-                <div className="flex gap-2.5 px-6 pb-5">
+                {/* Bagian Rentang Waktu */}
+                <div className="mb-5 bg-slate-50/70 p-3 rounded-xl border border-slate-100">
+                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-2">
+                    Rentang Waktu Data
+                  </label>
+                  <div className="flex gap-2 mb-3">
+                    <button
+                      type="button"
+                      onClick={() => setIsAllTime(true)}
+                      className={`flex-1 py-1.5 text-xs font-semibold rounded-lg border transition-all cursor-pointer ${
+                        isAllTime ? 'bg-amber-50 border-amber-300 text-[#d9a416] shadow-sm' : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'
+                      }`}
+                    >
+                      Semua Waktu
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setIsAllTime(false)}
+                      className={`flex-1 py-1.5 text-xs font-semibold rounded-lg border transition-all cursor-pointer ${
+                        !isAllTime ? 'bg-amber-50 border-amber-300 text-[#d9a416] shadow-sm' : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'
+                      }`}
+                    >
+                      Pilih Tanggal
+                    </button>
+                  </div>
+
+                  {!isAllTime && (
+                    <div className="grid grid-cols-2 gap-2 animate-fadeIn">
+                      <div>
+                        <label className="text-[9px] font-bold text-slate-400 block mb-0.5">Tanggal Mulai</label>
+                        <input
+                          type="date"
+                          value={startDate}
+                          onChange={(e) => setStartDate(e.target.value)}
+                          className="w-full text-xs px-2 py-1.5 rounded-lg border border-slate-200 bg-white focus:border-[#d9a416] focus:outline-none text-slate-700 font-medium"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-[9px] font-bold text-slate-400 block mb-0.5">Tanggal Selesai</label>
+                        <input
+                          type="date"
+                          value={endDate}
+                          onChange={(e) => setEndDate(e.target.value)}
+                          className="w-full text-xs px-2 py-1.5 rounded-lg border border-slate-200 bg-white focus:border-[#d9a416] focus:outline-none text-slate-700 font-medium"
+                        />
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Selection Grid (Format Excel/PDF) */}
+                <div className="grid grid-cols-2 gap-3 mb-4">
+                  <motion.button
+                    whileHover={{ scale: 1.03, y: -2 }}
+                    whileTap={{ scale: 0.97 }}
+                    onClick={() => handleExport('excel')}
+                    className="flex flex-col items-center gap-2.5 p-3 rounded-xl border border-slate-100 hover:border-emerald-300 hover:bg-emerald-50 hover:shadow-lg transition-all text-center cursor-pointer group"
+                  >
+                    <div className="p-2.5 rounded-xl bg-emerald-50 text-emerald-600 group-hover:bg-emerald-100 group-hover:scale-110 transition-transform duration-300">
+                      <FileSpreadsheet className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <p className="text-xs font-bold text-slate-800">Format Excel</p>
+                      <p className="text-[9px] text-slate-400 mt-0.5">Spreadsheet</p>
+                    </div>
+                  </motion.button>
+
+                  <motion.button
+                    whileHover={{ scale: 1.03, y: -2 }}
+                    whileTap={{ scale: 0.97 }}
+                    onClick={() => handleExport('pdf')}
+                    className="flex flex-col items-center gap-2.5 p-3 rounded-xl border border-slate-100 hover:border-rose-300 hover:bg-rose-50 hover:shadow-lg transition-all text-center cursor-pointer group"
+                  >
+                    <div className="p-2.5 rounded-xl bg-rose-50 text-rose-600 group-hover:bg-rose-100 group-hover:scale-110 transition-transform duration-300">
+                      <FileText className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <p className="text-xs font-bold text-slate-800">Format PDF</p>
+                      <p className="text-[9px] text-slate-400 mt-0.5">Siap cetak</p>
+                    </div>
+                  </motion.button>
+                </div>
+
+                <div className="mt-2">
                   <Button
-                    variant="secondary"
-                    className="flex-1 rounded-xl text-gray-700 bg-gray-100 hover:bg-gray-200 h-11"
+                    variant="outline"
+                    className="w-full text-slate-500 hover:bg-slate-50 hover:text-slate-700 border-slate-200 shadow-none font-bold"
                     onClick={onClose}
                   >
                     Batal
-                  </Button>
-                  <Button
-                    className="flex-1 rounded-xl bg-emerald-600 text-white font-bold hover:bg-emerald-700 transition-all shadow-sm flex items-center gap-1.5 justify-center h-11 cursor-pointer"
-                    onClick={() => handleExport('excel')}
-                  >
-                    <FileSpreadsheet className="h-4 w-4" /> Excel
-                  </Button>
-                  <Button
-                    className="flex-1 rounded-xl bg-rose-600 text-white font-bold hover:bg-rose-700 transition-all shadow-sm flex items-center gap-1.5 justify-center h-11 cursor-pointer"
-                    onClick={() => handleExport('pdf')}
-                  >
-                    <FileText className="h-4 w-4" /> PDF
                   </Button>
                 </div>
               </motion.div>
