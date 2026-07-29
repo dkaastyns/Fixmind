@@ -12,8 +12,8 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'masked-icon.svg'],
       manifest: {
-        name: 'E-Lapor DPRD Kota Semarang',
-        short_name: 'E-Lapor DPRD',
+        name: 'ASETKITA Semarang',
+        short_name: 'ASETKITA Semarang',
         description: 'Sistem pelaporan dan pemeliharaan fasilitas DPRD Kota Semarang',
         theme_color: '#ef629f',
         background_color: '#fdf4f9',

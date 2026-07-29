@@ -366,7 +366,7 @@ export class AssetsService {
   /** Generate template Excel yang bisa di-download user sebagai panduan format import. */
   async generateImportTemplate(): Promise<Buffer> {
     const workbook = new ExcelJS.Workbook();
-    workbook.creator = 'E-Lapor DPRD';
+    workbook.creator = 'ASETKITA Semarang';
     workbook.created = new Date();
 
     const sheet = workbook.addWorksheet('Template Import Aset', {
@@ -429,7 +429,7 @@ export class AssetsService {
     const guide = workbook.addWorksheet('Panduan');
     guide.getColumn(1).width = 60;
     const info = [
-      ['PANDUAN IMPORT ASET - E-LAPOR DPRD KOTA SEMARANG'],
+      ['PANDUAN IMPORT ASET - ASETKITA SEMARANG'],
       [''],
       ['Kolom yang wajib diisi:'],
       [

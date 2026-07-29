@@ -158,7 +158,7 @@ export function UsersPage() {
                   Manajemen Pengguna
                 </h1>
                 <p className="text-sm text-slate-200 max-w-xl font-medium leading-relaxed opacity-95 drop-shadow-sm">
-                  Daftar dan kelola akun administrator serta pengguna aplikasi E-Lapor DPRD Kota Semarang.
+                  Daftar dan kelola akun administrator serta pengguna aplikasi ASETKITA Semarang.
                 </p>
               </div>
             </div>

@@ -45,7 +45,7 @@ export class ReportsController {
     @Query('endDate') endDate?: string,
   ) {
     const workbook = new ExcelJS.Workbook();
-    workbook.creator = 'E-Lapor DPRD';
+    workbook.creator = 'ASETKITA Semarang';
     workbook.created = new Date();
 
     const sheet = workbook.addWorksheet('Reports');
@@ -120,7 +120,7 @@ export class ReportsController {
       format: 'a4',
     });
     doc.setFontSize(16);
-    doc.text('E-Lapor DPRD – Ekspor Laporan', 40, 40);
+    doc.text('ASETKITA Semarang – Ekspor Laporan', 40, 40);
     doc.setFontSize(10);
     doc.text(`Dibuat: ${new Date().toISOString()}`, 40, 58);
 
