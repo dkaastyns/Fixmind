@@ -23,7 +23,7 @@ curl -X POST http://localhost:3000/api/v1/auth/login \
   -c cookies.txt \
   -d '{
     "email": "admin@asetkita-semarang.local",
-    "password": "AdminPassword123!"
+    "password": "Admin123!@#"
   }'
 ```
 *Catatan: Parameter `-c cookies.txt` akan menyimpan cookie refresh token yang dikirim backend ke file lokal.*

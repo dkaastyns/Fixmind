@@ -162,8 +162,8 @@ Setelah menjalankan `bun run seed` di backend, Anda dapat menggunakan akun berik
 
 | Peran (Role) | Email Kredensial | Kata Sandi (Password) | Akses |
 |--------------|------------------|-----------------------|-------|
-| **ADMIN** | `admin@asetkita-semarang.local` | `AdminPassword123!` | Akses Penuh (Kelola Ruangan, Aset, User, Maintenance, Transfer Review, Analitik) |
-| **USER** | `user@asetkita-semarang.local` | `UserPassword123!` | Akses Pegawai (Pelaporan Kerusakan, Pengajuan Transfer Aset, Profil) |
+| **ADMIN** | `admin@asetkita-semarang.local` | `Admin123!@#` | Akses Penuh (Kelola Ruangan, Aset, User, Maintenance, Transfer Review, Analitik) |
+| **USER** | `user@asetkita-semarang.local` | `User123!@#` | Akses Pegawai (Pelaporan Kerusakan, Pengajuan Transfer Aset, Profil) |
 
 ---
 
