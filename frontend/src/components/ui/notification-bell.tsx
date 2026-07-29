@@ -95,7 +95,7 @@ export function NotificationBell({ align = 'right', className }: { align?: 'left
               exit={{ opacity: 0, y: 10, scale: 0.95 }}
               transition={{ duration: 0.15 }}
               className={cn(
-                "absolute mt-3 z-50 w-80 sm:w-96 rounded-2xl border border-slate-200/60 bg-white shadow-[0_8px_30px_rgb(0,0,0,0.12)] overflow-hidden",
+                "absolute mt-3 z-50 w-80 max-w-[calc(100vw-2rem)] sm:w-96 rounded-2xl border border-slate-200/60 bg-white shadow-[0_8px_30px_rgb(0,0,0,0.12)] overflow-hidden",
                 align === 'right' ? 'right-0' : 'left-0'
               )}
             >

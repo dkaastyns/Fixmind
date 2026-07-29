@@ -392,12 +392,18 @@ export function AdminDashboard() {
           initial={{ opacity: 0, y: -15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="relative overflow-hidden w-full bg-cover bg-center rounded-b-[2.5rem] md:rounded-[2.5rem] shadow-xl pt-6 pb-8 px-5 md:py-8 md:px-8 text-white min-h-[300px] md:min-h-[260px] flex flex-col justify-between group"
-          style={{ backgroundImage: 'url("/new-bg_dprd.jpg")' }}
+          className="relative w-full pt-6 pb-8 px-5 md:py-8 md:px-8 text-white min-h-[300px] md:min-h-[260px] flex flex-col justify-between group"
         >
-          {/* Ambient Glow & Dark Overlay */}
-          <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/60 to-black/75 z-0" />
-          <div className="absolute -top-24 -right-24 w-96 h-96 bg-[#F9D141]/10 rounded-full blur-3xl pointer-events-none group-hover:bg-[#F9D141]/20 transition-all duration-700" />
+          {/* Background & Overlay Wrapper to clip rounded corners */}
+          <div className="absolute inset-0 rounded-b-[2.5rem] md:rounded-[2.5rem] overflow-hidden shadow-xl z-0">
+            <div 
+              className="absolute inset-0 bg-cover bg-center"
+              style={{ backgroundImage: 'url("/new-bg_dprd.jpg")' }}
+            />
+            {/* Ambient Glow & Dark Overlay */}
+            <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/60 to-black/75" />
+            <div className="absolute -top-24 -right-24 w-96 h-96 bg-[#F9D141]/10 rounded-full blur-3xl pointer-events-none group-hover:bg-[#F9D141]/20 transition-all duration-700" />
+          </div>
 
           {/* Mobile Header Toolbar */}
           <div className="relative z-10 flex items-center justify-between md:hidden w-full mb-4">

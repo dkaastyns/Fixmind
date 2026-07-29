@@ -62,11 +62,16 @@ export function UserDashboard() {
     >
       {/* Top Banner Container */}
       <div 
-        className="relative overflow-hidden w-full bg-cover bg-center rounded-b-[2.5rem] md:rounded-3xl shadow-md pt-6 pb-8 px-5 md:py-8 md:px-8 text-white min-h-[320px] flex flex-col justify-between"
-        style={{ backgroundImage: 'url("/new-bg_dprd.jpg")' }}
+        className="relative w-full pt-6 pb-8 px-5 md:py-8 md:px-8 text-white min-h-[320px] flex flex-col justify-between"
       >
-        {/* Dark overlay */}
-        <div className="absolute inset-0 bg-slate-950/70 z-0" />
+        {/* Background & Overlay Wrapper to clip rounded corners */}
+        <div className="absolute inset-0 rounded-b-[2.5rem] md:rounded-3xl overflow-hidden shadow-md z-0">
+          <div 
+            className="absolute inset-0 bg-cover bg-center"
+            style={{ backgroundImage: 'url("/new-bg_dprd.jpg")' }}
+          />
+          <div className="absolute inset-0 bg-slate-950/70" />
+        </div>
         
         {/* Mobile Header Toolbar */}
         <div className="relative z-10 flex items-center justify-between md:hidden w-full">

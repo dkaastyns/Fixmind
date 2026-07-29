@@ -393,12 +393,15 @@ export function UsersPage() {
         className="block lg:hidden min-h-screen bg-[#F5F5F5] pb-24 -mt-4 -mx-4 overflow-x-hidden relative"
       >
         {/* Header Cover Banner with background image */}
-        <div className="relative h-[280px] w-full rounded-b-[40px] overflow-hidden shadow-md">
-          <div 
-            className="absolute inset-0 bg-cover bg-center" 
-            style={{ backgroundImage: 'url(/new-bg_dprd.jpg)' }}
-          />
-          <div className="absolute inset-0 bg-black/60" />
+        <div className="relative h-[280px] w-full rounded-b-[40px] shadow-md">
+          {/* Background wrapper with overflow-hidden */}
+          <div className="absolute inset-0 rounded-b-[40px] overflow-hidden">
+            <div 
+              className="absolute inset-0 bg-cover bg-center" 
+              style={{ backgroundImage: 'url(/new-bg_dprd.jpg)' }}
+            />
+            <div className="absolute inset-0 bg-black/60" />
+          </div>
 
           {/* Top Nav */}
           <div className="relative z-10 flex items-center justify-between p-4 pt-6">
