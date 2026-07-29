@@ -1,5 +1,5 @@
 -- ============================================================
--- Fixmind Performance Indexes Migration
+-- ASETKITA Semarang Performance Indexes Migration
 -- Run this directly against your PostgreSQL database.
 -- All indexes use IF NOT EXISTS so it's safe to run multiple times.
 -- ============================================================

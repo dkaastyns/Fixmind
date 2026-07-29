@@ -51,7 +51,7 @@ export function FullPageLoading({ text = 'Menghubungkan ke layanan' }: { text?: 
         {/* App Title & Subtitle */}
         <div>
           <h2 className="text-xl font-black tracking-tight text-slate-900">
-            <span className="text-[#d9a416]">Fix</span>Mind
+            <span className="text-[#d9a416]">ASETKITA</span> Semarang
           </h2>
           <p className="mt-1 text-xs font-semibold text-slate-500 flex items-center gap-1.5 justify-center">
             <span>{text}</span>
