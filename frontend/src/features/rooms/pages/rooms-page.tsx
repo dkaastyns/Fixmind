@@ -329,13 +329,7 @@ export function RoomsPage() {
             <motion.div whileHover={{ scale: 1.04, y: -2 }} whileTap={{ scale: 0.96 }}>
               <Button
                 variant="secondary"
-                onClick={() => {
-                  if (!selectedRoom) {
-                    toast.error('Pilih ruangan terlebih dahulu di daftar sebelah kiri untuk menambah aset.')
-                    return
-                  }
-                  setShowAssetForm(true)
-                }}
+                onClick={() => setShowAssetForm(true)}
                 title="Tambah aset baru secara manual"
                 className="gap-1.5 h-10 px-3.5 border-slate-200 text-slate-700 bg-white/70 hover:bg-white hover:shadow-md transition-all duration-200 font-semibold rounded-xl text-xs cursor-pointer"
               >
@@ -750,19 +744,18 @@ export function RoomsPage() {
       />
 
       {/* Asset Creation Modal Form */}
-      {selectedRoom && (
-        <AssetFormModal
-          isOpen={showAssetForm}
-          token={token}
-          roomId={selectedRoom}
-          onClose={() => setShowAssetForm(false)}
-          onSuccess={() => { 
-            qc.invalidateQueries({ queryKey: ['assets'] })
-            setShowAssetForm(false)
-            toast.success('Aset berhasil ditambahkan') 
-          }}
-        />
-      )}
+      <AssetFormModal
+        isOpen={showAssetForm}
+        token={token}
+        initialRoomId={selectedRoom || ''}
+        rooms={rooms.data?.data ?? []}
+        onClose={() => setShowAssetForm(false)}
+        onSuccess={() => { 
+          qc.invalidateQueries({ queryKey: ['assets'] })
+          setShowAssetForm(false)
+          toast.success('Aset berhasil ditambahkan') 
+        }}
+      />
 
       {/* Modal pilih ruangan saat import dari header tanpa ruangan dipilih */}
       <ImportRoomPickerModal
@@ -1069,21 +1062,30 @@ function RoomFormModal({
 function AssetFormModal({
   isOpen,
   token,
-  roomId,
+  initialRoomId,
+  rooms,
   onClose,
   onSuccess,
 }: {
   isOpen: boolean
   token: string
-  roomId: string
+  initialRoomId: string
+  rooms: { id: string; code: string; name: string; building?: string }[]
   onClose: () => void
   onSuccess: () => void
 }) {
+  const [roomId, setRoomId] = useState(initialRoomId)
   const [idpemda, setIdpemda] = useState('')
   const [kodeBarang, setKodeBarang] = useState('')
   const [nomorRegister, setNomorRegister] = useState('')
   const [namaBarang, setNamaBarang] = useState('')
   const [merkType, setMerkType] = useState('')
+
+  useEffect(() => {
+    if (isOpen) {
+      setRoomId(initialRoomId)
+    }
+  }, [isOpen, initialRoomId])
 
   const mutation = useMutation({
     mutationFn: () => createAsset(token, { roomId, idpemda, kodeBarang, nomorRegister, namaBarang, merkType }),
@@ -1136,7 +1138,25 @@ function AssetFormModal({
                 </button>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-4">
+                <div className="space-y-1.5">
+                  <label htmlFor="asset-room" className="text-xs font-semibold text-slate-600">Pilih Ruangan *</label>
+                  <select
+                    id="asset-room"
+                    value={roomId}
+                    onChange={(e) => setRoomId(e.target.value)}
+                    className="w-full text-sm py-2 px-3 rounded-xl border border-slate-200 bg-white focus:border-[#F9D141] focus:ring-[#F9D141] outline-none"
+                  >
+                    <option value="" disabled>— Pilih ruangan —</option>
+                    {rooms.map((r) => (
+                      <option key={r.id} value={r.id}>
+                        {r.code} — {r.name} {r.building ? `(${r.building})` : ''}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
                   <label htmlFor="asset-name" className="text-xs font-semibold text-slate-600">Nama Barang *</label>
                   <Input 
@@ -1201,7 +1221,7 @@ function AssetFormModal({
                 </Button>
                 <Button 
                   onClick={() => mutation.mutate()} 
-                  disabled={!idpemda || !kodeBarang || !nomorRegister || !namaBarang || !merkType || mutation.isPending} 
+                  disabled={!roomId || !idpemda || !kodeBarang || !nomorRegister || !namaBarang || !merkType || mutation.isPending} 
                   className="bg-[#d9a416] hover:bg-[#b88b12] text-white font-extrabold rounded-xl cursor-pointer"
                 >
                   {mutation.isPending ? 'Menyimpan...' : 'Simpan Aset'}
