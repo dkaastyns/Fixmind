@@ -1123,9 +1123,9 @@ function ExportMaintenancePickerModal({
                   onClose()
                 }}
                 disabled={isExportingExcel || isExportingPdf}
-                className="flex flex-col items-center gap-3 p-4 rounded-xl border border-slate-100 hover:border-emerald-200 hover:bg-emerald-50/50 transition-all text-center cursor-pointer group"
+                className="flex flex-col items-center gap-3 p-4 rounded-xl border border-slate-100 hover:border-emerald-300 hover:bg-emerald-50 hover:shadow-lg transition-all text-center cursor-pointer group"
               >
-                <div className="p-3 rounded-xl bg-emerald-50 text-emerald-600 group-hover:scale-110 transition-transform">
+                <div className="p-3 rounded-xl bg-emerald-50 text-emerald-600 group-hover:bg-emerald-100 group-hover:scale-110 transition-transform duration-300">
                   <FileSpreadsheet className="w-6 h-6" />
                 </div>
                 <div>
@@ -1142,9 +1142,9 @@ function ExportMaintenancePickerModal({
                   onClose()
                 }}
                 disabled={isExportingExcel || isExportingPdf}
-                className="flex flex-col items-center gap-3 p-4 rounded-xl border border-slate-100 hover:border-rose-200 hover:bg-rose-50/50 transition-all text-center cursor-pointer group"
+                className="flex flex-col items-center gap-3 p-4 rounded-xl border border-slate-100 hover:border-rose-300 hover:bg-rose-50 hover:shadow-lg transition-all text-center cursor-pointer group"
               >
-                <div className="p-3 rounded-xl bg-rose-50 text-rose-600 group-hover:scale-110 transition-transform">
+                <div className="p-3 rounded-xl bg-rose-50 text-rose-600 group-hover:bg-rose-100 group-hover:scale-110 transition-transform duration-300">
                   <FileText className="w-6 h-6" />
                 </div>
                 <div>
