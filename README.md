@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://github.com/dkaastyns/Fixmind" target="_blank">
-    <img src="frontend/public/jdih-logo.png" width="380" alt="JDIH Logo" />
+    <img src="frontend/public/jdih-logo.png" width="480" style="background: white; padding: 12px; border-radius: 8px;" alt="JDIH Logo" />
   </a>
 </p>
 
