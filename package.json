@@ -1,0 +1,14 @@
+{
+  "name": "fixmind-root",
+  "private": true,
+  "scripts": {
+    "dev:all": "bun x concurrently \"bun --filter backend start:dev\" \"bun --filter frontend dev\"",
+    "start:backend": "bun --filter backend start:dev",
+    "start:frontend": "bun --filter frontend dev",
+    "test:ci": "bun --filter backend test && bun --filter frontend test"
+  },
+  "workspaces": [
+    "backend",
+    "frontend"
+  ]
+}

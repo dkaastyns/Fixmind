@@ -82,6 +82,14 @@ Struktur lengkap proyek dan panduan pengembang tersedia di folder `docs/`:
 | [docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md) | Solusi masalah umum saat instalasi dan penanganan galat |
 | [CONTRIBUTING.md](CONTRIBUTING.md) | Standar Conventional Commits, git branching, dan PR workflow |
 
+## Port Default Aplikasi & Endpoint
+
+Aplikasi menggunakan konfigurasi port default berikut:
+- **Frontend Web Client:** `http://localhost:5173`
+- **Backend API Server:** `http://localhost:3000`
+- **Backend API Base URL:** `http://localhost:3000/api/v1`
+- **Database PostgreSQL:** `postgresql://postgres:postgres@localhost:5432/asetkita-semarang`
+
 ---
 
 ## Panduan Memulai (Quick Start Guide)
@@ -95,47 +103,64 @@ Struktur lengkap proyek dan panduan pengembang tersedia di folder `docs/`:
 
 ---
 
-### Step 1: Konfigurasi & Jalankan Backend
+### Step 1: Konfigurasi Environment File (.env)
 
-```powershell
-# 1. Masuk ke direktori backend
-cd backend
+Buat file `.env` di dalam folder `backend` dan `frontend` dengan konfigurasi minimal berikut:
 
-# 2. Salin file environment
-copy .env.example .env
-
-# 3. Sesuaikan isi .env (DATABASE_URL, JWT_ACCESS_SECRET, GEMINI_API_KEY, dll)
-
-# 4. Install dependensi
-bun install
-
-# 5. Jalankan migrasi database & seed data admin awal
-bun run migrate
-bun run seed
-
-# 6. Menjalankan server backend (Mode Development)
-bun run start:dev
+**Backend (`backend/.env`):**
+```env
+DATABASE_URL=postgresql://postgres:postgres@localhost:5432/asetkita-semarang
+PORT=3000
+NODE_ENV=development
+CORS_ORIGIN=http://localhost:5173
+JWT_ACCESS_SECRET=your-super-long-secret-key-at-least-32-chars
+JWT_REFRESH_SECRET=your-other-super-long-secret-key-at-least-32-chars
+LLM_PROVIDER=gemini
+GEMINI_API_KEY=your-google-gemini-key
+GEMINI_MODEL=gemini-2.5-flash
 ```
-Backend API akan berjalan di: `http://localhost:3000/api/v1`
+
+**Frontend (`frontend/.env`):**
+```env
+VITE_API_BASE_URL=http://localhost:3000/api/v1
+```
 
 ---
 
-### Step 2: Konfigurasi & Jalankan Frontend
+### Step 2: Instalasi & Inisialisasi Database
+
+Jalankan perintah berikut di root folder untuk menginstal dependensi seluruh modul dan melakukan migrasi database awal:
 
 ```powershell
-# 1. Masuk ke direktori frontend
-cd frontend
-
-# 2. Salin file environment
-copy .env.example .env
-
-# 3. Install dependensi
+# Install seluruh dependensi workspace sekaligus
 bun install
 
-# 4. Menjalankan server frontend (Vite Dev Server)
-bun run dev
+# Masuk ke backend untuk menjalankan migrasi & seed awal
+cd backend
+bun run migrate
+bun run seed
+cd ..
 ```
-Frontend web akan berjalan di: `http://localhost:5173`
+
+---
+
+### Step 3: Jalankan Aplikasi dengan Skrip Helper
+
+Anda dapat menjalankan atau menguji aplikasi secara instan dari root folder menggunakan skrip otomatisasi workspaces Bun berikut:
+
+```powershell
+# Jalankan frontend & backend sekaligus secara bersamaan (Sangat direkomendasikan)
+bun run dev:all
+
+# Hanya jalankan backend service (NestJS)
+bun run start:backend
+
+# Hanya jalankan frontend web (Vite)
+bun run start:frontend
+
+# Jalankan seluruh unit testing (backend & frontend)
+bun run test:ci
+```
 
 ---
 
