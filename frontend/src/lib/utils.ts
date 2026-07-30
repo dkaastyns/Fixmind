@@ -34,6 +34,19 @@ export function handleApiError(error: unknown, defaultMessage = 'Terjadi kesalah
   // Handle specific ApiError status codes (401, 403, etc.)
   if (error instanceof ApiError) {
     if (error.status === 401) {
+      if (window.location.pathname === '/login') {
+        if (isSpam('auth-401')) return
+        const msg = error.message === 'Invalid credentials'
+          ? 'Email atau kata sandi salah'
+          : error.message.includes('Too many failed attempts')
+          ? 'Terlalu banyak percobaan gagal. Akun dikunci selama 15 menit.'
+          : error.message.includes('Account locked')
+          ? `Akun dikunci. Silakan coba lagi dalam ${error.message.match(/\d+/)?.[0] ?? '15'} menit.`
+          : error.message
+        toast.error(msg)
+        return
+      }
+
       if (isSpam('auth-401')) return
       useAuthStore.getState().clearSession()
       window.location.href = '/login'
@@ -50,6 +63,15 @@ export function handleApiError(error: unknown, defaultMessage = 'Terjadi kesalah
         description: 'Anda tidak memiliki wewenang untuk melakukan tindakan ini.',
         duration: 4000,
       })
+      return
+    }
+
+    if (error.status === 409) {
+      if (isSpam('auth-409')) return
+      const msg = error.message === 'Email already registered'
+        ? 'Email sudah terdaftar. Silakan gunakan email lain atau masuk.'
+        : error.message
+      toast.error(msg)
       return
     }
   }

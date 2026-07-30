@@ -194,7 +194,15 @@ export function SignupPage() {
               )}
             </div>
 
-            {mutation.isError && <Alert>{(mutation.error as Error).message}</Alert>}
+            {mutation.isError && (
+              <Alert>
+                {(() => {
+                  const msg = (mutation.error as Error).message
+                  if (msg === 'Email already registered') return 'Email sudah terdaftar. Silakan gunakan email lain atau masuk.'
+                  return msg
+                })()}
+              </Alert>
+            )}
 
             {/* Submit Button */}
             <motion.button
