@@ -349,7 +349,7 @@ export function AssetTransferPage() {
                 key={room.id}
                 className="bg-white/60 backdrop-blur-md border border-white/40 rounded-2xl p-4 shadow-sm hover:shadow-md transition-all flex items-start gap-3"
               >
-                <div className="p-2.5 bg-blue-500/10 text-blue-600 rounded-xl shadow-inner mt-0.5">
+                <div className="p-2.5 bg-[#F9D141]/10 text-[#d9a416] rounded-xl shadow-inner mt-0.5">
                   <Building className="w-5 h-5" />
                 </div>
                 <div className="min-w-0 flex-1">
