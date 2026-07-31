@@ -53,17 +53,14 @@ jobs:
         run: bun install
 
       - name: Lint Code
-        run: bun run lint
-        working-directory: ./backend
+        run: bun --filter backend lint
         continue-on-error: true
 
       - name: Build Backend
-        run: bun run build
-        working-directory: ./backend
+        run: bun --filter backend build
 
       - name: Run Tests
-        run: bun run test:cov
-        working-directory: ./backend
+        run: bun --filter backend test:cov
 
   frontend:
     name: Frontend CI
@@ -82,14 +79,11 @@ jobs:
         run: bun install
 
       - name: Lint Code
-        run: bun run lint
-        working-directory: ./frontend
+        run: bun --filter frontend lint
         continue-on-error: true
 
       - name: Build Frontend
-        run: bun run build
-        working-directory: ./frontend
+        run: bun --filter frontend build
 
       - name: Run Tests
-        run: bun run test:coverage
-        working-directory: ./frontend
+        run: bun --filter frontend test:coverage
