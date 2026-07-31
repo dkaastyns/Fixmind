@@ -85,6 +85,8 @@ Struktur lengkap proyek dan panduan pengembang tersedia di folder `docs/`:
 | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | Arsitektur global, diagram alur siklus laporan, dan transfer aset |
 | [docs/API.md](docs/API.md) | Katalog lengkap REST API endpoints, DTO, contoh cURL & WebSockets |
 | [docs/DATABASE.md](docs/DATABASE.md) | ERD, kamus data (Data Dictionary), indeks, dan riwayat migrasi |
+| [docs/ENV.md](docs/ENV.md) | Penjelasan lengkap seluruh environment variables backend, frontend, & Docker |
+| [docs/CONVENTIONS.md](docs/CONVENTIONS.md) | Konvensi penamaan, pola kode, struktur modul, & standar penulisan untuk developer baru |
 | [docs/FRONTEND-ARCHITECTURE.md](docs/FRONTEND-ARCHITECTURE.md) | Arsitektur React 19, Zustand, router-guards, dan design system |
 | [docs/BACKEND-ARCHITECTURE.md](docs/BACKEND-ARCHITECTURE.md) | Modul NestJS, middleware security (Helmet/Throttler), dan kueri `postgres.js` |
 | [docs/AI.md](docs/AI.md) | Konfigurasi prompt Gemini 2.5 Flash, penentuan prioritas & RAG roadmap |
@@ -92,6 +94,7 @@ Struktur lengkap proyek dan panduan pengembang tersedia di folder `docs/`:
 | [docs/ROADMAP.md](docs/ROADMAP.md) | Daftar status pengerjaan fitur proyek dan fase pengembangan |
 | [docs/SECURITY.md](docs/SECURITY.md) | Audit keamanan, JWT token rotation, rate limiting, & account lockout |
 | [docs/TESTING.md](docs/TESTING.md) | Panduan pengujian unit test dan verifikasi TypeScript |
+| [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) | Panduan deployment produksi via Docker Compose & Nginx |
 | [docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md) | Solusi masalah umum saat instalasi dan penanganan galat |
 | [CONTRIBUTING.md](CONTRIBUTING.md) | Standar Conventional Commits, git branching, dan PR workflow |
 

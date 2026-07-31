@@ -4,19 +4,28 @@ Dokumen ini menjelaskan arsitektur teknis server backend NestJS 11 pada sistem *
 
 ---
 
-## 🛠️ Tech Stack Backend
+## Tech Stack Backend
 
-- **NestJS 11** pada runtime **Bun 1.3+**
-- **postgres.js** — Driver SQL murni dengan *tagged template literals* tanpa ORM
-- **PostgreSQL 16** + **pgvector** — Database relasional dengan indeks vektor
-- **Otentikasi Hybrida JWT**: Access Token (JSON) + HTTP-Only Cookie Refresh Token Rotation
-- **Security Middleware**: `helmet`, `class-validator`, & `@nestjs/throttler` (Rate Limiting)
-- **Real-Time Gateway**: `@nestjs/websockets` + **Socket.io**
-- **Mesin AI**: Google Gemini 2.5 Flash API & Groq AI (Llama 3.1)
+| Teknologi | Versi | Peran |
+|-----------|-------|-------|
+| NestJS | 11 | Framework server TypeScript enterprise |
+| Bun | 1.3+ | Runtime & package manager |
+| postgres.js | — | Driver SQL murni (Raw SQL, tagged template literals, tanpa ORM) |
+| PostgreSQL | 16+ | Database relasional utama |
+| pgvector | — | Ekstensi pencarian vektor untuk fitur RAG masa depan |
+| JWT (jsonwebtoken) | — | Autentikasi Access Token + Refresh Token Rotation |
+| Helmet | — | HTTP security headers |
+| class-validator | — | Validasi DTO request body |
+| @nestjs/throttler | — | Rate limiting berbasis IP |
+| @nestjs/websockets + Socket.io | — | Real-time event gateway |
+| Google Gemini API | 2.5 Flash | Mesin analisis prioritas laporan |
+| Groq AI (Llama 3.1) | — | Provider AI alternatif |
+| Cloudinary SDK | — | Upload & penyimpanan media foto |
+| bcrypt | — | Hashing password (cost factor 12) |
 
 ---
 
-## 📂 Struktur Modul Backend (`backend/src/`)
+## Struktur Modul Backend (`backend/src/`)
 
 ```text
 backend/src/
@@ -48,7 +57,7 @@ backend/src/
 
 ---
 
-## 🔄 Pola Struktur Setiap Modul (Per-Module Architecture)
+## Pola Struktur Setiap Modul (Per-Module Architecture)
 
 Setiap modul di `backend/src/modules/` menerapkan pemisahan tanggung jawab yang jelas (*Clean Layered Architecture*):
 
@@ -61,30 +70,71 @@ modules/<nama-modul>/
 └── repositories/                 # Kueri Raw SQL murni via postgres.js (Query Layer)
 ```
 
----
+Aturan tanggung jawab per lapisan:
 
-## 🔒 Lapisan Keamanan (Security Hardening)
-
-1. **Helmet HTTP Headers**: Mengamankan header HTTP terhadap serangan XSS, Clickjacking, dan MIME sniffing.
-2. **ValidationPipe Strict Whitelist**: Menolak dan membuang bidang (*fields*) ilegal yang tidak terdaftar di DTO request.
-3. **Role-Based Access Control (RBAC)**: Guard `@Roles('ADMIN')` memverifikasi peran pengguna secara ketat di setiap endpoint terproteksi.
-4. **Rate Limiting (Throttler)**: Membatasi maksimal 100 request/menit per IP untuk mencegah serangan DoS/brute force.
-5. **Account Lockout Protection**: Akun otomatis dikunci selama 15 menit jika 5 kali berturut-turut gagal memasukkan kata sandi.
-6. **Password Hashing**: Menggunakan `bcrypt` dengan faktor *salt cost* 12.
-7. **Refresh Token Rotation**: Refresh token disimpan di database sebagai hash SHA-256 dan dikirim melalui cookie HTTP-Only.
+| Lapisan | Tanggung Jawab | Batasan |
+|---------|----------------|---------|
+| Controller | Routing HTTP, parse request, panggil service | Tidak boleh mengandung logika bisnis atau kueri database |
+| Service | Logika bisnis, validasi tambahan, orkestrasi | Tidak boleh langsung menulis kueri SQL |
+| Repository | Kueri Raw SQL murni via `postgres.js` | Tidak boleh mengandung logika bisnis |
 
 ---
 
-## 🤖 Arsitektur Kecerdasan Buatan (AI Engine)
+## Lapisan Keamanan (Security Hardening)
+
+| Mekanisme | Implementasi | Keterangan |
+|-----------|--------------|------------|
+| HTTP Security Headers | `helmet` | Mencegah XSS, Clickjacking, MIME sniffing |
+| Input Validation | `ValidationPipe` + `class-validator` | Whitelist ketat — field tidak terdaftar di DTO ditolak dan dibuang |
+| Role-Based Access Control | Guard `@Roles('ADMIN')` | Memeriksa peran dari JWT payload di setiap endpoint terproteksi |
+| Rate Limiting | `@nestjs/throttler` | Maks. 100 req/menit per IP (dapat dikonfigurasi via `THROTTLE_TTL` & `THROTTLE_LIMIT`) |
+| Account Lockout | `failed_login_count` + `locked_until` | Kunci akun 15 menit setelah 5x gagal login berturut-turut |
+| Password Hashing | `bcrypt` (cost 12) | Password tidak pernah disimpan dalam bentuk teks polos |
+| Refresh Token Rotation | Hash SHA-256 di database + HttpOnly Cookie | Token lama otomatis tidak valid saat token baru diterbitkan |
+
+---
+
+## Arsitektur Kecerdasan Buatan (AI Engine)
 
 ```text
 Laporan Baru Dibuat (POST /reports)
-  → Simpan Laporan ke Database (Status: PENDING)
-  → Pemicu Asinkron LlmProviderService
-  → Request ke Google Gemini 2.5 Flash / Groq AI
-  → Parse Respon JSON: priority, score, recommendation, estimatedHours
-  → Update Kolom ai_* di Tabel reports
-  → Pancarkan Event Real-time WebSockets ke Admin
+  -> Simpan Laporan ke Database (Status: PENDING)
+  -> Pemicu Asinkron LlmProviderService
+  -> Request ke Google Gemini 2.5 Flash / Groq AI
+  -> Parse Respon JSON: priority, score, recommendation, estimatedHours
+  -> Update Kolom ai_* di Tabel reports
+  -> Pancarkan Event Real-time WebSockets ke Admin
 ```
 
-Jika terjadi gangguan koneksi ke API Gemini, pembuatan laporan pengguna tetap **berhasil**, dan kolom `ai_analysis_status` di-set menjadi `FAILED` tanpa membatalkan transaksi.
+Jika terjadi gangguan koneksi ke API Gemini, pembuatan laporan pengguna tetap **berhasil**, dan kolom `ai_analysis_status` di-set menjadi `FAILED` tanpa membatalkan transaksi. Admin dapat memicu ulang analisis AI secara manual.
+
+---
+
+## Format Response Envelope API
+
+Semua respons dari backend mengikuti format envelope standar yang konsisten (diterapkan oleh `TransformInterceptor` dan `AllExceptionsFilter`):
+
+**Sukses:**
+```json
+{
+  "success": true,
+  "message": "Deskripsi hasil operasi",
+  "data": { }
+}
+```
+
+**Error:**
+```json
+{
+  "success": false,
+  "statusCode": 400,
+  "error": "Bad Request",
+  "message": "Deskripsi error"
+}
+```
+
+---
+
+## Koneksi Database & Konversi Nama Kolom
+
+Backend menggunakan `postgres.js` dengan konfigurasi `transform` di `backend/src/database/sql.ts` yang secara otomatis mengkonversi nama kolom dari format `snake_case` (PostgreSQL) ke `camelCase` (TypeScript/JavaScript). Proses ini transparan — developer tidak perlu melakukan mapping manual saat membaca hasil kueri.

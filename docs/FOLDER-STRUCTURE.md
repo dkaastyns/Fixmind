@@ -4,10 +4,10 @@ Dokumen ini menyajikan peta struktur pohon direktori proyek **E-Lapor DPRD (ASET
 
 ---
 
-## 🌳 Root Directory Overview
+## Root Directory Overview
 
 ```text
-ASETKITA Semarang/
+FixMind/
 ├── backend/                  # NestJS 11 Server (API, DB Migrations, WebSockets, AI)
 ├── frontend/                 # React 19 + Vite Client (PWA, Tailwind v4, Components)
 ├── docs/                     # Berkas Dokumentasi Lengkap Proyek
@@ -22,7 +22,7 @@ ASETKITA Semarang/
 
 ---
 
-## 📦 Backend Directory Structure (`backend/`)
+## Backend Directory Structure (`backend/`)
 
 ```text
 backend/
@@ -73,7 +73,7 @@ backend/
 
 ---
 
-## 🎨 Frontend Directory Structure (`frontend/`)
+## Frontend Directory Structure (`frontend/`)
 
 ```text
 frontend/
@@ -92,7 +92,7 @@ frontend/
 │   ├── components/           # Komponen UI Reusable
 │   │   ├── layout/           # DashboardLayout & Mobile Sidebar Navigation
 │   │   ├── providers/        # OfflineSyncProvider (PWA Sync Handler)
-│   │   └── ui/               # Button, Input, GlassCard, FullPageLoading, GlobalSearchModal, FloatingActionButton, etc.
+│   │   └── ui/               # Button, Input, GlassCard, FullPageLoading, GlobalSearchModal, FloatingActionButton, dll.
 │   ├── features/             # Modul Halaman Berdasarkan Fitur
 │   │   ├── analytics/pages/  # Halaman Dasbor Analitik & Grafik Metrik
 │   │   ├── asset-transfers/  # Halaman Pengajuan & Persetujuan Transfer Aset
@@ -114,4 +114,36 @@ frontend/
 ├── Dockerfile
 ├── vite.config.ts            # Konfigurasi Vite & Vite PWA Plugin
 └── package.json
+```
+
+---
+
+## Docs Directory Structure (`docs/`)
+
+```text
+docs/
+├── AGENT.md                  # Panduan khusus untuk AI coding agent
+├── AI.md                     # Konfigurasi prompt Gemini, priority engine, & RAG roadmap
+├── API.md                    # Katalog lengkap REST API endpoints, DTO, & contoh cURL
+├── ARCHITECTURE.md           # Arsitektur global & diagram alur siklus laporan
+├── BACKEND-ARCHITECTURE.md   # Modul NestJS, middleware security, & kueri postgres.js
+├── COMPONENTS.md             # Dokumentasi komponen UI reusable & design system
+├── CONTRIBUTION.md           # Panduan kontribusi internal
+├── CONVENTIONS.md            # Konvensi penamaan, kode, & pola arsitektur (dokumen ini)
+├── DATABASE.md               # ERD, kamus data, indeks, & riwayat migrasi
+├── DEPLOYMENT.md             # Panduan deployment produksi via Docker & Nginx
+├── Design.md                 # Filosofi & sistem desain UI/UX (warna, tipografi, animasi)
+├── ENV.md                    # Penjelasan lengkap semua environment variables
+├── FOLDER-STRUCTURE.md       # Struktur pohon folder backend & frontend (dokumen ini)
+├── FRONTEND-ARCHITECTURE.md  # Arsitektur React 19, Zustand, router-guards, & design system
+├── LOCAL-SETUP-LARAGON.md    # Panduan setup lokal menggunakan Laragon (Windows)
+├── LOGGING.md                # Strategi logging backend & penanganan error terstruktur
+├── MIGRATIONS.md             # Panduan menulis & menjalankan migrasi database SQL
+├── PRD.md                    # Product Requirements Document
+├── ROADMAP.md                # Status pengerjaan fitur & fase pengembangan
+├── SECURITY.md               # Audit keamanan, JWT rotation, rate limiting, & lockout
+├── SEED.md                   # Panduan menjalankan database seeding & data awal
+├── SRS.md                    # Software Requirements Specification
+├── TESTING.md                # Panduan pengujian unit test & verifikasi TypeScript
+└── TROUBLESHOOTING.md        # Solusi masalah umum saat instalasi & penanganan galat
 ```

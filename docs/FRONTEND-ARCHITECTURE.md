@@ -4,19 +4,25 @@ Dokumen ini menjelaskan arsitektur teknis, teknologi pendukung, manajemen state,
 
 ---
 
-## 🛠️ Tech Stack Frontend
+## Tech Stack Frontend
 
-- **React 19** + **Vite** + **TypeScript**
-- **Tailwind CSS v4** (`@tailwindcss/vite` & utility `@layer`)
-- **TanStack Query (React Query v5)** — Pengelolaan *server-state*, *caching*, & *optimistic updates*
-- **Zustand** — Pengelolaan *client auth session* (`accessToken` & data `user` di memori)
-- **React Router 7** — Sistem rute deklaratif dengan *router guards* terpisah
-- **Framer Motion** — Animasi sinematik, *glassmorphism*, & *opening intro*
-- **Vite PWA (Plugin)** — Dukungan *Progressive Web App*, *Service Worker caching*, & instalasi aplikasi seluler/desktop tanpa APK
+| Teknologi | Versi | Peran |
+|-----------|-------|-------|
+| React | 19 | UI Library inti |
+| Vite | 8+ | Build tool & dev server |
+| TypeScript | 5+ | Sistem tipe statis |
+| Tailwind CSS | v4 | Utility-first styling |
+| Framer Motion | 12+ | Animasi & transisi halaman |
+| TanStack Query | v5 | Server-state management, caching, & optimistic updates |
+| Zustand | 5+ | Client auth session (accessToken & data user di memori) |
+| React Router | 7 | Sistem rute deklaratif dengan router guards |
+| Vite PWA Plugin | 1+ | Progressive Web App, Service Worker caching, & instalasi seluler/desktop |
+| Lucide React | — | Library ikon konsisten |
+| Sonner | — | Komponen toast notification |
 
 ---
 
-## 📂 Peta Struktur Direktori Frontend
+## Peta Struktur Direktori Frontend
 
 ```text
 frontend/src/
@@ -49,36 +55,58 @@ frontend/src/
 
 ---
 
-## 🧠 Pengelolaan State (State Management Architecture)
+## Pengelolaan State (State Management Architecture)
 
 | Jenis State | Perkakas (Tool) | Catatan & Strategi Keamanan |
-|-------------|-----------------|-----------------------------|
-| **Server Data** | TanStack Query | Menangani pengambil data API, pembaruan otomatis, & pembersihan *cache* query |
-| **Auth Session** | Zustand | Menyimpan `accessToken` dan objek `user` **hanya di memori RAM** (tidak pernah di `localStorage`) |
-| **Refresh Token** | HttpOnly Cookie | Disimpan oleh browser dalam cookie aman `asetkita_semarang_refresh`, kebal dari serangan XSS |
-| **PWA Offline State** | OfflineSyncProvider | Menyimpan antrean transaksi lokal saat offline & menyinkronkan saat koneksi pulih |
-| **Form State** | Native Controlled State | Validasi real-time pada formulir modal & input |
+|-------------|-----------------|------------------------------|
+| Server Data | TanStack Query | Menangani pengambil data API, pembaruan otomatis, & pembersihan cache query |
+| Auth Session | Zustand | Menyimpan `accessToken` dan objek `user` hanya di memori RAM (tidak pernah di `localStorage`) |
+| Refresh Token | HttpOnly Cookie | Disimpan oleh browser dalam cookie aman `asetkita_semarang_refresh`, kebal dari serangan XSS |
+| PWA Offline State | OfflineSyncProvider | Menyimpan antrean transaksi lokal saat offline & menyinkronkan saat koneksi pulih |
+| Form State | Native Controlled State | Validasi real-time pada formulir modal & input |
 
 ---
 
-## 🎨 Design System & Estetika Visual
+## Alur Autentikasi & Token Refresh
 
-Aplikasi ini mengusung estetika **Dark Glassmorphism** yang mewah & futuristik:
+```text
+Pengguna Login (POST /auth/login)
+  -> Terima accessToken (JSON body) + refreshToken (HttpOnly Cookie)
+  -> Simpan accessToken di Zustand store (memori, bukan localStorage)
+  -> Setiap request API: sertakan accessToken di header Authorization
 
-- **Warna Utama**: Deep Slate (`#090D16`, `slate-950`), Accent Gold (`#F9D141` / `#d9a416`), & Soft White
-- **Kartu Kaca (Glass Card)**: `bg-slate-900/60 backdrop-blur-md border border-white/10 text-white`
-- **Typo & Font**: Font `Inter` dengan variasi ketebalan dari *Medium* hingga *ExtraBold*
-- **Layar Pemuatan (Full Page Loading)**: Layar pemuatan terang bermerek logo JDIH Kota Semarang dan animasi titik berpendar emas
+Saat accessToken kedaluwarsa (respons 401):
+  -> apiClient otomatis mengirim POST /auth/refresh (dengan cookie)
+  -> Terima accessToken baru
+  -> Ulangi request asli secara transparan
+  -> Jika refresh juga gagal: logout paksa & redirect ke /login
+```
 
 ---
 
-## 🔗 Peta Rute URL Aplikasi (Route Map)
+## Design System & Estetika Visual
+
+Aplikasi ini mengusung estetika **Minimalism + Glassmorphism**:
+
+| Token | Nilai |
+|-------|-------|
+| Warna Primary (Gold) | `#F9D141` / `#d9a416` |
+| Warna Background (Terang) | `#FAFAFC` |
+| Glass Card Background | `rgba(255, 255, 255, 0.72)` dengan `backdrop-blur-md` |
+| Glass Card Border | `rgba(255, 255, 255, 0.45)` |
+| Font Utama | Inter (Google Fonts) |
+| Border Radius | `rounded-xl` / `rounded-2xl` |
+| Animasi | Framer Motion, durasi 150ms–300ms |
+
+---
+
+## Peta Rute URL Aplikasi (Route Map)
 
 | Path URL | Guard Akses | Deskripsi Halaman |
 |----------|-------------|-------------------|
 | `/` | Public | Landing Page utama dengan Opening Intro Screen |
-| `/terms` | Public | Halaman Ketentuan Layanan (*Terms of Service*) |
-| `/privacy` | Public | Halaman Kebijakan Privasi (*Privacy Policy*) |
+| `/terms` | Public | Halaman Ketentuan Layanan |
+| `/privacy` | Public | Halaman Kebijakan Privasi |
 | `/login` | Guest Only | Halaman Masuk / Login Akun |
 | `/signup` | Guest Only | Halaman Pendaftaran Akun Baru |
 | `/dashboard` | Auth (User/Admin) | Dasbor Statistik & Ringkasan Aktivitas |
@@ -91,3 +119,9 @@ Aplikasi ini mengusung estetika **Dark Glassmorphism** yang mewah & futuristik:
 | `/dashboard/users` | Admin Only | Halaman Manajemen Akun Pengguna & Admin |
 | `/dashboard/analytics` | Admin Only | Halaman Analitik Metrik & Grafik Laporan |
 | `/dashboard/profile` | Auth (User/Admin) | Halaman Pengaturan Profil Saya |
+
+---
+
+## Konvensi Komponen
+
+Lihat [docs/CONVENTIONS.md](CONVENTIONS.md) untuk panduan lengkap konvensi penulisan komponen React, pengelolaan state, dan penggunaan Framer Motion.
