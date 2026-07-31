@@ -2,7 +2,7 @@ import { useRef, useState } from 'react'
 import type { ReactNode } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useParams } from 'react-router-dom'
-import { MessageCircle, Reply, Send, ZoomIn, Loader2, Bot, CheckCircle2, ChevronDown, Save, Sparkles } from 'lucide-react'
+import { MessageCircle, Reply, Send, ZoomIn, Loader2, Bot, CheckCircle2, ChevronDown, Save, Sparkles, Clock, GitBranch } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
@@ -251,82 +251,134 @@ export function ReportDetailPage() {
 
           {report.histories && report.histories.length > 0 && (
             <motion.div variants={itemVariants}>
-              <GlassCard>
-                <h3 className="font-medium text-foreground">Linimasa</h3>
-                <div className="relative pl-8 mt-4 space-y-7 before:absolute before:bottom-2 before:left-4 before:-translate-x-1/2 before:w-[2px] before:bg-gradient-to-b before:from-[#F9D141] before:via-amber-500/50 before:to-gray-200">
+              <GlassCard className="overflow-hidden !p-0">
+                {/* Timeline header */}
+                <div className="flex items-center gap-2.5 px-4 py-3 border-b border-white/20 bg-gradient-to-r from-white/30 to-transparent">
+                  <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-amber-500/10">
+                    <GitBranch className="h-3.5 w-3.5 text-amber-600" />
+                  </div>
+                  <h3 className="text-sm font-semibold text-foreground">Linimasa</h3>
+                  <span className="ml-auto text-[10px] font-semibold text-muted bg-white/40 rounded-full px-2 py-0.5 border border-white/30">
+                    {report.histories.length} entri
+                  </span>
+                </div>
+
+                {/* Timeline body */}
+                <div className="px-4 py-3 space-y-0">
                   {report.histories.map((h, i) => {
-                    const actionMap: Record<string, string> = {
-                      CREATED: 'Dibuat',
-                      AI_ANALYZED: 'Dianalisis AI',
-                      ASSIGNED: 'Ditugaskan',
-                      STATUS_UPDATED: 'Status Diperbarui',
-                      STATUS_CHANGED: 'Status Diperbarui',
+                    const actionMap: Record<string, { label: string; icon: string }> = {
+                      CREATED:        { label: 'Laporan Dibuat',     icon: '📋' },
+                      AI_ANALYZED:    { label: 'Dianalisis AI',      icon: '🤖' },
+                      ASSIGNED:       { label: 'Ditugaskan',         icon: '👤' },
+                      STATUS_UPDATED: { label: 'Status Diperbarui',  icon: '🔄' },
+                      STATUS_CHANGED: { label: 'Status Diperbarui',  icon: '🔄' },
                     }
+
                     const statusLabelMap: Record<string, string> = {
-                      PENDING: 'Menunggu',
+                      PENDING:     'Menunggu',
                       AI_ANALYSIS: 'Analisis AI',
-                      REVIEWED: 'Ditinjau',
-                      ASSIGNED: 'Ditugaskan',
+                      REVIEWED:    'Ditinjau',
+                      ASSIGNED:    'Ditugaskan',
                       IN_PROGRESS: 'Sedang Dikerjakan',
-                      COMPLETED: 'Selesai',
-                      CANCELLED: 'Dibatalkan',
-                      REJECTED: 'Ditolak',
+                      COMPLETED:   'Selesai',
+                      CANCELLED:   'Dibatalkan',
+                      REJECTED:    'Ditolak',
                     }
-                    const statusColorMap: Record<string, { bg: string, ring: string }> = {
-                      PENDING: { bg: 'bg-yellow-500', ring: 'bg-yellow-400' },
-                      REVIEWED: { bg: 'bg-blue-500', ring: 'bg-blue-400' },
-                      IN_PROGRESS: { bg: 'bg-indigo-500', ring: 'bg-indigo-400' },
-                      COMPLETED: { bg: 'bg-green-500', ring: 'bg-green-400' },
-                      CANCELLED: { bg: 'bg-gray-400', ring: 'bg-gray-300' },
-                      REJECTED: { bg: 'bg-red-500', ring: 'bg-red-400' },
+
+                    // Status color config for new status pill
+                    const statusPillConfig: Record<string, { bg: string; text: string; border: string }> = {
+                      PENDING:     { bg: 'bg-yellow-50',  text: 'text-yellow-700',  border: 'border-yellow-200' },
+                      AI_ANALYSIS: { bg: 'bg-amber-50',   text: 'text-amber-700',   border: 'border-amber-200' },
+                      REVIEWED:    { bg: 'bg-blue-50',    text: 'text-blue-700',    border: 'border-blue-200' },
+                      ASSIGNED:    { bg: 'bg-purple-50',  text: 'text-purple-700',  border: 'border-purple-200' },
+                      IN_PROGRESS: { bg: 'bg-indigo-50',  text: 'text-indigo-700',  border: 'border-indigo-200' },
+                      COMPLETED:   { bg: 'bg-green-50',   text: 'text-green-700',   border: 'border-green-200' },
+                      CANCELLED:   { bg: 'bg-gray-50',    text: 'text-gray-600',    border: 'border-gray-200' },
+                      REJECTED:    { bg: 'bg-red-50',     text: 'text-red-700',     border: 'border-red-200' },
+                    }
+
+                    // Dot color config
+                    const dotColorMap: Record<string, { bg: string; ring: string }> = {
+                      PENDING:     { bg: 'bg-yellow-500', ring: 'bg-yellow-300' },
+                      AI_ANALYSIS: { bg: 'bg-amber-500',  ring: 'bg-amber-300' },
+                      REVIEWED:    { bg: 'bg-blue-500',   ring: 'bg-blue-300' },
+                      ASSIGNED:    { bg: 'bg-purple-500', ring: 'bg-purple-300' },
+                      IN_PROGRESS: { bg: 'bg-indigo-500', ring: 'bg-indigo-300' },
+                      COMPLETED:   { bg: 'bg-green-500',  ring: 'bg-green-300' },
+                      CANCELLED:   { bg: 'bg-gray-400',   ring: 'bg-gray-200' },
+                      REJECTED:    { bg: 'bg-red-500',    ring: 'bg-red-300' },
                     }
 
                     const isStatusChange = h.action === 'STATUS_CHANGED' || h.action === 'STATUS_UPDATED'
                     const oldLabel = h.oldStatus ? (statusLabelMap[h.oldStatus] ?? h.oldStatus) : null
                     const newLabel = h.newStatus ? (statusLabelMap[h.newStatus] ?? h.newStatus) : null
+                    const oldPill = h.oldStatus ? statusPillConfig[h.oldStatus] : null
+                    const newPill = h.newStatus ? statusPillConfig[h.newStatus] : null
 
-                    const activeStatus = h.newStatus || (h.action === 'CREATED' ? 'PENDING' : h.action === 'AI_ANALYZED' ? 'REVIEWED' : 'PENDING')
-                    const statusColors = statusColorMap[activeStatus] ?? { bg: 'bg-amber-500', ring: 'bg-amber-400' }
+                    const activeStatus = h.newStatus ?? (h.action === 'CREATED' ? 'PENDING' : h.action === 'AI_ANALYZED' ? 'AI_ANALYSIS' : 'PENDING')
+                    const dotColors = dotColorMap[activeStatus] ?? { bg: 'bg-amber-500', ring: 'bg-amber-300' }
+                    const actionInfo = actionMap[h.action] ?? { label: h.action.replace(/_/g, ' ').toLowerCase(), icon: '📌' }
+
+                    const isLast = i === report.histories!.length - 1
 
                     return (
                       <motion.div
                         key={h.id}
-                        initial={{ opacity: 0, x: -10 }}
+                        initial={{ opacity: 0, x: -8 }}
                         animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: i * 0.05, type: 'spring' as const, stiffness: 200, damping: 20 }}
-                        className="relative text-sm"
+                        transition={{ delay: i * 0.06, type: 'spring' as const, stiffness: 220, damping: 22 }}
+                        className="relative flex gap-3"
                       >
-                        {/* Mathematically aligned custom dot indicator */}
-                        <span className="absolute left-4 top-1.5 flex h-[12px] w-[12px] items-center justify-center -translate-x-1/2">
-                          <span className={`absolute inline-flex h-full w-full rounded-full ${statusColors.ring} opacity-75 animate-ping`} />
-                          <span className={`relative inline-flex h-[8px] w-[8px] rounded-full ${statusColors.bg} shadow-sm`} />
-                        </span>
+                        {/* Vertical line + dot */}
+                        <div className="relative flex flex-col items-center">
+                          {/* Dot */}
+                          <div className={`relative z-10 mt-1 flex h-[14px] w-[14px] flex-shrink-0 items-center justify-center rounded-full ${dotColors.bg} shadow-sm ring-2 ring-white`}>
+                            <span className="h-[6px] w-[6px] rounded-full bg-white/80" />
+                            {/* Only ping on last (latest) item */}
+                            {isLast && (
+                              <span className={`absolute inline-flex h-full w-full rounded-full ${dotColors.ring} opacity-60 animate-ping`} />
+                            )}
+                          </div>
+                          {/* Connector line */}
+                          {!isLast && (
+                            <div className="mt-1 w-[2px] flex-1 rounded-full bg-gradient-to-b from-white/60 to-gray-200/80" style={{ minHeight: '32px' }} />
+                          )}
+                        </div>
 
-                        <div className="pl-4">
-                          <p className="font-medium text-foreground">
-                            {actionMap[h.action] ?? h.action.replace(/_/g, ' ').toLowerCase()}
-                          </p>
-                          {/* Show old → new status for status changes */}
-                          {isStatusChange && oldLabel && newLabel && (
-                            <div className="mt-1.5 flex flex-wrap items-center gap-1.5 text-xs">
-                              <span className="rounded-lg bg-gray-100/80 px-2 py-0.5 text-gray-500 border border-gray-200/50">{oldLabel}</span>
-                              <span className="text-muted">→</span>
-                              <span className="rounded-lg bg-amber-500/10 px-2 py-0.5 font-medium text-amber-600 border border-amber-500/20">{newLabel}</span>
+                        {/* Content */}
+                        <div className={`min-w-0 flex-1 ${isLast ? 'pb-0' : 'pb-5'}`}>
+                          <div className="flex items-start justify-between gap-2 min-w-0">
+                            <div className="flex items-center gap-1.5 min-w-0">
+                              <span className="text-sm leading-none">{actionInfo.icon}</span>
+                              <span className="text-[13px] font-semibold text-foreground truncate">{actionInfo.label}</span>
+                            </div>
+                            <div className="flex-shrink-0 flex items-center gap-1 text-[10px] text-muted font-medium">
+                              <Clock className="h-2.5 w-2.5" />
+                              <span className="whitespace-nowrap">
+                                {new Date(h.createdAt).toLocaleString('id-ID', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}
+                              </span>
+                            </div>
+                          </div>
+
+                          {/* Status transition pills */}
+                          {isStatusChange && oldLabel && newLabel && oldPill && newPill && (
+                            <div className="mt-1.5 flex flex-wrap items-center gap-1">
+                              <span className={`inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-semibold ${oldPill.bg} ${oldPill.text} ${oldPill.border}`}>
+                                {oldLabel}
+                              </span>
+                              <span className="text-muted text-[10px]">→</span>
+                              <span className={`inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-semibold ${newPill.bg} ${newPill.text} ${newPill.border}`}>
+                                {newLabel}
+                              </span>
                             </div>
                           )}
+
+                          {/* Note callout */}
                           {h.note && (
-                            <p className="mt-1.5 text-xs text-muted-foreground bg-white/30 rounded-lg p-2.5 border border-white/40 italic leading-relaxed">
-                              "{h.note}"
-                            </p>
+                            <div className="mt-1.5 rounded-lg border border-amber-200/60 bg-amber-50/60 px-2.5 py-1.5">
+                              <p className="text-[11px] text-amber-800/80 italic leading-snug">"{h.note}"</p>
+                            </div>
                           )}
-                          <p className="mt-1.5 text-[10px] text-muted tracking-wide font-semibold uppercase">
-                            {new Date(h.createdAt).toLocaleString('id-ID', {
-                              day: 'numeric',
-                              month: 'short',
-                              hour: '2-digit',
-                              minute: '2-digit'
-                            })}
-                          </p>
                         </div>
                       </motion.div>
                     )
