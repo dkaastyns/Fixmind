@@ -37,10 +37,10 @@ jobs:
         uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest
+          cache: bun
 
       - name: Install Dependencies
         run: bun install --frozen-lockfile
-        working-directory: ./backend
 
       - name: Lint Code
         run: bun run lint
@@ -67,10 +67,10 @@ jobs:
         uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest
+          cache: bun
 
       - name: Install Dependencies
         run: bun install --frozen-lockfile
-        working-directory: ./frontend
 
       - name: Lint Code
         run: bun run lint
