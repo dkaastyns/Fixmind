@@ -45,7 +45,7 @@ const itemVariants = {
     opacity: 1,
     y: 0,
     transition: {
-      type: 'spring',
+      type: 'spring' as const,
       stiffness: 260,
       damping: 22,
     },
@@ -293,7 +293,7 @@ export function ReportDetailPage() {
                         key={h.id}
                         initial={{ opacity: 0, x: -10 }}
                         animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: i * 0.05, type: 'spring', stiffness: 200, damping: 20 }}
+                        transition={{ delay: i * 0.05, type: 'spring' as const, stiffness: 200, damping: 20 }}
                         className="relative text-sm"
                       >
                         {/* Mathematically aligned custom dot indicator */}
