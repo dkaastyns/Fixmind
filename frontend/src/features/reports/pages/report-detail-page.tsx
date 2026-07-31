@@ -2,7 +2,7 @@ import { useRef, useState } from 'react'
 import type { ReactNode } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useParams } from 'react-router-dom'
-import { MessageCircle, Reply, Send, ZoomIn, Loader2, Bot, CheckCircle2, ChevronDown, Save } from 'lucide-react'
+import { MessageCircle, Reply, Send, ZoomIn, Loader2, Bot, CheckCircle2, ChevronDown, Save, Sparkles } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
@@ -28,6 +28,29 @@ const ADMIN_STATUS_OPTIONS = [
   { value: 'CANCELLED',    label: 'Dibatalkan',      color: 'text-gray-500' },
   { value: 'REJECTED',     label: 'Ditolak',         color: 'text-danger' },
 ] as const
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.08,
+    },
+  },
+}
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 15 },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      type: 'spring',
+      stiffness: 260,
+      damping: 22,
+    },
+  },
+}
 
 export function ReportDetailPage() {
   const { id } = useParams<{ id: string }>()
@@ -63,7 +86,12 @@ export function ReportDetailPage() {
   const lightboxImages = (report.attachments ?? []).map((a) => ({ id: a.id, url: a.url, label: a.type }))
 
   return (
-    <div className="space-y-6">
+    <motion.div
+      variants={containerVariants}
+      initial="hidden"
+      animate="show"
+      className="space-y-6"
+    >
       {lightboxIndex !== null && (
         <ImageLightbox
           images={lightboxImages}
@@ -71,177 +99,238 @@ export function ReportDetailPage() {
           onClose={() => setLightboxIndex(null)}
         />
       )}
-      <Breadcrumb items={[
-        { label: 'Laporan Masalah', to: '/dashboard/reports' },
-        { label: `Detail: ${report.title.slice(0, 20)}${report.title.length > 20 ? '...' : ''}` }
-      ]} />
+      <motion.div variants={itemVariants}>
+        <Breadcrumb items={[
+          { label: 'Laporan Masalah', to: '/dashboard/reports' },
+          { label: `Detail: ${report.title.slice(0, 20)}${report.title.length > 20 ? '...' : ''}` }
+        ]} />
+      </motion.div>
 
-      <PageHeader title={report.title} description={`${report.roomCode} — ${report.roomName}`} />
+      <motion.div variants={itemVariants}>
+        <PageHeader title={report.title} description={`${report.roomCode} — ${report.roomName}`} />
+      </motion.div>
 
       <div className="grid gap-4 lg:grid-cols-3">
-        <GlassCard className="lg:col-span-2 space-y-4">
-          <div className="flex flex-wrap gap-2">
-            <StatusBadge status={report.status} />
-            {report.priority && <StatusBadge status={report.priority} />}
-          </div>
-          <p className="text-sm leading-relaxed">{report.description}</p>
-          <div className="grid gap-2 text-sm text-muted sm:grid-cols-2">
-            <p>Pelapor: <span className="text-foreground">{report.reporterName}</span></p>
-            <p>Dibuat: {new Date(report.createdAt).toLocaleString('id-ID')}</p>
-            {report.assetName && <p>Aset: <span className="text-foreground">{report.assetName}</span></p>}
-            {report.targetCompletionDate && <p>Target Selesai: <span className="text-foreground">{new Date(report.targetCompletionDate).toLocaleDateString('id-ID')}</span></p>}
-          </div>
-
-          {report.adminNotes && (
-            <div className="mt-4 rounded-xl border border-[#F9D141]/20 bg-[#F9D141]/5 p-4">
-              <h3 className="font-medium text-[#d9a416] mb-1">Instruksi Admin</h3>
-              <p className="text-sm">{report.adminNotes}</p>
+        <motion.div variants={itemVariants} className="lg:col-span-2">
+          <GlassCard className="space-y-4 h-full">
+            <div className="flex flex-wrap gap-2">
+              <StatusBadge status={report.status} />
+              {report.priority && <StatusBadge status={report.priority} />}
             </div>
-          )}
-
-          {/* AI Analysis status */}
-          {report.aiAnalysisStatus === 'PENDING' || report.aiAnalysisStatus === 'PROCESSING' ? (
-            <motion.div
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="rounded-xl border border-[#F9D141]/20 bg-gradient-to-r from-[#F9D141]/5 to-amber-500/5 p-4"
-            >
-              <div className="flex items-center gap-3">
-                <div className="relative">
-                  <Bot className="h-5 w-5 text-[#d9a416]" />
-                  <span className="absolute -top-1 -right-1 flex h-2.5 w-2.5">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#F9D141] opacity-75" />
-                    <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#F9D141]" />
-                  </span>
-                </div>
-                <div>
-                  <p className="text-sm font-semibold text-[#d9a416]">AI sedang menganalisis laporan...</p>
-                  <p className="text-xs text-muted mt-0.5">Menentukan prioritas dan rekomendasi perbaikan</p>
-                </div>
-                <Loader2 className="ml-auto h-4 w-4 animate-spin text-[#d9a416]/60" />
-              </div>
-              <div className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-[#F9D141]/10">
-                <motion.div
-                  className="h-full rounded-full bg-gradient-to-r from-[#F9D141] to-amber-500"
-                  animate={{ x: ['-100%', '100%'] }}
-                  transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
-                  style={{ width: '60%' }}
-                />
-              </div>
-            </motion.div>
-          ) : report.aiAnalysisStatus === 'COMPLETED' ? (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.97 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.3 }}
-              className="rounded-xl bg-gradient-to-br from-white/60 to-white/40 border border-[#F9D141]/20 p-4 shadow-sm"
-            >
-              <div className="flex items-center gap-2 mb-3">
-                <CheckCircle2 className="h-4 w-4 text-[#d9a416]" />
-                <h3 className="font-semibold text-gradient flex items-center">
-                  Analisis AI
-                  <HelpTooltip text="Prioritas dan saran perbaikan dihasilkan otomatis oleh kecerdasan buatan (AI) berdasarkan riwayat dan kategori laporan." />
-                </h3>
-              </div>
-              <p className="mt-2 text-sm">{report.aiPriorityReason}</p>
-              <p className="mt-2 text-sm"><strong>Rekomendasi:</strong> {report.aiRecommendation}</p>
-              <p className="mt-1 text-sm text-muted">Est. {report.aiEstimatedRepairHours} jam — {report.aiSuggestedAction}</p>
-              {report.aiSuggestedTargetDate && (
-                <p className="mt-1 text-sm text-[#d9a416] font-medium">Target Selesai yang Disarankan AI: {new Date(report.aiSuggestedTargetDate).toLocaleDateString('id-ID')}</p>
+            <p className="text-sm leading-relaxed text-foreground/90">{report.description}</p>
+            <div className="grid gap-2.5 text-sm text-muted sm:grid-cols-2 border-t border-white/20 pt-3">
+              <p>Pelapor: <span className="text-foreground font-medium">{report.reporterName}</span></p>
+              <p>Dibuat: <span className="text-foreground font-medium">{new Date(report.createdAt).toLocaleString('id-ID')}</span></p>
+              {report.assetName && <p>Aset: <span className="text-foreground font-medium">{report.assetName}</span></p>}
+              {report.targetCompletionDate && (
+                <p>Target Selesai: <span className="text-foreground font-medium">{new Date(report.targetCompletionDate).toLocaleDateString('id-ID')}</span></p>
               )}
-            </motion.div>
-          ) : null}
-
-          {report.attachments && report.attachments.length > 0 && (
-            <div className="mt-4">
-              <h3 className="font-medium text-sm text-muted mb-3">Foto Bukti ({report.attachments.length})</h3>
-              <div className="flex flex-wrap gap-3">
-                {report.attachments.map((a, i) => (
-                  <button
-                    key={a.id}
-                    onClick={() => setLightboxIndex(i)}
-                    className="group relative overflow-hidden rounded-xl border border-white/30 shadow-sm transition-all hover:scale-105 hover:shadow-lg hover:border-[#F9D141]/50"
-                    title="Klik untuk memperbesar"
-                  >
-                    <img src={a.url} alt={a.type} className="h-28 w-28 object-cover" />
-                    <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/0 group-hover:bg-black/40 transition-colors">
-                      <ZoomIn className="h-6 w-6 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
-                    </div>
-                    <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent p-1.5 text-center">
-                      <span className="text-[10px] font-medium text-white uppercase tracking-wider">{a.type}</span>
-                    </div>
-                  </button>
-                ))}
-              </div>
             </div>
-          )}
-        </GlassCard>
+
+            {report.adminNotes && (
+              <div className="mt-4 rounded-xl border border-[#F9D141]/20 bg-[#F9D141]/5 p-4 shadow-inner">
+                <h3 className="font-medium text-[#d9a416] mb-1 flex items-center gap-1.5 text-sm">
+                  <CheckCircle2 className="h-4 w-4" /> Instruksi Admin
+                </h3>
+                <p className="text-sm text-foreground/80 leading-relaxed">{report.adminNotes}</p>
+              </div>
+            )}
+
+            {/* AI Analysis status */}
+            {report.aiAnalysisStatus === 'PENDING' || report.aiAnalysisStatus === 'PROCESSING' ? (
+              <motion.div
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="rounded-2xl border border-[#F9D141]/20 bg-gradient-to-r from-[#F9D141]/5 to-amber-500/5 p-4 shadow-sm"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="relative flex h-9 w-9 items-center justify-center rounded-xl bg-amber-500/10 text-amber-600">
+                    <Bot className="h-5 w-5 animate-pulse" />
+                    <span className="absolute -top-1 -right-1 flex h-2 w-2">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-500 opacity-75" />
+                      <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-500" />
+                    </span>
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-[#d9a416]">AI sedang menganalisis laporan...</p>
+                    <p className="text-xs text-muted mt-0.5">Menentukan prioritas dan rekomendasi perbaikan</p>
+                  </div>
+                  <Loader2 className="ml-auto h-4 w-4 animate-spin text-[#d9a416]/60" />
+                </div>
+                <div className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-[#F9D141]/10">
+                  <motion.div
+                    className="h-full rounded-full bg-gradient-to-r from-[#F9D141] to-amber-500"
+                    animate={{ x: ['-100%', '100%'] }}
+                    transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
+                    style={{ width: '60%' }}
+                  />
+                </div>
+              </motion.div>
+            ) : report.aiAnalysisStatus === 'COMPLETED' ? (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.97 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.3 }}
+                className="rounded-2xl bg-gradient-to-br from-amber-500/5 via-white/40 to-transparent border border-amber-500/20 p-5 shadow-[0_0_15px_rgba(217,164,22,0.08)] hover:border-amber-500/30 hover:shadow-[0_0_20px_rgba(217,164,22,0.12)] transition-all duration-300"
+              >
+                <div className="flex items-center justify-between mb-3 border-b border-white/20 pb-2.5">
+                  <div className="flex items-center gap-2.5">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-amber-500/10 text-amber-600 shadow-inner">
+                      <Sparkles className="h-4.5 w-4.5 animate-pulse" />
+                    </div>
+                    <h3 className="font-semibold text-foreground flex items-center gap-1.5">
+                      Analisis AI
+                      <HelpTooltip text="Prioritas dan saran perbaikan dihasilkan otomatis oleh kecerdasan buatan (AI) berdasarkan riwayat dan kategori laporan." />
+                    </h3>
+                  </div>
+                  <div className="rounded-full bg-amber-500/15 border border-amber-500/25 px-2.5 py-0.5 text-xs font-semibold text-amber-700">
+                    Smart Engine
+                  </div>
+                </div>
+                <p className="text-sm text-foreground/80 leading-relaxed font-medium mb-2">{report.aiPriorityReason}</p>
+                <p className="text-sm text-foreground/80 leading-relaxed"><strong className="text-amber-700 font-semibold">Rekomendasi:</strong> {report.aiRecommendation}</p>
+
+                <div className="mt-4 grid grid-cols-1 gap-2.5 sm:grid-cols-3">
+                  <div className="rounded-xl border border-white/40 bg-white/20 p-2.5 text-center shadow-sm">
+                    <span className="block text-[10px] uppercase tracking-wider text-muted font-medium">Estimasi Kerja</span>
+                    <span className="mt-0.5 block text-sm font-semibold text-foreground">{report.aiEstimatedRepairHours} Jam</span>
+                  </div>
+                  <div className="rounded-xl border border-white/40 bg-white/20 p-2.5 text-center shadow-sm">
+                    <span className="block text-[10px] uppercase tracking-wider text-muted font-medium">Tindakan</span>
+                    <span className="mt-0.5 block text-sm font-semibold text-foreground truncate px-1">{report.aiSuggestedAction}</span>
+                  </div>
+                  <div className="rounded-xl border border-amber-500/10 bg-amber-500/5 p-2.5 text-center shadow-sm">
+                    <span className="block text-[10px] uppercase tracking-wider text-amber-700/80 font-medium">Target AI</span>
+                    <span className="mt-0.5 block text-sm font-semibold text-amber-700">
+                      {report.aiSuggestedTargetDate ? new Date(report.aiSuggestedTargetDate).toLocaleDateString('id-ID') : '—'}
+                    </span>
+                  </div>
+                </div>
+              </motion.div>
+            ) : null}
+
+            {report.attachments && report.attachments.length > 0 && (
+              <div className="mt-4 border-t border-white/20 pt-4">
+                <h3 className="font-medium text-sm text-muted mb-3">Foto Bukti ({report.attachments.length})</h3>
+                <div className="flex flex-wrap gap-3">
+                  {report.attachments.map((a, i) => (
+                    <button
+                      key={a.id}
+                      onClick={() => setLightboxIndex(i)}
+                      className="group relative overflow-hidden rounded-xl border border-white/30 shadow-sm transition-all hover:scale-105 hover:shadow-lg hover:border-amber-500/50"
+                      title="Klik untuk memperbesar"
+                    >
+                      <img src={a.url} alt={a.type} className="h-28 w-28 object-cover" />
+                      <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/0 group-hover:bg-black/40 transition-colors">
+                        <ZoomIn className="h-6 w-6 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+                      </div>
+                      <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent p-1.5 text-center">
+                        <span className="text-[10px] font-medium text-white uppercase tracking-wider">{a.type}</span>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+          </GlassCard>
+        </motion.div>
 
         <div className="space-y-4">
           {user?.isAdmin && (
-            <AdminActionPanel
-              token={token}
-              reportId={report.id}
-              currentStatus={report.status}
-              onSuccess={() => {
-                qc.invalidateQueries({ queryKey: ['report', id] })
-              }}
-            />
+            <motion.div variants={itemVariants}>
+              <AdminActionPanel
+                token={token}
+                reportId={report.id}
+                currentStatus={report.status}
+                onSuccess={() => {
+                  qc.invalidateQueries({ queryKey: ['report', id] })
+                }}
+              />
+            </motion.div>
           )}
 
           {report.histories && report.histories.length > 0 && (
-            <GlassCard>
-              <h3 className="font-medium">Linimasa</h3>
-              <ul className="mt-3 space-y-3">
-                {report.histories.map((h) => {
-                  const actionMap: Record<string, string> = {
-                    CREATED: 'Dibuat',
-                    AI_ANALYZED: 'Dianalisis AI',
-                    ASSIGNED: 'Ditugaskan',
-                    STATUS_UPDATED: 'Status Diperbarui',
-                    STATUS_CHANGED: 'Status Diperbarui',
-                  }
-                  const statusLabelMap: Record<string, string> = {
-                    PENDING: 'Menunggu',
-                    AI_ANALYSIS: 'Analisis AI',
-                    REVIEWED: 'Ditinjau',
-                    ASSIGNED: 'Ditugaskan',
-                    IN_PROGRESS: 'Sedang Dikerjakan',
-                    COMPLETED: 'Selesai',
-                    CANCELLED: 'Dibatalkan',
-                    REJECTED: 'Ditolak',
-                  }
-                  const isStatusChange = h.action === 'STATUS_CHANGED' || h.action === 'STATUS_UPDATED'
-                  const oldLabel = h.oldStatus ? (statusLabelMap[h.oldStatus] ?? h.oldStatus) : null
-                  const newLabel = h.newStatus ? (statusLabelMap[h.newStatus] ?? h.newStatus) : null
+            <motion.div variants={itemVariants}>
+              <GlassCard>
+                <h3 className="font-medium text-foreground">Linimasa</h3>
+                <div className="relative pl-6 mt-4 space-y-6 before:absolute before:bottom-2 before:left-[11px] before:top-2 before:w-0.5 before:bg-gradient-to-b before:from-[#F9D141] before:via-amber-500/50 before:to-gray-200">
+                  {report.histories.map((h, i) => {
+                    const actionMap: Record<string, string> = {
+                      CREATED: 'Dibuat',
+                      AI_ANALYZED: 'Dianalisis AI',
+                      ASSIGNED: 'Ditugaskan',
+                      STATUS_UPDATED: 'Status Diperbarui',
+                      STATUS_CHANGED: 'Status Diperbarui',
+                    }
+                    const statusLabelMap: Record<string, string> = {
+                      PENDING: 'Menunggu',
+                      AI_ANALYSIS: 'Analisis AI',
+                      REVIEWED: 'Ditinjau',
+                      ASSIGNED: 'Ditugaskan',
+                      IN_PROGRESS: 'Sedang Dikerjakan',
+                      COMPLETED: 'Selesai',
+                      CANCELLED: 'Dibatalkan',
+                      REJECTED: 'Ditolak',
+                    }
+                    const isStatusChange = h.action === 'STATUS_CHANGED' || h.action === 'STATUS_UPDATED'
+                    const oldLabel = h.oldStatus ? (statusLabelMap[h.oldStatus] ?? h.oldStatus) : null
+                    const newLabel = h.newStatus ? (statusLabelMap[h.newStatus] ?? h.newStatus) : null
 
-                  return (
-                    <li key={h.id} className="border-l-2 border-[#F9D141]/30 pl-3 text-sm">
-                      <p className="font-medium">
-                        {actionMap[h.action] ?? h.action.replace(/_/g, ' ').toLowerCase()}
-                      </p>
-                      {/* Show old → new status for status changes */}
-                      {isStatusChange && oldLabel && newLabel && (
-                        <p className="mt-0.5 flex items-center gap-1.5 text-xs">
-                          <span className="rounded-md bg-gray-100 px-1.5 py-0.5 text-gray-500">{oldLabel}</span>
-                          <span className="text-muted">→</span>
-                          <span className="rounded-md bg-[#F9D141]/10 px-1.5 py-0.5 font-medium text-[#d9a416]">{newLabel}</span>
-                        </p>
-                      )}
-                      {h.note && <p className="mt-0.5 text-muted">{h.note}</p>}
-                      <p className="mt-0.5 text-xs text-muted">{new Date(h.createdAt).toLocaleString('id-ID')}</p>
-                    </li>
-                  )
-                })}
-              </ul>
-            </GlassCard>
+                    return (
+                      <motion.div
+                        key={h.id}
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: i * 0.05, type: 'spring', stiffness: 200, damping: 20 }}
+                        className="relative text-sm"
+                      >
+                        {/* Custom dot indicator */}
+                        <span className="absolute -left-[21px] top-1 flex h-[12px] w-[12px] items-center justify-center">
+                          <span className="absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75 animate-ping" />
+                          <span className="relative inline-flex h-[8px] w-[8px] rounded-full bg-amber-500 shadow-sm" />
+                        </span>
+
+                        <div>
+                          <p className="font-medium text-foreground">
+                            {actionMap[h.action] ?? h.action.replace(/_/g, ' ').toLowerCase()}
+                          </p>
+                          {/* Show old → new status for status changes */}
+                          {isStatusChange && oldLabel && newLabel && (
+                            <div className="mt-1.5 flex flex-wrap items-center gap-1.5 text-xs">
+                              <span className="rounded-lg bg-gray-100/80 px-2 py-0.5 text-gray-500 border border-gray-200/50">{oldLabel}</span>
+                              <span className="text-muted">→</span>
+                              <span className="rounded-lg bg-amber-500/10 px-2 py-0.5 font-medium text-amber-600 border border-amber-500/20">{newLabel}</span>
+                            </div>
+                          )}
+                          {h.note && (
+                            <p className="mt-1 text-xs text-muted-foreground bg-white/30 rounded-lg p-2 border border-white/40 italic">
+                              "{h.note}"
+                            </p>
+                          )}
+                          <p className="mt-1 text-[10px] text-muted tracking-wide font-medium uppercase">
+                            {new Date(h.createdAt).toLocaleString('id-ID', {
+                              day: 'numeric',
+                              month: 'short',
+                              hour: '2-digit',
+                              minute: '2-digit'
+                            })}
+                          </p>
+                        </div>
+                      </motion.div>
+                    )
+                  })}
+                </div>
+              </GlassCard>
+            </motion.div>
           )}
         </div>
       </div>
 
       {/* Comments Section */}
-      <CommentSection token={token} reportId={id!} />
-    </div>
+      <motion.div variants={itemVariants}>
+        <CommentSection token={token} reportId={id!} />
+      </motion.div>
+    </motion.div>
   )
 }
 
@@ -322,17 +411,19 @@ function AdminActionPanel({
         />
       </div>
 
-      <Button
-        className="w-full gap-2"
-        onClick={() => mutation.mutate()}
-        disabled={!isDirty || mutation.isPending}
-      >
-        {mutation.isPending ? (
-          <><Loader2 className="h-4 w-4 animate-spin" /> Menyimpan...</>
-        ) : (
-          <><Save className="h-4 w-4" /> Simpan Perubahan</>
-        )}
-      </Button>
+      <motion.div whileHover={{ scale: !isDirty || mutation.isPending ? 1 : 1.01 }} whileTap={{ scale: !isDirty || mutation.isPending ? 1 : 0.98 }}>
+        <Button
+          className="w-full gap-2 transition-all duration-300"
+          onClick={() => mutation.mutate()}
+          disabled={!isDirty || mutation.isPending}
+        >
+          {mutation.isPending ? (
+            <><Loader2 className="h-4 w-4 animate-spin" /> Menyimpan...</>
+          ) : (
+            <><Save className="h-4 w-4" /> Simpan Perubahan</>
+          )}
+        </Button>
+      </motion.div>
     </GlassCard>
   )
 }
@@ -521,13 +612,14 @@ function CommentSection({ token, reportId }: { token: string; reportId: string }
             }
           }}
         />
-        <Button
-          className="self-end"
-          onClick={() => sendMutation.mutate(newComment.trim())}
-          disabled={!newComment.trim() || sendMutation.isPending}
-        >
-          <Send className="h-4 w-4" /> Kirim
-        </Button>
+        <motion.div whileHover={{ scale: !newComment.trim() || sendMutation.isPending ? 1 : 1.02 }} whileTap={{ scale: !newComment.trim() || sendMutation.isPending ? 1 : 0.98 }} className="self-end">
+          <Button
+            onClick={() => sendMutation.mutate(newComment.trim())}
+            disabled={!newComment.trim() || sendMutation.isPending}
+          >
+            <Send className="h-4 w-4" /> Kirim
+          </Button>
+        </motion.div>
       </div>
       <p className="text-xs text-muted">Tekan Ctrl+Enter untuk mengirim komentar</p>
     </GlassCard>
