@@ -52,7 +52,7 @@ jobs:
         working-directory: ./backend
 
       - name: Run Tests
-        run: bun run test
+        run: bun run test:cov
         working-directory: ./backend
 
   frontend:
@@ -82,5 +82,5 @@ jobs:
         working-directory: ./frontend
 
       - name: Run Tests
-        run: bun run test
+        run: bun run test:coverage
         working-directory: ./frontend
