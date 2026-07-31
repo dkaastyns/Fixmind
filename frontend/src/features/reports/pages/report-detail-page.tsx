@@ -253,7 +253,7 @@ export function ReportDetailPage() {
             <motion.div variants={itemVariants}>
               <GlassCard>
                 <h3 className="font-medium text-foreground">Linimasa</h3>
-                <div className="relative pl-8 mt-4 space-y-7 before:absolute before:bottom-2 before:left-[15px] before:top-2 before:w-[2px] before:bg-gradient-to-b before:from-[#F9D141] before:via-amber-500/50 before:to-gray-200">
+                <div className="relative pl-8 mt-4 space-y-7 before:absolute before:bottom-2 before:left-4 before:-translate-x-1/2 before:w-[2px] before:bg-gradient-to-b before:from-[#F9D141] before:via-amber-500/50 before:to-gray-200">
                   {report.histories.map((h, i) => {
                     const actionMap: Record<string, string> = {
                       CREATED: 'Dibuat',
@@ -297,7 +297,7 @@ export function ReportDetailPage() {
                         className="relative text-sm"
                       >
                         {/* Mathematically aligned custom dot indicator */}
-                        <span className="absolute left-[10px] top-1.5 flex h-[12px] w-[12px] items-center justify-center -translate-x-1/2">
+                        <span className="absolute left-4 top-1.5 flex h-[12px] w-[12px] items-center justify-center -translate-x-1/2">
                           <span className={`absolute inline-flex h-full w-full rounded-full ${statusColors.ring} opacity-75 animate-ping`} />
                           <span className={`relative inline-flex h-[8px] w-[8px] rounded-full ${statusColors.bg} shadow-sm`} />
                         </span>
