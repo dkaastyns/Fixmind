@@ -2,7 +2,8 @@ import { useRef, useState } from 'react'
 import type { ReactNode } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useParams } from 'react-router-dom'
-import { MessageCircle, Reply, Send, ZoomIn, Loader2, Bot, CheckCircle2, ChevronDown, Save, Sparkles, Clock, GitBranch } from 'lucide-react'
+import { MessageCircle, Reply, Send, ZoomIn, Loader2, Bot, CheckCircle2, ChevronDown, Save, Clock, GitBranch, FilePlus, RefreshCw, UserCheck } from 'lucide-react'
+import type { LucideIcon } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
@@ -176,7 +177,7 @@ export function ReportDetailPage() {
                 <div className="flex items-center justify-between mb-3 border-b border-white/20 pb-2.5">
                   <div className="flex items-center gap-2.5">
                     <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-amber-500/10 text-amber-600 shadow-inner">
-                      <Sparkles className="h-4.5 w-4.5 animate-pulse" />
+                      <Bot className="h-4 w-4" />
                     </div>
                     <h3 className="font-semibold text-foreground flex items-center gap-1.5">
                       Analisis AI
@@ -266,12 +267,12 @@ export function ReportDetailPage() {
                 {/* Timeline body */}
                 <div className="px-4 py-3 space-y-0">
                   {report.histories.map((h, i) => {
-                    const actionMap: Record<string, { label: string; icon: string }> = {
-                      CREATED:        { label: 'Laporan Dibuat',     icon: '📋' },
-                      AI_ANALYZED:    { label: 'Dianalisis AI',      icon: '🤖' },
-                      ASSIGNED:       { label: 'Ditugaskan',         icon: '👤' },
-                      STATUS_UPDATED: { label: 'Status Diperbarui',  icon: '🔄' },
-                      STATUS_CHANGED: { label: 'Status Diperbarui',  icon: '🔄' },
+                    const actionMap: Record<string, { label: string; Icon: LucideIcon }> = {
+                      CREATED:        { label: 'Laporan Dibuat',    Icon: FilePlus },
+                      AI_ANALYZED:    { label: 'Dianalisis AI',     Icon: Bot },
+                      ASSIGNED:       { label: 'Ditugaskan',        Icon: UserCheck },
+                      STATUS_UPDATED: { label: 'Status Diperbarui', Icon: RefreshCw },
+                      STATUS_CHANGED: { label: 'Status Diperbarui', Icon: RefreshCw },
                     }
 
                     const statusLabelMap: Record<string, string> = {
@@ -317,7 +318,7 @@ export function ReportDetailPage() {
 
                     const activeStatus = h.newStatus ?? (h.action === 'CREATED' ? 'PENDING' : h.action === 'AI_ANALYZED' ? 'AI_ANALYSIS' : 'PENDING')
                     const dotColors = dotColorMap[activeStatus] ?? { bg: 'bg-amber-500', ring: 'bg-amber-300' }
-                    const actionInfo = actionMap[h.action] ?? { label: h.action.replace(/_/g, ' ').toLowerCase(), icon: '📌' }
+                    const actionInfo = actionMap[h.action] ?? { label: h.action.replace(/_/g, ' ').toLowerCase(), Icon: RefreshCw }
 
                     const isLast = i === report.histories!.length - 1
 
@@ -349,7 +350,7 @@ export function ReportDetailPage() {
                         <div className={`min-w-0 flex-1 ${isLast ? 'pb-0' : 'pb-5'}`}>
                           <div className="flex items-start justify-between gap-2 min-w-0">
                             <div className="flex items-center gap-1.5 min-w-0">
-                              <span className="text-sm leading-none">{actionInfo.icon}</span>
+                              <actionInfo.Icon className="h-3.5 w-3.5 flex-shrink-0 text-[#d9a416]" />
                               <span className="text-[13px] font-semibold text-foreground truncate">{actionInfo.label}</span>
                             </div>
                             <div className="flex-shrink-0 flex items-center gap-1 text-[10px] text-muted font-medium">
