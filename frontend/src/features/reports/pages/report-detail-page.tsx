@@ -253,7 +253,7 @@ export function ReportDetailPage() {
             <motion.div variants={itemVariants}>
               <GlassCard>
                 <h3 className="font-medium text-foreground">Linimasa</h3>
-                <div className="relative pl-6 mt-4 space-y-6 before:absolute before:bottom-2 before:left-[11px] before:top-2 before:w-0.5 before:bg-gradient-to-b before:from-[#F9D141] before:via-amber-500/50 before:to-gray-200">
+                <div className="relative pl-8 mt-4 space-y-7 before:absolute before:bottom-2 before:left-[15px] before:top-2 before:w-[2px] before:bg-gradient-to-b before:from-[#F9D141] before:via-amber-500/50 before:to-gray-200">
                   {report.histories.map((h, i) => {
                     const actionMap: Record<string, string> = {
                       CREATED: 'Dibuat',
@@ -272,9 +272,21 @@ export function ReportDetailPage() {
                       CANCELLED: 'Dibatalkan',
                       REJECTED: 'Ditolak',
                     }
+                    const statusColorMap: Record<string, { bg: string, ring: string }> = {
+                      PENDING: { bg: 'bg-yellow-500', ring: 'bg-yellow-400' },
+                      REVIEWED: { bg: 'bg-blue-500', ring: 'bg-blue-400' },
+                      IN_PROGRESS: { bg: 'bg-indigo-500', ring: 'bg-indigo-400' },
+                      COMPLETED: { bg: 'bg-green-500', ring: 'bg-green-400' },
+                      CANCELLED: { bg: 'bg-gray-400', ring: 'bg-gray-300' },
+                      REJECTED: { bg: 'bg-red-500', ring: 'bg-red-400' },
+                    }
+
                     const isStatusChange = h.action === 'STATUS_CHANGED' || h.action === 'STATUS_UPDATED'
                     const oldLabel = h.oldStatus ? (statusLabelMap[h.oldStatus] ?? h.oldStatus) : null
                     const newLabel = h.newStatus ? (statusLabelMap[h.newStatus] ?? h.newStatus) : null
+
+                    const activeStatus = h.newStatus || (h.action === 'CREATED' ? 'PENDING' : h.action === 'AI_ANALYZED' ? 'REVIEWED' : 'PENDING')
+                    const statusColors = statusColorMap[activeStatus] ?? { bg: 'bg-amber-500', ring: 'bg-amber-400' }
 
                     return (
                       <motion.div
@@ -284,13 +296,13 @@ export function ReportDetailPage() {
                         transition={{ delay: i * 0.05, type: 'spring', stiffness: 200, damping: 20 }}
                         className="relative text-sm"
                       >
-                        {/* Custom dot indicator */}
-                        <span className="absolute -left-[21px] top-1 flex h-[12px] w-[12px] items-center justify-center">
-                          <span className="absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75 animate-ping" />
-                          <span className="relative inline-flex h-[8px] w-[8px] rounded-full bg-amber-500 shadow-sm" />
+                        {/* Mathematically aligned custom dot indicator */}
+                        <span className="absolute left-[10px] top-1.5 flex h-[12px] w-[12px] items-center justify-center -translate-x-1/2">
+                          <span className={`absolute inline-flex h-full w-full rounded-full ${statusColors.ring} opacity-75 animate-ping`} />
+                          <span className={`relative inline-flex h-[8px] w-[8px] rounded-full ${statusColors.bg} shadow-sm`} />
                         </span>
 
-                        <div>
+                        <div className="pl-4">
                           <p className="font-medium text-foreground">
                             {actionMap[h.action] ?? h.action.replace(/_/g, ' ').toLowerCase()}
                           </p>
@@ -303,11 +315,11 @@ export function ReportDetailPage() {
                             </div>
                           )}
                           {h.note && (
-                            <p className="mt-1 text-xs text-muted-foreground bg-white/30 rounded-lg p-2 border border-white/40 italic">
+                            <p className="mt-1.5 text-xs text-muted-foreground bg-white/30 rounded-lg p-2.5 border border-white/40 italic leading-relaxed">
                               "{h.note}"
                             </p>
                           )}
-                          <p className="mt-1 text-[10px] text-muted tracking-wide font-medium uppercase">
+                          <p className="mt-1.5 text-[10px] text-muted tracking-wide font-semibold uppercase">
                             {new Date(h.createdAt).toLocaleString('id-ID', {
                               day: 'numeric',
                               month: 'short',
