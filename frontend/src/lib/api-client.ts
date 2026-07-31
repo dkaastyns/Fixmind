@@ -526,12 +526,6 @@ export const uploadAttachment = async (token: string, id: string, file: File, ty
   return body as ApiSuccessResponse<{ url: string }>
 }
 
-export const assignReport = (token: string, id: string, data: object) =>
-  apiFetch<Report>(`/reports/${id}/assign`, {
-    method: 'POST',
-    body: JSON.stringify(data),
-    ...auth(token),
-  })
 
 // Analytics
 export const fetchOverview = (token: string) =>

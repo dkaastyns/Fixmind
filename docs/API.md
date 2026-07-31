@@ -165,10 +165,15 @@ sequenceDiagram
 
 | Method | Path | Akses | Deskripsi |
 |--------|------|-------|-----------|
+| `POST` | `/auth/register` | Publik | Registrasi akun pengguna baru & otomatis login |
 | `POST` | `/auth/login` | Publik | Login pengguna |
 | `POST` | `/auth/refresh` | Publik | Refresh access token via cookie |
 | `POST` | `/auth/logout` | Terautentikasi | Cabut sesi & bersihkan cookie |
 | `GET` | `/auth/me` | Terautentikasi | Profil pengguna yang sedang login |
+| `PATCH` | `/auth/profile` | Terautentikasi | Perbarui data nama & nomor telepon profil mandiri |
+| `POST` | `/auth/profile/avatar` | Terautentikasi | Unggah berkas gambar untuk foto avatar profil |
+| `DELETE` | `/auth/profile/avatar` | Terautentikasi | Hapus foto avatar profil (reset ke null) |
+| `POST` | `/auth/change-password` | Terautentikasi | Ubah kata sandi profil mandiri |
 
 ---
 
@@ -184,8 +189,8 @@ sequenceDiagram
 
 | Method | Path | Peran Akses | Deskripsi |
 |--------|------|-------------|-----------|
-| `GET` | `/users` | ADMIN | Daftar semua akun pengguna |
-| `GET` | `/users/technicians` | ADMIN | Daftar teknisi aktif |
+| `GET` | `/users` | ADMIN | Daftar semua akun pengguna (`?page=1&limit=20&isAdmin=true`) |
+| `GET` | `/users/:id` | ADMIN | Detail data akun pengguna tertentu |
 | `POST` | `/users` | ADMIN | Buat akun pengguna baru |
 | `PATCH` | `/users/:id` | ADMIN | Perbarui data / status pengguna |
 | `DELETE` | `/users/:id` | ADMIN | Hapus akun pengguna |
@@ -262,11 +267,10 @@ sequenceDiagram
 
 | Method | Path | Peran Akses | Deskripsi |
 |--------|------|-------------|-----------|
-| `GET` | `/reports` | Terautentikasi | Daftar laporan (`?status=<enum>&roomId=<uuid>&search=<query>`) |
+| `GET` | `/reports` | Terautentikasi | Daftar laporan (`?status=<enum>&roomId=<uuid>&search=<query>&dateFrom=2026-07-01&dateTo=2026-07-31`) |
 | `GET` | `/reports/:id` | Terautentikasi | Detail laporan beserta riwayat audit & lampiran foto |
 | `POST` | `/reports` | USER, ADMIN | Buat tiket laporan kerusakan baru |
 | `PATCH` | `/reports/:id/status` | ADMIN | Update status pengerjaan laporan |
-| `POST` | `/reports/:id/assign` | ADMIN | Penugasan vendor/teknisi |
 | `POST` | `/reports/:id/attachments` | USER, ADMIN | Upload foto kerusakan/perbaikan (multipart) |
 | `GET` | `/reports/:id/comments` | Terautentikasi | Ambil daftar komentar laporan |
 | `POST` | `/reports/:id/comments` | Terautentikasi | Tambah komentar baru |
@@ -311,10 +315,9 @@ sequenceDiagram
 
 | Method | Path | Peran Akses | Deskripsi |
 |--------|------|-------------|-----------|
-| `GET` | `/analytics/overview` | ADMIN | Ringkasan dasbor (metrik laporan aktif, dll) |
+| `GET` | `/analytics/overview` | Terautentikasi | Ringkasan dasbor (metrik laporan aktif, dll. Berbeda untuk USER dan ADMIN) |
 | `GET` | `/analytics/summary` | ADMIN | Statistik lengkap dengan rincian status |
-| `GET` | `/analytics/technician-stats` | ADMIN | Statistik performa pengerjaan teknisi |
-| `GET` | `/analytics/export` | ADMIN | Export data analitik |
+| `GET` | `/analytics/export` | ADMIN | Export data analitik ke CSV |
 
 ---
 

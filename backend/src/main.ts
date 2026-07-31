@@ -49,7 +49,10 @@ async function bootstrap() {
   app.use(cookieParser());
 
   // SECURITY: Parse CORS_ORIGIN dan pastikan hanya localhost yang diizinkan di development.
-  const rawCorsOrigin = config.get<string>('CORS_ORIGIN', 'http://localhost:5173');
+  const rawCorsOrigin = config.get<string>(
+    'CORS_ORIGIN',
+    'http://localhost:5173',
+  );
   const isProd = config.get<string>('NODE_ENV') === 'production';
   const origins = rawCorsOrigin.split(',').map((o) => o.trim());
 
