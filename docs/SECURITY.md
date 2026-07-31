@@ -29,7 +29,8 @@ Business rules (e.g. "user can only view own reports") belong in **services**, n
 ## HTTP Security
 
 - **helmet** — Mengamankan HTTP Headers dengan Content Security Policy (CSP) ketat secara terperinci. CSP membatasi eksekusi skrip hanya dari asal (`'self'`), melarang iframe, dan membatasi sumber gambar eksternal hanya dari Cloudinary.
-- **CORS** — Validasi asal request melalui variabel lingkungan `CORS_ORIGIN`, dengan opsi `credentials: true`.
+  - **Audit CSP `connectSrc`**: Kebijakan `connectSrc` disetel secara ketat ke `"'self'"`. Audit keamanan mengonfirmasi bahwa client-side browser tidak perlu terhubung langsung ke layanan eksternal (seperti API Cloudinary atau API Gemini/Groq LLM). Semua unggahan berkas dan kueri kecerdasan buatan (AI) dijembatani secara aman melalui server backend kita.
+- **CORS** — Validasi asal request melalui variabel lingkungan `CORS_ORIGIN`, dengan opsi `credentials: true`. Pada lingkungan development, terdapat pengaman tambahan untuk menolak asal request non-localhost guna mencegah paparan yang tidak disengaja.
 - **Rate limiting** — Rate limit global (100 req/menit default) yang dikonfigurasi melalui modul Throttler. Endpoint sensitif di-override untuk proteksi brute force:
   - Register: maksimal 5 request/menit.
   - Login: maksimal 10 request/menit.
@@ -94,6 +95,52 @@ Pembagian tanggung jawab untuk memastikan keamanan sistem sebelum dideploy ke li
 - [ ] **Set NODE_ENV:** Pastikan variabel lingkungan `NODE_ENV` bernilai `production`.
 - [ ] **Enable HTTPS & HSTS:** Konfigurasi TLS/SSL dan header Strict-Transport-Security (HSTS) di Nginx/Reverse Proxy.
 - [ ] **Restrict Database Access:** Batasi akses port Postgres (5432) hanya dari host internal/backend (jangan dibuka ke publik).
+
+## Secret Rotation Checklist (Panduan Rotasi Kunci & Rahasia)
+
+Untuk menjaga integritas dan keamanan sistem jangka panjang, rahasia/kredensial pada lingkungan produksi wajib dirotasi secara berkala (misal tiap 90 hari) atau segera setelah terjadi insiden keamanan / pergantian personil tim dengan akses produksi.
+
+### 1. Rotasi Kunci JWT (Access & Refresh Token)
+Rotasi JWT secret akan membatalkan semua sesi aktif pengguna dan memaksa login ulang secara aman.
+1. Buat string acak ber-entropi tinggi (minimal 32 karakter, direkomendasikan 64 karakter) untuk Access Secret dan Refresh Secret:
+   ```bash
+   openssl rand -base64 48
+   ```
+2. Perbarui variabel lingkungan pada environment hosting/Docker container:
+   - `JWT_ACCESS_SECRET`
+   - `JWT_REFRESH_SECRET`
+3. Lakukan restart pada service backend NestJS agar server membaca kunci baru.
+
+### 2. Rotasi Kredensial Database PostgreSQL
+1. Masuk ke console database administrator (misal panel Supabase atau server Postgres mandiri).
+2. Jalankan perintah SQL untuk mengubah kata sandi user aplikasi:
+   ```sql
+   ALTER USER nama_user WITH PASSWORD 'password_baru_yang_sangat_kuat';
+   ```
+3. Perbarui variabel lingkungan `DATABASE_URL` di konfigurasi backend. Pastikan menyertakan port, nama user, database, dan password baru.
+4. Lakukan restart backend untuk menginisialisasi ulang database connection pool dengan kredensial baru.
+
+### 3. Rotasi API Key Layanan Kecerdasan Buatan (Gemini / Groq LLM)
+1. Buka dashboard konsol masing-masing provider:
+   - Google AI Studio API Keys Console (untuk Gemini).
+   - Groq Cloud Console (untuk Groq).
+2. Buat API Key baru yang aktif.
+3. Perbarui variabel lingkungan berikut pada konfigurasi backend:
+   - `GEMINI_API_KEY`
+   - `GROQ_API_KEY`
+4. Lakukan restart backend NestJS.
+5. Lakukan verifikasi fungsionalitas fitur AI untuk memastikan API Key baru berfungsi dengan baik.
+6. Hapus/revok API Key lama dari dashboard masing-masing konsol provider setelah dipastikan aman.
+
+### 4. Rotasi Kredensial Penyimpanan Berkas (Cloudinary)
+1. Buka dashboard Cloudinary dan masuk ke menu Settings > Access Keys.
+2. Buat API Key dan API Secret baru.
+3. Perbarui variabel lingkungan di backend:
+   - `CLOUDINARY_API_KEY`
+   - `CLOUDINARY_API_SECRET`
+4. Restart service backend NestJS.
+5. Lakukan uji coba mengunggah avatar atau lampiran berkas laporan baru.
+6. Hapus API Key lama di dashboard Cloudinary setelah dipastikan kunci baru telah menggantikan seluruh fungsi unggahan.
 
 ---
 
