@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/set-state-in-effect */
 import { useRef, useState, useMemo, useEffect } from 'react'
-import { useSearchParams } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { createPortal } from 'react-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
@@ -19,6 +19,12 @@ import {
   ChevronsLeft,
   ChevronsRight,
   FileText,
+  Tag,
+  ShieldCheck,
+  Calendar,
+  ArrowRightLeft,
+  AlertTriangle,
+  Hash,
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
@@ -50,6 +56,7 @@ export function RoomsPage() {
   const user = useAuthStore((s) => s.user)
   const isAdmin = user?.role === 'ADMIN'
   const qc = useQueryClient()
+  const navigate = useNavigate()
   const [selectedRoom, setSelectedRoom] = useState<string | null>(null)
   const [showRoomForm, setShowRoomForm] = useState(false)
   const [showAssetForm, setShowAssetForm] = useState(false)
@@ -63,6 +70,10 @@ export function RoomsPage() {
   const [showConfirmRoomDelete, setShowConfirmRoomDelete] = useState(false)
   const [showConfirmAssetDelete, setShowConfirmAssetDelete] = useState(false)
   const [showExportModal, setShowExportModal] = useState(false)
+
+  // Detail Asset Modal State
+  const [selectedAssetForDetail, setSelectedAssetForDetail] = useState<Asset | null>(null)
+  const [showAssetDetailModal, setShowAssetDetailModal] = useState(false)
 
   const [searchParams] = useSearchParams()
   const initialSearch = searchParams.get('search') ?? ''
@@ -645,15 +656,20 @@ export function RoomsPage() {
                         hidden: { opacity: 0, y: 10 },
                         show: { opacity: 1, y: 0 }
                       }}
-                      whileHover={{ y: -2, backgroundColor: 'rgba(248, 250, 252, 0.9)' }}
+                      whileHover={{ y: -2, backgroundColor: isDeletingAssets ? 'rgba(254, 242, 242, 0.5)' : 'rgba(248, 250, 252, 0.95)' }}
                       transition={{ duration: 0.2 }}
                       className={cn(
-                        "flex flex-col sm:flex-row sm:items-center justify-between px-4 py-3.5 transition-colors gap-3 rounded-lg mx-1 my-0.5",
-                        isDeletingAssets ? "cursor-pointer hover:bg-rose-50/20" : ""
+                        "group flex flex-col sm:flex-row sm:items-center justify-between px-4 py-3.5 transition-all gap-3 rounded-xl mx-1 my-0.5 border border-transparent cursor-pointer",
+                        isDeletingAssets 
+                          ? "hover:bg-rose-50/30 hover:border-rose-200/50" 
+                          : "hover:border-[#F9D141]/40 hover:shadow-sm"
                       )}
                       onClick={() => {
                         if (isDeletingAssets) {
                           toggleAssetDelete(a.id)
+                        } else {
+                          setSelectedAssetForDetail(a)
+                          setShowAssetDetailModal(true)
                         }
                       }}
                     >
@@ -669,12 +685,19 @@ export function RoomsPage() {
                         )}
                         <motion.div 
                           whileHover={{ scale: 1.15, rotate: 10 }}
-                          className="p-2 bg-amber-500/10 text-amber-600 rounded-xl mt-0.5 shrink-0"
+                          className="p-2 bg-amber-500/10 text-amber-600 rounded-xl mt-0.5 shrink-0 group-hover:bg-[#F9D141]/25 transition-colors"
                         >
                           <Package className="w-4 h-4" />
                         </motion.div>
                         <div className="min-w-0 space-y-1">
-                          <p className="font-bold text-slate-800 text-sm truncate">{a.namaBarang}</p>
+                          <div className="flex items-center gap-1.5">
+                            <p className="font-bold text-slate-800 text-sm truncate group-hover:text-amber-700 transition-colors">
+                              {a.namaBarang}
+                            </p>
+                            <span className="text-[10px] text-amber-600 opacity-0 group-hover:opacity-100 transition-opacity font-semibold hidden sm:inline">
+                              • Klik untuk detail
+                            </span>
+                          </div>
                           <div className="flex flex-wrap gap-1 text-[10px] text-slate-500 font-bold">
                             <span className="bg-slate-100 px-1.5 py-0.5 rounded border border-slate-200/40">Kode: {a.kodeBarang}</span>
                             <span className="bg-slate-100 px-1.5 py-0.5 rounded border border-slate-200/40">Reg: {a.nomorRegister}</span>
@@ -801,6 +824,27 @@ export function RoomsPage() {
         onExportPdf={handleExportPdf}
         isExportingExcel={isExportingExcel}
         isExportingPdf={isExportingPdf}
+      />
+
+      {/* Asset Detail Pop-up Modal */}
+      <AssetDetailModal
+        isOpen={showAssetDetailModal}
+        asset={selectedAssetForDetail}
+        room={selectedRoomObj ?? null}
+        onClose={() => {
+          setShowAssetDetailModal(false)
+          setSelectedAssetForDetail(null)
+        }}
+        onReportIssue={(asset, room) => {
+          setShowAssetDetailModal(false)
+          setSelectedAssetForDetail(null)
+          navigate(`/dashboard/reports?openForm=true&roomId=${room?.id || asset.roomId}&assetId=${asset.id}`)
+        }}
+        onTransferAsset={(asset, room) => {
+          setShowAssetDetailModal(false)
+          setSelectedAssetForDetail(null)
+          navigate(`/dashboard/asset-transfers?roomId=${room?.id || asset.roomId}&assetId=${asset.id}`)
+        }}
       />
     </div>
   )
@@ -1339,6 +1383,220 @@ function ExportRoomsPickerModal({
             >
               Batal
             </Button>
+          </motion.div>
+        </div>
+      )}
+    </AnimatePresence>,
+    document.body
+  )
+}
+
+// ─── Modal Detail Aset & Ruangan ─────────────────────────────────────────────
+
+function AssetDetailModal({
+  isOpen,
+  asset,
+  room,
+  onClose,
+  onReportIssue,
+  onTransferAsset,
+}: {
+  isOpen: boolean
+  asset: Asset | null
+  room: Room | null
+  onClose: () => void
+  onReportIssue?: (asset: Asset, room: Room | null) => void
+  onTransferAsset?: (asset: Asset, room: Room | null) => void
+}) {
+  if (typeof document === 'undefined' || !asset) return null
+
+  const formattedDate = asset.createdAt
+    ? new Date(asset.createdAt).toLocaleDateString('id-ID', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric',
+      })
+    : '-'
+
+  return createPortal(
+    <AnimatePresence>
+      {isOpen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="absolute inset-0 bg-slate-950/45 backdrop-blur-md"
+            onClick={onClose}
+          />
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95, y: 15 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: 15 }}
+            transition={{ duration: 0.25, ease: 'easeOut' }}
+            className="relative w-full max-w-lg overflow-hidden rounded-[2rem] bg-white shadow-2xl border border-slate-100/90 max-h-[90vh] flex flex-col z-10"
+          >
+            {/* Ambient Gold Gradient Top Line */}
+            <div className="h-1.5 w-full bg-gradient-to-r from-[#F9D141] via-amber-400 to-[#d9a416]" />
+
+            {/* Header */}
+            <div className="flex items-center justify-between px-6 pt-5 pb-4 border-b border-slate-100">
+              <div className="flex items-center gap-3">
+                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-amber-500/10 text-amber-600 border border-amber-200/50 shadow-sm">
+                  <Package className="h-5 w-5" />
+                </div>
+                <div>
+                  <h3 className="text-base font-bold text-slate-800">Detail Inventaris Aset</h3>
+                  <p className="text-xs text-slate-400 font-medium">Informasi spesifikasi barang dan lokasi ruangan</p>
+                </div>
+              </div>
+              <button
+                onClick={onClose}
+                className="rounded-xl p-2 text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition-colors cursor-pointer"
+                aria-label="Tutup modal"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+
+            {/* Body */}
+            <div className="p-6 space-y-5 overflow-y-auto flex-1">
+              {/* Asset Hero Card */}
+              <div className="rounded-2xl bg-gradient-to-br from-amber-500/5 via-slate-50 to-amber-500/10 p-4 border border-amber-200/40">
+                <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
+                  <div className="space-y-1">
+                    <span className="inline-flex items-center gap-1 text-[11px] font-bold text-amber-700 bg-amber-100/70 px-2 py-0.5 rounded-md uppercase tracking-wider">
+                      <Tag className="w-3 h-3" />
+                      {asset.merkType || 'Umum / Standard'}
+                    </span>
+                    <h4 className="text-lg font-extrabold text-slate-800 leading-snug pt-1">
+                      {asset.namaBarang}
+                    </h4>
+                    <p className="text-xs text-slate-500 font-medium flex items-center gap-1.5 pt-0.5">
+                      <ShieldCheck className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+                      ID Pemda:{' '}
+                      <span className="font-bold text-slate-700 font-mono">{asset.idpemda}</span>
+                    </p>
+                  </div>
+                  <div className="self-start">
+                    <StatusBadge status={asset.status} />
+                  </div>
+                </div>
+              </div>
+
+              {/* Technical Specifications Grid */}
+              <div className="space-y-2">
+                <h5 className="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
+                  <Hash className="w-3.5 h-3.5 text-[#d9a416]" />
+                  Spesifikasi & Identifikasi
+                </h5>
+                <div className="grid grid-cols-2 gap-2.5">
+                  <div className="p-3 rounded-xl bg-slate-50 border border-slate-100 space-y-1">
+                    <p className="text-[10px] font-semibold text-slate-400 uppercase">Kode Barang</p>
+                    <p className="text-xs font-bold text-slate-800 font-mono truncate" title={asset.kodeBarang}>
+                      {asset.kodeBarang}
+                    </p>
+                  </div>
+                  <div className="p-3 rounded-xl bg-slate-50 border border-slate-100 space-y-1">
+                    <p className="text-[10px] font-semibold text-slate-400 uppercase">Nomor Register</p>
+                    <p className="text-xs font-bold text-slate-800 font-mono truncate" title={asset.nomorRegister}>
+                      {asset.nomorRegister}
+                    </p>
+                  </div>
+                  <div className="p-3 rounded-xl bg-slate-50 border border-slate-100 space-y-1">
+                    <p className="text-[10px] font-semibold text-slate-400 uppercase">Merk / Tipe</p>
+                    <p className="text-xs font-bold text-slate-800 truncate" title={asset.merkType}>
+                      {asset.merkType || '-'}
+                    </p>
+                  </div>
+                  <div className="p-3 rounded-xl bg-slate-50 border border-slate-100 space-y-1">
+                    <p className="text-[10px] font-semibold text-slate-400 uppercase">Tanggal Registrasi</p>
+                    <p className="text-xs font-bold text-slate-800 flex items-center gap-1">
+                      <Calendar className="w-3 h-3 text-slate-400 shrink-0" />
+                      <span className="truncate">{formattedDate}</span>
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Room & Location Details Card */}
+              <div className="space-y-2">
+                <h5 className="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
+                  <Building2 className="w-3.5 h-3.5 text-[#d9a416]" />
+                  Lokasi & Ruangan Terdaftar
+                </h5>
+                <div className="p-4 rounded-2xl bg-slate-50/80 border border-slate-200/60 space-y-2.5">
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-2 min-w-0">
+                      <div className="p-1.5 bg-amber-50 text-[#d9a416] rounded-lg shrink-0">
+                        <Building2 className="w-4 h-4" />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-xs font-bold text-slate-800 truncate">
+                          {room?.name ?? asset.roomName ?? 'Ruangan Terdaftar'}
+                        </p>
+                        <p className="text-[11px] font-medium text-slate-500">
+                          Kode: <span className="font-mono font-bold text-slate-700">{room?.code ?? asset.roomCode ?? '-'}</span>
+                        </p>
+                      </div>
+                    </div>
+                    {(room?.building || room?.floor) && (
+                      <div className="text-right shrink-0">
+                        <span className="text-[10px] font-bold text-amber-700 bg-amber-100/80 px-2 py-0.5 rounded-md">
+                          {room?.building ?? 'Gedung Utama'}
+                          {room?.floor ? ` • Lt. ${room.floor}` : ''}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+
+                  {room?.description && (
+                    <p className="text-xs text-slate-500 bg-white/70 rounded-xl p-2.5 border border-slate-100 leading-relaxed">
+                      {room.description}
+                    </p>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Footer Quick Actions */}
+            <div className="px-6 py-4 bg-slate-50/70 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-2.5">
+              <div className="flex items-center gap-2 w-full sm:w-auto">
+                {onReportIssue && (
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    size="sm"
+                    className="h-9 text-xs font-bold border border-amber-300/80 bg-amber-50/60 text-amber-800 hover:bg-amber-100/70 rounded-xl flex-1 sm:flex-initial cursor-pointer"
+                    onClick={() => onReportIssue(asset, room)}
+                  >
+                    <AlertTriangle className="w-3.5 h-3.5 mr-1.5 text-amber-600" />
+                    Laporkan Masalah
+                  </Button>
+                )}
+                {onTransferAsset && (
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    size="sm"
+                    className="h-9 text-xs font-bold border border-slate-200 bg-white text-slate-700 hover:bg-slate-100 rounded-xl flex-1 sm:flex-initial cursor-pointer"
+                    onClick={() => onTransferAsset(asset, room)}
+                  >
+                    <ArrowRightLeft className="w-3.5 h-3.5 mr-1.5 text-slate-600" />
+                    Ajukan Mutasi
+                  </Button>
+                )}
+              </div>
+              <Button
+                type="button"
+                variant="secondary"
+                size="sm"
+                className="h-9 px-4 text-xs font-bold rounded-xl w-full sm:w-auto cursor-pointer"
+                onClick={onClose}
+              >
+                Tutup
+              </Button>
+            </div>
           </motion.div>
         </div>
       )}
