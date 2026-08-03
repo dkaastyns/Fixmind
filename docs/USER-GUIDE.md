@@ -1,895 +1,323 @@
-﻿# 📖 Panduan Pengguna — ASETKITA Semarang
+# 🌟 Buku Panduan FixMind: Teman Setia Pengelolaan Aset & Ruangan Anda! 🌟
 
-> **E-Lapor DPRD (ASETKITA Semarang)**  
-> Sistem Manajemen Pelaporan & Pemeliharaan Fasilitas Berbasis AI & PWA  
-> Sekretariat DPRD Kota Semarang
+Halo! Selamat datang di buku panduan resmi FixMind. Kami sangat senang Anda ada di sini! 🤗
 
----
+Pernahkah Anda melihat lampu ruangan yang berkedip-kedip, AC yang kurang dingin, atau kursi yang goyang, tapi bingung harus lapor ke mana? Atau mungkin Anda adalah bagian dari tim pengelola gedung yang pusing dengan tumpukan kertas laporan kerusakan yang berserakan?
 
-## Daftar Isi
+Tenang saja, tarik napas dalam-dalam, karena **FixMind hadir untuk membantu Anda!**
 
-- [Pendahuluan](#pendahuluan)
-- [Memulai Aplikasi](#memulai-aplikasi)
-- [🧑 Panduan USER (Pegawai)](#panduan-user-pegawai)
-  - [Dasbor Pengguna](#dasbor-pengguna)
-  - [Fitur 1: Pelaporan Kerusakan](#fitur-1-pelaporan-kerusakan)
-  - [Fitur 2: Detail Laporan & Linimasa](#fitur-2-detail-laporan--linimasa)
-  - [Fitur 3: Komentar & Diskusi](#fitur-3-komentar--diskusi)
-  - [Fitur 4: Pengajuan Pemindahan Aset](#fitur-4-pengajuan-pemindahan-aset)
-  - [Fitur 5: Ruangan & Inventaris Aset](#fitur-5-ruangan--inventaris-aset)
-  - [Fitur 6: Pencarian Global](#fitur-6-pencarian-global)
-  - [Fitur 7: Profil & Pengaturan Akun](#fitur-7-profil--pengaturan-akun)
-  - [Fitur 8: Notifikasi Real-time](#fitur-8-notifikasi-real-time)
-- [🛡️ Panduan ADMINISTRATOR (Admin)](#panduan-administrator-admin)
-  - [Dasbor Admin](#dasbor-admin)
-  - [Fitur A1: Manajemen Laporan](#fitur-a1-manajemen-laporan)
-  - [Fitur A2: Manajemen Pengguna](#fitur-a2-manajemen-pengguna)
-  - [Fitur A3: Manajemen Ruangan & Aset](#fitur-a3-manajemen-ruangan--aset)
-  - [Fitur A4: Jadwal Pemeliharaan Rutin](#fitur-a4-jadwal-pemeliharaan-rutin)
-  - [Fitur A5: Persetujuan Transfer Aset](#fitur-a5-persetujuan-transfer-aset)
-  - [Fitur A6: Analitik & Ekspor Laporan](#fitur-a6-analitik--ekspor-laporan)
-- [🤖 Fitur Kecerdasan Buatan (AI)](#fitur-kecerdasan-buatan-ai)
-- [📊 Referensi Status & Kode](#referensi-status--kode)
-- [❓ FAQ & Pemecahan Masalah Umum](#faq--pemecahan-masalah-umum)
+## 💡 Apa itu FixMind?
+
+Bayangkan FixMind seperti **kotak saran digital yang super pintar**. 
+
+Dulu, kalau ada barang rusak, Anda mungkin harus mencari formulir kertas, mengisinya, lalu mencari petugas untuk menyerahkan formulir tersebut. Sangat merepotkan, bukan?
+
+Dengan FixMind, semuanya jadi jauh lebih mudah! Cukup buka aplikasi, foto barang yang rusak, tulis sedikit cerita tentang apa yang terjadi, dan... *wusss!* Laporan Anda langsung terbang ke meja teknisi yang tepat. Sistem kami bahkan punya asisten pintar (AI) yang bisa langsung menebak seberapa darurat laporan Anda. Keren, kan?
+
+## 👥 Siapa Saja yang Bisa Pakai Aplikasi Ini?
+
+Aplikasi ini dirancang seperti rumah dengan dua pintu masuk yang berbeda:
+
+1. **Pegawai / Karyawan (USER)** 🧑‍💼
+   Ini adalah Anda yang menggunakan ruangan dan barang-barang di dalamnya sehari-hari. Anda adalah "mata dan telinga" gedung ini. Kalau ada yang rusak, Anda yang lapor.
+   
+2. **Administrator & Teknisi (ADMIN)** 🛠️
+   Ini adalah tim pahlawan di balik layar yang bertugas memperbaiki barang rusak, mengatur ruangan, dan memastikan semuanya berjalan lancar.
 
 ---
 
-## Pendahuluan
+# 🚪 BAGIAN 1: Cara Masuk ke Aplikasi (Login)
 
-**ASETKITA Semarang** adalah platform digital terpadu untuk mempermudah pengaduan kerusakan fasilitas, pengelolaan inventaris aset, dan penjadwalan pemeliharaan gedung di Sekretariat DPRD Kota Semarang.
+Sebelum bisa memakai FixMind, kita harus masuk dulu ke dalam "rumah" digital ini. Sama seperti masuk ke rumah sungguhan, Anda butuh kunci. Kunci ini adalah **Username** (nama pengguna) dan **Password** (kata sandi) Anda.
 
-Sistem ini mengintegrasikan **Kecerdasan Buatan (Google Gemini 2.5 Flash)** untuk menganalisis prioritas laporan secara otomatis, dan menggunakan teknologi **Progressive Web App (PWA)** agar dapat diakses dari perangkat apa pun tanpa menginstal aplikasi terpisah.
+> [!NOTE]
+> **Kenapa harus pakai password?**
+> Bayangkan kalau rumah Anda tidak dikunci, siapa saja bisa masuk dan memindahkan barang sembarangan. Password memastikan bahwa hanya orang-orang yang berhak saja yang bisa masuk dan membuat laporan. Ini demi keamanan kita bersama!
 
-### Dua Peran Pengguna
-
-| Peran | Deskripsi | Akses |
-|-------|-----------|-------|
-| **USER** (Pegawai) | Staf Sekretariat yang melaporkan kerusakan dan mengajukan transfer aset | Laporan, Transfer Aset, Ruangan (lihat), Profil |
-| **ADMIN** (Administrator) | Administrator sistem yang mengelola keseluruhan platform | Semua fitur termasuk Manajemen User, Analitik, Persetujuan Transfer |
-
----
-
-## Memulai Aplikasi
-
-### Cara Login
-
-1. Buka peramban web dan akses URL aplikasi.
-2. Klik tombol **"Masuk ke Sistem"** di halaman Landing Page.
-3. Isi **Email** dan **Kata Sandi** akun Anda.
-4. Klik **"Masuk"** atau tekan `Enter`.
-5. Anda diarahkan ke **Dasbor** sesuai peran.
-
-> **Kredensial Bawaan (untuk pengujian):**
->
-> | Peran | Email | Kata Sandi |
-> |-------|-------|------------|
-> | Admin | `admin@asetkita-semarang.local` | `Admin123!@#` |
-> | User | `user@asetkita-semarang.local` | `User123!@#` |
-
-### Keamanan Akun & Lockout
-
-- Gagal login **5 kali berturut-turut** → akun **terkunci selama 15 menit**
-- Setelah 15 menit akun terbuka otomatis
-- Untuk membuka lebih awal, hubungi Administrator
-
-> Pastikan **Caps Lock** tidak aktif saat mengetik kata sandi.
-
-### Cara Logout
-
-1. Klik nama pengguna / avatar di **kiri bawah** sidebar.
-2. Pilih **"Keluar"** / **"Logout"**.
-3. Sesi dicabut dan Anda kembali ke halaman login.
-
-### Instalasi PWA (Opsional)
-
-**Android (Chrome):** Ketuk ⋮ (tiga titik) → "Tambahkan ke Layar Beranda"
-
-**iOS (Safari):** Ketuk ↑ (bagikan) → "Tambahkan ke Layar Beranda"
-
-**Desktop (Chrome/Edge):** Klik ikon install di address bar → "Install"
+**Langkah-langkah Masuk (Login):**
+1. Buka alamat web FixMind di browser Anda (seperti Google Chrome atau Firefox).
+2. Di tengah layar, Anda akan melihat kotak bertuliskan **Masuk ke Akun Anda**.
+3. Di kolom **Email / Username**, ketikkan email atau username yang sudah diberikan oleh kantor.
+   *(Contoh: budi.santoso@kantorkita.com)*
+4. Di kolom **Password**, ketikkan kata sandi rahasia Anda. 
+   *(Tips: Jangan kasih tahu password ini ke siapapun, ya!)*
+5. Klik tombol biru bertuliskan **Masuk**.
+6. Selesai! Anda sekarang sudah ada di dalam aplikasi FixMind. 🎉
 
 ---
 
-## Panduan USER (Pegawai)
+# 🧑‍💼 BAGIAN 2: Panduan LENGKAP untuk PEGAWAI (USER)
+
+Selamat datang di area khusus Pegawai! Di sini, Anda punya banyak "kekuatan super" untuk membuat tempat kerja jadi lebih nyaman. Mari kita pelajari satu per satu.
+
+## 🏠 Halaman Utama (Dasbor)
+
+Begitu berhasil masuk, Anda akan disambut oleh **Dasbor**. Dasbor ini ibarat papan pengumuman di lobi kantor. Di sini Anda bisa melihat ringkasan cepat dari semua aktivitas Anda.
+
+**Apa saja yang ada di Dasbor?**
+- **Ringkasan Laporan:** Anda bisa melihat angka besar yang menunjukkan berapa laporan yang Anda buat, berapa yang sedang dikerjakan, dan berapa yang sudah selesai.
+- **Laporan Terbaru:** Daftar 5 laporan terakhir yang Anda kirimkan. Jadi Anda tidak perlu repot mencari tahu status laporannya.
+- **Jalan Pintas:** Tombol-tombol besar untuk membuat laporan baru dengan cepat.
+
+## 📢 Membuat Laporan Kerusakan
+
+Ini adalah fitur yang paling sering Anda gunakan! Kalau ada yang rusak, jangan diam saja, yuk dilaporkan.
+
+**Langkah-langkah:**
+1. Klik menu **Laporan** di sebelah kiri layar Anda, lalu klik tombol biru bertuliskan **+ Buat Laporan Baru**. (Bisa juga langsung klik dari Dasbor).
+2. Sebuah formulir akan muncul. Jangan bingung, mari kita isi bersama:
+   - **Judul Laporan:** Tulis dengan singkat dan jelas.
+     ✅ *Contoh bagus: "AC Ruang Rapat A Bocor dan Menetes"*
+     ❌ *Contoh kurang bagus: "Rusak nih", "Tolong dong"*
+   - **Lokasi / Ruangan:** Pilih dari daftar yang ada (misalnya: Ruang Rapat A, Toilet Lantai 2).
+   - **Deskripsi:** Ceritakan detail kerusakannya seperti Anda sedang cerita ke teman.
+     ✅ *Contoh: "Kemarin sore AC-nya masih dingin, tapi pagi ini tiba-tiba keluar air netes ke meja rapat di bawahnya. Tolong segera dicek ya karena nanti siang mau dipakai meeting."*
+3. **Upload Foto (Sangat Disarankan!):** 📷
+   Klik tombol **Pilih Foto**. Cari foto kerusakannya dari HP atau komputer Anda.
+   > [!TIP] 
+   > **Tips Foto yang Bagus:**
+   > - Pastikan terang (jangan gelap-gelapan).
+   > - Fokus pada area yang rusak (kalau AC bocor, foto tetesan airnya).
+   > - Boleh kasih lingkaran merah di fotonya kalau mau lebih jelas!
+4. Klik tombol **Kirim Laporan** yang berwarna hijau.
+
+**Apa yang Terjadi Setelah Ini?**
+Laporan Anda akan langsung terbang ke komputer Admin. Asisten pintar (AI) kami juga akan langsung membaca laporan tersebut untuk memberi tahu Admin seberapa penting kerusakan ini untuk segera diperbaiki. Anda tinggal duduk manis dan menunggu! ☕
+
+## 🔍 Melihat Perkembangan Laporan
+
+Laporan sudah dikirim, lalu bagaimana cara tahu sudah diperbaiki atau belum?
+
+1. Klik menu **Daftar Laporan**.
+2. Anda akan melihat semua laporan yang pernah Anda buat berjejer rapi.
+3. Anda bisa menggunakan kotak **Cari** di atas untuk mencari laporan lama.
+4. Anda juga bisa klik **Filter** untuk hanya melihat laporan yang "Selesai" atau "Menunggu".
+
+## 💬 Fitur Detail Laporan & Komentar
+
+Kalau Anda klik salah satu laporan di daftar tadi, Anda akan masuk ke halaman **Detail Laporan**. Ini seperti melihat "kartu rekam medis" dari laporan Anda.
+
+**Apa yang bisa Anda lakukan di sini?**
+- **Melihat Status Terbaru:** Anda bisa melihat persis laporan Anda sedang ada di tahap mana.
+- **Linimasa (Riwayat):** Di bagian bawah, ada jejak waktu seperti riwayat chat. Anda bisa melihat jam berapa laporannya dibaca teknisi, jam berapa mulai dikerjakan, dll.
+- **Fitur Komentar:** Anda bisa "ngobrol" dengan teknisi! Kalau ada informasi tambahan, ketik saja di kotak komentar.
+  *(Contoh: "Halo Mas Teknisi, saya hari ini WFH, kunci ruangannya saya titip ke satpam depan ya.")*
+- **Panel AI:** Anda akan melihat kotak kecil bertuliskan "Analisis AI". Jangan bingung, ini cuma saran dari komputer tentang laporan Anda.
+
+## 📦 Mengajukan Pindah Aset (Transfer)
+
+Pernahkah Anda ingin meminjam proyektor dari ruangan sebelah, tapi harus minta izin dulu? Fitur **Transfer Aset** ini fungsinya mirip dengan itu.
+
+**Apa itu Pindah Aset?**
+Ini adalah permintaan resmi untuk memindahkan barang dari satu ruangan ke ruangan lain secara permanen atau sementara waktu.
+
+**Langkah-langkah Mengajukan:**
+1. Klik menu **Pindah Aset**, lalu klik **+ Ajukan Pemindahan**.
+2. Pilih barang apa yang mau dipindah (misalnya: Printer Canon).
+3. Pilih ruangan asalnya (misalnya: Ruang Staf).
+4. Pilih ruangan tujuannya (misalnya: Ruang Manajer).
+5. Tulis alasan di kotak keterangan.
+   *(Contoh: "Minta izin pindah printer ini ke ruang manajer karena printer lamanya sedang rusak total.")*
+6. Klik **Ajukan**.
+
+**Apa yang Terjadi Setelah Ini?**
+Pengajuan Anda tidak langsung pindah, melainkan akan masuk ke antrean Admin. Admin perlu mengecek dulu apakah boleh dipindah atau tidak (supaya barang kantor tidak hilang/berantakan). Nanti Anda akan dapat notifikasi apakah disetujui atau ditolak.
+
+## 🏢 Melihat Data Ruangan & Aset
+
+Penasaran ada barang apa saja di ruangan Anda?
+1. Klik menu **Ruangan & Aset**.
+2. Pilih ruangan Anda.
+3. Tadaa! Akan muncul daftar lengkap semua barang resmi yang tercatat ada di ruangan itu.
+
+## 👤 Mengubah Data Profil
+
+Kalau Anda mau ganti foto profil atau ganti password, ini tempatnya:
+1. Klik nama Anda di pojok kanan atas layar.
+2. Pilih **Profil Saya**.
+3. Di sini Anda bisa mengubah nama tampilan, upload foto profil baru yang keren, atau mengganti password lama dengan yang baru. Jangan lupa klik **Simpan**!
+
+## 🔔 Notifikasi (Pemberitahuan)
+
+Lihat gambar lonceng di pojok kanan atas? Kalau ada titik merahnya, berarti ada pesan baru untuk Anda!
+Notifikasi ini akan muncul kalau:
+- Laporan Anda mulai dikerjakan teknisi.
+- Laporan Anda sudah selesai diperbaiki.
+- Ada balasan komentar dari teknisi.
+- Pengajuan pindah aset Anda disetujui/ditolak.
+
+Klik lonceng itu untuk membaca semua pesan seperti Anda membaca notifikasi WhatsApp!
 
 ---
 
-### Dasbor Pengguna
+# 🛠️ BAGIAN 3: Panduan LENGKAP untuk ADMIN
 
-Setelah login sebagai USER, Anda melihat **Dasbor Pengguna** dengan:
+Halo Pahlawan Gedung! Di bagian ini, Anda akan belajar cara mengatur semuanya agar berjalan rapi dan teratur.
 
-#### Banner Selamat Datang
-- Nama Anda, tanggal hari ini
-- **Search Bar (Pencarian Global)** — klik atau tekan `Ctrl+K`
+## 📊 Dasbor Admin
 
-#### Kartu Statistik
+Dasbor Admin jauh lebih lengkap dari dasbor pengguna biasa. Ini adalah "Ruang Kontrol" Anda.
+Anda bisa melihat:
+- Total tiket yang masuk hari ini.
+- Grafik seberapa cepat tim Anda menyelesaikan masalah minggu ini.
+- Laporan mana yang butuh perhatian paling mendesak (biasanya ini sudah diurutkan oleh AI kita).
 
-| Kartu | Keterangan |
-|-------|------------|
-| Laporan Saya | Total laporan yang pernah Anda buat |
-| Menunggu | Laporan status `PENDING` |
-| Sedang Dikerjakan | Laporan status `IN_PROGRESS` |
-| Selesai | Laporan status `COMPLETED` |
+## 📋 Mengelola Laporan Masuk
 
-#### Laporan Terbaru Saya
-- 3 laporan terbaru dengan status
-- Klik untuk lihat detail
-- Tombol **"Lihat Semua Laporan"**
+Ini adalah tugas utama Admin. Ketika ada laporan masuk, apa yang harus dilakukan?
 
-#### Pengajuan Transfer Terbaru
-- 3 transfer aset terbaru
-- Badge merah = jumlah yang masih `PENDING`
+1. Buka menu **Kelola Laporan**.
+2. Klik laporan yang baru masuk (yang statusnya "Menunggu").
+3. **Mengubah Status:** Di dalam detail, cari tombol **Ubah Status**.
+   - *Pilih "Diterima" jika laporan masuk akal dan akan segera dijadwalkan.*
+   - *Pilih "Sedang Dikerjakan" ketika teknisi sudah jalan ke lokasi.*
+   - *Pilih "Selesai" ketika kerusakannya sudah beres.*
+4. **Menugaskan Teknisi:** Ada tombol **Tugaskan Kepada**. Klik itu, dan pilih nama teknisi yang sedang senggang. Teknisi itu akan langsung mendapat notifikasi.
+5. **Upload Bukti Perbaikan:** Kalau sudah selesai, sangat disarankan Admin memfoto hasil perbaikannya dan meng-uploadnya di kolom komentar. Ini supaya pegawai (USER) tahu kalau laporannya benar-benar sudah dikerjakan dengan baik.
 
----
+## 👥 Mengelola Akun Pegawai (Manajemen Pengguna)
 
-### Fitur 1: Pelaporan Kerusakan
+Ada karyawan baru? Atau ada yang resign? Anda yang mengatur ini.
 
-#### Cara Membuat Laporan Baru
+1. Buka menu **Pengguna (Users)**.
+2. **Tambah Baru:** Klik **+ Tambah Akun**. Masukkan nama, email, dan password awal. Pilih jabatannya (User atau Admin).
+3. **Nonaktifkan Akun:** Kalau ada yang resign, JANGAN dihapus. Nanti riwayat laporannya hilang. Cukup klik tombol **Edit** pada namanya, lalu ubah statusnya menjadi **Tidak Aktif**.
+4. **Reset Password:** Ada pegawai yang lupa password? Kasihan dia tidak bisa masuk. Anda cukup cari namanya, klik tombol **Kunci/Reset**, dan ketikkan password baru (misalnya: *123456*), lalu suruh pegawai tersebut untuk segera menggantinya setelah login.
 
-1. Klik menu **"Laporan Kerusakan"** di sidebar
-2. Klik tombol **"+ Buat Laporan"**
-3. Isi formulir:
+## 🪑 Mengelola Ruangan & Aset
 
-| Field | Keterangan | Wajib? |
-|-------|------------|--------|
-| Judul Laporan | Ringkasan singkat (contoh: "AC Bocor di Ruang Rapat Lt. 2") | Ya |
-| Deskripsi | Penjelasan detail kerusakan | Ya |
-| Ruangan | Pilih ruangan dari dropdown | Ya |
-| Aset Terkait | Pilih aset spesifik | Opsional |
-| Foto Kerusakan | Unggah foto bukti (JPG/PNG) | Opsional |
+Ini seperti mengatur daftar inventaris sekolah.
 
-4. Klik **"Kirim Laporan"**
-5. Status awal laporan: **`PENDING`**
-6. AI otomatis menganalisis laporan Anda di latar belakang
+1. **Tambah Ruangan:** Buka menu **Manajemen Ruangan**, klik **+ Tambah Ruangan**. Isi namanya (misalnya: "Gudang Lantai 3").
+2. **Tambah Aset:** Buka ruangan tersebut, klik **+ Tambah Aset**. Isi nama barangnya.
+3. **Import dari Excel (Cara Cepat!):** Kalau asetnya ada ratusan, Anda akan capek mengetiknya satu-satu. 
+   - Klik tombol **Import Excel**.
+   - Akan ada tombol **Download Template**. Klik itu, dan Anda akan mendapat file Excel kosong.
+   - Buka file Excel tersebut, dan ketik daftar barang Anda di sana sesuai kolom yang ada.
+   - Simpan file Excel-nya.
+   - Kembali ke aplikasi FixMind, lalu upload file Excel tadi. Dalam 3 detik, ratusan barang akan langsung masuk ke aplikasi! Ajaib! ✨
 
-#### Melihat & Memfilter Daftar Laporan
+## 📅 Membuat Jadwal Perawatan Rutin (Pemeliharaan)
 
-**Filter Status (Tab di atas tabel):**
+Bayangkan motor yang butuh ganti oli tiap bulan. AC atau Genset di gedung juga butuh diservis rutin supaya tidak gampang rusak. Fitur ini berfungsi sebagai pengingat (alarm) untuk hal tersebut.
 
-| Tab | Status | Keterangan |
-|-----|--------|------------|
-| Semua | — | Semua laporan Anda |
-| Menunggu | `PENDING` | Belum ditindaklanjuti |
-| Ditinjau | `REVIEWED` | Admin sedang memeriksa |
-| Sedang Dikerjakan | `IN_PROGRESS` | Teknisi sedang memperbaiki |
-| Selesai | `COMPLETED` | Perbaikan selesai |
-| Dibatalkan | `CANCELLED` | Laporan dibatalkan |
-| Ditolak | `REJECTED` | Laporan tidak diproses |
+1. Buka menu **Jadwal Pemeliharaan**.
+2. Klik **+ Buat Jadwal**.
+3. Isi detailnya:
+   - **Nama:** "Servis AC Bulanan"
+   - **Tanggal Pelaksanaan:** Pilih tanggalnya di kalender.
+   - **Aset Terkait:** Pilih AC di Ruang Rapat.
+   - **Catatan:** "Cuci filter dan tambah freon."
+4. Nanti ketika tanggalnya tiba, sistem akan memunculkan notifikasi merah untuk mengingatkan Anda!
+5. Kalau sudah diservis, jangan lupa ubah status jadwalnya menjadi **Selesai**.
 
-**Filter Lanjutan** (klik ikon Filter):
-- Berdasarkan **Ruangan** tertentu
-- Berdasarkan **Rentang Tanggal**
+## 🔄 Menyetujui / Menolak Permohonan Pindah Aset
 
-**Pencarian:** Ketik di kolom search untuk mencari berdasarkan judul.
+Kalau ada yang mengajukan pindah barang (seperti yang dijelaskan di Bagian 2), pengajuannya akan masuk ke menu **Persetujuan Transfer**.
 
-**Pagination:** 10 laporan per halaman, navigasi dengan tombol ⟨ ⟩.
+1. Buka menu tersebut. Anda akan melihat daftar permohonan.
+2. Klik salah satunya.
+3. Anda bisa menilai, apakah boleh dipindah?
+   - Kalau **BOLEH**: Klik tombol hijau **Setujui**. Barang di sistem akan otomatis berpindah ruangannya. 
+   - Kalau **TIDAK BOLEH**: Klik tombol merah **Tolak**. 
+     > [!IMPORTANT]
+     > Kalau Anda menolak, wajib mengisi alasan.
+     > *Contoh alasan: "Maaf Pak, proyektor ini memang dialokasikan khusus di Ruang Staf dan tidak boleh dipindah. Bapak bisa pakai ruangan ini saja untuk presentasi."*
 
----
+## 📈 Melihat Statistik & Mengunduh Laporan (Export)
 
-### Fitur 2: Detail Laporan & Linimasa
+Di akhir bulan, Bos biasanya minta laporan, "Bulan ini kita memperbaiki apa saja?"
 
-Klik judul laporan untuk membuka halaman Detail Laporan.
-
-#### Panel Kiri — Informasi Utama
-- Judul & deskripsi lengkap
-- Ruangan & aset terkait
-- Tanggal pembuatan
-- **Galeri Foto** — klik untuk mode lightbox (layar penuh)
-
-#### Panel Kanan — Metadata
-- Status saat ini (badge berwarna)
-- Prioritas AI (CRITICAL/HIGH/MEDIUM/LOW)
-- Nama Pelapor
-- Teknisi/Vendor yang ditugaskan
-
-#### Panel Analisis AI
-
-Setelah AI selesai, muncul panel "Analisis AI" berisi:
-
-| Info | Keterangan |
-|------|------------|
-| Prioritas | Level urgensitas (CRITICAL/HIGH/MEDIUM/LOW) |
-| Estimasi Waktu | Perkiraan durasi perbaikan dalam jam |
-| Rekomendasi Teknis | Saran langkah penanganan dari AI |
-
-> Jika analisis masih berlangsung, halaman **auto-refresh tiap 3 detik** hingga hasil tersedia.
-
-#### Linimasa (Timeline)
-
-Riwayat kronologis semua perubahan laporan:
-
-| Icon | Kejadian |
-|------|----------|
-| Bel | Laporan baru dibuat |
-| Mata | Laporan ditinjau admin |
-| Roda gigi | Pengerjaan dimulai, teknisi ditugaskan |
-| Centang | Laporan diselesaikan |
-| Silang | Laporan dibatalkan / ditolak |
-| Robot | Hasil analisis AI tersedia |
+1. Buka menu **Laporan Analitik**.
+2. Di sini Anda bisa melihat grafik warna-warni (merah, kuning, hijau) yang mudah dibaca.
+3. Pilih rentang tanggal (misalnya: 1 Januari sampai 31 Januari).
+4. Klik tombol **Export ke Excel** atau **Export PDF**.
+5. File rapi siap diprint dan diserahkan ke Bos! 📁
 
 ---
 
-### Fitur 3: Komentar & Diskusi
+# 🤖 BAGIAN 4: Tentang Fitur AI (Asisten Pintar Kita!)
 
-#### Cara Menambah Komentar
-1. Scroll ke bagian **"Diskusi"** di halaman detail laporan
-2. Klik kolom input "Tulis komentar..."
-3. Ketik pesan Anda
-4. Klik tombol Kirim atau tekan `Ctrl+Enter`
+Mungkin Anda bertanya-tanya, apa sih "AI" yang disebut-sebut dari tadi?
 
-#### Cara Membalas Komentar
-1. Klik tombol **"Balas"** di bawah komentar
-2. Tulis balasan di input yang muncul
-3. Klik Kirim
+Tenang, ini bukan robot seram seperti di film-film! 
 
-> Semua komentar tersimpan permanen sebagai rekam jejak audit laporan.
+Sistem kami punya sebuah program komputer pintar yang sudah dilatih (seperti asisten magang yang rajin). Setelah Anda mengirim laporan kerusakan, si Asisten Pintar ini langsung "membaca" cerita Anda.
 
----
+Bayangkan Anda menulis: *"PIPA AIR BOCOR BESAR BANGET BANJIR"*
+Asisten Pintar ini akan langsung berpikir: *"Waduh, ini darurat!"* Lalu dia otomatis akan memberikan label **PRIORITAS TINGGI** dengan warna merah terang agar Admin langsung melihatnya.
 
-### Fitur 4: Pengajuan Pemindahan Aset
+Sebaliknya, kalau Anda menulis: *"Engsel pintu lemari agak bunyi sedikit"*
+Asisten Pintar akan memberi label **PRIORITAS RENDAH**.
 
-#### Cara Mengajukan Transfer Aset
-
-1. Klik menu **"Transfer Aset"** di sidebar
-2. Isi formulir pengajuan:
-
-| Field | Keterangan |
-|-------|------------|
-| Ruang Asal | Ruangan tempat aset saat ini |
-| Aset yang Dipindahkan | Pilih aset dari ruang yang dipilih |
-| Ruang Tujuan | Ruangan tujuan (ruang asal tidak tersedia) |
-| Alasan Pemindahan | Jelaskan alasan (minimal 10 karakter) |
-
-3. Periksa rangkuman detail di panel samping
-4. Klik **"Ajukan Transfer"**
-5. Konfirmasi di modal yang muncul
-
-> Pengajuan masuk dengan status `PENDING` dan menunggu persetujuan Admin.
-
-#### Melihat Riwayat Pengajuan
-
-Di bagian bawah halaman, tabel **"Riwayat Pengajuan Saya"** menampilkan semua pengajuan:
-
-| Status | Warna | Keterangan |
-|--------|-------|------------|
-| `PENDING` | Oranye | Menunggu tinjauan Admin |
-| `APPROVED` | Hijau | Disetujui, aset dipindahkan |
-| `REJECTED` | Merah | Ditolak oleh Admin |
-
-Filter: gunakan tab `Semua` / `Menunggu` / `Disetujui` / `Ditolak`.
+**Apa yang harus dilakukan jika Asisten Pintar ini belum merespon atau salah tebak?**
+Tidak apa-apa! AI juga bisa belajar. Kalau tebakan prioritasnya kurang pas, Admin manusia selalu punya kuasa penuh untuk mengubah tingkat prioritasnya secara manual. Jadi jangan khawatir!
 
 ---
 
-### Fitur 5: Ruangan & Inventaris Aset
+# 🚦 BAGIAN 5: Arti Warna & Status 
 
-#### Melihat Daftar Ruangan
-1. Klik menu **"Ruangan & Aset"** di sidebar
-2. Panel kiri = daftar semua ruangan aktif
-3. Gunakan kolom pencarian untuk cari ruangan
-4. Klik ruangan untuk lihat asetnya
+Sistem kami sangat suka pakai warna supaya Anda lebih cepat paham tanpa harus membaca banyak tulisan. Ini kamusnya:
 
-#### Melihat Aset dalam Ruangan
+### Warna Status Laporan
+| Warna | Status | Arti (Bahasa Sehari-hari) |
+| :--- | :--- | :--- |
+| 🟠 **Kuning** | Menunggu / Baru | Laporan sudah masuk, tapi belum disentuh sama sekali oleh teknisi. Sabar ya! |
+| 🔵 **Biru** | Sedang Dikerjakan | Yey! Teknisi sudah bawa perkakas dan sedang memperbaiki kerusakannya sekarang. |
+| 🟢 **Hijau** | Selesai | Semua sudah beres. Barang sudah bisa dipakai lagi dengan normal. |
+| 🔴 **Merah** | Dibatalkan | Laporannya batal dikerjakan. (Biasanya karena salah lapor atau barangnya memang mau dibuang). |
 
-Panel kanan menampilkan daftar aset:
-
-| Kolom | Keterangan |
-|-------|------------|
-| Nama Aset | Nama / kode inventaris aset |
-| Kategori | Jenis aset (AC, Proyektor, Meja, dll.) |
-| Kondisi | Status kondisi aset |
-
-> Sebagai USER, Anda hanya bisa **melihat** data. Untuk CRUD data diperlukan akses ADMIN.
-
----
-
-### Fitur 6: Pencarian Global
-
-Fitur pencarian terpadu yang menemukan data dari seluruh modul dalam satu kolom.
-
-#### Cara Menggunakan
-1. Klik **Search Bar** di banner dasbor, ATAU tekan `Ctrl+K` (Windows) / `Cmd+K` (Mac)
-2. Modal pencarian muncul dari mana pun dalam aplikasi
-3. Ketik kata kunci
-
-Hasil muncul secara instan, dikelompokkan per kategori:
-
-| Kategori | Contoh Hasil |
-|----------|-------------|
-| Ruangan | "Ruang Rapat Lantai 2" |
-| Aset | "AC Daikin 2 PK — R. Rapat" |
-| Laporan | "AC Bocor — PENDING" |
-| Transfer Aset | "Kursi Kayu → R. Sekretariat" |
-| Jadwal Pemeliharaan | "Service AC Bulanan — 15 Agt" |
-
-4. Klik hasil untuk navigasi langsung ke halaman terkait.
+### Warna Prioritas (Tingkat Kedaruratan)
+| Warna | Tingkat | Arti |
+| :--- | :--- | :--- |
+| 🔴 **Merah** | Tinggi (Darurat) | BAHAYA! Harus diperbaiki HARI INI JUGA. (Contoh: Konslet listrik berasap) |
+| 🟡 **Kuning** | Sedang | Mengganggu kerja, tolong diperbaiki dalam 1-2 hari. (Contoh: AC mati, agak panas) |
+| 🟢 **Hijau** | Rendah | Tidak buru-buru, kapan-kapan saja kalau teknisi senggang. (Contoh: Cat tembok terkelupas sedikit) |
 
 ---
 
-### Fitur 7: Profil & Pengaturan Akun
+# ❓ BAGIAN 6: Pertanyaan yang Sering Ditanya (FAQ)
 
-#### Mengakses Halaman Profil
-Klik nama pengguna atau avatar di sidebar → pilih **"Profil Saya"**
+Masih bingung? Mungkin pertanyaan Anda ada jawabannya di bawah ini:
 
-#### Informasi yang Dapat Diubah
+**1. Q: Aduh, saya salah ngetik ruangan saat buat laporan. Bisa diubah tidak?**
+A: Sayangnya laporan yang sudah dikirim tidak bisa diedit sendiri. Tapi jangan khawatir, tulis saja di kolom komentar pada laporan tersebut, "Maaf teknisi, maksud saya Ruang Rapat B ya, bukan A." Nanti teknisinya pasti baca!
 
-| Field | Keterangan |
-|-------|------------|
-| Nama Lengkap | Nama tampilan di sistem |
-| Email | Alamat email untuk login |
-| Kata Sandi | Ubah kata sandi akun |
-| Foto Profil | Unggah foto avatar (opsional) |
+**2. Q: Berapa lama laporan saya akan diperbaiki?**
+A: Tergantung tingkat prioritas dan jadwal teknisi. Biasanya kalau darurat akan ditangani di hari yang sama. Kalau biasa, mungkin 1-2 hari. Anda bisa pantau statusnya dari HP kok!
 
-#### Cara Mengubah Kata Sandi
-1. Temukan bagian "Ubah Kata Sandi"
-2. Masukkan **Kata Sandi Lama**
-3. Masukkan **Kata Sandi Baru** (min. 8 karakter)
-4. Ulangi di kolom **Konfirmasi**
-5. Klik **"Simpan Perubahan"**
+**3. Q: Password saya ditolak terus saat mau masuk (Login). Harus bagaimana?**
+A: Cek dulu, apakah tombol "Caps Lock" di keyboard Anda menyala? Password membedakan huruf besar dan kecil. Kalau masih tidak bisa, hubungi Admin untuk minta *Reset Password*.
 
----
+**4. Q: Boleh tidak saya lapor hal yang bukan barang rusak? Misalnya "Ada tikus"?**
+A: Tentu saja! FixMind bisa dipakai untuk melaporkan ketidaknyamanan apa pun terkait fasilitas gedung, termasuk masalah hama/kebersihan.
 
-### Fitur 8: Notifikasi Real-time
+**5. Q: Saya sudah lapor 3 hari lalu, tapi statusnya masih Kuning (Menunggu). Kenapa ya?**
+A: Kemungkinan teknisi sedang sangat sibuk menangani kerusakan yang lebih parah di ruangan lain. Anda boleh menambahkan komentar di laporan itu untuk mengingatkan teknisi secara halus.
 
-Sistem menggunakan **WebSocket (Socket.io)** untuk notifikasi instan tanpa refresh.
+**6. Q: Apa bedanya "Pemeliharaan" dan "Laporan Kerusakan"?**
+A: "Laporan Kerusakan" itu kalau barangnya SUDAH rusak (Anda yang lapor). Kalau "Pemeliharaan" itu servis rutin sebelum barangnya rusak (Admin yang jadwalkan).
 
-#### Cara Melihat Notifikasi
-Klik ikon **Lonceng** di pojok kanan atas untuk membuka panel notifikasi.
+**7. Q: File Excel saya gagal terus saat import aset. Kenapa?**
+A: Biasanya karena formatnya diubah. Pastikan Anda pakai file "Template" asli yang di-download dari aplikasi, dan jangan mengubah nama kolom yang ada di baris paling atas Excel tersebut.
 
-#### Jenis Notifikasi untuk USER
+**8. Q: Apakah aplikasi ini bisa dibuka di HP?**
+A: Bisa banget! Buka saja browser di HP Anda (Safari atau Chrome), ketik alamat aplikasinya. Tampilannya otomatis akan menyesuaikan ukuran layar HP Anda.
 
-| Notifikasi | Pemicu |
-|------------|--------|
-| AI selesai menganalisis | Laporan Anda selesai dianalisis |
-| Transfer disetujui | Admin menyetujui pengajuan Anda |
-| Transfer ditolak | Admin menolak pengajuan Anda |
-| Status laporan diperbarui | Admin mengubah status laporan Anda |
+**9. Q: Kok Asisten Pintar (AI)-nya lama sekali memproses laporan saya?**
+A: Biasanya AI butuh waktu 5-10 detik. Kalau internet sedang lambat, mungkin sedikit lebih lama. Tunggu sebentar lalu *refresh* halaman Anda.
+
+**10. Q: Saya tidak sengaja menolak (Reject) permohonan pindah aset. Bisa ditarik lagi?**
+A: Untuk saat ini belum bisa dibatalkan secara otomatis. Anda bisa meminta orang tersebut untuk membuat pengajuan baru saja.
 
 ---
 
-## Panduan ADMINISTRATOR (Admin)
+# 🎈 Penutup
 
----
+Nah, itu dia semua yang perlu Anda ketahui tentang FixMind! Ternyata tidak sesulit yang dibayangkan, bukan?
 
-### Dasbor Admin
+Dengan FixMind, kita semua bisa bekerja sama menjaga lingkungan kerja kita tetap nyaman, aman, dan rapi. Jangan ragu-ragu untuk melapor kalau menemukan kerusakan kecil, karena mencegah kerusakan yang lebih besar itu selalu lebih baik!
 
-Ringkasan eksekutif seluruh sistem secara real-time.
+Selamat mencoba aplikasinya, dan semoga hari kerja Anda selalu lancar dan menyenangkan! ✨
 
-#### Kartu Statistik Utama
-
-| Kartu | Keterangan |
-|-------|------------|
-| Total Laporan Aktif | Semua laporan yang belum selesai di seluruh sistem |
-| Rata-rata Rating | Rating kepuasan pengguna atas penyelesaian laporan |
-| Estimasi Total Jam | Akumulasi estimasi jam pengerjaan dari analisis AI |
-| Transfer Menunggu | Pengajuan transfer yang belum diproses |
-
-#### Grafik & Visualisasi
-
-**Bar Chart — Laporan per Bulan:**
-Tren jumlah laporan 6 bulan terakhir. Membantu analisis apakah beban pemeliharaan meningkat atau menurun.
-
-**Pie Chart — Distribusi Prioritas AI:**
-Proporsi laporan berdasarkan level prioritas. Identifikasi apakah banyak masalah kritis belum tertangani.
-
-**Pie Chart — Status Transfer Aset:**
-Proporsi transfer PENDING, APPROVED, dan REJECTED.
-
-#### Tabel Transfer Aset Terbaru
-5 pengajuan transfer terbaru dengan tombol **Setujui / Tolak** langsung dari dasbor.
-
-#### Tabel Jadwal Pemeliharaan Mendatang
-5 agenda pemeliharaan terdekat berdasarkan tanggal.
-
-#### Tombol Export Data (Global)
-Klik **"Export Data"** untuk mengunduh laporan dalam format Excel/PDF.
-
----
-
-### Fitur A1: Manajemen Laporan
-
-Admin memiliki kontrol penuh atas semua laporan dari seluruh pegawai.
-
-#### Perbedaan USER vs ADMIN
-
-| Kemampuan | USER | ADMIN |
-|-----------|------|-------|
-| Lihat laporan sendiri | Ya | Ya |
-| Lihat laporan semua pengguna | Tidak | Ya |
-| Buat laporan baru | Ya | Ya |
-| Ubah status laporan | Tidak | Ya |
-| Tugaskan teknisi / vendor | Tidak | Ya |
-| Unggah foto bukti perbaikan | Tidak | Ya |
-
-#### Mengubah Status Laporan
-
-1. Buka **Detail Laporan**
-2. Klik dropdown **Status** di panel kanan
-3. Pilih status:
-
-| Status | Keterangan |
-|--------|------------|
-| `PENDING` | Belum ditindaklanjuti |
-| `REVIEWED` | Admin sedang meninjau |
-| `IN_PROGRESS` | Pengerjaan telah dimulai |
-| `COMPLETED` | Perbaikan selesai |
-| `CANCELLED` | Laporan dibatalkan |
-| `REJECTED` | Laporan ditolak |
-
-4. Isi catatan perubahan jika perlu
-5. Klik **"Simpan Status"**
-
-#### Menugaskan Teknisi / Vendor
-1. Temukan bagian "Penugasan Teknisi" di detail laporan
-2. Masukkan nama teknisi atau vendor
-3. Klik **"Simpan"**
-
-#### Mengunggah Foto Bukti Perbaikan
-1. Klik **"Unggah Foto Perbaikan"**
-2. Pilih file gambar dari perangkat
-3. Foto diunggah ke Cloudinary dan tampil di galeri laporan
-
----
-
-### Fitur A2: Manajemen Pengguna
-
-Kontrol penuh atas semua akun pengguna sistem.
-
-#### Mengakses
-Klik menu **"Pengguna"** di sidebar.
-
-#### Tabel Pengguna
-
-| Kolom | Keterangan |
-|-------|------------|
-| Nama Lengkap | Nama lengkap pegawai |
-| Email | Alamat email untuk login |
-| Peran | `ADMIN` atau `USER` |
-| Status | Aktif atau Non-aktif |
-| Tanggal Dibuat | Kapan akun dibuat |
-
-Filter: tab `Semua` / `Admin` / `User`.
-
-#### Membuat Akun Pengguna Baru
-
-1. Klik **"+ Tambah Pengguna"**
-2. Isi formulir:
-
-| Field | Keterangan | Wajib? |
-|-------|------------|--------|
-| Nama Lengkap | Nama lengkap pegawai | Ya |
-| Email | Alamat email unik | Ya |
-| Kata Sandi | Kata sandi awal (min. 8 karakter) | Ya |
-| Peran | `USER` atau `ADMIN` | Ya |
-
-3. Klik **"Simpan"**
-4. Berikan email dan kata sandi kepada pegawai
-
-#### Menonaktifkan / Mengaktifkan Akun
-1. Klik **toggle switch** di baris pengguna
-2. Konfirmasi di modal yang muncul
-
-> Pengguna nonaktif **tidak dapat login** sampai diaktifkan kembali.
-
-#### Mereset Kata Sandi Pengguna
-
-1. Klik ikon **Kunci (Reset Sandi)** di baris pengguna
-2. Masukkan **kata sandi baru**
-3. Klik **"Reset"**
-4. Sampaikan kata sandi baru kepada pengguna
-
-#### Menghapus Akun Pengguna
-
-> Penghapusan menggunakan *soft delete* — data tidak hilang dari database untuk audit.
-
-1. Klik ikon **Hapus (Trash)** di baris pengguna
-2. Ketik nama pengguna di modal konfirmasi
-3. Klik **"Hapus"**
-
----
-
-### Fitur A3: Manajemen Ruangan & Aset
-
-Kontrol penuh atas data ruangan dan inventaris aset gedung.
-
-#### Mengakses
-Klik menu **"Ruangan & Aset"** di sidebar.
-
-#### Struktur Halaman
-- **Panel Kiri** — Daftar ruangan
-- **Panel Kanan** — Daftar aset dari ruangan yang dipilih
-
-#### Membuat Ruangan Baru
-1. Klik **"+ Ruangan"** di panel kiri
-2. Isi Nama Ruangan dan Lantai/Lokasi
-3. Klik **"Simpan"**
-
-#### Menghapus Ruangan
-1. Centang ruangan yang ingin dihapus
-2. Klik **"Hapus Terpilih"**
-3. Konfirmasi di modal
-
-> Ruangan yang masih memiliki aset aktif **tidak dapat dihapus**.
-
-#### Menambah Aset ke Ruangan
-
-1. Pilih ruangan di panel kiri
-2. Klik **"+ Aset"** di panel kanan
-3. Isi formulir:
-
-| Field | Keterangan | Wajib? |
-|-------|------------|--------|
-| Nama Aset | Nama/label aset (contoh: "AC Daikin 2 PK") | Ya |
-| Kode Inventaris | Nomor inventaris dari Pemda | Opsional |
-| Kategori | Jenis aset | Opsional |
-| Kondisi | Status kondisi aset | Opsional |
-
-4. Klik **"Simpan Aset"**
-
-#### Import Aset Massal dari Excel
-
-1. Pilih ruangan tujuan di panel kiri
-2. Klik tombol **"Import Excel"**
-3. Klik **"Unduh Template"** — isi data di file template yang terunduh
-4. Upload file Excel yang sudah diisi
-5. Klik **"Import"**
-6. Sistem menampilkan hasil import per baris
-
-> Gunakan selalu template yang disediakan agar format kolom sesuai dengan database.
-
-#### Export Data Ruangan & Aset
-1. Klik **"Export"** di pojok kanan atas
-2. Pilih format **Excel** atau **PDF**
-3. File otomatis terunduh
-
-#### Menghapus Aset
-1. Centang aset yang ingin dihapus di panel kanan
-2. Klik **"Hapus Terpilih"**
-3. Konfirmasi di modal
-
----
-
-### Fitur A4: Jadwal Pemeliharaan Rutin
-
-Merencanakan dan mencatat agenda pemeliharaan preventif gedung dan aset.
-
-#### Mengakses
-Klik menu **"Jadwal Pemeliharaan"** di sidebar.
-
-#### Tampilan Halaman
-Agenda ditampilkan sebagai **kartu (card)** berisi:
-- Judul agenda, ruangan/aset, frekuensi, tanggal terjadwal
-- Badge status (berwarna)
-- Vendor/penanggung jawab, estimasi biaya
-
-#### Membuat Jadwal Baru
-
-1. Klik **"+ Jadwal"**
-2. Isi formulir:
-
-| Field | Keterangan | Wajib? |
-|-------|------------|--------|
-| Judul | Nama agenda (contoh: "Service Rutin AC Gedung Utama") | Ya |
-| Deskripsi | Detail pekerjaan | Opsional |
-| Ruangan | Ruangan yang dipelihara | Ya |
-| Aset | Aset spesifik yang dipelihara | Opsional |
-| Frekuensi | Seberapa sering | Ya |
-| Tanggal Terjadwal | Kapan dilaksanakan | Ya |
-| Tipe Penanggung Jawab | Internal (staf) atau Vendor Eksternal | Ya |
-| Nama Vendor / Staf | Nama perusahaan atau staf | Ya |
-| Nama Kontak Person | Nama PIC vendor | Opsional |
-| No. Telepon Vendor | Nomor yang dapat dihubungi | Opsional |
-| Estimasi Biaya | Perkiraan biaya pemeliharaan (Rp) | Opsional |
-| Catatan | Catatan tambahan | Opsional |
-
-3. Klik **"Simpan Jadwal"**
-
-**Pilihan Frekuensi:**
-
-| Kode | Label | Keterangan |
-|------|-------|------------|
-| `WEEKLY` | Mingguan | Setiap minggu |
-| `MONTHLY` | Bulanan | Setiap bulan |
-| `QUARTERLY` | Triwulan | Setiap 3 bulan |
-| `ANNUALLY` | Tahunan | Setiap tahun |
-| `ONE_TIME` | Sekali Saja | Tidak berulang |
-
-#### Mengubah Status Jadwal
-
-| Tombol | Aksi | Status Baru |
-|--------|------|------------|
-| Mulai | Pengerjaan dimulai | `IN_PROGRESS` |
-| Selesai | Pengerjaan selesai | `DONE` |
-| Batal | Batalkan jadwal | `CANCELLED` |
-
-> Jadwal melewati tanggal terjadwal tanpa perubahan status otomatis menjadi `OVERDUE`.
-
-**Referensi Status:**
-
-| Status | Label | Badge |
-|--------|-------|-------|
-| `SCHEDULED` | Terjadwal | Amber/Kuning |
-| `IN_PROGRESS` | Dikerjakan | Biru |
-| `DONE` | Selesai | Hijau |
-| `CANCELLED` | Batal | Merah |
-| `OVERDUE` | Terlambat | Merah Tua |
-
-#### Mengedit Jadwal
-1. Klik ikon Edit di kartu jadwal
-2. Ubah field yang diperlukan
-3. Klik **"Perbarui"**
-
-#### Menghapus Jadwal
-1. Klik ikon Hapus di kartu jadwal
-2. Konfirmasi di modal
-
-#### Export Jadwal Pemeliharaan
-1. Klik **"Export"** di pojok kanan atas
-2. Pilih format Excel atau PDF + rentang waktu
-3. File otomatis terunduh
-
----
-
-### Fitur A5: Persetujuan Transfer Aset
-
-Meninjau dan memberikan keputusan atas pengajuan pemindahan aset dari pegawai.
-
-#### Mengakses
-Klik menu **"Transfer Aset"** → **"Tinjauan Pengajuan"** di sidebar.
-
-#### Statistik Counter
-
-| Counter | Keterangan |
-|---------|------------|
-| Menunggu | Pengajuan belum diproses |
-| Disetujui | Pengajuan telah disetujui |
-| Ditolak | Pengajuan yang ditolak |
-| Total | Total semua pengajuan |
-
-#### Informasi di Setiap Kartu Pengajuan
-
-- Nama aset yang dipindahkan
-- **Ruang Asal → Ruang Tujuan**
-- Nama pegawai pelapor & tanggal pengajuan
-- Alasan pemindahan dari pegawai
-- Kolom **Catatan Admin** untuk diisi saat memberi keputusan
-
-#### Menyetujui Pengajuan
-
-1. Opsional: isi **Catatan Admin**
-2. Klik tombol **"Setujui"**
-3. Konfirmasi di modal
-
-> Jika disetujui: `room_id` aset otomatis diperbarui ke ruangan tujuan. Notifikasi dikirim ke pegawai.
-
-#### Menolak Pengajuan
-
-1. **Wajib** isi **Catatan Admin** (alasan penolakan)
-2. Klik tombol **"Tolak"**
-3. Konfirmasi di modal
-
-> Jika ditolak: aset tetap di ruangan asal. Notifikasi dikirim ke pegawai.
-
-#### Pemindahan Langsung (Fitur Khusus Admin)
-
-Admin dapat memindahkan aset tanpa proses pengajuan:
-1. Menu Transfer Aset → isi Ruang Asal, Aset, Ruang Tujuan
-2. Klik **"Pindahkan Langsung"** (tanpa kolom Alasan)
-3. Aset langsung dipindahkan
-
----
-
-### Fitur A6: Analitik & Ekspor Laporan
-
-#### Halaman Analitik
-Klik menu **"Analitik"** di sidebar.
-
-**Kartu Statistik:**
-
-| Metrik | Keterangan |
-|--------|------------|
-| Laporan Terbuka | Total laporan aktif belum selesai |
-| Sedang Dikerjakan | Laporan dengan status `IN_PROGRESS` |
-| Selesai (30 Hari) | Laporan diselesaikan dalam 30 hari terakhir |
-| Rating Rata-rata | Rata-rata penilaian kepuasan pengguna |
-
-**Visualisasi:**
-
-1. **Distribusi Prioritas AI** — Bar chart jumlah laporan per level prioritas
-2. **Ruangan dengan Laporan Terbanyak** — Bar chart horizontal, identifikasi area bermasalah
-
-#### Export Data — Panduan Lengkap
-
-**Titik akses export:**
-- Tombol "Export Data" di **Dasbor Admin**
-- Tombol "Export Excel/PDF" di **Halaman Analitik**
-- Tombol "Export" di **Ruangan & Aset**
-- Tombol "Export" di **Jadwal Pemeliharaan**
-
-**Langkah export dari Dasbor/Analitik:**
-
-1. Klik tombol **"Export Data"**
-2. Pilih **Jenis Laporan:**
-
-| Pilihan | Keterangan |
-|---------|------------|
-| Laporan Masalah | Data laporan kerusakan fasilitas |
-| Transfer Aset | Data pengajuan pemindahan aset |
-| Jadwal Pemeliharaan | Data agenda maintenance |
-
-3. Pilih **Rentang Waktu:**
-
-| Pilihan | Keterangan |
-|---------|------------|
-| Semua Waktu | Seluruh data historis |
-| Pilih Tanggal | Tentukan tanggal mulai dan selesai |
-
-4. Pilih **Format File:**
-
-| Format | Keterangan |
-|--------|------------|
-| Excel (.xlsx) | Untuk analisis di spreadsheet |
-| PDF | Dokumen siap cetak / lampiran surat |
-
-5. Klik format yang dipilih — file otomatis terunduh.
-
----
-
-## Fitur Kecerdasan Buatan (AI)
-
-Sistem mengintegrasikan **Google Gemini 2.5 Flash** sebagai mesin analisis AI.
-
-### Cara Kerja AI
-
-Setiap laporan baru memicu **analisis AI secara otomatis** di latar belakang:
-
-1. Membaca judul dan deskripsi laporan
-2. Menganalisis kategori dan kondisi aset terkait
-3. Mempertimbangkan konteks ruangan
-4. Menghasilkan analisis terstruktur dalam format JSON
-
-### Hasil Analisis AI
-
-Tersedia di **Detail Laporan** pada panel "Analisis AI":
-
-| Parameter | Keterangan | Contoh |
-|-----------|------------|--------|
-| Skor Prioritas | Nilai numerik urgensitas 0-100 | `85` |
-| Level Prioritas | Kategori urgensitas | `HIGH` |
-| Estimasi Jam | Perkiraan durasi perbaikan | `4 jam` |
-| Rekomendasi Teknis | Saran langkah penanganan | "Periksa pipa kondensasi..." |
-
-### Status Analisis AI
-
-| Status | Keterangan |
-|--------|------------|
-| `PENDING` | Analisis dalam antrian |
-| `PROCESSING` | AI sedang menganalisis (auto-refresh 3 detik) |
-| `COMPLETED` | Analisis selesai, hasil tersedia |
-| `FAILED` | Analisis gagal (laporan tetap tersimpan) |
-
-### Level Prioritas AI
-
-| Level | Label | Rekomendasi Waktu Respons |
-|-------|-------|--------------------------|
-| `CRITICAL` | Kritis | Segera ditangani < 24 jam |
-| `HIGH` | Tinggi | Ditangani < 48 jam |
-| `MEDIUM` | Sedang | Ditangani dalam seminggu |
-| `LOW` | Rendah | Dapat dijadwalkan fleksibel |
-
-### Poin Penting
-
-> **AI sebagai Pendukung Keputusan, bukan Penentu.**
-> Hasil analisis bersifat **rekomendasi**. Administrator tetap memegang kendali penuh atas keputusan akhir.
-
-> **Failsafe:** Jika layanan AI gangguan, laporan tetap tersimpan dengan status AI `FAILED`. Operasi CRUD laporan berjalan normal.
-
----
-
-## Referensi Status & Kode
-
-### Status Laporan Kerusakan
-
-| Status | Label | Badge | Keterangan |
-|--------|-------|-------|------------|
-| `PENDING` | Menunggu | Kuning | Laporan baru, belum ditinjau |
-| `REVIEWED` | Ditinjau | Biru | Admin sedang memeriksa |
-| `IN_PROGRESS` | Sedang Dikerjakan | Ungu/Indigo | Teknisi sedang memperbaiki |
-| `COMPLETED` | Selesai | Hijau | Perbaikan berhasil |
-| `CANCELLED` | Dibatalkan | Abu-abu | Laporan dibatalkan |
-| `REJECTED` | Ditolak | Merah | Laporan tidak diproses |
-
-### Level Prioritas AI
-
-| Level | Label | Badge | Urgensitas |
-|-------|-------|-------|------------|
-| `CRITICAL` | Kritis | Merah Tua | Kerusakan parah, ancaman operasional |
-| `HIGH` | Tinggi | Oranye | Kerusakan signifikan, penanganan cepat |
-| `MEDIUM` | Sedang | Kuning | Kerusakan moderat, perlu penjadwalan |
-| `LOW` | Rendah | Hijau | Kerusakan ringan, bisa ditunda |
-
-### Status Transfer Aset
-
-| Status | Label | Badge | Keterangan |
-|--------|-------|-------|------------|
-| `PENDING` | Menunggu | Oranye | Pengajuan belum ditinjau Admin |
-| `APPROVED` | Disetujui | Hijau | Aset berhasil dipindahkan |
-| `REJECTED` | Ditolak | Merah | Pengajuan tidak disetujui |
-
-### Status Jadwal Pemeliharaan
-
-| Status | Label | Badge | Keterangan |
-|--------|-------|-------|------------|
-| `SCHEDULED` | Terjadwal | Amber | Agenda terencana, belum dimulai |
-| `IN_PROGRESS` | Dikerjakan | Biru | Sedang berlangsung |
-| `DONE` | Selesai | Hijau | Berhasil diselesaikan |
-| `CANCELLED` | Batal | Merah | Agenda dibatalkan |
-| `OVERDUE` | Terlambat | Merah Tua | Melewati tanggal terjadwal |
-
----
-
-## FAQ & Pemecahan Masalah Umum
-
-**Q: Akun terkunci dan tidak bisa login?**
-
-Tunggu **15 menit** hingga terbuka otomatis. Untuk membuka lebih cepat, hubungi Administrator yang dapat membuka kunci melalui panel Manajemen Pengguna.
-
----
-
-**Q: Analisis AI laporan tidak muncul setelah lama?**
-
-Normalnya 5-30 detik. Jika lebih dari 5 menit, layanan AI mungkin gangguan. Status tercatat `FAILED`. Laporan Anda tetap aman dan Admin dapat memproses secara manual.
-
----
-
-**Q: Tombol "Buat Laporan" tidak ada?**
-
-Pastikan Anda sudah login, akun dalam status **aktif**, dan berada di halaman "Laporan Kerusakan". Jika masih tidak ada, hubungi Administrator.
-
----
-
-**Q: Import Excel aset gagal?**
-
-Kemungkinan penyebab:
-1. Tidak menggunakan template yang disediakan — unduh ulang template
-2. Format kolom tidak sesuai (angka/teks)
-3. Nama aset duplikat
-4. File Excel rusak — simpan ulang dan coba lagi
-
----
-
-**Q: Pengajuan transfer masih PENDING sudah beberapa hari?**
-
-Pengajuan perlu persetujuan Admin secara manual. Jika lebih dari 2-3 hari kerja belum ada respons, hubungi Administrator secara langsung.
-
----
-
-**Q: Notifikasi real-time tidak muncul?**
-
-1. Pastikan koneksi internet stabil
-2. Coba refresh halaman (F5)
-3. Gunakan browser modern (Chrome/Firefox/Edge versi terbaru)
-4. Periksa apakah ad-blocker memblokir koneksi WebSocket
-
----
-
-**Q: Bagaimana cara export laporan bulanan?**
-
-(Hanya Admin) Buka Dasbor → klik "Export Data" → pilih jenis laporan → pilih "Pilih Tanggal" → isi rentang bulan → pilih format Excel atau PDF.
-
----
-
-**Q: Data yang dihapus bisa dipulihkan?**
-
-Sistem menggunakan **Soft Delete** — data ditandai dihapus, bukan benar-benar hilang. Pemulihan hanya bisa dilakukan tim pengembang via akses database langsung. Hubungi tim IT jika diperlukan.
-
----
-
-**Q: Bagaimana cara install aplikasi di HP?**
-
-Lihat bagian **Instalasi PWA** di awal panduan. Mendukung Android (Chrome), iOS (Safari), dan Desktop (Chrome/Edge) tanpa melalui toko aplikasi.
-
----
-
-*Dokumen ini terakhir diperbarui pada **Agustus 2026** oleh Tim Pengembang ASETKITA Semarang.*
-
-*Untuk pertanyaan teknis lebih lanjut, lihat dokumentasi developer di folder `docs/` atau hubungi tim IT Sekretariat DPRD Kota Semarang.*
+*Tim Pengembang FixMind*
