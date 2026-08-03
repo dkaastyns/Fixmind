@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useState } from 'react'
 import { io, Socket } from 'socket.io-client'
 import { useAuthStore } from '@/stores/auth-store'
 
@@ -8,24 +8,29 @@ const SOCKET_URL = import.meta.env.VITE_API_BASE_URL
 
 export function useSocket() {
   const token = useAuthStore((s) => s.accessToken)
-  const socketRef = useRef<Socket | null>(null)
+  const [socket, setSocket] = useState<Socket | null>(null)
 
   useEffect(() => {
-    if (!token) return
+    if (!token) {
+      setSocket(null)
+      return
+    }
 
-    socketRef.current = io(SOCKET_URL, {
+    const socketInstance = io(SOCKET_URL, {
       auth: { token },
       transports: ['websocket'],
     })
 
-    socketRef.current.on('connect', () => {
+    socketInstance.on('connect', () => {
       console.log('Connected to WebSocket server')
     })
 
+    setSocket(socketInstance)
+
     return () => {
-      socketRef.current?.disconnect()
+      socketInstance.disconnect()
     }
   }, [token])
 
-  return socketRef.current
+  return socket
 }

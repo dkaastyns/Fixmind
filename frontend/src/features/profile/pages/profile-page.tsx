@@ -48,15 +48,6 @@ export function ProfilePage() {
     }
   }, [user])
 
-  // Safety loading guard to prevent rendering crashes if user session is hydrating
-  if (!user) {
-    return (
-      <div className="flex min-h-[50vh] items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-[#F9D141]" />
-      </div>
-    )
-  }
-
   // Upload Avatar Mutation
   const uploadAvatarMut = useMutation({
     mutationFn: (file: File) => uploadAvatarRequest(token, file),
@@ -193,6 +184,15 @@ export function ProfilePage() {
   const handleConfirmPasswordChange = () => {
     passwordMut.mutate({ oldPassword, newPassword })
     setShowConfirmModal(false)
+  }
+
+  // Safety loading guard to prevent rendering crashes if user session is hydrating
+  if (!user) {
+    return (
+      <div className="flex min-h-[50vh] items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-[#F9D141]" />
+      </div>
+    )
   }
 
   return (

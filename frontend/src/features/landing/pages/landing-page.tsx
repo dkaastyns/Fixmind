@@ -160,13 +160,13 @@ export function LandingPage() {
   const accessToken = useAuthStore((s) => s.accessToken)
   const isHydrated = useAuthStore((s) => s.isHydrated)
 
-  if (isHydrated && accessToken) {
-    return <Navigate to="/dashboard" replace />
-  }
-
   const [showIntro, setShowIntro] = useState(() => {
     return !sessionStorage.getItem('hasSeenIntro')
   })
+
+  if (isHydrated && accessToken) {
+    return <Navigate to="/dashboard" replace />
+  }
 
   const handleIntroComplete = () => {
     sessionStorage.setItem('hasSeenIntro', 'true')
