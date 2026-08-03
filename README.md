@@ -26,6 +26,168 @@ Sistem ini mempermudah alur pengaduan dan pemeliharaan fasilitas secara digital,
 
 ---
 
+## From Zero to Running (Quick Start)
+
+Pilih salah satu metode di bawah ini untuk menjalankan aplikasi:
+
+### Metode A: Full Stack dengan Docker Compose (Satu Langkah)
+
+Metode ini menjalankan seluruh ekosistem (Frontend, Backend NestJS, Database PostgreSQL 16, dan Nginx Reverse Proxy) secara otomatis.
+
+1. Salin template file environment:
+   ```bash
+   cp .env.example .env
+   ```
+
+2. Jalankan seluruh container:
+   ```bash
+   docker compose up -d --build
+   ```
+
+3. Buka aplikasi di peramban:
+   - **Web Application:** `http://localhost`
+   - **Health Check API:** `http://localhost/api/v1/health`
+
+---
+
+### Metode B: Lokal Manual tanpa Docker (Development Mode)
+
+Metode ini digunakan untuk pengembangan aktif frontend dan backend di lingkungan lokal.
+
+#### 1. Prasyarat Sistem
+- **Bun 1.3+** (Runtime resmi proyek) atau **Node.js 20+**
+- **PostgreSQL 16+** (dengan ekstensi `pgvector`) yang berjalan di port `5432`
+
+#### 2. Konfigurasi Environment Variables
+Salin contoh file environment ke masing-masing direktori modul:
+
+```bash
+# Salin konfigurasi backend
+cp backend/.env.example backend/.env
+
+# Salin konfigurasi frontend
+cp frontend/.env.example frontend/.env
+```
+
+Pastikan variabel `DATABASE_URL` pada `backend/.env` sesuai dengan kredensial PostgreSQL lokal Anda.
+
+#### 3. Instalasi Dependensi Workspace
+Jalankan instalasi dependensi dari root direktori:
+
+```bash
+bun install
+```
+
+#### 4. Migrasi & Seeding Database
+Jalankan script migrasi skema tabel dan data awal (seed akun admin & user, data ruangan, data aset):
+
+```bash
+cd backend
+bun run migrate
+bun run seed
+cd ..
+```
+
+#### 5. Menjalankan Aplikasi
+Jalankan frontend dan backend secara bersamaan dari root direktori:
+
+```bash
+bun run dev:all
+```
+
+Aplikasi siap diakses:
+- **Frontend Client:** `http://localhost:5173`
+- **Backend API:** `http://localhost:3000/api/v1`
+
+---
+
+## Daftar Minimal Environment Variables yang Wajib
+
+Berikut adalah rincian environment variables utama yang wajib dikonfigurasi sebelum menjalankan aplikasi:
+
+### Backend (`backend/.env`)
+
+| Variabel | Status | Nilai Default / Contoh | Deskripsi |
+|---|---|---|---|
+| `DATABASE_URL` | Wajib | `postgresql://postgres:postgres@localhost:5432/asetkita-semarang` | URL koneksi ke PostgreSQL instance |
+| `PORT` | Wajib | `3000` | Port listening HTTP server backend |
+| `NODE_ENV` | Wajib | `development` | Mode runtime (`development`, `production`, `test`) |
+| `CORS_ORIGIN` | Wajib | `http://localhost:5173` | Domain/origin frontend yang diizinkan |
+| `JWT_ACCESS_SECRET` | Wajib | `minimum-32-characters-random-secret-key` | Kunci rahasia signing JWT Access Token |
+| `JWT_REFRESH_SECRET` | Wajib | `minimum-32-characters-random-refresh-key` | Kunci rahasia signing JWT Refresh Token |
+| `LLM_PROVIDER` | Wajib | `gemini` | Provider AI (`gemini` atau `groq`) |
+| `GEMINI_API_KEY` | Opsional (Wajib jika AI aktif) | `AIzaSy...` | API key Google AI Studio untuk Gemini |
+| `CLOUDINARY_CLOUD_NAME` | Opsional | `your-cloud-name` | Penyimpanan upload foto kerusakan |
+| `CLOUDINARY_API_KEY` | Opsional | `your-api-key` | API key Cloudinary |
+| `CLOUDINARY_API_SECRET` | Opsional | `your-api-secret` | API secret Cloudinary |
+
+### Frontend (`frontend/.env`)
+
+| Variabel | Status | Nilai Default / Contoh | Deskripsi |
+|---|---|---|---|
+| `VITE_API_BASE_URL` | Wajib | `http://localhost:3000/api/v1` | URL endpoint backend yang dituju client |
+
+### Docker Compose (`.env`)
+
+| Variabel | Status | Nilai Default / Contoh | Deskripsi |
+|---|---|---|---|
+| `POSTGRES_PASSWORD` | Wajib | `changeme` | Password user postgres internal container |
+| `JWT_ACCESS_SECRET` | Wajib | `change-me-access-secret-min-32-chars` | Rahasia JWT Access Token container backend |
+| `JWT_REFRESH_SECRET` | Wajib | `change-me-refresh-secret-min-32-chars` | Rahasia JWT Refresh Token container backend |
+| `GEMINI_API_KEY` | Opsional | `your-gemini-key` | Kunci API Gemini untuk analisis laporan |
+| `CORS_ORIGIN` | Wajib | `http://localhost` | Origin domain produksi Nginx |
+| `VITE_API_BASE_URL` | Wajib | `/api/v1` | Reverse proxy path API backend di Nginx |
+
+---
+
+## Keputusan Runtime & Package Manager (Bun vs npm/pnpm)
+
+### Keputusan Resmi: Menggunakan Bun (v1.3+)
+
+Proyek **FixMind (ASETKITA Semarang)** secara resmi menetapkan **[Bun](https://bun.sh/) 1.3+** sebagai runtime JavaScript/TypeScript dan package manager monorepo workspace standar.
+
+**Alasan Pemilihan Bun:**
+1. **Kecepatan Tinggi:** Proses instalasi dependensi, eksekusi task, dan build berjalan 3x hingga 10x lebih cepat dibanding package manager tradisional.
+2. **Native TypeScript Execution:** Bun dapat langsung mengeksekusi file TypeScript (seperti `scripts/migrate.ts` dan `scripts/seed.ts`) tanpa membutuhkan konfigurasi compiler eksternal (`ts-node` / `tsx`).
+3. **Workspace Support Terintegrasi:** Fitur `bun --filter` memudahkan orkestrasi skrip antar modul `backend` dan `frontend` dalam satu perintah di root folder.
+
+### Status File Lock (`bun.lock`)
+File `bun.lock` di root, `backend/bun.lock`, dan `frontend/bun.lock` adalah file lock resmi proyek. File ini wajib diikutsertakan dalam version control (git) untuk menjamin konsistensi versi dependensi seluruh tim pengembang dan pipeline CI.
+
+### Padanan Perintah (Jika Menggunakan npm atau pnpm)
+
+Jika Bun belum terpasang pada lingkungan Anda, perintah berikut dapat digunakan sebagai padanan:
+
+| Tindakan | Perintah Bun (Rekomendasi) | Padanan npm | Padanan pnpm |
+|---|---|---|---|
+| Install Dependensi | `bun install` | `npm install` | `pnpm install` |
+| Jalankan Full Stack Dev | `bun run dev:all` | `npm run dev:all` | `pnpm run dev:all` |
+| Jalankan Backend Dev | `bun run start:backend` | `npm run --prefix backend start:dev` | `pnpm --filter backend start:dev` |
+| Jalankan Frontend Dev | `bun run start:frontend` | `npm run --prefix frontend dev` | `pnpm --filter frontend dev` |
+| Migrasi Database | `cd backend && bun run migrate` | `cd backend && npx ts-node scripts/migrate.ts` | `cd backend && pnpm exec ts-node scripts/migrate.ts` |
+| Seed Database | `cd backend && bun run seed` | `cd backend && npx ts-node scripts/seed.ts` | `cd backend && pnpm exec ts-node scripts/seed.ts` |
+| Jalankan Seluruh Test | `bun run test:ci` | `npm run --prefix backend test && npm run --prefix frontend test` | `pnpm --recursive test` |
+
+---
+
+## CI & Quality Gates
+
+Proyek ini menerapkan quality gate otomatis melalui GitHub Actions (`.github/workflows/ci.yml`) pada setiap `push` dan `pull request` ke branch `main`:
+
+1. **Secret Scanning (TruffleHog OSS):**
+   Memindai seluruh riwayat commit dan pull request untuk mendeteksi potensi kebocoran API Key, kata sandi, token JWT, atau kredensial sensitif lainnya sebelum masuk ke repository utama.
+
+2. **Linting & Code Formatting:**
+   Menjalankan ESLint dan Prettier pada kode frontend dan backend untuk memastikan standar gaya kode dan konsistensi arsitektur tetap terjaga.
+
+3. **Type Safety & Build Verification:**
+   Memverifikasi bahwa TypeScript compiler (`tsc -b`) berhasil mengompilasi seluruh modul tanpa error tipe data, serta memverifikasi bahwa proses production build (Vite & NestJS CLI) berjalan lancar.
+
+4. **Automated Unit Testing & Coverage:**
+   Menjalankan rangkaian pengujian otomatis unit testing (Jest pada Backend dan Vitest pada Frontend) untuk memastikan fungsi kalkulasi, service, middleware, dan komponen UI bekerja sesuai spesifikasi.
+
+---
+
 ## Fitur Utama Sistem
 
 ### 1. Pelaporan Kerusakan Cerdas Berbasis AI
@@ -35,12 +197,12 @@ Sistem ini mempermudah alur pengaduan dan pemeliharaan fasilitas secara digital,
 
 ### 2. Jadwal Pemeliharaan Rutin (Maintenance Schedule)
 - **Manajemen Agenda Pemeliharaan:** Penjadwalan perawatan preventif gedung dan aset berkala (Mingguan, Bulanan, Triwulan, Tahunan, atau Sekali Saja).
-- **Manajemen Vendor Eksternal & Biaya:** Pencatatan nama perusahaan vendor, nama *contact person*, nomor telepon vendor, serta estimasi dan realisasi biaya pemeliharaan.
-- **Status Siklus Kerja:** Pelacakan status pengerjaan (*Terjadwal*, *Sedang Dikerjakan*, *Selesai*, *Batal*, *Terlambat/Overdue*).
+- **Manajemen Vendor Eksternal & Biaya:** Pencatatan nama perusahaan vendor, nama contact person, nomor telepon vendor, serta estimasi dan realisasi biaya pemeliharaan.
+- **Status Siklus Kerja:** Pelacakan status pengerjaan (Terjadwal, Sedang Dikerjakan, Selesai, Batal, Terlambat/Overdue).
 
 ### 3. Pengajuan Pemindahan Aset (Asset Transfer Workflow)
 - **Alur Persetujuan Bertingkat:** Pegawai dapat mengajukan permohonan pemindahan aset antar ruangan beserta alasannya.
-- **Verifikasi Administrator:** Admin dapat meninjau (*Approve* / *Reject*) pengajuan transfer. Jika disetujui, lokasi `room_id` aset otomatis diperbarui secara otomatis di database.
+- **Verifikasi Administrator:** Admin dapat meninjau (Approve / Reject) pengajuan transfer. Jika disetujui, lokasi `room_id` aset otomatis diperbarui di database.
 
 ### 4. Pencarian Global Terpadu (Global Instant Search)
 - **Pencarian Melintas Entitas:** Satu kolom pencarian pintar untuk menemukan Aset, Laporan Kerusakan, Pengajuan Transfer, dan Jadwal Pemeliharaan secara instan dari seluruh sudut aplikasi.
@@ -62,14 +224,14 @@ Sistem ini mempermudah alur pengaduan dan pemeliharaan fasilitas secara digital,
 ## Tech Stack
 
 | Komponen | Teknologi | Keterangan |
-|----------|-----------|------------|
+|---|---|---|
 | **Runtime & PM** | [Bun](https://bun.sh/) 1.3+ | Runtime JavaScript/TypeScript super cepat & package manager |
 | **Backend Framework** | NestJS 11 | Framework Node.js/TypeScript enterprise dengan modul terpisah |
 | **Frontend Framework** | React 19 + Vite | UI library modern dengan Vite bundler dan React Router 7 |
-| **Styling & Motion** | Tailwind CSS v4 + Framer Motion | Desain *Dark Glassmorphism* modern dengan animasi kinetic halus |
+| **Styling & Motion** | Tailwind CSS v4 + Framer Motion | Desain Dark Glassmorphism modern dengan animasi kinetic halus |
 | **State Management** | TanStack Query + Zustand | Management server-state dan auth session in-memory |
 | **Database** | PostgreSQL 16 + pgvector | Database relasional dengan ekstensi pencarian vektor |
-| **Database Access** | `postgres.js` | Kueri *Raw SQL* berkinerja tinggi tanpa ORM overhead |
+| **Database Access** | `postgres.js` | Kueri Raw SQL berkinerja tinggi tanpa ORM overhead |
 | **Kecerdasan Buatan (AI)** | Gemini 2.5 Flash & Groq (Llama 3.1) | Mesin analisis prioritas, durasi pengerjaan, dan saran teknis |
 | **Real-time Engine** | Socket.io (WebSockets) | Event streaming untuk notifikasi instan |
 | **Media Storage** | Cloudinary | Penyimpanan cloud untuk bukti foto kerusakan & perbaikan |
@@ -81,7 +243,7 @@ Sistem ini mempermudah alur pengaduan dan pemeliharaan fasilitas secara digital,
 Struktur lengkap proyek dan panduan pengembang tersedia di folder `docs/`:
 
 | File Dokumentasi | Isi & Deskripsi |
-|------------------|-----------------|
+|---|---|
 | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | Arsitektur global, diagram alur siklus laporan, dan transfer aset |
 | [docs/API.md](docs/API.md) | Katalog lengkap REST API endpoints, DTO, contoh cURL & WebSockets |
 | [docs/DATABASE.md](docs/DATABASE.md) | ERD, kamus data (Data Dictionary), indeks, dan riwayat migrasi |
@@ -98,6 +260,8 @@ Struktur lengkap proyek dan panduan pengembang tersedia di folder `docs/`:
 | [docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md) | Solusi masalah umum saat instalasi dan penanganan galat |
 | [CONTRIBUTING.md](CONTRIBUTING.md) | Standar Conventional Commits, git branching, dan PR workflow |
 
+---
+
 ## Port Default Aplikasi & Endpoint
 
 Aplikasi menggunakan konfigurasi port default berikut:
@@ -108,101 +272,12 @@ Aplikasi menggunakan konfigurasi port default berikut:
 
 ---
 
-## Panduan Memulai (Quick Start Guide)
-
-### Prasyarat Sistem
-1. Pasang **[Bun](https://bun.sh/) 1.3+** (pengganti Node.js/npm).
-   - Windows PowerShell: `powershell -c "irm bun.sh/install.ps1 | iex"`
-   - Linux/macOS: `curl -fsSL https://bun.sh/install | bash`
-2. Pasang **PostgreSQL 16+** (dengan ekstensi `pgvector`).
-3. Buat database baru bernama `asetkita-semarang` di PostgreSQL lokal Anda.
-
----
-
-### Step 1: Konfigurasi Environment File (.env)
-
-Buat file `.env` di dalam folder `backend` dan `frontend` dengan konfigurasi minimal berikut:
-
-**Backend (`backend/.env`):**
-```env
-DATABASE_URL=postgresql://postgres:postgres@localhost:5432/asetkita-semarang
-PORT=3000
-NODE_ENV=development
-CORS_ORIGIN=http://localhost:5173
-JWT_ACCESS_SECRET=your-super-long-secret-key-at-least-32-chars
-JWT_REFRESH_SECRET=your-other-super-long-secret-key-at-least-32-chars
-LLM_PROVIDER=gemini
-GEMINI_API_KEY=your-google-gemini-key
-GEMINI_MODEL=gemini-2.5-flash
-```
-
-**Frontend (`frontend/.env`):**
-```env
-VITE_API_BASE_URL=http://localhost:3000/api/v1
-```
-
----
-
-### Step 2: Instalasi & Inisialisasi Database
-
-Jalankan perintah berikut di root folder untuk menginstal dependensi seluruh modul dan melakukan migrasi database awal:
-
-```powershell
-# Install seluruh dependensi workspace sekaligus
-bun install
-
-# Masuk ke backend untuk menjalankan migrasi & seed awal
-cd backend
-bun run migrate
-bun run seed
-cd ..
-```
-
----
-
-### Step 3: Jalankan Aplikasi dengan Skrip Helper
-
-Anda dapat menjalankan atau menguji aplikasi secara instan dari root folder menggunakan skrip otomatisasi workspaces Bun berikut:
-
-```powershell
-# Jalankan frontend & backend sekaligus secara bersamaan (Sangat direkomendasikan)
-bun run dev:all
-
-# Hanya jalankan backend service (NestJS)
-bun run start:backend
-
-# Hanya jalankan frontend web (Vite)
-bun run start:frontend
-
-# Jalankan seluruh unit testing (backend & frontend)
-bun run test:ci
-```
-
----
-
-## Menjalankan dengan Docker Compose (Produksi / Staging)
-
-Seluruh sistem (Nginx, Backend NestJS, PostgreSQL 16) dapat dijalankan menggunakan Docker Compose:
-
-```bash
-# Salin contoh file .env root
-cp .env.example .env
-
-# Build dan jalankan seluruh container
-docker compose up -d --build
-```
-
-- **URL Aplikasi Production:** `http://localhost` (melalui Nginx Reverse Proxy di port 80/443).
-- **Keamanan Production:** Port internal database (`5432`) dan backend NestJS (`3000`) sengaja disembunyikan dari akses publik demi keamanan *hardening*.
-
----
-
 ## Kredensial Login Default (Development Seed)
 
 Setelah menjalankan `bun run seed` di backend, Anda dapat menggunakan akun berikut untuk menguji aplikasi:
 
 | Peran (Role) | Email Kredensial | Kata Sandi (Password) | Akses |
-|--------------|------------------|-----------------------|-------|
+|---|---|---|---|
 | **ADMIN** | `admin@asetkita-semarang.local` | `Admin123!@#` | Akses Penuh (Kelola Ruangan, Aset, User, Maintenance, Transfer Review, Analitik) |
 | **USER** | `user@asetkita-semarang.local` | `User123!@#` | Akses Pegawai (Pelaporan Kerusakan, Pengajuan Transfer Aset, Profil) |
 
@@ -210,4 +285,4 @@ Setelah menjalankan `bun run seed` di backend, Anda dapat menggunakan akun berik
 
 ## Lisensi
 
-Hak Cipta © 2026 Sekretariat DPRD Kota Semarang / Tim Pengembang ASETKITA Semarang. Berlisensi di bawah [MIT License](LICENSE).
+Hak Cipta (c) 2026 Sekretariat DPRD Kota Semarang / Tim Pengembang ASETKITA Semarang. Berlisensi di bawah [MIT License](LICENSE).
