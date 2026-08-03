@@ -392,8 +392,8 @@ export function UsersPage() {
         transition={{ duration: 0.5 }}
         className="block lg:hidden min-h-screen bg-[#F5F5F5] pb-24 -mt-4 -mx-4 overflow-x-hidden relative"
       >
-        {/* Header Cover Banner with background image */}
-        <div className="relative h-[280px] w-full rounded-b-[40px] shadow-md">
+        {/* Header with background image */}
+        <div className="relative z-30 h-[280px] w-full rounded-b-[40px] shadow-md">
           {/* Background wrapper with overflow-hidden */}
           <div className="absolute inset-0 rounded-b-[40px] overflow-hidden">
             <div 
@@ -404,7 +404,7 @@ export function UsersPage() {
           </div>
 
           {/* Top Nav */}
-          <div className="relative z-10 flex items-center justify-between p-4 pt-6">
+          <div className="relative z-30 flex items-center justify-between p-4 pt-6">
             <button onClick={() => window.dispatchEvent(new CustomEvent('open-mobile-menu'))} className="text-[#F9D141] hover:text-yellow-300">
               <Menu className="w-7 h-7" />
             </button>

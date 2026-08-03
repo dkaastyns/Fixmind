@@ -69,7 +69,7 @@ export function NotificationBell({ align = 'right', className }: { align?: 'left
   }, [socket, user, addNotification])
 
   return (
-    <div className="relative inline-block">
+    <div className={cn("relative inline-block", isOpen && "z-50")}>
       <button
         onClick={() => setIsOpen((prev) => !prev)}
         className={cn(

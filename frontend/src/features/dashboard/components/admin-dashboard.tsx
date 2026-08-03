@@ -392,7 +392,7 @@ export function AdminDashboard() {
           initial={{ opacity: 0, y: -15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="relative w-full pt-6 pb-8 px-5 md:py-8 md:px-8 text-white min-h-[300px] md:min-h-[260px] flex flex-col justify-between group"
+          className="relative z-20 w-full pt-6 pb-8 px-5 md:py-8 md:px-8 text-white min-h-[300px] md:min-h-[260px] flex flex-col justify-between group"
         >
           {/* Background & Overlay Wrapper to clip rounded corners */}
           <div className="absolute inset-0 rounded-b-[2.5rem] md:rounded-[2.5rem] overflow-hidden shadow-xl z-0">
@@ -406,7 +406,7 @@ export function AdminDashboard() {
           </div>
 
           {/* Mobile Header Toolbar */}
-          <div className="relative z-10 flex items-center justify-between md:hidden w-full mb-4">
+          <div className="relative z-30 flex items-center justify-between md:hidden w-full mb-4">
             <button 
               onClick={() => window.dispatchEvent(new CustomEvent('open-mobile-menu'))}
               className="p-1 text-[#ffd043] hover:text-yellow-300 transition-colors cursor-pointer"
