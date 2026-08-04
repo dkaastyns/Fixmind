@@ -289,74 +289,81 @@ export function RoomsPage() {
         title="Fasilitas & Aset DPRD Kota Semarang"
         description="Kelola seluruh daftar inventaris barang kantor, kendaraan dinas, serta fasilitas gedung secara terpadu."
         action={isAdmin ? (
-          <div className="flex flex-wrap items-center gap-2">
-            <motion.div whileHover={{ scale: 1.04, y: -2 }} whileTap={{ scale: 0.96 }}>
+          <div className="flex flex-wrap items-center justify-start sm:justify-end gap-2.5">
+            {/* Group 1: Data Utilities */}
+            <div className="flex items-center gap-1 p-1 bg-white/90 border border-slate-200/80 rounded-2xl shadow-sm">
               <Button
-                variant="secondary"
+                variant="ghost"
+                size="sm"
                 onClick={() => setShowExportModal(true)}
                 disabled={isExportingExcel || isExportingPdf}
                 title="Export data ruangan & aset ke Excel atau PDF"
-                className="gap-1.5 h-10 px-3.5 border-slate-200 text-slate-700 bg-white/80 hover:bg-white hover:shadow-md transition-all duration-200 font-semibold rounded-xl text-xs cursor-pointer"
+                className="gap-1.5 h-8 px-2.5 text-xs font-semibold text-slate-700 hover:bg-slate-100 rounded-xl cursor-pointer"
               >
-                <Download className="h-4 w-4 text-emerald-600" />
-                Export Data
+                <Download className="h-3.5 w-3.5 text-emerald-600" />
+                <span>Export</span>
               </Button>
-            </motion.div>
 
-            <motion.div whileHover={{ scale: 1.04, y: -2 }} whileTap={{ scale: 0.96 }}>
+              <div className="h-4 w-[1px] bg-slate-200" />
+
               <Button
-                variant="secondary"
+                variant="ghost"
+                size="sm"
                 onClick={() => downloadTemplateMut.mutate()}
                 disabled={downloadTemplateMut.isPending}
                 title="Download template Excel untuk import aset"
-                className="gap-1.5 h-10 px-3.5 border-slate-200 text-slate-700 bg-white/80 hover:bg-white hover:shadow-md transition-all duration-200 font-semibold rounded-xl text-xs cursor-pointer"
+                className="gap-1.5 h-8 px-2.5 text-xs font-semibold text-slate-700 hover:bg-slate-100 rounded-xl cursor-pointer"
               >
-                <Download className="h-4 w-4 text-[#d9a416]" />
-                Download Template
+                <Download className="h-3.5 w-3.5 text-[#d9a416]" />
+                <span>Template</span>
               </Button>
-            </motion.div>
 
-            <input
-              ref={headerImportInputRef}
-              type="file"
-              accept=".xlsx,.xls"
-              className="hidden"
-              onChange={handleHeaderImportFileChange}
-            />
-            <motion.div whileHover={{ scale: 1.04, y: -2 }} whileTap={{ scale: 0.96 }}>
+              <div className="h-4 w-[1px] bg-slate-200" />
+
+              <input
+                ref={headerImportInputRef}
+                type="file"
+                accept=".xlsx,.xls"
+                className="hidden"
+                onChange={handleHeaderImportFileChange}
+              />
               <Button
-                variant="secondary"
+                variant="ghost"
+                size="sm"
                 onClick={() => headerImportInputRef.current?.click()}
                 disabled={importAssetsMut.isPending}
                 title="Import aset dari file Excel"
-                className="gap-1.5 h-10 px-3.5 border-slate-200 text-slate-700 bg-white/80 hover:bg-white hover:shadow-md transition-all duration-200 font-semibold rounded-xl text-xs cursor-pointer"
+                className="gap-1.5 h-8 px-2.5 text-xs font-semibold text-slate-700 hover:bg-slate-100 rounded-xl cursor-pointer"
               >
-                <FileSpreadsheet className="h-4 w-4 text-emerald-600" />
-                {importAssetsMut.isPending ? 'Mengimport...' : 'Import Excel'}
+                <FileSpreadsheet className="h-3.5 w-3.5 text-emerald-600" />
+                <span>{importAssetsMut.isPending ? 'Mengimport...' : 'Import'}</span>
               </Button>
-            </motion.div>
+            </div>
 
-            {/* Tombol Tambah Aset Manual */}
-            <motion.div whileHover={{ scale: 1.04, y: -2 }} whileTap={{ scale: 0.96 }}>
-              <Button
-                variant="secondary"
-                onClick={() => setShowAssetForm(true)}
-                title="Tambah aset baru secara manual"
-                className="gap-1.5 h-10 px-3.5 border-amber-300/80 bg-amber-50/80 hover:bg-amber-100/80 text-amber-800 shadow-sm hover:shadow-md transition-all duration-200 font-bold rounded-xl text-xs cursor-pointer"
-              >
-                <Plus className="h-4 w-4 text-amber-600" />
-                Tambah Aset
-              </Button>
-            </motion.div>
+            {/* Group 2: Primary Add Actions */}
+            <div className="flex items-center gap-2">
+              <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
+                <Button
+                  onClick={() => setShowAssetForm(true)}
+                  title="Tambah aset baru secara manual"
+                  className="gap-1.5 h-9 px-3.5 bg-amber-500 hover:bg-amber-600 text-white font-extrabold rounded-xl text-xs shadow-md shadow-amber-500/20 cursor-pointer"
+                >
+                  <Plus className="h-4 w-4 text-white" />
+                  <span>Tambah Aset</span>
+                </Button>
+              </motion.div>
 
-            <motion.div whileHover={{ scale: 1.04, y: -2 }} whileTap={{ scale: 0.96 }}>
-              <Button 
-                onClick={() => setShowRoomForm(true)} 
-                className="gap-1.5 h-10 px-4 bg-[#d9a416] hover:bg-[#b88b12] text-white shadow-md hover:shadow-lg transition-all duration-200 font-extrabold rounded-xl text-xs cursor-pointer"
-              >
-                <Plus className="h-4 w-4 text-white" /> Tambah Ruangan
-              </Button>
-            </motion.div>
+              <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
+                <Button 
+                  onClick={() => setShowRoomForm(true)} 
+                  title="Tambah ruangan baru"
+                  className="gap-1.5 h-9 px-3.5 bg-slate-900 hover:bg-slate-800 text-white font-extrabold rounded-xl text-xs shadow-md shadow-slate-900/20 cursor-pointer"
+                >
+                  <Plus className="h-4 w-4 text-white" />
+                  <span>Tambah Ruangan</span>
+                </Button>
+              </motion.div>
+            </div>
           </div>
         ) : undefined}
       />
