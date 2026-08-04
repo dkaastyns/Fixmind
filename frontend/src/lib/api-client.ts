@@ -359,7 +359,7 @@ export const reviewAssetTransfer = (
     ...auth(token),
   })
 
-export const importAssets = async (token: string, roomId: string, file: File) => {
+export const importAssets = async (token: string, roomId: string | null | undefined, file: File) => {
   const ALLOWED_TYPES = [
     'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
     'application/vnd.ms-excel',
@@ -375,7 +375,8 @@ export const importAssets = async (token: string, roomId: string, file: File) =>
   const formData = new FormData()
   formData.append('file', file)
 
-  const response = await fetch(`${API_BASE}/assets/import?roomId=${roomId}`, {
+  const qs = roomId ? `?roomId=${encodeURIComponent(roomId)}` : ''
+  const response = await fetch(`${API_BASE}/assets/import${qs}`, {
     method: 'POST',
     headers: { Authorization: `Bearer ${token}` },
     body: formData,
@@ -877,11 +878,11 @@ export const exportRoomsExcel = async (token: string) => {
 
   // Sheet 2: Daftar Aset per Ruangan
   const assetsRows = assets.map((a, i) => {
-    const r = roomsMap.get(a.roomId)
+    const r = a.roomId ? roomsMap.get(a.roomId) : undefined
     return {
       No: i + 1,
-      'Kode Ruangan': r?.code ?? '-',
-      'Nama Ruangan': r?.name ?? '-',
+      'Kode Ruangan': r?.code ?? a.roomCode ?? 'Tanpa Ruangan',
+      'Nama Ruangan': r?.name ?? a.roomName ?? 'Tanpa Ruangan (Aset Luar/Mobil/Pot)',
       'ID Pemda': a.idpemda ?? '-',
       'Kode Barang': a.kodeBarang ?? '-',
       'Nomor Register': a.nomorRegister ?? '-',
@@ -956,11 +957,11 @@ export const exportRoomsPdf = async (token: string) => {
     startY: 35,
     head: [['No', 'Kode Rng', 'Nama Ruangan', 'ID Pemda', 'Kode Barang', 'No Reg', 'Nama Barang', 'Merk/Tipe', 'Status']],
     body: assets.map((a, i) => {
-      const r = roomsMap.get(a.roomId)
+      const r = a.roomId ? roomsMap.get(a.roomId) : undefined
       return [
         i + 1,
-        r?.code ?? '-',
-        r?.name ?? '-',
+        r?.code ?? a.roomCode ?? 'OUTDOOR',
+        r?.name ?? a.roomName ?? 'Tanpa Ruangan',
         a.idpemda ?? '-',
         a.kodeBarang ?? '-',
         a.nomorRegister ?? '-',

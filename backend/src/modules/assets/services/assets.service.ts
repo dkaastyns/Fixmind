@@ -105,11 +105,13 @@ export class AssetsService {
   }
 
   async create(dto: CreateAssetDto) {
-    const room = await this.roomsRepository.findById(dto.roomId);
-    if (!room) throw new NotFoundException('Room not found');
+    if (dto.roomId) {
+      const room = await this.roomsRepository.findById(dto.roomId);
+      if (!room) throw new NotFoundException('Room not found');
+    }
 
     const asset = await this.assetsRepository.create({
-      roomId: dto.roomId,
+      roomId: dto.roomId || null,
       idpemda: dto.idpemda,
       kodeBarang: dto.kodeBarang,
       nomorRegister: dto.nomorRegister,
@@ -200,8 +202,10 @@ export class AssetsService {
     const asset = await this.assetsRepository.findById(dto.assetId);
     if (!asset) throw new NotFoundException('Asset not found');
 
-    const fromRoom = await this.roomsRepository.findById(asset.room_id);
-    if (!fromRoom) throw new NotFoundException('Current room not found');
+    if (asset.room_id) {
+      const fromRoom = await this.roomsRepository.findById(asset.room_id);
+      if (!fromRoom) throw new NotFoundException('Current room not found');
+    }
 
     const toRoom = await this.roomsRepository.findById(dto.toRoomId);
     if (!toRoom) throw new NotFoundException('Target room not found');
@@ -279,9 +283,13 @@ export class AssetsService {
     return this.toTransferPublic(updated);
   }
 
-  async importExcel(roomId: string, file?: Express.Multer.File) {
-    const room = await this.roomsRepository.findById(roomId);
-    if (!room) throw new NotFoundException('Room not found');
+  async importExcel(roomId?: string, file?: Express.Multer.File) {
+    if (roomId && roomId !== 'unassigned' && roomId !== 'NONE') {
+      const room = await this.roomsRepository.findById(roomId);
+      if (!room) throw new NotFoundException('Room not found');
+    }
+    const targetRoomId = (roomId && roomId !== 'unassigned' && roomId !== 'NONE') ? roomId : null;
+
     if (!file?.buffer?.length)
       throw new BadRequestException('Excel file is required');
 
@@ -312,7 +320,7 @@ export class AssetsService {
     }
 
     const rows: Array<{
-      roomId: string;
+      roomId?: string | null;
       idpemda: string;
       kodeBarang: string;
       nomorRegister: string;
@@ -324,7 +332,7 @@ export class AssetsService {
       if (rowNumber === 1) return;
 
       const item = {
-        roomId,
+        roomId: targetRoomId,
         idpemda: this.cellText(row, headers.get('idpemda')),
         kodeBarang: this.cellText(row, headers.get('kode_barang')),
         nomorRegister: this.cellText(row, headers.get('nomor_register')),
@@ -338,11 +346,11 @@ export class AssetsService {
         item.nomorRegister,
         item.namaBarang,
         item.merkType,
-      ].some((value) => value.trim().length > 0);
+      ].some((value) => Boolean(value && value.trim().length > 0));
       if (!hasAnyValue) return;
 
       const missingFields = Object.entries(item)
-        .filter(([key, value]) => key !== 'roomId' && !value.trim())
+        .filter(([key, value]) => key !== 'roomId' && (!value || !value.trim()))
         .map(([key]) => key);
       if (missingFields.length) {
         throw new BadRequestException(

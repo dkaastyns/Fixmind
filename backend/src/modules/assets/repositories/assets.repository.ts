@@ -25,22 +25,35 @@ export class AssetsRepository {
     const offset = (params.page - 1) * params.limit;
 
     // Use COUNT(*) OVER() window function to get total in a single query
-    const result = params.roomId
-      ? await this.sql<(AssetRow & { total_count: string })[]>`
-          SELECT *, COUNT(*) OVER() AS total_count
-          FROM assets WHERE deleted_at IS NULL AND room_id = ${params.roomId}
-          ${params.status ? this.sql`AND status = ${params.status}` : this.sql``}
-          ORDER BY nama_barang ASC LIMIT ${params.limit} OFFSET ${offset}
+    const result = params.roomId === 'unassigned' || params.roomId === 'NONE'
+      ? await this.sql<(AssetRow & { room_name?: string; room_code?: string; total_count: string })[]>`
+          SELECT a.*, r.name AS room_name, r.code AS room_code, COUNT(*) OVER() AS total_count
+          FROM assets a
+          LEFT JOIN rooms r ON r.id = a.room_id
+          WHERE a.deleted_at IS NULL AND a.room_id IS NULL
+          ${params.status ? this.sql`AND a.status = ${params.status}` : this.sql``}
+          ORDER BY a.nama_barang ASC LIMIT ${params.limit} OFFSET ${offset}
         `
-      : await this.sql<(AssetRow & { total_count: string })[]>`
-          SELECT *, COUNT(*) OVER() AS total_count
-          FROM assets WHERE deleted_at IS NULL
-          ${params.status ? this.sql`AND status = ${params.status}` : this.sql``}
-          ORDER BY created_at DESC LIMIT ${params.limit} OFFSET ${offset}
+      : params.roomId
+      ? await this.sql<(AssetRow & { room_name?: string; room_code?: string; total_count: string })[]>`
+          SELECT a.*, r.name AS room_name, r.code AS room_code, COUNT(*) OVER() AS total_count
+          FROM assets a
+          LEFT JOIN rooms r ON r.id = a.room_id
+          WHERE a.deleted_at IS NULL AND a.room_id = ${params.roomId}
+          ${params.status ? this.sql`AND a.status = ${params.status}` : this.sql``}
+          ORDER BY a.nama_barang ASC LIMIT ${params.limit} OFFSET ${offset}
+        `
+      : await this.sql<(AssetRow & { room_name?: string; room_code?: string; total_count: string })[]>`
+          SELECT a.*, r.name AS room_name, r.code AS room_code, COUNT(*) OVER() AS total_count
+          FROM assets a
+          LEFT JOIN rooms r ON r.id = a.room_id
+          WHERE a.deleted_at IS NULL
+          ${params.status ? this.sql`AND a.status = ${params.status}` : this.sql``}
+          ORDER BY a.created_at DESC LIMIT ${params.limit} OFFSET ${offset}
         `;
 
     const total = result.length > 0 ? Number(result[0].total_count) : 0;
-    return { rows: result as AssetRow[], total };
+    return { rows: result, total };
   }
 
   async search(params: { query: string; limit: number; page?: number }) {
@@ -77,7 +90,7 @@ export class AssetsRepository {
   }
 
   async create(data: {
-    roomId: string;
+    roomId?: string | null;
     idpemda: string;
     kodeBarang: string;
     nomorRegister: string;
@@ -87,7 +100,7 @@ export class AssetsRepository {
     const [row] = await this.sql<AssetRow[]>`
       INSERT INTO assets (room_id, idpemda, kode_barang, nomor_register, nama_barang, merk_type)
       VALUES (
-        ${data.roomId},
+        ${data.roomId ?? null},
         ${data.idpemda},
         ${data.kodeBarang},
         ${data.nomorRegister},
@@ -101,7 +114,7 @@ export class AssetsRepository {
 
   async upsertMany(
     rows: Array<{
-      roomId: string;
+      roomId?: string | null;
       idpemda: string;
       kodeBarang: string;
       nomorRegister: string;
@@ -115,7 +128,7 @@ export class AssetsRepository {
       const [row] = await this.sql<AssetRow[]>`
         INSERT INTO assets (room_id, idpemda, kode_barang, nomor_register, nama_barang, merk_type)
         VALUES (
-          ${data.roomId},
+          ${data.roomId ?? null},
           ${data.idpemda},
           ${data.kodeBarang},
           ${data.nomorRegister},

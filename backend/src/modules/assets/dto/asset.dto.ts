@@ -1,4 +1,4 @@
-﻿import {
+import {
   IsIn,
   IsNotEmpty,
   IsOptional,
@@ -8,8 +8,9 @@
 import type { AssetStatus } from '../../../common/types/database-rows';
 
 export class CreateAssetDto {
+  @IsOptional()
   @IsUUID()
-  roomId!: string;
+  roomId?: string;
 
   @IsString()
   @IsNotEmpty()
@@ -63,8 +64,9 @@ export class UpdateAssetDto {
 }
 
 export class ImportAssetsQueryDto {
-  @IsUUID()
-  roomId!: string;
+  @IsOptional()
+  @IsString()
+  roomId?: string;
 }
 
 export class CreateAssetTransferDto {

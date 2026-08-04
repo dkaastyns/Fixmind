@@ -46,7 +46,7 @@ export interface RoomRow {
 
 export interface AssetRow {
   id: string;
-  room_id: string;
+  room_id: string | null;
   idpemda: string;
   kode_barang: string;
   nomor_register: string;
@@ -120,7 +120,7 @@ export interface AssetTransferRow {
   id: string;
   asset_id: string;
   requester_id: string;
-  from_room_id: string;
+  from_room_id: string | null;
   to_room_id: string;
   reason: string;
   status: AssetTransferStatus;

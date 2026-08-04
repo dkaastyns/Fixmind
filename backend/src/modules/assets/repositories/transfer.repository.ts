@@ -13,7 +13,7 @@ export class TransferRepository {
     data: {
       assetId: string;
       requesterId: string;
-      fromRoomId: string;
+      fromRoomId: string | null;
       toRoomId: string;
       reason: string;
       status?: AssetTransferStatus;

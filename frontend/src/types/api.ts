@@ -50,9 +50,9 @@ export interface Room {
 
 export interface Asset {
   id: string
-  roomId: string
-  roomName?: string
-  roomCode?: string
+  roomId: string | null
+  roomName?: string | null
+  roomCode?: string | null
   idpemda: string
   kodeBarang: string
   nomorRegister: string
