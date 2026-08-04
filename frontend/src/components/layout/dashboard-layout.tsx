@@ -20,6 +20,7 @@ import {
   PanelLeftOpen,
   AlertTriangle,
   Loader2,
+  BookOpen,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { logoutRequest } from '@/lib/api-client'
@@ -183,6 +184,24 @@ function SidebarContent({
             )}
           </Button>
         )}
+
+        <a
+          href="/guide"
+          target="_blank"
+          rel="noopener noreferrer"
+          className={cn(
+            "flex items-center gap-3 text-slate-600 hover:text-amber-600 hover:bg-amber-500/10 font-bold text-[14px] h-11 rounded-[14px] transition-colors group relative cursor-pointer",
+            isCollapsed ? "justify-center px-0 w-11 h-11 mx-auto" : "px-3"
+          )}
+        >
+          <BookOpen className="h-5 w-5 shrink-0 text-amber-600" />
+          {!isCollapsed && <span>Panduan Pengguna</span>}
+          {isCollapsed && (
+            <div className="absolute left-full ml-3 px-2 py-1 bg-slate-900 text-white text-xs rounded-md whitespace-nowrap opacity-0 pointer-events-none group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-200 z-50 shadow-md font-normal">
+              Panduan Pengguna (PDF)
+            </div>
+          )}
+        </a>
 
         <Button
           variant="ghost"

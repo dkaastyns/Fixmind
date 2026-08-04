@@ -12,6 +12,7 @@ import {
   FileText,
   KeyRound,
   Eye,
+  BookOpen,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
@@ -184,10 +185,10 @@ export function PrivacyPage() {
             
             {/* Unified Document Tab Switcher */}
             <div className="mb-8 flex justify-center">
-              <div className="inline-flex p-1.5 rounded-2xl bg-slate-950/40 border border-white/10 backdrop-blur-md">
+              <div className="inline-flex p-1.5 rounded-2xl bg-slate-950/40 border border-white/10 backdrop-blur-md flex-wrap justify-center gap-1">
                 <Link 
                   to="/terms" 
-                  className={`relative px-5 py-2.5 text-xs sm:text-sm font-bold transition-all rounded-xl cursor-pointer ${
+                  className={`relative px-4 sm:px-5 py-2.5 text-xs sm:text-sm font-bold transition-all rounded-xl cursor-pointer ${
                     location.pathname === '/terms' 
                       ? 'gradient-gold text-white shadow-md' 
                       : 'text-slate-300 hover:text-white'
@@ -199,7 +200,7 @@ export function PrivacyPage() {
                 </Link>
                 <Link 
                   to="/privacy" 
-                  className={`relative px-5 py-2.5 text-xs sm:text-sm font-bold transition-all rounded-xl cursor-pointer ${
+                  className={`relative px-4 sm:px-5 py-2.5 text-xs sm:text-sm font-bold transition-all rounded-xl cursor-pointer ${
                     location.pathname === '/privacy' 
                       ? 'gradient-gold text-white shadow-md' 
                       : 'text-slate-300 hover:text-white'
@@ -207,6 +208,18 @@ export function PrivacyPage() {
                 >
                   <span className="flex items-center gap-2">
                     <ShieldCheck className="h-4 w-4" /> Kebijakan Pengguna
+                  </span>
+                </Link>
+                <Link 
+                  to="/guide" 
+                  className={`relative px-4 sm:px-5 py-2.5 text-xs sm:text-sm font-bold transition-all rounded-xl cursor-pointer ${
+                    location.pathname === '/guide' || location.pathname === '/user-guide'
+                      ? 'gradient-gold text-white shadow-md' 
+                      : 'text-slate-300 hover:text-white'
+                  }`}
+                >
+                  <span className="flex items-center gap-2">
+                    <BookOpen className="h-4 w-4" /> Panduan Pengguna
                   </span>
                 </Link>
               </div>

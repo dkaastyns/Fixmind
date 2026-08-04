@@ -322,8 +322,23 @@ export function LandingPage() {
       </section>
 
       {/* Footer Section */}
-      <footer className="w-full border-t border-slate-200/60 py-6 text-center text-xs text-slate-500 bg-white">
-        © 2026 ASETKITA Semarang. Pemeliharaan Fasilitas Cerdas.
+      <footer className="w-full border-t border-slate-200/60 py-6 px-4 text-center text-xs text-slate-500 bg-white space-y-2">
+        <div className="flex items-center justify-center gap-4 flex-wrap text-slate-600 font-medium">
+          <Link to="/terms" className="hover:text-amber-600 transition-colors">
+            Ketentuan Layanan
+          </Link>
+          <span>•</span>
+          <Link to="/privacy" className="hover:text-amber-600 transition-colors">
+            Kebijakan Pengguna
+          </Link>
+          <span>•</span>
+          <Link to="/guide" className="hover:text-amber-600 font-semibold text-amber-600 transition-colors">
+            Panduan Pengguna (User Guide)
+          </Link>
+        </div>
+        <p className="text-slate-400 text-[11px]">
+          © 2026 ASETKITA Semarang DPRD Kota Semarang. Pemeliharaan Fasilitas Cerdas.
+        </p>
       </footer>
     </div>
   )
