@@ -164,16 +164,19 @@ const guideSections: GuideSection[] = [
         step: '🟡 KUNING',
         title: 'MENUNGGU (PENDING)',
         desc: 'Laporan Anda sudah tersimpan dengan aman di sistem dan sedang menunggu konfirmasi admin untuk menugaskan teknisi.',
+        tip: 'Target Waktu Respon: Maksimal 1 - 2 Jam Kerja.',
       },
       {
         step: '🔵 BIRU',
         title: 'SEDANG DIKERJAKAN (IN PROGRESS)',
         desc: 'Teknisi perbaikan sudah menerima tugas dan sedang menuju lokasi atau sedang memperbaiki fasilitas.',
+        tip: 'Target Waktu Perbaikan: 1 - 24 Jam Kerja tergantung tingkat kesulitan barang.',
       },
       {
         step: '🟢 HIJAU',
         title: 'SELESAI (COMPLETED)',
         desc: 'Perbaikan sudah tuntas 100% dan fasilitas sudah normal kembali untuk mendukung aktivitas kerja Anda.',
+        tip: 'Anda dapat memberikan ulasan atau tanda bintang atas hasil kerja teknisi.',
       },
       {
         step: '🔴 MERAH',
@@ -183,7 +186,7 @@ const guideSections: GuideSection[] = [
       {
         step: '🤖 ASISTEN AI',
         title: 'Bagaimana Asisten Cerdas Membantu?',
-        desc: 'Sistem memiliki kecerdasan buatan yang otomatis membaca tulisan laporan Anda. Jika ada kata seperti "korslet", "bocor besar", atau "asap", sistem langsung menaikkan prioritas agar ditangani terlebih dahulu.',
+        desc: 'Sistem memiliki kecerdasan buatan yang otomatis membaca tulisan laporan Anda. Jika ada kata darurat seperti "korslet", "bocor besar", atau "asap", sistem langsung menaikkan prioritas penanganan ke barisan teratas.',
       },
     ],
   },
