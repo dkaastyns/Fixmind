@@ -13,7 +13,6 @@ import {
   ShieldAlert,
   Smartphone,
   CheckCircle2,
-  AlertTriangle,
   HelpCircle,
   Cpu,
   ArrowRight,
@@ -506,7 +505,7 @@ export function GuidePage() {
                       Coba gunakan kata kunci sehari-hari seperti "AC", "foto", "pindah meja", "lupa sandi", atau tekan tombol reset.
                     </p>
                     <Button
-                      variant="outline"
+                      variant="secondary"
                       size="sm"
                       onClick={() => {
                         setSearchQuery('')
@@ -646,7 +645,7 @@ export function GuidePage() {
 
                 <Link to="/signup" className="w-full sm:w-auto">
                   <Button
-                    variant="outline"
+                    variant="secondary"
                     className="w-full sm:w-auto h-11 text-xs sm:text-sm font-bold bg-white/10 hover:bg-white/20 text-white border-white/20 rounded-xl cursor-pointer gap-2"
                   >
                     <span>Mulai Daftar Akun</span>

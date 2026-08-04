@@ -361,7 +361,7 @@ export async function generateUserGuidePDF() {
   // ==========================================
   // FOOTER & NOMOR HALAMAN RESMI (SEMUA HALAMAN)
   // ==========================================
-  const totalPages = doc.internal.getNumberOfPages()
+  const totalPages = doc.getNumberOfPages()
   for (let i = 1; i <= totalPages; i++) {
     doc.setPage(i)
     doc.setFontSize(7.5)
