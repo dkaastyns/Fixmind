@@ -17,6 +17,7 @@ import {
   updateAsset,
 } from '@/lib/api-client'
 import { useAuthStore } from '@/stores/auth-store'
+import type { Room } from '@/types/api'
 
 export function AssetTransferPage() {
   const token = useAuthStore((s) => s.accessToken)!
@@ -46,8 +47,7 @@ export function AssetTransferPage() {
 
   const assets = useQuery({
     queryKey: ['asset-transfer-assets', roomId],
-    queryFn: () => fetchAssets(token, { roomId, limit: 100 }),
-    enabled: Boolean(roomId),
+    queryFn: () => fetchAssets(token, { roomId: roomId && roomId !== 'UNASSIGNED' ? roomId : undefined, limit: 500 }),
   })
 
   const myTransfers = useQuery({
@@ -69,10 +69,13 @@ export function AssetTransferPage() {
     [assets.data?.data, assetId],
   )
 
-  const selectedSourceRoom = useMemo(
-    () => rooms.data?.data.find((r) => r.id === roomId),
-    [rooms.data?.data, roomId],
-  )
+  const selectedSourceRoom = useMemo(() => {
+    const sourceId = selectedAsset?.roomId ?? roomId
+    if (sourceId === 'UNASSIGNED' || (!sourceId && selectedAsset)) {
+      return { id: 'UNASSIGNED', code: 'OUTDOOR', name: 'Tanpa Ruangan (Aset Luar / Mobil / Pot)', building: 'Umum' } as Room
+    }
+    return rooms.data?.data.find((r) => r.id === sourceId)
+  }, [rooms.data?.data, roomId, selectedAsset])
 
   const selectedTargetRoom = useMemo(
     () => rooms.data?.data.find((r) => r.id === toRoomId),
@@ -112,15 +115,30 @@ export function AssetTransferPage() {
 
   const isAdmin = user?.role === 'ADMIN'
   const canSubmit = isAdmin
-    ? Boolean(roomId && assetId && toRoomId)
-    : Boolean(roomId && assetId && toRoomId && reason.trim().length >= 10)
+    ? Boolean((roomId || selectedAsset) && assetId && toRoomId)
+    : Boolean((roomId || selectedAsset) && assetId && toRoomId && reason.trim().length >= 10)
 
   useEffect(() => {
     const paramRoom = searchParams.get('roomId') ?? ''
     const paramAsset = searchParams.get('assetId') ?? ''
-    if (paramRoom && paramRoom !== roomId) setRoomId(paramRoom)
-    if (paramAsset && paramAsset !== assetId) setAssetId(paramAsset)
-  }, [assetId, roomId, searchParams])
+
+    if (paramAsset) {
+      setAssetId(paramAsset)
+    }
+    if (paramRoom) {
+      setRoomId(paramRoom)
+    }
+
+    if (paramAsset && assets.data?.data) {
+      const found = assets.data.data.find(a => a.id === paramAsset)
+      if (found) {
+        setAssetId(found.id)
+        if (!paramRoom) {
+          setRoomId(found.roomId ?? 'UNASSIGNED')
+        }
+      }
+    }
+  }, [searchParams, assets.data?.data])
 
   // (Filtering is now handled server-side via the query)
 
@@ -180,12 +198,19 @@ export function AssetTransferPage() {
                       className="w-full rounded-xl border border-white/60 bg-white/70 px-3.5 py-2.5 text-sm shadow-sm outline-none transition focus:border-[#F9D141] focus:ring-2 focus:ring-[#F9D141]/20 font-medium text-slate-800"
                       value={roomId}
                       onChange={(e) => {
-                        setRoomId(e.target.value)
-                        setAssetId('')
-                        setToRoomId('')
+                        const newRoomId = e.target.value
+                        setRoomId(newRoomId)
+                        if (assetId) {
+                          const selectedObj = (assets.data?.data ?? []).find((a) => a.id === assetId)
+                          if (selectedObj) {
+                            const match = newRoomId === 'UNASSIGNED' ? !selectedObj.roomId : selectedObj.roomId === newRoomId
+                            if (!match) setAssetId('')
+                          }
+                        }
                       }}
                     >
                       <option value="">Pilih ruangan asal</option>
+                      <option value="UNASSIGNED">🚗 Tanpa Ruangan (Aset Luar / Mobil / Pot)</option>
                       {(rooms.data?.data ?? []).map((room) => (
                         <option key={room.id} value={room.id}>
                           {room.code} - {room.name}
@@ -202,15 +227,28 @@ export function AssetTransferPage() {
                       id="direct-asset"
                       className="w-full rounded-xl border border-white/60 bg-white/70 px-3.5 py-2.5 text-sm shadow-sm outline-none transition focus:border-[#F9D141] focus:ring-2 focus:ring-[#F9D141]/20 disabled:opacity-60 font-medium text-slate-800"
                       value={assetId}
-                      onChange={(e) => setAssetId(e.target.value)}
-                      disabled={!roomId || assets.isLoading}
+                      onChange={(e) => {
+                        const newAssetId = e.target.value
+                        setAssetId(newAssetId)
+                        const selectedObj = (assets.data?.data ?? []).find((a) => a.id === newAssetId)
+                        if (selectedObj) {
+                          setRoomId(selectedObj.roomId ?? 'UNASSIGNED')
+                        }
+                      }}
+                      disabled={assets.isLoading}
                     >
-                      <option value="">{roomId ? 'Pilih aset' : 'Pilih ruangan asal dulu'}</option>
-                      {(assets.data?.data ?? []).map((asset) => (
-                        <option key={asset.id} value={asset.id}>
-                          {asset.kodeBarang} - {asset.namaBarang}
-                        </option>
-                      ))}
+                      <option value="">Pilih aset</option>
+                      {(assets.data?.data ?? [])
+                        .filter((a) => {
+                          if (!roomId) return true
+                          if (roomId === 'UNASSIGNED') return !a.roomId
+                          return a.roomId === roomId
+                        })
+                        .map((asset) => (
+                          <option key={asset.id} value={asset.id}>
+                            {asset.kodeBarang} - {asset.namaBarang} {asset.roomName ? `(${asset.roomName})` : '(Tanpa Ruangan)'}
+                          </option>
+                        ))}
                     </select>
                   </div>
 
@@ -491,12 +529,19 @@ export function AssetTransferPage() {
                   className="w-full rounded-xl border border-white/60 bg-white/70 px-3.5 py-2.5 text-sm shadow-sm outline-none transition focus:border-[#F9D141] focus:ring-2 focus:ring-[#F9D141]/20 font-medium text-slate-800"
                   value={roomId}
                   onChange={(e) => {
-                    setRoomId(e.target.value)
-                    setAssetId('')
-                    setToRoomId('')
+                    const newRoomId = e.target.value
+                    setRoomId(newRoomId)
+                    if (assetId) {
+                      const selectedObj = (assets.data?.data ?? []).find((a) => a.id === assetId)
+                      if (selectedObj) {
+                        const match = newRoomId === 'UNASSIGNED' ? !selectedObj.roomId : selectedObj.roomId === newRoomId
+                        if (!match) setAssetId('')
+                      }
+                    }
                   }}
                 >
                   <option value="">Pilih ruangan asal</option>
+                  <option value="UNASSIGNED">🚗 Tanpa Ruangan (Aset Luar / Mobil / Pot)</option>
                   {(rooms.data?.data ?? []).map((room) => (
                     <option key={room.id} value={room.id}>
                       {room.code} - {room.name}
@@ -513,15 +558,28 @@ export function AssetTransferPage() {
                   id="req-asset"
                   className="w-full rounded-xl border border-white/60 bg-white/70 px-3.5 py-2.5 text-sm shadow-sm outline-none transition focus:border-[#F9D141] focus:ring-2 focus:ring-[#F9D141]/20 disabled:opacity-60 font-medium text-slate-800"
                   value={assetId}
-                  onChange={(e) => setAssetId(e.target.value)}
-                  disabled={!roomId || assets.isLoading}
+                  onChange={(e) => {
+                    const newAssetId = e.target.value
+                    setAssetId(newAssetId)
+                    const selectedObj = (assets.data?.data ?? []).find((a) => a.id === newAssetId)
+                    if (selectedObj) {
+                      setRoomId(selectedObj.roomId ?? 'UNASSIGNED')
+                    }
+                  }}
+                  disabled={assets.isLoading}
                 >
-                  <option value="">{roomId ? 'Pilih aset' : 'Pilih ruangan asal dulu'}</option>
-                  {(assets.data?.data ?? []).map((asset) => (
-                    <option key={asset.id} value={asset.id}>
-                      {asset.kodeBarang} - {asset.namaBarang}
-                    </option>
-                  ))}
+                  <option value="">Pilih aset</option>
+                  {(assets.data?.data ?? [])
+                    .filter((a) => {
+                      if (!roomId) return true
+                      if (roomId === 'UNASSIGNED') return !a.roomId
+                      return a.roomId === roomId
+                    })
+                    .map((asset) => (
+                      <option key={asset.id} value={asset.id}>
+                        {asset.kodeBarang} - {asset.namaBarang} {asset.roomName ? `(${asset.roomName})` : '(Tanpa Ruangan)'}
+                      </option>
+                    ))}
                 </select>
               </div>
             </div>

@@ -672,7 +672,7 @@ export function RoomsPage() {
 
                             <button
                               onClick={() => {
-                                navigate(`/dashboard/transfers?assetId=${asset.id}`)
+                                navigate(`/dashboard/transfers?assetId=${asset.id}${asset.roomId ? `&roomId=${asset.roomId}` : ''}`)
                               }}
                               title="Ajukan Mutasi / Pindah Ruangan"
                               className="p-1.5 rounded-lg text-amber-600 hover:bg-amber-50 transition-colors"
@@ -949,7 +949,7 @@ export function RoomsPage() {
         }}
         onTransferAsset={(asset) => {
           setShowAssetDetailModal(false)
-          navigate(`/dashboard/transfers?assetId=${asset.id}`)
+          navigate(`/dashboard/transfers?assetId=${asset.id}${asset.roomId ? `&roomId=${asset.roomId}` : ''}`)
         }}
       />
 
