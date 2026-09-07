@@ -46,6 +46,7 @@ export class AuthService {
       phone: user.phone,
       avatarUrl: user.avatar_url,
       isActive: user.is_active,
+      approvalStatus: user.approval_status ?? 'APPROVED',
       createdAt: user.created_at,
     };
   }
@@ -56,7 +57,7 @@ export class AuthService {
     meta?: { userAgent?: string; ipAddress?: string },
   ) {
     const user = await this.usersRepository.findByEmail(email.toLowerCase());
-    if (!user || !user.is_active) {
+    if (!user) {
       throw new UnauthorizedException('Invalid credentials');
     }
 
@@ -91,6 +92,23 @@ export class AuthService {
       throw new UnauthorizedException('Invalid credentials');
     }
 
+    // Password valid: check approval and active status
+    if (user.approval_status === 'PENDING') {
+      throw new UnauthorizedException(
+        'Akun Anda sedang menunggu persetujuan dari Administrator. Silakan hubungi admin atau tunggu hingga akun Anda disetujui.',
+      );
+    }
+
+    if (user.approval_status === 'REJECTED') {
+      throw new UnauthorizedException(
+        'Pendaftaran akun Anda ditolak oleh Administrator.',
+      );
+    }
+
+    if (!user.is_active) {
+      throw new UnauthorizedException('Akun Anda telah dinonaktifkan.');
+    }
+
     if (user.failed_login_attempts > 0 || user.lockout_until) {
       await this.usersRepository.update(user.id, {
         failedLoginAttempts: 0,
@@ -113,7 +131,7 @@ export class AuthService {
     }
 
     const user = await this.usersRepository.findById(session.user_id);
-    if (!user || !user.is_active) {
+    if (!user || !user.is_active || (user.approval_status && user.approval_status !== 'APPROVED')) {
       throw new UnauthorizedException('Invalid refresh token');
     }
 
@@ -150,6 +168,8 @@ export class AuthService {
       fullName: data.fullName,
       isAdmin: false,
       phone: data.phone,
+      approvalStatus: 'PENDING',
+      isActive: false,
     });
 
     return this.toPublicUser(user);

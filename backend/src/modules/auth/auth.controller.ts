@@ -52,25 +52,14 @@ export class AuthController {
   @Public()
   @Post('register')
   @HttpCode(HttpStatus.CREATED)
-  async register(
-    @Body() dto: RegisterDto,
-    @Req() req: Request,
-    @Res({ passthrough: true }) res: Response,
-  ) {
+  async register(@Body() dto: RegisterDto) {
     const user = await this.authService.register(dto);
-    const result = await this.authService.login(dto.email, dto.password, {
-      userAgent: req.headers['user-agent'],
-      ipAddress: req.ip,
-    });
-
-    this.setRefreshCookie(res, result.refreshToken);
 
     return {
-      message: 'Registration successful',
+      message:
+        'Pendaftaran berhasil. Akun Anda sedang menunggu persetujuan dari Administrator sebelum dapat digunakan untuk masuk.',
       data: {
-        user: result.user,
-        accessToken: result.accessToken,
-        expiresIn: result.expiresIn,
+        user,
       },
     };
   }

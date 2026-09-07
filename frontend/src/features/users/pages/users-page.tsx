@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { Plus, Users, UserCheck, UserX, Shield, Trash2, KeyRound, X, Lock, Mail, User, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Menu } from 'lucide-react'
+import { Plus, Users, UserCheck, UserX, Shield, Trash2, KeyRound, X, Lock, Mail, User, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Menu, Clock, CheckCheck, XCircle } from 'lucide-react'
 import { toast } from 'sonner'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Button } from '@/components/ui/button'
@@ -9,7 +9,7 @@ import { PasswordInput } from '@/components/ui/password-input'
 import { GlassCard } from '@/components/ui/glass-card'
 import { EmptyState } from '@/components/ui/feedback'
 import { TableSkeleton } from '@/components/ui/skeleton'
-import { createUser, deleteUser, fetchUsers, updateUser } from '@/lib/api-client'
+import { createUser, deleteUser, fetchUsers, updateUser, approveUser, rejectUser } from '@/lib/api-client'
 import { useAuthStore } from '@/stores/auth-store'
 import { DeleteConfirmationModal } from '@/components/ui/delete-confirmation-modal'
 import { NotificationBell } from '@/components/ui/notification-bell'
@@ -27,17 +27,19 @@ const itemVariants = {
   show: { opacity: 1, y: 0 }
 }
 
+type FilterTab = 'ALL' | 'PENDING' | 'ADMIN' | 'USER'
+
 export function UsersPage() {
   const token = useAuthStore((s) => s.accessToken)!
   const qc = useQueryClient()
   
   const [showForm, setShowForm] = useState(false)
-  const [isAdminFilter, setIsAdminFilter] = useState<boolean | ''>('')
+  const [filterTab, setFilterTab] = useState<FilterTab>('ALL')
   const [page, setPage] = useState(1)
 
   useEffect(() => {
     setPage(1)
-  }, [isAdminFilter])
+  }, [filterTab])
   
   // Password reset states
   const [resetUserId, setResetUserId] = useState<string | null>(null)
@@ -49,6 +51,16 @@ export function UsersPage() {
   const [deleteUserId, setDeleteUserId] = useState<string | null>(null)
   const [deleteUserName, setDeleteUserName] = useState('')
   const [showDeleteModal, setShowDeleteModal] = useState(false)
+
+  // User approval states
+  const [approveUserId, setApproveUserId] = useState<string | null>(null)
+  const [approveUserName, setApproveUserName] = useState('')
+  const [showApproveModal, setShowApproveModal] = useState(false)
+
+  // User rejection states
+  const [rejectUserId, setRejectUserId] = useState<string | null>(null)
+  const [rejectUserName, setRejectUserName] = useState('')
+  const [showRejectModal, setShowRejectModal] = useState(false)
 
   // User status toggle states
   const [statusUserId, setStatusUserId] = useState<string | null>(null)
@@ -64,8 +76,8 @@ export function UsersPage() {
   }
 
   const { data, isLoading } = useQuery({
-    queryKey: ['users', isAdminFilter],
-    queryFn: () => fetchUsers(token, typeof isAdminFilter === 'boolean' ? { isAdmin: isAdminFilter } : undefined),
+    queryKey: ['users'],
+    queryFn: () => fetchUsers(token),
   })
 
   const deleteMut = useMutation({
@@ -85,6 +97,44 @@ export function UsersPage() {
     setDeleteUserId(id)
     setDeleteUserName(name)
     setShowDeleteModal(true)
+  }
+
+  const approveMut = useMutation({
+    mutationFn: (id: string) => approveUser(token, id),
+    onSuccess: () => { 
+      qc.invalidateQueries({ queryKey: ['users'] })
+      toast.success(`Akun ${approveUserName} berhasil disetujui (ACC)!`) 
+      setShowApproveModal(false)
+    },
+    onError: (e: Error) => {
+      toast.error(e.message)
+      setShowApproveModal(false)
+    },
+  })
+
+  const triggerApproveUser = (id: string, name: string) => {
+    setApproveUserId(id)
+    setApproveUserName(name)
+    setShowApproveModal(true)
+  }
+
+  const rejectMut = useMutation({
+    mutationFn: (id: string) => rejectUser(token, id),
+    onSuccess: () => { 
+      qc.invalidateQueries({ queryKey: ['users'] })
+      toast.success(`Pendaftaran akun ${rejectUserName} telah ditolak.`) 
+      setShowRejectModal(false)
+    },
+    onError: (e: Error) => {
+      toast.error(e.message)
+      setShowRejectModal(false)
+    },
+  })
+
+  const triggerRejectUser = (id: string, name: string) => {
+    setRejectUserId(id)
+    setRejectUserName(name)
+    setShowRejectModal(true)
   }
 
   const updateMut = useMutation({
@@ -115,19 +165,29 @@ export function UsersPage() {
 
   const users = data?.data ?? []
 
-  // Local filtering
-  const filteredUsers = useMemo(() => {
-    return users
-  }, [users])
-
   // Statistics calculation
   const stats = useMemo(() => {
     return {
       total: users.length,
       admins: users.filter(u => u.isAdmin).length,
-      active: users.filter(u => u.isActive).length,
+      active: users.filter(u => u.isActive && u.approvalStatus !== 'PENDING').length,
+      pending: users.filter(u => u.approvalStatus === 'PENDING').length,
     }
   }, [users])
+
+  // Filtering based on tab
+  const filteredUsers = useMemo(() => {
+    if (filterTab === 'PENDING') {
+      return users.filter(u => u.approvalStatus === 'PENDING')
+    }
+    if (filterTab === 'ADMIN') {
+      return users.filter(u => u.isAdmin)
+    }
+    if (filterTab === 'USER') {
+      return users.filter(u => !u.isAdmin && u.approvalStatus !== 'PENDING')
+    }
+    return users
+  }, [users, filterTab])
 
   const limit = 8
   const totalPages = Math.max(1, Math.ceil(filteredUsers.length / limit))
@@ -189,7 +249,7 @@ export function UsersPage() {
         </motion.div>
 
         {/* Overview Statistics Cards Desktop */}
-        <div className="grid gap-4 grid-cols-1 sm:grid-cols-3">
+        <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
           <GlassCard className="p-5 flex items-center gap-4 border border-white/40">
             <div className="p-3.5 rounded-xl bg-blue-500/10 text-blue-500 shadow-inner">
               <Users className="w-6 h-6" />
@@ -215,6 +275,24 @@ export function UsersPage() {
           </GlassCard>
 
           <GlassCard className="p-5 flex items-center gap-4 border border-white/40">
+            <div className="p-3.5 rounded-xl bg-amber-500/10 text-amber-600 shadow-inner relative">
+              <Clock className="w-6 h-6" />
+              {stats.pending > 0 && (
+                <span className="absolute -top-1 -right-1 flex h-3 w-3">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-3 w-3 bg-amber-500"></span>
+                </span>
+              )}
+            </div>
+            <div>
+              <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">Menunggu ACC</p>
+              <p className="text-2xl font-extrabold text-amber-600 mt-0.5">
+                {isLoading ? '...' : stats.pending}
+              </p>
+            </div>
+          </GlassCard>
+
+          <GlassCard className="p-5 flex items-center gap-4 border border-white/40">
             <div className="p-3.5 rounded-xl bg-green-500/10 text-green-500 shadow-inner">
               <UserCheck className="w-6 h-6" />
             </div>
@@ -227,22 +305,68 @@ export function UsersPage() {
           </GlassCard>
         </div>
 
+        {/* Pending Approvals Notification Banner */}
+        {stats.pending > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="p-4 rounded-2xl bg-amber-500/10 border border-amber-300/60 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4"
+          >
+            <div className="flex items-center gap-3">
+              <div className="p-2.5 rounded-xl bg-amber-500/20 text-amber-600 shrink-0">
+                <Clock className="w-5 h-5 animate-pulse" />
+              </div>
+              <div>
+                <p className="text-sm font-bold text-slate-800">
+                  Permintaan Persetujuan Pendaftaran Akun ({stats.pending} Permintaan)
+                </p>
+                <p className="text-xs text-slate-600">
+                  Terdapat akun pengguna baru yang membutuhkan tinjauan dan persetujuan (ACC) dari Anda sebelum dapat masuk.
+                </p>
+              </div>
+            </div>
+            <Button
+              size="sm"
+              onClick={() => setFilterTab('PENDING')}
+              className={`rounded-xl text-xs font-bold shrink-0 transition-all ${
+                filterTab === 'PENDING'
+                  ? 'bg-amber-600 text-white shadow-sm'
+                  : 'bg-white text-amber-800 border border-amber-300 hover:bg-amber-50 shadow-sm'
+              }`}
+            >
+              {filterTab === 'PENDING' ? 'Sedang Ditampilkan' : 'Tinjau Permintaan (ACC)'}
+            </Button>
+          </motion.div>
+        )}
+
         {/* User Table list Desktop */}
         <GlassCard className="space-y-4 border border-white/40 overflow-hidden">
           {/* Filters */}
-          <div className="flex flex-col sm:flex-row justify-end gap-4 p-4 border-b border-white/20">
-            <div className="flex gap-1 bg-slate-200/50 p-1 rounded-xl border border-slate-200/40 text-xs overflow-x-auto self-start">
-              {(['', true, false] as const).map((r) => {
-                const labels: Record<string, string> = { '': 'Semua', true: 'ADMIN', false: 'USER' }
+          <div className="flex flex-col sm:flex-row justify-between items-center gap-4 p-4 border-b border-white/20">
+            <h2 className="text-sm font-extrabold text-slate-800 flex items-center gap-2">
+              <Users className="w-4 h-4 text-slate-500" />
+              Daftar Akun Pengguna
+            </h2>
+            <div className="flex gap-1 bg-slate-200/50 p-1 rounded-xl border border-slate-200/40 text-xs overflow-x-auto self-start sm:self-auto">
+              {(['ALL', 'PENDING', 'ADMIN', 'USER'] as const).map((tab) => {
+                const labels: Record<FilterTab, string> = {
+                  ALL: 'Semua',
+                  PENDING: `Menunggu ACC ${stats.pending > 0 ? `(${stats.pending})` : ''}`,
+                  ADMIN: 'ADMIN',
+                  USER: 'USER',
+                }
                 return (
                   <button
-                    key={r === '' ? 'all' : String(r)}
-                    onClick={() => setIsAdminFilter(r)}
-                    className={`px-4 py-1.5 rounded-lg font-bold transition-all whitespace-nowrap ${
-                      isAdminFilter === r ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-500 hover:text-slate-800'
+                    key={tab}
+                    onClick={() => setFilterTab(tab)}
+                    className={`px-4 py-1.5 rounded-lg font-bold transition-all whitespace-nowrap flex items-center gap-1.5 ${
+                      filterTab === tab ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-500 hover:text-slate-800'
                     }`}
                   >
-                    {labels[String(r)]}
+                    {tab === 'PENDING' && stats.pending > 0 && (
+                      <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
+                    )}
+                    {labels[tab]}
                   </button>
                 )
               })}
@@ -251,7 +375,7 @@ export function UsersPage() {
 
           {isLoading ? (
             <div className="p-4">
-              <TableSkeleton rows={5} cols={4} />
+              <TableSkeleton rows={5} cols={5} />
             </div>
           ) : filteredUsers.length === 0 ? (
             <EmptyState 
@@ -267,7 +391,7 @@ export function UsersPage() {
                       <th className="px-5 py-3.5">Nama Lengkap</th>
                       <th className="px-5 py-3.5">Email</th>
                       <th className="px-5 py-3.5">Peran</th>
-                      <th className="px-5 py-3.5">Status</th>
+                      <th className="px-5 py-3.5">Status Akun</th>
                       <th className="px-5 py-3.5 text-right">Aksi</th>
                     </tr>
                   </thead>
@@ -281,7 +405,11 @@ export function UsersPage() {
                       <motion.tr 
                         key={u.id} 
                         variants={itemVariants}
-                        className="hover:bg-white/30 transition-colors"
+                        className={`transition-colors ${
+                          u.approvalStatus === 'PENDING'
+                            ? 'bg-amber-50/40 hover:bg-amber-50/70'
+                            : 'hover:bg-white/30'
+                        }`}
                       >
                         <td className="px-5 py-3.5 font-semibold text-slate-800">
                           <div className="flex items-center gap-3">
@@ -304,42 +432,100 @@ export function UsersPage() {
                           )}
                         </td>
                         <td className="px-5 py-3.5">
-                          <div className="flex items-center gap-2">
-                            <button
-                              onClick={() => triggerToggleStatus(u.id, u.fullName, !u.isActive)}
-                              className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors focus:outline-none shadow-inner border border-slate-200/50 ${
-                                u.isActive ? 'bg-green-500' : 'bg-slate-300'
-                              }`}
-                            >
-                              <span
-                                className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white transition-transform shadow-sm ${
-                                  u.isActive ? 'translate-x-4' : 'translate-x-0.5'
-                                }`}
-                              />
-                            </button>
-                            <span className={`text-xs font-bold ${u.isActive ? 'text-green-600' : 'text-slate-400'}`}>
-                              {u.isActive ? 'Aktif' : 'Nonaktif'}
+                          {u.approvalStatus === 'PENDING' ? (
+                            <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2.5 py-1 rounded-full bg-amber-500/15 text-amber-700 border border-amber-300 shadow-sm">
+                              <Clock className="w-3 h-3 animate-pulse" /> Menunggu ACC
                             </span>
-                          </div>
+                          ) : u.approvalStatus === 'REJECTED' ? (
+                            <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2.5 py-1 rounded-full bg-rose-500/15 text-rose-700 border border-rose-300">
+                              <XCircle className="w-3 h-3" /> Ditolak
+                            </span>
+                          ) : (
+                            <div className="flex items-center gap-2">
+                              <button
+                                onClick={() => triggerToggleStatus(u.id, u.fullName, !u.isActive)}
+                                className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors focus:outline-none shadow-inner border border-slate-200/50 ${
+                                  u.isActive ? 'bg-green-500' : 'bg-slate-300'
+                                }`}
+                              >
+                                <span
+                                  className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white transition-transform shadow-sm ${
+                                    u.isActive ? 'translate-x-4' : 'translate-x-0.5'
+                                  }`}
+                                />
+                              </button>
+                              <span className={`text-xs font-bold ${u.isActive ? 'text-green-600' : 'text-slate-400'}`}>
+                                {u.isActive ? 'Aktif' : 'Nonaktif'}
+                              </span>
+                            </div>
+                          )}
                         </td>
                         <td className="px-5 py-3.5 text-right">
                           <div className="flex items-center justify-end gap-1.5">
-                            <Button 
-                              variant="secondary" 
-                              size="sm" 
-                              className="h-8 text-xs rounded-xl flex items-center gap-1" 
-                              onClick={() => triggerResetPassword(u.id, u.fullName)}
-                            >
-                              <KeyRound className="w-3.5 h-3.5 text-slate-500" /> Reset Sandi
-                            </Button>
-                            <Button 
-                              variant="ghost" 
-                              size="sm" 
-                              className="h-8 text-xs rounded-xl text-danger hover:text-danger hover:bg-danger/5 border border-transparent hover:border-danger/20 gap-1" 
-                              onClick={() => triggerDeleteUser(u.id, u.fullName)}
-                            >
-                              <Trash2 className="w-3.5 h-3.5" /> Hapus
-                            </Button>
+                            {u.approvalStatus === 'PENDING' ? (
+                              <>
+                                <Button 
+                                  size="sm" 
+                                  className="h-8 text-xs rounded-xl bg-green-600 hover:bg-green-700 text-white font-extrabold flex items-center gap-1 shadow-sm" 
+                                  onClick={() => triggerApproveUser(u.id, u.fullName)}
+                                >
+                                  <CheckCheck className="w-3.5 h-3.5" /> ACC / Setujui
+                                </Button>
+                                <Button 
+                                  variant="ghost" 
+                                  size="sm" 
+                                  className="h-8 text-xs rounded-xl text-rose-600 hover:text-rose-700 hover:bg-rose-50 border border-rose-200 flex items-center gap-1 font-bold" 
+                                  onClick={() => triggerRejectUser(u.id, u.fullName)}
+                                >
+                                  <XCircle className="w-3.5 h-3.5" /> Tolak
+                                </Button>
+                                <Button 
+                                  variant="ghost" 
+                                  size="sm" 
+                                  className="h-8 text-xs rounded-xl text-danger hover:text-danger hover:bg-danger/5 border border-transparent hover:border-danger/20 gap-1" 
+                                  onClick={() => triggerDeleteUser(u.id, u.fullName)}
+                                >
+                                  <Trash2 className="w-3.5 h-3.5" /> Hapus
+                                </Button>
+                              </>
+                            ) : u.approvalStatus === 'REJECTED' ? (
+                              <>
+                                <Button 
+                                  size="sm" 
+                                  className="h-8 text-xs rounded-xl bg-green-600 hover:bg-green-700 text-white font-extrabold flex items-center gap-1 shadow-sm" 
+                                  onClick={() => triggerApproveUser(u.id, u.fullName)}
+                                >
+                                  <CheckCheck className="w-3.5 h-3.5" /> Setujui Kembali
+                                </Button>
+                                <Button 
+                                  variant="ghost" 
+                                  size="sm" 
+                                  className="h-8 text-xs rounded-xl text-danger hover:text-danger hover:bg-danger/5 border border-transparent hover:border-danger/20 gap-1" 
+                                  onClick={() => triggerDeleteUser(u.id, u.fullName)}
+                                >
+                                  <Trash2 className="w-3.5 h-3.5" /> Hapus
+                                </Button>
+                              </>
+                            ) : (
+                              <>
+                                <Button 
+                                  variant="secondary" 
+                                  size="sm" 
+                                  className="h-8 text-xs rounded-xl flex items-center gap-1" 
+                                  onClick={() => triggerResetPassword(u.id, u.fullName)}
+                                >
+                                  <KeyRound className="w-3.5 h-3.5 text-slate-500" /> Reset Sandi
+                                </Button>
+                                <Button 
+                                  variant="ghost" 
+                                  size="sm" 
+                                  className="h-8 text-xs rounded-xl text-danger hover:text-danger hover:bg-danger/5 border border-transparent hover:border-danger/20 gap-1" 
+                                  onClick={() => triggerDeleteUser(u.id, u.fullName)}
+                                >
+                                  <Trash2 className="w-3.5 h-3.5" /> Hapus
+                                </Button>
+                              </>
+                            )}
                           </div>
                         </td>
                       </motion.tr>
@@ -442,45 +628,89 @@ export function UsersPage() {
         {/* Mobile Stats & Content Section */}
         <div className="px-5 pt-8 space-y-6">
           {/* Mobile Overview Statistics Cards */}
-          <div className="grid gap-3 grid-cols-3">
-            <div className="p-3.5 rounded-2xl bg-white shadow-md border border-slate-100 flex flex-col items-center text-center">
-              <div className="p-2 rounded-xl bg-blue-500/10 text-blue-500 mb-1.5">
-                <Users className="w-5 h-5" />
+          <div className="grid gap-2.5 grid-cols-2 sm:grid-cols-4">
+            <div className="p-3 rounded-2xl bg-white shadow-md border border-slate-100 flex flex-col items-center text-center">
+              <div className="p-1.5 rounded-xl bg-blue-500/10 text-blue-500 mb-1">
+                <Users className="w-4 h-4" />
               </div>
               <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Total</p>
-              <p className="text-lg font-extrabold text-slate-800 mt-0.5">{isLoading ? '...' : stats.total}</p>
+              <p className="text-base font-extrabold text-slate-800 mt-0.5">{isLoading ? '...' : stats.total}</p>
             </div>
 
-            <div className="p-3.5 rounded-2xl bg-white shadow-md border border-slate-100 flex flex-col items-center text-center">
-              <div className="p-2 rounded-xl bg-purple-500/10 text-purple-500 mb-1.5">
-                <Shield className="w-5 h-5" />
+            <div className="p-3 rounded-2xl bg-white shadow-md border border-slate-100 flex flex-col items-center text-center">
+              <div className="p-1.5 rounded-xl bg-purple-500/10 text-purple-500 mb-1">
+                <Shield className="w-4 h-4" />
               </div>
               <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Admin</p>
-              <p className="text-lg font-extrabold text-slate-800 mt-0.5">{isLoading ? '...' : stats.admins}</p>
+              <p className="text-base font-extrabold text-slate-800 mt-0.5">{isLoading ? '...' : stats.admins}</p>
             </div>
 
-            <div className="p-3.5 rounded-2xl bg-white shadow-md border border-slate-100 flex flex-col items-center text-center">
-              <div className="p-2 rounded-xl bg-green-500/10 text-green-500 mb-1.5">
-                <UserCheck className="w-5 h-5" />
+            <div className="p-3 rounded-2xl bg-white shadow-md border border-slate-100 flex flex-col items-center text-center relative">
+              <div className="p-1.5 rounded-xl bg-amber-500/10 text-amber-600 mb-1 relative">
+                <Clock className="w-4 h-4" />
+                {stats.pending > 0 && (
+                  <span className="absolute -top-0.5 -right-0.5 flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
+                  </span>
+                )}
+              </div>
+              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Menunggu</p>
+              <p className="text-base font-extrabold text-amber-600 mt-0.5">{isLoading ? '...' : stats.pending}</p>
+            </div>
+
+            <div className="p-3 rounded-2xl bg-white shadow-md border border-slate-100 flex flex-col items-center text-center">
+              <div className="p-1.5 rounded-xl bg-green-500/10 text-green-500 mb-1">
+                <UserCheck className="w-4 h-4" />
               </div>
               <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Aktif</p>
-              <p className="text-lg font-extrabold text-slate-800 mt-0.5">{isLoading ? '...' : stats.active}</p>
+              <p className="text-base font-extrabold text-slate-800 mt-0.5">{isLoading ? '...' : stats.active}</p>
             </div>
           </div>
 
+          {/* Pending Banner Mobile */}
+          {stats.pending > 0 && (
+            <div className="p-3.5 rounded-2xl bg-amber-500/10 border border-amber-300/60 shadow-sm flex flex-col gap-2">
+              <div className="flex items-center gap-2.5">
+                <div className="p-1.5 rounded-lg bg-amber-500/20 text-amber-600">
+                  <Clock className="w-4 h-4 animate-pulse" />
+                </div>
+                <p className="text-xs font-bold text-slate-800">
+                  {stats.pending} Akun Menunggu Persetujuan (ACC)
+                </p>
+              </div>
+              <Button
+                size="sm"
+                onClick={() => setFilterTab('PENDING')}
+                className={`w-full rounded-xl text-xs font-bold h-8 ${
+                  filterTab === 'PENDING'
+                    ? 'bg-amber-600 text-white shadow-sm'
+                    : 'bg-white text-amber-800 border border-amber-300 hover:bg-amber-50'
+                }`}
+              >
+                {filterTab === 'PENDING' ? 'Sedang Ditampilkan' : 'Tinjau Permintaan'}
+              </Button>
+            </div>
+          )}
+
           {/* Filter Status Tabs Mobile */}
-          <div className="flex justify-between items-center bg-white p-1.5 rounded-2xl shadow-sm border border-slate-200/60">
-            {(['', true, false] as const).map((r) => {
-              const labels: Record<string, string> = { '': 'Semua', true: 'ADMIN', false: 'USER' }
+          <div className="flex justify-between items-center bg-white p-1 rounded-2xl shadow-sm border border-slate-200/60 gap-1 overflow-x-auto">
+            {(['ALL', 'PENDING', 'ADMIN', 'USER'] as const).map((tab) => {
+              const labels: Record<FilterTab, string> = {
+                ALL: 'Semua',
+                PENDING: `ACC ${stats.pending > 0 ? `(${stats.pending})` : ''}`,
+                ADMIN: 'ADMIN',
+                USER: 'USER',
+              }
               return (
                 <button
-                  key={r === '' ? 'all-m' : String(r)}
-                  onClick={() => setIsAdminFilter(r)}
-                  className={`flex-1 py-2 text-center rounded-xl text-xs font-extrabold transition-all ${
-                    isAdminFilter === r ? 'bg-[#F9D141] text-slate-950 shadow-sm' : 'text-slate-500 hover:text-slate-800'
+                  key={tab}
+                  onClick={() => setFilterTab(tab)}
+                  className={`flex-1 py-1.5 px-2 text-center rounded-xl text-[11px] font-extrabold whitespace-nowrap transition-all ${
+                    filterTab === tab ? 'bg-[#F9D141] text-slate-950 shadow-sm' : 'text-slate-500 hover:text-slate-800'
                   }`}
                 >
-                  {labels[String(r)]}
+                  {labels[tab]}
                 </button>
               )
             })}
@@ -494,7 +724,14 @@ export function UsersPage() {
               <EmptyState title="Tidak ada pengguna" description="Belum ada pengguna dalam kategori filter ini." />
             ) : (
               paginatedUsers.map((u) => (
-                <div key={`m-${u.id}`} className="p-4 rounded-2xl border border-slate-200/80 bg-white shadow-md space-y-3">
+                <div 
+                  key={`m-${u.id}`} 
+                  className={`p-4 rounded-2xl border shadow-md space-y-3 ${
+                    u.approvalStatus === 'PENDING'
+                      ? 'border-amber-300/80 bg-amber-50/20'
+                      : 'border-slate-200/80 bg-white'
+                  }`}
+                >
                   <div className="flex items-center justify-between gap-3">
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 rounded-full bg-slate-900 flex items-center justify-center text-[#F9D141] text-sm font-extrabold shadow-sm border border-slate-700">
@@ -518,42 +755,92 @@ export function UsersPage() {
 
                   <div className="flex items-center justify-between border-t border-slate-100 pt-2.5">
                     <span className="text-[11px] text-slate-400 font-bold uppercase tracking-wider">Status Akun</span>
-                    <div className="flex items-center gap-2">
-                      <button
-                        onClick={() => triggerToggleStatus(u.id, u.fullName, !u.isActive)}
-                        className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors focus:outline-none shadow-inner border border-slate-200/50 ${
-                          u.isActive ? 'bg-green-500' : 'bg-slate-300'
-                        }`}
-                      >
-                        <span
-                          className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white transition-transform shadow-sm ${
-                            u.isActive ? 'translate-x-4' : 'translate-x-0.5'
-                          }`}
-                        />
-                      </button>
-                      <span className={`text-xs font-extrabold ${u.isActive ? 'text-green-600' : 'text-slate-400'}`}>
-                        {u.isActive ? 'Aktif' : 'Nonaktif'}
+                    {u.approvalStatus === 'PENDING' ? (
+                      <span className="inline-flex items-center gap-1 text-[10px] font-extrabold px-2.5 py-1 rounded-full bg-amber-500/15 text-amber-700 border border-amber-300">
+                        <Clock className="w-3 h-3 animate-pulse" /> Menunggu ACC
                       </span>
-                    </div>
+                    ) : u.approvalStatus === 'REJECTED' ? (
+                      <span className="inline-flex items-center gap-1 text-[10px] font-extrabold px-2.5 py-1 rounded-full bg-rose-500/15 text-rose-700 border border-rose-300">
+                        <XCircle className="w-3 h-3" /> Ditolak
+                      </span>
+                    ) : (
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => triggerToggleStatus(u.id, u.fullName, !u.isActive)}
+                          className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors focus:outline-none shadow-inner border border-slate-200/50 ${
+                            u.isActive ? 'bg-green-500' : 'bg-slate-300'
+                          }`}
+                        >
+                          <span
+                            className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white transition-transform shadow-sm ${
+                              u.isActive ? 'translate-x-4' : 'translate-x-0.5'
+                            }`}
+                          />
+                        </button>
+                        <span className={`text-xs font-extrabold ${u.isActive ? 'text-green-600' : 'text-slate-400'}`}>
+                          {u.isActive ? 'Aktif' : 'Nonaktif'}
+                        </span>
+                      </div>
+                    )}
                   </div>
 
                   <div className="flex gap-2 border-t border-slate-100 pt-2.5">
-                    <Button 
-                      variant="secondary" 
-                      size="sm" 
-                      className="flex-1 h-9 text-xs rounded-xl flex items-center justify-center gap-1 font-bold border-slate-200" 
-                      onClick={() => triggerResetPassword(u.id, u.fullName)}
-                    >
-                      <KeyRound className="w-3.5 h-3.5 text-slate-500" /> Reset Sandi
-                    </Button>
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
-                      className="flex-1 h-9 text-xs rounded-xl text-danger hover:text-danger hover:bg-danger/5 border border-transparent hover:border-danger/20 gap-1 flex items-center justify-center font-bold" 
-                      onClick={() => triggerDeleteUser(u.id, u.fullName)}
-                    >
-                      <Trash2 className="w-3.5 h-3.5" /> Hapus
-                    </Button>
+                    {u.approvalStatus === 'PENDING' ? (
+                      <>
+                        <Button 
+                          size="sm" 
+                          className="flex-1 h-9 text-xs rounded-xl bg-green-600 hover:bg-green-700 text-white font-extrabold flex items-center justify-center gap-1 shadow-sm" 
+                          onClick={() => triggerApproveUser(u.id, u.fullName)}
+                        >
+                          <CheckCheck className="w-3.5 h-3.5" /> ACC / Setujui
+                        </Button>
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          className="flex-1 h-9 text-xs rounded-xl text-rose-600 hover:text-rose-700 hover:bg-rose-50 border border-rose-200 gap-1 flex items-center justify-center font-bold" 
+                          onClick={() => triggerRejectUser(u.id, u.fullName)}
+                        >
+                          <XCircle className="w-3.5 h-3.5" /> Tolak
+                        </Button>
+                      </>
+                    ) : u.approvalStatus === 'REJECTED' ? (
+                      <>
+                        <Button 
+                          size="sm" 
+                          className="flex-1 h-9 text-xs rounded-xl bg-green-600 hover:bg-green-700 text-white font-extrabold flex items-center justify-center gap-1 shadow-sm" 
+                          onClick={() => triggerApproveUser(u.id, u.fullName)}
+                        >
+                          <CheckCheck className="w-3.5 h-3.5" /> Setujui Kembali
+                        </Button>
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          className="flex-1 h-9 text-xs rounded-xl text-danger hover:text-danger hover:bg-danger/5 border border-transparent hover:border-danger/20 gap-1 flex items-center justify-center font-bold" 
+                          onClick={() => triggerDeleteUser(u.id, u.fullName)}
+                        >
+                          <Trash2 className="w-3.5 h-3.5" /> Hapus
+                        </Button>
+                      </>
+                    ) : (
+                      <>
+                        <Button 
+                          variant="secondary" 
+                          size="sm" 
+                          className="flex-1 h-9 text-xs rounded-xl flex items-center justify-center gap-1 font-bold border-slate-200" 
+                          onClick={() => triggerResetPassword(u.id, u.fullName)}
+                        >
+                          <KeyRound className="w-3.5 h-3.5 text-slate-500" /> Reset Sandi
+                        </Button>
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          className="flex-1 h-9 text-xs rounded-xl text-danger hover:text-danger hover:bg-danger/5 border border-transparent hover:border-danger/20 gap-1 flex items-center justify-center font-bold" 
+                          onClick={() => triggerDeleteUser(u.id, u.fullName)}
+                        >
+                          <Trash2 className="w-3.5 h-3.5" /> Hapus
+                        </Button>
+                      </>
+                    )}
                   </div>
                 </div>
               ))
@@ -691,6 +978,42 @@ export function UsersPage() {
         confirmClass={statusUserTargetState ? "flex-grow bg-green-600 hover:bg-green-700 text-white font-extrabold" : "flex-grow bg-rose-600 hover:bg-rose-700 text-white font-extrabold"}
         icon={statusUserTargetState ? <UserCheck className="h-6 w-6 text-green-600" /> : <UserX className="h-6 w-6 text-rose-600" />}
         iconBgClass={statusUserTargetState ? "bg-green-50" : "bg-rose-50"}
+      />
+
+      {/* Approve Confirmation Modal */}
+      <DeleteConfirmationModal
+        isOpen={showApproveModal}
+        onClose={() => setShowApproveModal(false)}
+        onConfirm={() => {
+          if (approveUserId) {
+            approveMut.mutate(approveUserId)
+          }
+        }}
+        title="Setujui Pendaftaran Akun (ACC)"
+        description={`Apakah Anda yakin ingin menyetujui akun "${approveUserName}"? Akun ini akan aktif dan dapat langsung login ke dalam sistem.`}
+        isLoading={approveMut.isPending}
+        confirmText="Ya, Setujui Akun"
+        confirmClass="flex-grow bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold"
+        icon={<CheckCheck className="h-6 w-6 text-emerald-600" />}
+        iconBgClass="bg-emerald-50"
+      />
+
+      {/* Reject Confirmation Modal */}
+      <DeleteConfirmationModal
+        isOpen={showRejectModal}
+        onClose={() => setShowRejectModal(false)}
+        onConfirm={() => {
+          if (rejectUserId) {
+            rejectMut.mutate(rejectUserId)
+          }
+        }}
+        title="Tolak Pendaftaran Akun"
+        description={`Apakah Anda yakin ingin menolak pendaftaran akun "${rejectUserName}"? Pengguna tidak akan dapat login ke sistem.`}
+        isLoading={rejectMut.isPending}
+        confirmText="Ya, Tolak Akun"
+        confirmClass="flex-grow bg-rose-600 hover:bg-rose-700 text-white font-extrabold"
+        icon={<XCircle className="h-6 w-6 text-rose-600" />}
+        iconBgClass="bg-rose-50"
       />
     </div>
   )

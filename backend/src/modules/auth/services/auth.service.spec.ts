@@ -23,6 +23,7 @@ describe('AuthService - Account Lockout', () => {
     phone: null,
     avatar_url: null,
     is_active: true,
+    approval_status: 'APPROVED' as const,
     failed_login_attempts: 0,
     lockout_until: null,
     created_at: new Date(),
@@ -34,6 +35,7 @@ describe('AuthService - Account Lockout', () => {
     const mockUsersRepository = {
       findByEmail: jest.fn(),
       update: jest.fn(),
+      create: jest.fn(),
     };
     const mockSessionsRepository = {
       create: jest.fn().mockResolvedValue({}),
@@ -128,5 +130,78 @@ describe('AuthService - Account Lockout', () => {
     ).rejects.toThrow(/Account locked. Please try again in 10 minutes./);
 
     expect(usersRepository.update).not.toHaveBeenCalled();
+  });
+
+  it('rejects login if account approval is PENDING', async () => {
+    const pendingUser = {
+      ...mockUser,
+      approval_status: 'PENDING' as const,
+      is_active: false,
+    };
+    usersRepository.findByEmail.mockResolvedValue(pendingUser);
+    (bcrypt.compare as jest.Mock).mockResolvedValue(true);
+
+    await expect(
+      service.login('user@asetkita-semarang.local', 'password'),
+    ).rejects.toThrow(/menunggu persetujuan/);
+  });
+
+  it('rejects login if account approval is REJECTED', async () => {
+    const rejectedUser = {
+      ...mockUser,
+      approval_status: 'REJECTED' as const,
+      is_active: false,
+    };
+    usersRepository.findByEmail.mockResolvedValue(rejectedUser);
+    (bcrypt.compare as jest.Mock).mockResolvedValue(true);
+
+    await expect(
+      service.login('user@asetkita-semarang.local', 'password'),
+    ).rejects.toThrow(/ditolak/);
+  });
+
+  it('rejects login if account is inactive', async () => {
+    const inactiveUser = {
+      ...mockUser,
+      approval_status: 'APPROVED' as const,
+      is_active: false,
+    };
+    usersRepository.findByEmail.mockResolvedValue(inactiveUser);
+    (bcrypt.compare as jest.Mock).mockResolvedValue(true);
+
+    await expect(
+      service.login('user@asetkita-semarang.local', 'password'),
+    ).rejects.toThrow(/dinonaktifkan/);
+  });
+
+  it('register creates user with PENDING approval and inactive status', async () => {
+    usersRepository.findByEmail.mockResolvedValue(null);
+    (bcrypt.hash as jest.Mock).mockResolvedValue('hashed_pwd');
+    const createdUser = {
+      ...mockUser,
+      id: 'new-user',
+      email: 'baru@asetkita-semarang.local',
+      approval_status: 'PENDING' as const,
+      is_active: false,
+    };
+    usersRepository.create.mockResolvedValue(createdUser);
+
+    const result = await service.register({
+      email: 'baru@asetkita-semarang.local',
+      password: 'Password123',
+      fullName: 'Pengguna Baru',
+    });
+
+    expect(usersRepository.create).toHaveBeenCalledWith({
+      email: 'baru@asetkita-semarang.local',
+      passwordHash: 'hashed_pwd',
+      fullName: 'Pengguna Baru',
+      isAdmin: false,
+      phone: undefined,
+      approvalStatus: 'PENDING',
+      isActive: false,
+    });
+    expect(result.approvalStatus).toBe('PENDING');
+    expect(result.isActive).toBe(false);
   });
 });

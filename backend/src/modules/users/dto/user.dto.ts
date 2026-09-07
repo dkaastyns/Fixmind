@@ -1,6 +1,7 @@
 import {
   IsBoolean,
   IsEmail,
+  IsIn,
   IsNotEmpty,
   IsOptional,
   IsString,
@@ -51,6 +52,10 @@ export class UpdateUserDto {
   @IsOptional()
   @IsBoolean()
   isActive?: boolean;
+
+  @IsOptional()
+  @IsIn(['PENDING', 'APPROVED', 'REJECTED'])
+  approvalStatus?: 'PENDING' | 'APPROVED' | 'REJECTED';
 
   @IsOptional()
   @IsString()

@@ -13,6 +13,7 @@ import {
   fetchAnalyticsSummary,
   fetchAssetTransfers,
   fetchMaintenanceSchedules,
+  fetchUsers,
 } from '@/lib/api-client'
 import { AnimatedGlassCard } from '@/components/ui/animated-glass-card'
 import { GlassCard } from '@/components/ui/glass-card'
@@ -35,6 +36,8 @@ import {
   Menu,
   Search,
   Download,
+  UserCheck,
+  ArrowRight,
 } from 'lucide-react'
 import { NotificationBell } from '@/components/ui/notification-bell'
 import {
@@ -329,6 +332,12 @@ export function AdminDashboard() {
     queryFn: () => fetchAssetTransfers(token, { limit: 1000 }),
   })
 
+  const { data: usersData } = useQuery({
+    queryKey: ['users', 'pending-count'],
+    queryFn: () => fetchUsers(token, { approvalStatus: 'PENDING', limit: 1 }),
+  })
+  const pendingUsersCount = usersData?.meta?.pendingCount ?? usersData?.meta?.total ?? 0
+
   const stats = analyticsData?.data
   const transfers = transfersData?.data ?? []
 
@@ -471,6 +480,40 @@ export function AdminDashboard() {
             </motion.div>
           </div>
         </motion.div>
+
+        {/* ── Pending User Registrations Banner (ACC Notice) ── */}
+        {pendingUsersCount > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="rounded-2xl bg-gradient-to-r from-amber-500/15 via-amber-400/10 to-transparent border border-amber-400/30 p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 backdrop-blur-md shadow-sm"
+          >
+            <div className="flex items-center gap-3.5">
+              <div className="w-10 h-10 rounded-xl bg-amber-400/20 border border-amber-400/30 flex items-center justify-center text-amber-600 shrink-0">
+                <UserCheck className="w-5 h-5" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="font-bold text-slate-900 text-sm sm:text-base">
+                    Persetujuan Pengguna Baru
+                  </span>
+                  <span className="px-2 py-0.5 rounded-full text-[11px] font-extrabold bg-amber-500 text-white shadow-xs">
+                    {pendingUsersCount} Menunggu
+                  </span>
+                </div>
+                <p className="text-xs text-slate-600 mt-0.5">
+                  Terdapat {pendingUsersCount} pengguna baru yang mendaftar dan membutuhkan persetujuan (ACC) admin untuk login.
+                </p>
+              </div>
+            </div>
+            <Link
+              to="/dashboard/users"
+              className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-bold text-slate-900 bg-amber-400 hover:bg-amber-500 rounded-xl shadow-sm transition-all hover:shadow-md cursor-pointer shrink-0 w-full sm:w-auto justify-center"
+            >
+              Review Pendaftaran <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+          </motion.div>
+        )}
 
         {/* ── Report Stats ────────────────────────────────────────────────── */}
         <div>

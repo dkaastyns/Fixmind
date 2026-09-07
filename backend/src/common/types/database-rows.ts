@@ -1,4 +1,5 @@
 export type UserRole = 'ADMIN' | 'USER';
+export type UserApprovalStatus = 'PENDING' | 'APPROVED' | 'REJECTED';
 
 export interface UserRow {
   id: string;
@@ -10,6 +11,7 @@ export interface UserRow {
   phone: string | null;
   avatar_url: string | null;
   is_active: boolean;
+  approval_status: UserApprovalStatus;
   failed_login_attempts: number;
   lockout_until: Date | null;
   created_at: Date;

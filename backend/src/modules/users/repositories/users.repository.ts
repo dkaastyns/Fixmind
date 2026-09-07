@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { SQL_TOKEN, type Sql } from '../../../database/sql';
-import type { UserRow } from '../../../common/types/database-rows';
+import type { UserRow, UserApprovalStatus } from '../../../common/types/database-rows';
 
 @Injectable()
 export class UsersRepository {
@@ -65,18 +65,23 @@ export class UsersRepository {
     fullName: string;
     isAdmin?: boolean;
     phone?: string;
+    approvalStatus?: UserApprovalStatus;
+    isActive?: boolean;
   }): Promise<UserRow> {
     const hasIsAdmin = await this.hasIsAdminColumn();
+    const approvalStatus = data.approvalStatus ?? 'APPROVED';
+    const isActive = data.isActive ?? true;
+
     const [row] = hasIsAdmin
       ? await this.sql<UserRow[]>`
-          INSERT INTO users (email, password_hash, full_name, is_admin, phone)
-          VALUES (${data.email}, ${data.passwordHash}, ${data.fullName}, ${data.isAdmin ?? false}, ${data.phone ?? null})
+          INSERT INTO users (email, password_hash, full_name, is_admin, phone, approval_status, is_active)
+          VALUES (${data.email}, ${data.passwordHash}, ${data.fullName}, ${data.isAdmin ?? false}, ${data.phone ?? null}, ${approvalStatus}, ${isActive})
           RETURNING *,
             CASE WHEN is_admin THEN 'ADMIN' ELSE 'USER' END AS role
         `
       : await this.sql<UserRow[]>`
-          INSERT INTO users (email, password_hash, full_name, role, phone)
-          VALUES (${data.email}, ${data.passwordHash}, ${data.fullName}, ${data.isAdmin ? 'ADMIN' : 'USER'}, ${data.phone ?? null})
+          INSERT INTO users (email, password_hash, full_name, role, phone, approval_status, is_active)
+          VALUES (${data.email}, ${data.passwordHash}, ${data.fullName}, ${data.isAdmin ? 'ADMIN' : 'USER'}, ${data.phone ?? null}, ${approvalStatus}, ${isActive})
           RETURNING *,
             CASE WHEN role = 'ADMIN' THEN TRUE ELSE FALSE END AS is_admin
         `;
@@ -90,6 +95,7 @@ export class UsersRepository {
       isAdmin: boolean;
       phone: string | null;
       isActive: boolean;
+      approvalStatus: UserApprovalStatus;
       passwordHash: string;
       avatarUrl: string | null;
       failedLoginAttempts: number;
@@ -107,6 +113,7 @@ export class UsersRepository {
             is_admin = ${data.isAdmin ?? existing.is_admin},
             phone = ${data.phone !== undefined ? data.phone : existing.phone},
             is_active = ${data.isActive ?? existing.is_active},
+            approval_status = ${data.approvalStatus ?? existing.approval_status},
             password_hash = ${data.passwordHash ?? existing.password_hash},
             avatar_url = ${data.avatarUrl !== undefined ? data.avatarUrl : existing.avatar_url},
             failed_login_attempts = ${data.failedLoginAttempts !== undefined ? data.failedLoginAttempts : existing.failed_login_attempts},
@@ -122,6 +129,7 @@ export class UsersRepository {
             role = ${(data.isAdmin ?? existing.is_admin) ? 'ADMIN' : 'USER'},
             phone = ${data.phone !== undefined ? data.phone : existing.phone},
             is_active = ${data.isActive ?? existing.is_active},
+            approval_status = ${data.approvalStatus ?? existing.approval_status},
             password_hash = ${data.passwordHash ?? existing.password_hash},
             avatar_url = ${data.avatarUrl !== undefined ? data.avatarUrl : existing.avatar_url},
             failed_login_attempts = ${data.failedLoginAttempts !== undefined ? data.failedLoginAttempts : existing.failed_login_attempts},
@@ -142,62 +150,59 @@ export class UsersRepository {
     return rows.count > 0;
   }
 
+  async countPending(): Promise<number> {
+    const [{ count }] = await this.sql<{ count: string }[]>`
+      SELECT COUNT(*)::text AS count FROM users
+      WHERE deleted_at IS NULL AND approval_status = 'PENDING'
+    `;
+    return Number(count || 0);
+  }
+
   async list(params: {
     page: number;
     limit: number;
     isAdmin?: boolean;
-  }): Promise<{ rows: UserRow[]; total: number }> {
+    approvalStatus?: UserApprovalStatus;
+  }): Promise<{ rows: UserRow[]; total: number; pendingCount: number }> {
     const offset = (params.page - 1) * params.limit;
     const hasIsAdmin = await this.hasIsAdminColumn();
 
-    const rows =
-      params.isAdmin !== undefined
-        ? hasIsAdmin
-          ? await this.sql<UserRow[]>`
-            SELECT
-              *,
-              CASE WHEN is_admin THEN 'ADMIN' ELSE 'USER' END AS role
-            FROM users WHERE deleted_at IS NULL AND is_admin = ${params.isAdmin}
-            ORDER BY created_at DESC LIMIT ${params.limit} OFFSET ${offset}
-          `
-          : await this.sql<UserRow[]>`
-            SELECT
-              *,
-              CASE WHEN role = 'ADMIN' THEN TRUE ELSE FALSE END AS is_admin
-            FROM users WHERE deleted_at IS NULL AND role = ${params.isAdmin ? 'ADMIN' : 'USER'}
-            ORDER BY created_at DESC LIMIT ${params.limit} OFFSET ${offset}
-          `
-        : hasIsAdmin
-          ? await this.sql<UserRow[]>`
-            SELECT
-              *,
-              CASE WHEN is_admin THEN 'ADMIN' ELSE 'USER' END AS role
-            FROM users WHERE deleted_at IS NULL
-            ORDER BY created_at DESC LIMIT ${params.limit} OFFSET ${offset}
-          `
-          : await this.sql<UserRow[]>`
-            SELECT
-              *,
-              CASE WHEN role = 'ADMIN' THEN TRUE ELSE FALSE END AS is_admin
-            FROM users WHERE deleted_at IS NULL
-            ORDER BY created_at DESC LIMIT ${params.limit} OFFSET ${offset}
-          `;
+    const conditions = [this.sql`deleted_at IS NULL`];
+    if (params.isAdmin !== undefined) {
+      if (hasIsAdmin) {
+        conditions.push(this.sql`is_admin = ${params.isAdmin}`);
+      } else {
+        conditions.push(this.sql`role = ${params.isAdmin ? 'ADMIN' : 'USER'}`);
+      }
+    }
+    if (params.approvalStatus) {
+      conditions.push(this.sql`approval_status = ${params.approvalStatus}`);
+    }
 
-    const [{ count }] =
-      params.isAdmin !== undefined
-        ? hasIsAdmin
-          ? await this.sql<{ count: string }[]>`
-            SELECT COUNT(*)::text AS count FROM users
-            WHERE deleted_at IS NULL AND is_admin = ${params.isAdmin}
-          `
-          : await this.sql<{ count: string }[]>`
-            SELECT COUNT(*)::text AS count FROM users
-            WHERE deleted_at IS NULL AND role = ${params.isAdmin ? 'ADMIN' : 'USER'}
-          `
-        : await this.sql<{ count: string }[]>`
-          SELECT COUNT(*)::text AS count FROM users WHERE deleted_at IS NULL
+    const whereClause = conditions.reduce((acc, curr) => this.sql`${acc} AND ${curr}`);
+
+    const rows = hasIsAdmin
+      ? await this.sql<UserRow[]>`
+          SELECT
+            *,
+            CASE WHEN is_admin THEN 'ADMIN' ELSE 'USER' END AS role
+          FROM users WHERE ${whereClause}
+          ORDER BY created_at DESC LIMIT ${params.limit} OFFSET ${offset}
+        `
+      : await this.sql<UserRow[]>`
+          SELECT
+            *,
+            CASE WHEN role = 'ADMIN' THEN TRUE ELSE FALSE END AS is_admin
+          FROM users WHERE ${whereClause}
+          ORDER BY created_at DESC LIMIT ${params.limit} OFFSET ${offset}
         `;
 
-    return { rows, total: Number(count) };
+    const [{ count }] = await this.sql<{ count: string }[]>`
+      SELECT COUNT(*)::text AS count FROM users WHERE ${whereClause}
+    `;
+
+    const pendingCount = await this.countPending();
+
+    return { rows, total: Number(count), pendingCount };
   }
 }

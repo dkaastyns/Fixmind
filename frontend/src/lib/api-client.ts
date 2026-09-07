@@ -9,6 +9,7 @@ import type {
   Report,
   Room,
   User,
+  UserApprovalStatus,
 } from '@/types/api'
 
 import { useAuthStore } from '@/stores/auth-store'
@@ -200,7 +201,7 @@ export const registerRequest = (data: {
   fullName: string
   phone?: string
 }) =>
-  apiFetch<LoginResponse>('/auth/register', {
+  apiFetch<{ user: User }>('/auth/register', {
     method: 'POST',
     body: JSON.stringify(data),
   })
@@ -271,13 +272,32 @@ export const changePasswordRequest = (
   })
 
 // Users
-export const fetchUsers = (token: string, params?: { isAdmin?: boolean }) => {
-  const q = typeof params?.isAdmin === 'boolean' ? `?isAdmin=${params.isAdmin}` : ''
-  return apiFetch<User[]>(`/users${q}`, auth(token))
+export const fetchUsers = (
+  token: string,
+  params?: {
+    isAdmin?: boolean
+    approvalStatus?: UserApprovalStatus
+    page?: number
+    limit?: number
+  },
+) => {
+  const q = new URLSearchParams()
+  if (typeof params?.isAdmin === 'boolean') q.set('isAdmin', String(params.isAdmin))
+  if (params?.approvalStatus) q.set('approvalStatus', params.approvalStatus)
+  if (params?.page) q.set('page', String(params.page))
+  if (params?.limit) q.set('limit', String(params.limit))
+  const qs = q.toString() ? `?${q.toString()}` : ''
+  return apiFetch<User[]>(`/users${qs}`, auth(token))
 }
 
 export const createUser = (token: string, data: object) =>
   apiFetch<User>('/users', { method: 'POST', body: JSON.stringify(data), ...auth(token) })
+
+export const approveUser = (token: string, id: string) =>
+  apiFetch<User>(`/users/${id}/approve`, { method: 'PATCH', ...auth(token) })
+
+export const rejectUser = (token: string, id: string) =>
+  apiFetch<User>(`/users/${id}/reject`, { method: 'PATCH', ...auth(token) })
 
 export const updateUser = (token: string, id: string, data: object) =>
   apiFetch<User>(`/users/${id}`, { method: 'PATCH', body: JSON.stringify(data), ...auth(token) })

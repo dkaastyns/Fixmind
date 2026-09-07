@@ -4,7 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
-import type { UserRow } from '../../../common/types/database-rows';
+import type { UserRow, UserApprovalStatus } from '../../../common/types/database-rows';
 import { CreateUserDto, UpdateUserDto } from '../dto/user.dto';
 import { UsersRepository } from '../repositories/users.repository';
 
@@ -32,19 +32,21 @@ export class UsersService {
       phone: user.phone,
       avatarUrl: user.avatar_url,
       isActive: user.is_active,
+      approvalStatus: user.approval_status ?? 'APPROVED',
       createdAt: user.created_at,
     };
   }
 
-  async list(page = 1, limit = 20, isAdmin?: boolean) {
-    const { rows, total } = await this.usersRepository.list({
+  async list(page = 1, limit = 20, isAdmin?: boolean, approvalStatus?: UserApprovalStatus) {
+    const { rows, total, pendingCount } = await this.usersRepository.list({
       page,
       limit,
       isAdmin,
+      approvalStatus,
     });
     return {
       data: rows.map((r) => this.toPublic(r)),
-      meta: { page, limit, total },
+      meta: { page, limit, total, pendingCount },
     };
   }
 
@@ -67,6 +69,8 @@ export class UsersService {
       fullName: dto.fullName,
       isAdmin: dto.isAdmin,
       phone: dto.phone,
+      approvalStatus: 'APPROVED',
+      isActive: true,
     });
     return this.toPublic(user);
   }
@@ -92,12 +96,21 @@ export class UsersService {
     if (dto.isAdmin !== undefined) data.isAdmin = dto.isAdmin;
     if (dto.phone !== undefined) data.phone = dto.phone;
     if (dto.isActive !== undefined) data.isActive = dto.isActive;
+    if (dto.approvalStatus !== undefined) data.approvalStatus = dto.approvalStatus;
     if (dto.avatarUrl !== undefined) data.avatarUrl = dto.avatarUrl;
     if (dto.password) data.passwordHash = await bcrypt.hash(dto.password, 12);
 
     const user = await this.usersRepository.update(id, data);
     if (!user) throw new NotFoundException('User not found');
     return this.toPublic(user);
+  }
+
+  async approveUser(id: string) {
+    return this.update(id, { approvalStatus: 'APPROVED', isActive: true });
+  }
+
+  async rejectUser(id: string) {
+    return this.update(id, { approvalStatus: 'REJECTED', isActive: false });
   }
 
   async remove(id: string) {

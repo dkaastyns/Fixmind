@@ -12,10 +12,13 @@ export type ReportStatus =
 
 export type AssetTransferStatus = 'PENDING' | 'APPROVED' | 'REJECTED'
 
+export type UserApprovalStatus = 'PENDING' | 'APPROVED' | 'REJECTED'
+
 export interface ApiMeta {
   page: number
   limit: number
   total: number
+  pendingCount?: number
 }
 
 export interface ApiSuccessResponse<T> {
@@ -34,6 +37,7 @@ export interface User {
   phone: string | null
   avatarUrl: string | null
   isActive: boolean
+  approvalStatus?: UserApprovalStatus
   createdAt: string
 }
 

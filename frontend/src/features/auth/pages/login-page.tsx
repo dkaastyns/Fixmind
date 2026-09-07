@@ -120,6 +120,9 @@ export function LoginPage() {
                 {(() => {
                   const msg = (mutation.error as Error).message
                   if (msg === 'Invalid credentials') return 'Email atau kata sandi salah'
+                  if (msg.includes('menunggu persetujuan')) return msg
+                  if (msg.includes('ditolak')) return msg
+                  if (msg.includes('dinonaktifkan')) return msg
                   if (msg.includes('Too many failed attempts')) return 'Terlalu banyak percobaan gagal. Akun dikunci sementara.'
                   if (msg.includes('Account locked')) return 'Akun dikunci sementara karena terlalu banyak percobaan gagal.'
                   return msg
